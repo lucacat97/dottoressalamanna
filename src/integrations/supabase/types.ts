@@ -14,7 +14,80 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      course_editions: {
+        Row: {
+          created_at: string
+          date: string
+          description: string | null
+          id: string
+          location: string | null
+          max_participants: number | null
+          status: string
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          date: string
+          description?: string | null
+          id?: string
+          location?: string | null
+          max_participants?: number | null
+          status?: string
+          title: string
+        }
+        Update: {
+          created_at?: string
+          date?: string
+          description?: string | null
+          id?: string
+          location?: string | null
+          max_participants?: number | null
+          status?: string
+          title?: string
+        }
+        Relationships: []
+      }
+      course_registrations: {
+        Row: {
+          created_at: string
+          edition_id: string
+          email: string
+          full_name: string
+          id: string
+          notes: string | null
+          phone: string | null
+          registered_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          edition_id: string
+          email: string
+          full_name: string
+          id?: string
+          notes?: string | null
+          phone?: string | null
+          registered_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          edition_id?: string
+          email?: string
+          full_name?: string
+          id?: string
+          notes?: string | null
+          phone?: string | null
+          registered_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "course_registrations_edition_id_fkey"
+            columns: ["edition_id"]
+            isOneToOne: false
+            referencedRelation: "course_editions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
