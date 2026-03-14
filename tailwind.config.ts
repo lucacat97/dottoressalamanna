@@ -47,6 +47,16 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        petrolio: {
+          DEFAULT: "hsl(var(--petrolio))",
+          light: "hsl(var(--petrolio-light))",
+          dark: "hsl(var(--petrolio-dark))",
+        },
+        gold: {
+          DEFAULT: "hsl(var(--gold-warm))",
+          light: "hsl(var(--gold-light))",
+        },
+        cream: "hsl(var(--cream))",
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
@@ -57,6 +67,10 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+      },
+      fontFamily: {
+        display: ['Playfair Display', 'serif'],
+        body: ['Raleway', 'sans-serif'],
       },
       borderRadius: {
         lg: "var(--radius)",
