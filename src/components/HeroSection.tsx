@@ -22,7 +22,7 @@ const HeroSection = () => {
 
       {/* Hero image - floating parallax with opposite direction */}
       <div
-        className="absolute right-0 bottom-0 h-[115%] w-auto z-[2] will-change-transform"
+        className="absolute right-0 bottom-[-5%] h-[115%] w-auto z-[2] will-change-transform"
         style={{
           transform: `translateY(${-parallaxOffset * 0.6}px)`
         }}>
