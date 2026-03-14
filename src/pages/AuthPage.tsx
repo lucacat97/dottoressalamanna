@@ -34,7 +34,7 @@ const AuthPage = () => {
         if (error) throw error;
         toast({
           title: "Registrazione completata",
-          description: "Controlla la tua email per confermare l'account.",
+          description: "Per favore, controlla la tua email per confermare l'account.",
         });
       }
     } catch (error: any) {
@@ -62,9 +62,7 @@ const AuthPage = () => {
             {isLogin ? "Accedi" : "Registrati"}
           </h1>
           <p className="font-body text-sm text-muted-foreground text-center mb-8">
-            {isLogin
-              ? "Accedi alla tua area riservata"
-              : "Crea il tuo account per accedere ai corsi"}
+            {isLogin ? "Accedi alla tua area riservata" : "Crea il tuo account per accedere ai corsi"}
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-5">
@@ -121,10 +119,7 @@ const AuthPage = () => {
 
           <p className="font-body text-sm text-muted-foreground text-center mt-6">
             {isLogin ? "Non hai un account?" : "Hai già un account?"}{" "}
-            <button
-              onClick={() => setIsLogin(!isLogin)}
-              className="text-petrolio font-semibold hover:underline"
-            >
+            <button onClick={() => setIsLogin(!isLogin)} className="text-petrolio font-semibold hover:underline">
               {isLogin ? "Registrati" : "Accedi"}
             </button>
           </p>

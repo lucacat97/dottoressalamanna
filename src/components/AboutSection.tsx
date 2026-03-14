@@ -24,9 +24,7 @@ const AboutSection = () => {
           {/* Text */}
           <AnimatedSection delay={0.2}>
             <div>
-              <p className="font-body text-sm uppercase tracking-[0.2em] text-gold mb-4">
-                Chi Sono
-              </p>
+              <p className="font-body text-sm uppercase tracking-[0.2em] text-gold mb-4">Chi Sono</p>
               <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-6 leading-tight">
                 Un approccio
                 <br />
@@ -34,34 +32,28 @@ const AboutSection = () => {
               </h2>
               <div className="space-y-4 font-body text-muted-foreground leading-relaxed">
                 <p>
-                  La Dott.ssa Annarita Lamanna è un'odontoiatra specializzata in ortodonzia
-                  con un approccio unico che integra la valutazione ortodontica con l'analisi
-                  posturale e neuromuscolare.
+                  La Dott.ssa Annarita Lamanna è un'odontoiatra specializzata in ortodonzia con un approccio unico che
+                  integra la valutazione ortodontica con l'analisi posturale e neuromuscolare.
                 </p>
                 <p>
-                  Con anni di esperienza clinica e formativa, la Dott.ssa Lamanna ha sviluppato
-                  un metodo che coniuga ortodonzia tradizionale, agopuntura e nanotecnologie
-                  terapeutiche per un trattamento davvero personalizzato.
+                  Con anni di esperienza clinica e formativa, la Dott.ssa Lamanna ha sviluppato un metodo che coniuga
+                  ortodonzia tradizionale, agopuntura e nanotecnologie terapeutiche per un trattamento davvero
+                  personalizzato.
                 </p>
                 <p>
-                  I suoi corsi si rivolgono a professionisti del settore odontoiatrico e sanitario
-                  che desiderano ampliare le proprie competenze verso una visione olistica
-                  del paziente.
+                  I suoi corsi si rivolgono a professionisti del settore odontoiatrico e sanitario che desiderano
+                  ampliare le proprie competenze verso una visione olistica del paziente.
                 </p>
               </div>
               <div className="mt-8 flex gap-8">
                 {[
                   { value: "15+", label: "Anni di esperienza" },
-                  { value: "500+", label: "Professionisti formati" },
-                  { value: "30+", label: "Corsi tenuti" },
+                  { value: "100+", label: "Professionisti formati" },
+                  { value: "5+", label: "Corsi tenuti" },
                 ].map((stat) => (
                   <div key={stat.label}>
-                    <div className="font-display text-2xl font-bold text-petrolio">
-                      {stat.value}
-                    </div>
-                    <div className="font-body text-xs text-muted-foreground mt-1">
-                      {stat.label}
-                    </div>
+                    <div className="font-display text-2xl font-bold text-petrolio">{stat.value}</div>
+                    <div className="font-body text-xs text-muted-foreground mt-1">{stat.label}</div>
                   </div>
                 ))}
               </div>
