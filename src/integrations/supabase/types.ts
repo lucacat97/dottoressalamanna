@@ -14,6 +14,38 @@ export type Database = {
   }
   public: {
     Tables: {
+      course_access_overrides: {
+        Row: {
+          created_at: string
+          edition_id: string
+          granted: boolean
+          id: string
+          user_email: string
+        }
+        Insert: {
+          created_at?: string
+          edition_id: string
+          granted?: boolean
+          id?: string
+          user_email: string
+        }
+        Update: {
+          created_at?: string
+          edition_id?: string
+          granted?: boolean
+          id?: string
+          user_email?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "course_access_overrides_edition_id_fkey"
+            columns: ["edition_id"]
+            isOneToOne: false
+            referencedRelation: "course_editions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       course_editions: {
         Row: {
           created_at: string
@@ -149,6 +181,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      has_course_access: {
+        Args: { _edition_id: string; _user_id: string }
+        Returns: boolean
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
