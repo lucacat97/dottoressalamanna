@@ -326,13 +326,6 @@ const Dashboard = () => {
           </Tabs>
         </section>
 
-        {editions.length === 0 && (
-          <div className="bg-cream rounded-lg p-8 text-center mt-6">
-            <p className="font-body text-muted-foreground">
-              I corsi e i materiali verranno aggiornati dalla Dott.ssa Lamanna.
-            </p>
-          </div>
-        )}
       </main>
     </div>
   );
