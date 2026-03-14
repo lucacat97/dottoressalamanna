@@ -1,6 +1,6 @@
 import { useParallax } from "@/hooks/useParallax";
 import { motion } from "framer-motion";
-import lamannaHero from "@/assets/lamanna-hero.png";
+import lamannaHero from "@/assets/lamanna-hero-cutout.png";
 
 const HeroSection = () => {
   const parallaxOffset = useParallax(0.4);
