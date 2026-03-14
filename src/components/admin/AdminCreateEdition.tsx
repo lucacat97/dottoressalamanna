@@ -18,6 +18,7 @@ const AdminCreateEdition = ({ onCreated }: Props) => {
     location: "",
     max_participants: "25",
     status: "upcoming",
+    type: "live",
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
