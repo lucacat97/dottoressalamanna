@@ -33,7 +33,8 @@ const AdminCreateEdition = ({ onCreated }: Props) => {
       location: form.location.trim() || null,
       max_participants: parseInt(form.max_participants) || 25,
       status: form.status,
-    });
+      type: form.type,
+    } as any);
     setSubmitting(false);
 
     if (error) {
