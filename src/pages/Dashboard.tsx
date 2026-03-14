@@ -248,6 +248,10 @@ const Dashboard = () => {
             {adminTab === "materials" && (
               <AdminMaterials editions={editions} materials={materials} onUpdated={fetchData} />
             )}
+
+            {adminTab === "access" && (
+              <AdminAccessControl editions={editions} />
+            )}
           </section>
         )}
 
