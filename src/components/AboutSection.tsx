@@ -32,16 +32,15 @@ const AboutSection = () => {
               </h2>
               <div className="space-y-4 font-body text-muted-foreground leading-relaxed">
                 <p>
-                  La Dott.ssa Annarita Lamanna è un'odontoiatra specializzata in ortodonzia con un approccio unico che
-                  integra la valutazione ortodontica con l'analisi posturale e neuromuscolare.
+                  Sono un'odontoiatra specializzata in ortodonzia con un approccio unico che integra la valutazione
+                  ortodontica con l'analisi posturale e neuromuscolare.
                 </p>
                 <p>
-                  Con anni di esperienza clinica e formativa, la Dott.ssa Lamanna ha sviluppato un metodo che coniuga
-                  ortodonzia tradizionale, agopuntura e nanotecnologie terapeutiche per un trattamento davvero
-                  personalizzato.
+                  Con anni di esperienza clinica e formativa, ho sviluppato un metodo che coniuga ortodonzia
+                  tradizionale, agopuntura e nanotecnologie terapeutiche per un trattamento davvero personalizzato.
                 </p>
                 <p>
-                  I suoi corsi si rivolgono a professionisti del settore odontoiatrico e sanitario che desiderano
+                  I miei corsi si rivolgono a professionisti del settore odontoiatrico e sanitario che desiderano
                   ampliare le proprie competenze verso una visione olistica del paziente.
                 </p>
               </div>
