@@ -7,9 +7,6 @@ const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
 
-const Navbar = () => {
-  const [isOpen, setIsOpen] = useState(false);
-
   const links = [
     { label: "Chi Sono", href: "#chi-sono" },
     { label: "Corsi", href: "#corsi" },
@@ -35,7 +32,12 @@ const Navbar = () => {
               {link.label}
             </a>
           ))}
-          <Button variant="default" size="sm" className="bg-primary hover:bg-accent text-primary-foreground font-body">
+          <Button
+            variant="default"
+            size="sm"
+            className="bg-primary hover:bg-accent text-primary-foreground font-body"
+            onClick={() => navigate("/login")}
+          >
             Area Riservata
           </Button>
         </div>
@@ -62,7 +64,12 @@ const Navbar = () => {
               {link.label}
             </a>
           ))}
-          <Button variant="default" size="sm" className="w-full bg-primary hover:bg-accent text-primary-foreground font-body">
+          <Button
+            variant="default"
+            size="sm"
+            className="w-full bg-primary hover:bg-accent text-primary-foreground font-body"
+            onClick={() => { setIsOpen(false); navigate("/login"); }}
+          >
             Area Riservata
           </Button>
         </div>
