@@ -12,20 +12,11 @@ import AnimatedSection from "./AnimatedSection";
 
 const images = [
   { src: corsoAula, alt: "Aula del corso con partecipanti", span: "md:col-span-2" },
-  {
-    /* src: meetintao25, alt: "Dott.ssa Lamanna - Meet in TAO", span: "" */
-  },
-  {
-    /*src: lamannaLezione, alt: "Dott.ssa Lamanna durante una lezione", span: "" */
-  },
+
   { src: meetintao109, alt: "Dott.ssa Lamanna in conversazione", span: "md:col-span-2" },
-  {
-    /* src: lamannaEsercizi, alt: "Dimostrazione di esercizi correttivi", span: "" */
-  },
+
   { src: meetintao26, alt: "Dott.ssa Lamanna all'evento TAO", span: "" },
-  {
-    /* src: lamannaSpiegazione, alt: "Spiegazione delle fibre trigeminali", span: "" */
-  },
+
   { src: meetintao24, alt: "Dott.ssa Lamanna - evento professionale", span: "" },
   { src: locationHotel, alt: "Location elegante dei corsi", span: "" },
   { src: corsoPlatea, alt: "Partecipanti al corso", span: "md:col-span-2" },
