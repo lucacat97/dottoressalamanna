@@ -36,7 +36,7 @@ const Dashboard = () => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [editions, setEditions] = useState<CourseEdition[]>([]);
   const [materials, setMaterials] = useState<CourseMaterial[]>([]);
-  const [adminTab, setAdminTab] = useState<"editions" | "registrations" | "materials">("editions");
+  const [adminTab, setAdminTab] = useState<"editions" | "registrations" | "materials" | "access">("editions");
   const navigate = useNavigate();
 
   useEffect(() => {
