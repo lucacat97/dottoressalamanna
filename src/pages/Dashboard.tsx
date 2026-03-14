@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { LogOut, BookOpen, FileText, User, Download, Calendar, MapPin, Shield, Users, Upload, Trash2, Monitor, Brain } from "lucide-react";
+import { LogOut, BookOpen, FileText, User, Download, Calendar, MapPin, Shield, Users, Upload, Trash2, Monitor, Brain, KeyRound } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
@@ -9,6 +9,7 @@ import type { User as SupaUser } from "@supabase/supabase-js";
 import AdminCreateEdition from "@/components/admin/AdminCreateEdition";
 import AdminRegistrations from "@/components/admin/AdminRegistrations";
 import AdminMaterials from "@/components/admin/AdminMaterials";
+import AdminAccessControl from "@/components/admin/AdminAccessControl";
 
 interface CourseEdition {
   id: string;
@@ -35,7 +36,7 @@ const Dashboard = () => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [editions, setEditions] = useState<CourseEdition[]>([]);
   const [materials, setMaterials] = useState<CourseMaterial[]>([]);
-  const [adminTab, setAdminTab] = useState<"editions" | "registrations" | "materials">("editions");
+  const [adminTab, setAdminTab] = useState<"editions" | "registrations" | "materials" | "access">("editions");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -192,6 +193,7 @@ const Dashboard = () => {
                 { key: "editions" as const, label: "Edizioni", icon: BookOpen },
                 { key: "registrations" as const, label: "Iscrizioni", icon: Users },
                 { key: "materials" as const, label: "Materiali", icon: Upload },
+                { key: "access" as const, label: "Accessi", icon: KeyRound },
               ]).map(({ key, label, icon: Icon }) => (
                 <button
                   key={key}
@@ -245,6 +247,10 @@ const Dashboard = () => {
 
             {adminTab === "materials" && (
               <AdminMaterials editions={editions} materials={materials} onUpdated={fetchData} />
+            )}
+
+            {adminTab === "access" && (
+              <AdminAccessControl editions={editions} />
             )}
           </section>
         )}
