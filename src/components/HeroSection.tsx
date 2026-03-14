@@ -1,4 +1,4 @@
-import lamannaSpeaking from "@/assets/lamanna-speaking.jpg";
+import lamannaHero from "@/assets/lamanna-hero.png";
 
 const HeroSection = () => {
   return (
@@ -6,7 +6,7 @@ const HeroSection = () => {
       {/* Background image */}
       <div className="absolute inset-0">
         <img
-          src={lamannaSpeaking}
+          src={lamannaHero}
           alt="Dott.ssa Annarita Lamanna durante un corso"
           className="w-full h-full object-cover object-top"
         />
