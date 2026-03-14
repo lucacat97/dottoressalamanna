@@ -122,6 +122,17 @@ const AdminCreateEdition = ({ onCreated }: Props) => {
           />
         </div>
         <div>
+          <label className="font-body text-xs uppercase tracking-wider text-muted-foreground mb-1 block">Tipo</label>
+          <select
+            value={form.type}
+            onChange={(e) => setForm({ ...form, type: e.target.value })}
+            className="w-full px-4 py-2.5 rounded-md border border-input bg-background font-body text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+          >
+            <option value="live">Corso Live</option>
+            <option value="webinar">Webinar</option>
+          </select>
+        </div>
+        <div>
           <label className="font-body text-xs uppercase tracking-wider text-muted-foreground mb-1 block">Stato</label>
           <select
             value={form.status}
