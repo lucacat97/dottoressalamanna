@@ -15,7 +15,7 @@ const images = [
 
   { src: meetintao109, alt: "Dott.ssa Lamanna in conversazione", span: "md:col-span-2" },
 
-  { src: meetintao26, alt: "Dott.ssa Lamanna all'evento TAO", span: "" },
+  { src: meetintao26, alt: "Dott.ssa Lamanna all'evento TAO", span: "", position: "object-bottom" },
 
   { src: meetintao24, alt: "Dott.ssa Lamanna - evento professionale", span: "" },
   { src: locationHotel, alt: "Location elegante dei corsi", span: "" },
