@@ -31,6 +31,7 @@ const HeroSection = () => {
           src={lamannaHero}
           alt="Dott.ssa Annarita Lamanna"
           className="h-full w-auto object-contain object-bottom drop-shadow-[0_0_80px_rgba(0,0,0,0.5)]"
+          style={{ mixBlendMode: 'multiply' }}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-transparent via-transparent to-petrolio-dark/40 pointer-events-none" />
       </div>
