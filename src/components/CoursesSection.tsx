@@ -29,23 +29,22 @@ const webinars = [
   },
 ];
 
-const CourseCard = ({ course, index }: { course: typeof liveCourses[0]; index: number }) => (
+const CourseCard = ({ course, index }: { course: (typeof liveCourses)[0]; index: number }) => (
   <AnimatedSection delay={index * 0.1}>
     <div className="group bg-card rounded-lg p-8 shadow-card hover:shadow-elevated transition-all duration-500 border border-border hover:border-petrolio-light/30 hover:-translate-y-1">
       <div className="flex items-start gap-5">
         <div className="flex-shrink-0 w-12 h-12 rounded-md bg-primary/10 flex items-center justify-center group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300">
-          <course.icon size={22} className="text-petrolio group-hover:text-primary-foreground transition-colors duration-300" />
+          <course.icon
+            size={22}
+            className="text-petrolio group-hover:text-primary-foreground transition-colors duration-300"
+          />
         </div>
         <div>
           <span className="inline-block font-body text-xs uppercase tracking-wider text-gold font-semibold mb-2">
             {course.tag}
           </span>
-          <h3 className="font-display text-xl font-semibold text-foreground mb-3">
-            {course.title}
-          </h3>
-          <p className="font-body text-sm text-muted-foreground leading-relaxed">
-            {course.description}
-          </p>
+          <h3 className="font-display text-xl font-semibold text-foreground mb-3">{course.title}</h3>
+          <p className="font-body text-sm text-muted-foreground leading-relaxed">{course.description}</p>
         </div>
       </div>
     </div>
@@ -58,15 +57,11 @@ const CoursesSection = () => {
       <div className="max-w-7xl mx-auto px-6">
         <AnimatedSection>
           <div className="text-center mb-16">
-            <p className="font-body text-sm uppercase tracking-[0.2em] text-gold mb-4">
-              Formazione
-            </p>
-            <h2 className="font-display text-3xl md:text-5xl font-bold text-foreground mb-4">
-              I Nostri Corsi
-            </h2>
+            <p className="font-body text-sm uppercase tracking-[0.2em] text-gold mb-4">Formazione</p>
+            <h2 className="font-display text-3xl md:text-5xl font-bold text-foreground mb-4">I Miei Corsi</h2>
             <p className="font-body text-muted-foreground max-w-2xl mx-auto">
-              Percorsi formativi pensati per professionisti che vogliono integrare
-              ortodonzia, postura e approccio neuromuscolare nella propria pratica clinica.
+              Percorsi formativi pensati per professionisti che vogliono integrare ortodonzia, postura e approccio
+              neuromuscolare nella propria pratica clinica.
             </p>
           </div>
         </AnimatedSection>
@@ -75,11 +70,17 @@ const CoursesSection = () => {
           <AnimatedSection>
             <div className="flex justify-center mb-10">
               <TabsList className="bg-muted/80 p-1 rounded-lg">
-                <TabsTrigger value="live" className="flex items-center gap-2 px-6 py-2.5 font-body text-sm data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-sm">
+                <TabsTrigger
+                  value="live"
+                  className="flex items-center gap-2 px-6 py-2.5 font-body text-sm data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-sm"
+                >
                   <Monitor size={16} />
                   Corsi Live
                 </TabsTrigger>
-                <TabsTrigger value="webinar" className="flex items-center gap-2 px-6 py-2.5 font-body text-sm data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-sm">
+                <TabsTrigger
+                  value="webinar"
+                  className="flex items-center gap-2 px-6 py-2.5 font-body text-sm data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-sm"
+                >
                   <Brain size={16} />
                   Webinar
                 </TabsTrigger>
