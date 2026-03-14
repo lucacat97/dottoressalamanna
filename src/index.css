@@ -6,40 +6,40 @@
 
 @layer base {
   :root {
-    --background: 180 15% 97%;
-    --foreground: 200 25% 10%;
+    --background: 180 12% 96%;
+    --foreground: 180 30% 8%;
 
     --card: 0 0% 100%;
-    --card-foreground: 200 25% 10%;
+    --card-foreground: 180 30% 8%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 200 25% 10%;
+    --popover-foreground: 180 30% 8%;
 
-    --primary: 185 60% 22%;
-    --primary-foreground: 180 15% 97%;
+    --primary: 178 55% 18%;
+    --primary-foreground: 170 15% 96%;
 
-    --secondary: 180 20% 92%;
-    --secondary-foreground: 200 25% 10%;
+    --secondary: 175 18% 91%;
+    --secondary-foreground: 180 30% 8%;
 
-    --muted: 180 10% 94%;
-    --muted-foreground: 200 10% 45%;
+    --muted: 175 10% 93%;
+    --muted-foreground: 180 12% 42%;
 
-    --accent: 175 45% 30%;
-    --accent-foreground: 180 15% 97%;
+    --accent: 172 40% 26%;
+    --accent-foreground: 170 15% 96%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 180 15% 88%;
-    --input: 180 15% 88%;
-    --ring: 185 60% 22%;
+    --border: 175 14% 86%;
+    --input: 175 14% 86%;
+    --ring: 178 55% 18%;
 
     --radius: 0.5rem;
 
     /* Custom tokens */
-    --petrolio: 185 60% 22%;
-    --petrolio-light: 182 40% 35%;
-    --petrolio-dark: 190 65% 14%;
+    --petrolio: 178 55% 18%;
+    --petrolio-light: 174 38% 30%;
+    --petrolio-dark: 180 60% 10%;
     --gold-warm: 38 60% 55%;
     --gold-light: 38 50% 80%;
     --cream: 40 30% 96%;
@@ -47,9 +47,9 @@
     --font-display: 'Playfair Display', serif;
     --font-body: 'Raleway', sans-serif;
 
-    --shadow-soft: 0 4px 20px -4px hsl(185 60% 22% / 0.1);
-    --shadow-card: 0 8px 30px -8px hsl(185 60% 22% / 0.12);
-    --shadow-elevated: 0 20px 60px -15px hsl(185 60% 22% / 0.2);
+    --shadow-soft: 0 4px 20px -4px hsl(178 55% 18% / 0.1);
+    --shadow-card: 0 8px 30px -8px hsl(178 55% 18% / 0.12);
+    --shadow-elevated: 0 20px 60px -15px hsl(178 55% 18% / 0.2);
 
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
@@ -58,7 +58,7 @@
     --sidebar-accent: 240 4.8% 95.9%;
     --sidebar-accent-foreground: 240 5.9% 10%;
     --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-ring: 178 55% 40%;
   }
 
   .dark {
