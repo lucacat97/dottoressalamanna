@@ -193,6 +193,7 @@ const Dashboard = () => {
                 { key: "editions" as const, label: "Edizioni", icon: BookOpen },
                 { key: "registrations" as const, label: "Iscrizioni", icon: Users },
                 { key: "materials" as const, label: "Materiali", icon: Upload },
+                { key: "access" as const, label: "Accessi", icon: KeyRound },
               ]).map(({ key, label, icon: Icon }) => (
                 <button
                   key={key}
