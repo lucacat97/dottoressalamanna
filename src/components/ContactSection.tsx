@@ -20,7 +20,7 @@ const ContactSection = () => {
 
               <div className="space-y-6">
                 {[
-                  { icon: Mail, text: "info@dottssalamanna.it" },
+                  { icon: Mail, text: "---" },
                   { icon: Phone, text: "+39 333 263 5804" },
                   { icon: MapPin, text: "Italia" },
                 ].map(({ icon: Icon, text }) => (
