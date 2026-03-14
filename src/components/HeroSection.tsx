@@ -1,4 +1,4 @@
-import lamannaSpeaking from "@/assets/lamanna-speaking.jpg";
+import lamannaHero from "@/assets/lamanna-hero.png";
 
 const HeroSection = () => {
   return (
