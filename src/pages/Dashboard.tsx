@@ -86,11 +86,28 @@ const Dashboard = () => {
     navigate("/");
   };
 
-  const handleDownload = (material: CourseMaterial) => {
-    const { data } = supabase.storage
+  const handleDownload = async (material: CourseMaterial) => {
+    const { data, error } = await supabase.storage
       .from("course-materials")
-      .getPublicUrl(material.file_path);
-    window.open(data.publicUrl, "_blank");
+      .download(material.file_path);
+
+    if (error || !data) {
+      toast({
+        title: "Download non riuscito",
+        description: "Impossibile scaricare il file, riprova.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const blobUrl = URL.createObjectURL(data);
+    const link = document.createElement("a");
+    link.href = blobUrl;
+    link.download = material.file_name;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(blobUrl);
   };
 
   const handleDeleteEdition = async (id: string) => {
