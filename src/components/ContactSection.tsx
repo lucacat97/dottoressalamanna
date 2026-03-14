@@ -9,21 +9,19 @@ const ContactSection = () => {
           {/* Info */}
           <AnimatedSection>
             <div>
-              <p className="font-body text-sm uppercase tracking-[0.2em] text-gold mb-4">
-                Contatti
-              </p>
+              <p className="font-body text-sm uppercase tracking-[0.2em] text-gold mb-4">Contatti</p>
               <h2 className="font-display text-3xl md:text-4xl font-bold text-primary-foreground mb-6">
                 Restiamo in Contatto
               </h2>
               <p className="font-body text-primary-foreground/75 leading-relaxed mb-10">
-                Vuoi saperne di più sui corsi o richiedere una consulenza?
-                Compila il modulo oppure contattaci direttamente.
+                Vuoi saperne di più sui corsi o richiedere una consulenza? Compila il modulo oppure contattaci
+                direttamente.
               </p>
 
               <div className="space-y-6">
                 {[
                   { icon: Mail, text: "info@dottssalamanna.it" },
-                  { icon: Phone, text: "+39 XXX XXX XXXX" },
+                  { icon: Phone, text: "+39 333 263 5804" },
                   { icon: MapPin, text: "Italia" },
                 ].map(({ icon: Icon, text }) => (
                   <div key={text} className="flex items-center gap-4">
