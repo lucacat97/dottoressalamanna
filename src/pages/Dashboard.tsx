@@ -18,6 +18,7 @@ interface CourseEdition {
   location: string | null;
   max_participants: number | null;
   status: string;
+  type: string;
 }
 
 interface CourseMaterial {
