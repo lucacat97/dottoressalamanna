@@ -24,6 +24,7 @@ export type Database = {
           max_participants: number | null
           status: string
           title: string
+          type: string
         }
         Insert: {
           created_at?: string
@@ -34,6 +35,7 @@ export type Database = {
           max_participants?: number | null
           status?: string
           title: string
+          type?: string
         }
         Update: {
           created_at?: string
@@ -44,6 +46,7 @@ export type Database = {
           max_participants?: number | null
           status?: string
           title?: string
+          type?: string
         }
         Relationships: []
       }

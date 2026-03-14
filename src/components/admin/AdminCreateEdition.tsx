@@ -18,6 +18,7 @@ const AdminCreateEdition = ({ onCreated }: Props) => {
     location: "",
     max_participants: "25",
     status: "upcoming",
+    type: "live",
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -32,14 +33,15 @@ const AdminCreateEdition = ({ onCreated }: Props) => {
       location: form.location.trim() || null,
       max_participants: parseInt(form.max_participants) || 25,
       status: form.status,
-    });
+      type: form.type,
+    } as any);
     setSubmitting(false);
 
     if (error) {
       toast({ title: "Errore", description: error.message, variant: "destructive" });
     } else {
       toast({ title: "Edizione creata", description: "La nuova edizione è stata aggiunta." });
-      setForm({ title: "", description: "", date: "", location: "", max_participants: "25", status: "upcoming" });
+      setForm({ title: "", description: "", date: "", location: "", max_participants: "25", status: "upcoming", type: "live" });
       setOpen(false);
       onCreated();
     }
@@ -118,6 +120,17 @@ const AdminCreateEdition = ({ onCreated }: Props) => {
             onChange={(e) => setForm({ ...form, max_participants: e.target.value })}
             className="w-full px-4 py-2.5 rounded-md border border-input bg-background font-body text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
           />
+        </div>
+        <div>
+          <label className="font-body text-xs uppercase tracking-wider text-muted-foreground mb-1 block">Tipo</label>
+          <select
+            value={form.type}
+            onChange={(e) => setForm({ ...form, type: e.target.value })}
+            className="w-full px-4 py-2.5 rounded-md border border-input bg-background font-body text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+          >
+            <option value="live">Corso Live</option>
+            <option value="webinar">Webinar</option>
+          </select>
         </div>
         <div>
           <label className="font-body text-xs uppercase tracking-wider text-muted-foreground mb-1 block">Stato</label>

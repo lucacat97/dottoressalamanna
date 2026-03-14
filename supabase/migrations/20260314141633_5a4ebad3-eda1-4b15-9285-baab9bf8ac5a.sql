@@ -1,0 +1,1 @@
+ALTER TABLE public.course_editions ADD COLUMN type text NOT NULL DEFAULT 'live' CHECK (type IN ('live', 'webinar'));
