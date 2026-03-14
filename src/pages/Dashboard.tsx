@@ -9,6 +9,7 @@ import type { User as SupaUser } from "@supabase/supabase-js";
 import AdminCreateEdition from "@/components/admin/AdminCreateEdition";
 import AdminRegistrations from "@/components/admin/AdminRegistrations";
 import AdminMaterials from "@/components/admin/AdminMaterials";
+import AdminAccessControl from "@/components/admin/AdminAccessControl";
 
 interface CourseEdition {
   id: string;
