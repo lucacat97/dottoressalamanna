@@ -20,7 +20,7 @@ const ContactSection = () => {
 
               <div className="space-y-6">
                 {[
-                  { icon: Mail, text: "---" },
+                  { icon: Mail, text: "dott.lamanna.a@gmail.com" },
                   { icon: Phone, text: "+39 333 263 5804" },
                   { icon: MapPin, text: "Italia" },
                 ].map(({ icon: Icon, text }) => (
