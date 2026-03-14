@@ -1,4 +1,5 @@
 import { useParallax } from "@/hooks/useParallax";
+import { motion } from "framer-motion";
 import lamannaHero from "@/assets/lamanna-hero.png";
 
 const HeroSection = () => {
@@ -31,7 +32,6 @@ const HeroSection = () => {
           alt="Dott.ssa Annarita Lamanna"
           className="h-full w-auto object-contain object-bottom drop-shadow-[0_0_80px_rgba(0,0,0,0.5)]"
         />
-        {/* Glow effect behind the person */}
         <div className="absolute inset-0 bg-gradient-to-t from-transparent via-transparent to-petrolio-dark/40 pointer-events-none" />
       </div>
 
@@ -44,24 +44,44 @@ const HeroSection = () => {
         }}
       >
         <div className="max-w-2xl">
-          <p className="font-body text-sm uppercase tracking-[0.3em] text-gold mb-6 opacity-90 animate-fade-in">
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 0.9, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="font-body text-sm uppercase tracking-[0.3em] text-gold mb-6"
+          >
             Ortodonzia · Postura · Formazione
-          </p>
-          <h1 className="font-display text-4xl md:text-6xl lg:text-7xl font-bold text-primary-foreground leading-tight mb-6">
+          </motion.p>
+          <motion.h1
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.4 }}
+            className="font-display text-4xl md:text-6xl lg:text-7xl font-bold text-primary-foreground leading-tight mb-6"
+          >
             Dott.ssa Annarita
             <br />
             <span className="italic font-medium">Lamanna</span>
-          </h1>
-          <p className="font-body text-lg md:text-xl text-primary-foreground/85 leading-relaxed mb-10 max-w-lg">
+          </motion.h1>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 0.85, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.6 }}
+            className="font-body text-lg md:text-xl text-primary-foreground/85 leading-relaxed mb-10 max-w-lg"
+          >
             Odontoiatra, Ortodontista, Agopuntrice e Nanotectherapist.
             Approccio multidisciplinare per un equilibrio occlusale, neuromuscolare e posturale.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4">
+          </motion.p>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.8 }}
+            className="flex flex-col sm:flex-row gap-4"
+          >
             <a
-              href="#corsi"
+              href="#edizioni"
               className="inline-flex items-center justify-center px-8 py-4 bg-primary-foreground text-petrolio-dark font-body font-semibold text-sm rounded-md hover:bg-gold-light transition-all duration-300 hover:scale-105"
             >
-              Scopri i Corsi
+              Scopri le Prossime Edizioni
             </a>
             <a
               href="#chi-sono"
@@ -69,7 +89,7 @@ const HeroSection = () => {
             >
               Chi Sono
             </a>
-          </div>
+          </motion.div>
         </div>
       </div>
 
