@@ -1,7 +1,8 @@
 import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { LogOut, BookOpen, FileText, User, Download, Calendar, MapPin, Shield, Users, Upload, Trash2 } from "lucide-react";
+import { LogOut, BookOpen, FileText, User, Download, Calendar, MapPin, Shield, Users, Upload, Trash2, Monitor, Brain } from "lucide-react";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
 import type { User as SupaUser } from "@supabase/supabase-js";
