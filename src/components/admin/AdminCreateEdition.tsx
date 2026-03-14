@@ -41,7 +41,7 @@ const AdminCreateEdition = ({ onCreated }: Props) => {
       toast({ title: "Errore", description: error.message, variant: "destructive" });
     } else {
       toast({ title: "Edizione creata", description: "La nuova edizione è stata aggiunta." });
-      setForm({ title: "", description: "", date: "", location: "", max_participants: "25", status: "upcoming" });
+      setForm({ title: "", description: "", date: "", location: "", max_participants: "25", status: "upcoming", type: "live" });
       setOpen(false);
       onCreated();
     }
