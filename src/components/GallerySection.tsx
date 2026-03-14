@@ -12,12 +12,20 @@ import AnimatedSection from "./AnimatedSection";
 
 const images = [
   { src: corsoAula, alt: "Aula del corso con partecipanti", span: "md:col-span-2" },
-  { src: meetintao25, alt: "Dott.ssa Lamanna - Meet in TAO", span: "" },
-  { src: lamannaLezione, alt: "Dott.ssa Lamanna durante una lezione", span: "" },
+  {
+    /* src: meetintao25, alt: "Dott.ssa Lamanna - Meet in TAO", span: "" */
+  },
+  {
+    /*src: lamannaLezione, alt: "Dott.ssa Lamanna durante una lezione", span: "" */
+  },
   { src: meetintao109, alt: "Dott.ssa Lamanna in conversazione", span: "md:col-span-2" },
-  { src: lamannaEsercizi, alt: "Dimostrazione di esercizi correttivi", span: "" },
+  {
+    /* src: lamannaEsercizi, alt: "Dimostrazione di esercizi correttivi", span: "" */
+  },
   { src: meetintao26, alt: "Dott.ssa Lamanna all'evento TAO", span: "" },
-  { src: lamannaSpiegazione, alt: "Spiegazione delle fibre trigeminali", span: "" },
+  {
+    /* src: lamannaSpiegazione, alt: "Spiegazione delle fibre trigeminali", span: "" */
+  },
   { src: meetintao24, alt: "Dott.ssa Lamanna - evento professionale", span: "" },
   { src: locationHotel, alt: "Location elegante dei corsi", span: "" },
   { src: corsoPlatea, alt: "Partecipanti al corso", span: "md:col-span-2" },
@@ -29,12 +37,8 @@ const GallerySection = () => {
       <div className="max-w-7xl mx-auto px-6">
         <AnimatedSection>
           <div className="text-center mb-16">
-            <p className="font-body text-sm uppercase tracking-[0.2em] text-gold mb-4">
-              Galleria
-            </p>
-            <h2 className="font-display text-3xl md:text-5xl font-bold text-foreground mb-4">
-              I Nostri Eventi
-            </h2>
+            <p className="font-body text-sm uppercase tracking-[0.2em] text-gold mb-4">Galleria</p>
+            <h2 className="font-display text-3xl md:text-5xl font-bold text-foreground mb-4">I Nostri Eventi</h2>
             <p className="font-body text-muted-foreground max-w-xl mx-auto">
               Momenti dai corsi e dagli eventi formativi della Dott.ssa Lamanna.
             </p>
