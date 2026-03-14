@@ -47,6 +47,41 @@ export type Database = {
         }
         Relationships: []
       }
+      course_materials: {
+        Row: {
+          created_at: string
+          edition_id: string
+          file_name: string
+          file_path: string
+          file_size: number | null
+          id: string
+        }
+        Insert: {
+          created_at?: string
+          edition_id: string
+          file_name: string
+          file_path: string
+          file_size?: number | null
+          id?: string
+        }
+        Update: {
+          created_at?: string
+          edition_id?: string
+          file_name?: string
+          file_path?: string
+          file_size?: number | null
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "course_materials_edition_id_fkey"
+            columns: ["edition_id"]
+            isOneToOne: false
+            referencedRelation: "course_editions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       course_registrations: {
         Row: {
           created_at: string
