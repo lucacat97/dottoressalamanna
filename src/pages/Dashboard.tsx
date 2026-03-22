@@ -256,6 +256,9 @@ const Dashboard = () => {
           </section>
         )}
 
+        {/* Tools Section */}
+        <ToolsSection />
+
         {/* User view: Courses & Materials */}
         <section>
           <h2 className="font-display text-xl font-semibold text-foreground mb-6 flex items-center gap-2">
