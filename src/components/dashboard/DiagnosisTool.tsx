@@ -81,8 +81,25 @@ const DiagnosisTool = () => {
 
   const handleAnalyze = async () => {
     if (!extractedText) return;
+
+    // Check monthly limit
+    if (monthlyUsage !== null && monthlyUsage >= MONTHLY_LIMIT) {
+      toast({
+        title: "Limite mensile raggiunto",
+        description: `Hai raggiunto il limite di ${MONTHLY_LIMIT} analisi per questo mese. Il contatore si resetta il primo del mese.`,
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsAnalyzing(true);
     setResult("");
+
+    // Log usage
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      await supabase.from("ai_usage_log").insert({ user_id: user.id, tool_name: "diagnosis-support" });
+    }
 
     try {
       const resp = await fetch(
