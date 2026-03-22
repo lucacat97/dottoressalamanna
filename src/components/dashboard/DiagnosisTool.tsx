@@ -15,7 +15,21 @@ const DiagnosisTool = () => {
   const [result, setResult] = useState("");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [accepted, setAccepted] = useState(false);
+  const [monthlyUsage, setMonthlyUsage] = useState<number | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    const fetchUsage = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      const { data } = await supabase.rpc("get_monthly_ai_usage", {
+        _user_id: user.id,
+        _tool_name: "diagnosis-support",
+      });
+      setMonthlyUsage(data ?? 0);
+    };
+    fetchUsage();
+  }, [result]); // re-fetch after each analysis
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const selected = e.target.files?.[0];
