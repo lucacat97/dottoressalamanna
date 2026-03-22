@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { LogOut, BookOpen, FileText, User, Download, Calendar, MapPin, Shield, Users, Upload, Trash2, Monitor, Brain, KeyRound } from "lucide-react";
+import ToolsSection from "@/components/dashboard/ToolsSection";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
@@ -254,6 +255,9 @@ const Dashboard = () => {
             )}
           </section>
         )}
+
+        {/* Tools Section */}
+        <ToolsSection />
 
         {/* User view: Courses & Materials */}
         <section>
