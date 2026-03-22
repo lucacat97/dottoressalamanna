@@ -1,8 +1,11 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Upload, Brain, AlertTriangle, FileText, Loader2, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 import ReactMarkdown from "react-markdown";
+
+const MONTHLY_LIMIT = 30;
 
 const DISCLAIMER = `⚠️ Disclaimer: Questo strumento fornisce esclusivamente un supporto all'analisi clinica e NON costituisce in alcun modo una diagnosi medica. La responsabilità diagnostica resta interamente in capo al professionista sanitario. L'utilizzo di questo strumento non sostituisce il giudizio clinico del medico.`;
 
@@ -12,7 +15,21 @@ const DiagnosisTool = () => {
   const [result, setResult] = useState("");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [accepted, setAccepted] = useState(false);
+  const [monthlyUsage, setMonthlyUsage] = useState<number | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    const fetchUsage = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      const { data } = await supabase.rpc("get_monthly_ai_usage", {
+        _user_id: user.id,
+        _tool_name: "diagnosis-support",
+      });
+      setMonthlyUsage(data ?? 0);
+    };
+    fetchUsage();
+  }, [result]); // re-fetch after each analysis
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const selected = e.target.files?.[0];
@@ -64,8 +81,25 @@ const DiagnosisTool = () => {
 
   const handleAnalyze = async () => {
     if (!extractedText) return;
+
+    // Check monthly limit
+    if (monthlyUsage !== null && monthlyUsage >= MONTHLY_LIMIT) {
+      toast({
+        title: "Limite mensile raggiunto",
+        description: `Hai raggiunto il limite di ${MONTHLY_LIMIT} analisi per questo mese. Il contatore si resetta il primo del mese.`,
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsAnalyzing(true);
     setResult("");
+
+    // Log usage
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      await supabase.from("ai_usage_log").insert({ user_id: user.id, tool_name: "diagnosis-support" });
+    }
 
     try {
       const resp = await fetch(
@@ -157,7 +191,18 @@ const DiagnosisTool = () => {
         </p>
       </div>
 
-      {/* Upload area */}
+      {/* Usage counter */}
+      {monthlyUsage !== null && (
+        <div className="flex items-center justify-between p-3 bg-muted/50 rounded-md">
+          <span className="font-body text-xs text-muted-foreground">
+            Analisi utilizzate questo mese
+          </span>
+          <span className={`font-body text-sm font-semibold ${monthlyUsage >= MONTHLY_LIMIT ? "text-destructive" : "text-petrolio"}`}>
+            {monthlyUsage}/{MONTHLY_LIMIT}
+          </span>
+        </div>
+      )}
+
       <div>
         <input
           ref={fileInputRef}

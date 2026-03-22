@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { LogOut, BookOpen, User, Shield, Wrench } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -36,7 +36,11 @@ const Dashboard = () => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [editions, setEditions] = useState<CourseEdition[]>([]);
   const [materials, setMaterials] = useState<CourseMaterial[]>([]);
-  const [activeTab, setActiveTab] = useState<MainTab>("corsi");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const tabParam = searchParams.get("tab");
+  const validTabs: MainTab[] = ["corsi", "strumenti", "admin"];
+  const activeTab: MainTab = validTabs.includes(tabParam as MainTab) ? (tabParam as MainTab) : "corsi";
+  const setActiveTab = (tab: MainTab) => setSearchParams({ tab });
   const navigate = useNavigate();
 
   useEffect(() => {
