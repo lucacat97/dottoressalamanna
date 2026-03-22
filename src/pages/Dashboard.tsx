@@ -36,7 +36,11 @@ const Dashboard = () => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [editions, setEditions] = useState<CourseEdition[]>([]);
   const [materials, setMaterials] = useState<CourseMaterial[]>([]);
-  const [activeTab, setActiveTab] = useState<MainTab>("corsi");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const tabParam = searchParams.get("tab");
+  const validTabs: MainTab[] = ["corsi", "strumenti", "admin"];
+  const activeTab: MainTab = validTabs.includes(tabParam as MainTab) ? (tabParam as MainTab) : "corsi";
+  const setActiveTab = (tab: MainTab) => setSearchParams({ tab });
   const navigate = useNavigate();
 
   useEffect(() => {
