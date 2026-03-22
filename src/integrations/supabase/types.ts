@@ -14,6 +14,27 @@ export type Database = {
   }
   public: {
     Tables: {
+      ai_usage_log: {
+        Row: {
+          created_at: string
+          id: string
+          tool_name: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          tool_name?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          tool_name?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       course_access_overrides: {
         Row: {
           created_at: string
@@ -181,6 +202,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_monthly_ai_usage: {
+        Args: { _tool_name: string; _user_id: string }
+        Returns: number
+      }
       has_course_access: {
         Args: { _edition_id: string; _user_id: string }
         Returns: boolean
