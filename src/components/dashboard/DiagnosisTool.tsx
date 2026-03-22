@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { Upload, Brain, AlertTriangle, FileText, Loader2, RotateCcw } from "lucide-react";
+import { Upload, Brain, AlertTriangle, FileText, Loader2, RotateCcw, Download, FileDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -11,6 +11,98 @@ const MONTHLY_LIMIT = 30;
 pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorker;
 
 const DISCLAIMER = `⚠️ Disclaimer: Questo strumento fornisce esclusivamente un supporto all'analisi clinica e NON costituisce in alcun modo una diagnosi medica. La responsabilità diagnostica resta interamente in capo al professionista sanitario. L'utilizzo di questo strumento non sostituisce il giudizio clinico del medico.`;
+
+const generateHtmlFromMarkdown = (markdown: string) => {
+  // We'll render the markdown result to a styled HTML string for export
+  const studioHeader = `
+    <div style="text-align:center;margin-bottom:24px;border-bottom:2px solid #2a6f6f;padding-bottom:16px;">
+      <h2 style="margin:0;font-size:18px;color:#2a6f6f;font-family:Georgia,serif;">Studio Carella &amp; Lamanna</h2>
+      <p style="margin:4px 0 0;font-size:11px;color:#666;">Studio Dentistico Multidisciplinare — Occlusione e Postura</p>
+    </div>
+  `;
+
+  // Convert markdown to basic HTML (simple conversion for export)
+  let html = markdown
+    // Tables
+    .replace(/\|(.+)\|/g, (match) => {
+      const cells = match.split("|").filter(c => c.trim());
+      if (cells.every(c => /^[\s-]+$/.test(c))) return "<!--table-sep-->";
+      const isHeader = cells.some(c => c.includes("**"));
+      const tag = isHeader ? "th" : "td";
+      const cellsHtml = cells.map(c => 
+        `<${tag} style="padding:8px 12px;border:1px solid #ddd;text-align:left;">${c.replace(/\*\*/g, "").trim()}</${tag}>`
+      ).join("");
+      return `<tr>${cellsHtml}</tr>`;
+    })
+    // Wrap consecutive table rows
+    .replace(/((<tr>.*<\/tr>\n?)+)/g, '<table style="width:100%;border-collapse:collapse;margin:16px 0;">$1</table>')
+    .replace(/<!--table-sep-->\n?/g, "")
+    // Headers
+    .replace(/^# (.+)$/gm, '<h1 style="font-size:20px;color:#2a6f6f;margin:28px 0 12px;font-family:Georgia,serif;border-bottom:1px solid #eee;padding-bottom:8px;">$1</h1>')
+    .replace(/^## (.+)$/gm, '<h2 style="font-size:17px;color:#2a6f6f;margin:24px 0 10px;font-family:Georgia,serif;">$1</h2>')
+    .replace(/^### (.+)$/gm, '<h3 style="font-size:15px;color:#333;margin:20px 0 8px;">$1</h3>')
+    // Bold
+    .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+    // Italic
+    .replace(/\*(.+?)\*/g, "<em>$1</em>")
+    // Bullet points
+    .replace(/^- (.+)$/gm, '<li style="margin:4px 0;">$1</li>')
+    .replace(/((<li[^>]*>.*<\/li>\n?)+)/g, '<ul style="margin:8px 0 8px 20px;padding:0;">$1</ul>')
+    // Blockquotes
+    .replace(/^> (.+)$/gm, '<blockquote style="border-left:3px solid #2a6f6f;padding:8px 16px;margin:12px 0;background:#f0f7f7;color:#333;">$1</blockquote>')
+    // Horizontal rules
+    .replace(/^---$/gm, '<hr style="border:none;border-top:1px solid #ddd;margin:24px 0;">')
+    // Paragraphs (lines that aren't already wrapped)
+    .replace(/^(?!<[hublot]|<\/)(.+)$/gm, '<p style="margin:8px 0;line-height:1.6;">$1</p>');
+
+  return `
+    <!DOCTYPE html>
+    <html>
+    <head><meta charset="utf-8"><style>
+      body { font-family: 'Segoe UI', Arial, sans-serif; font-size: 12px; color: #222; max-width: 800px; margin: 0 auto; padding: 40px; line-height: 1.6; }
+      table { page-break-inside: avoid; }
+      h1 { page-break-after: avoid; }
+      @media print { body { padding: 20px; } }
+    </style></head>
+    <body>${studioHeader}${html}</body>
+    </html>
+  `;
+};
+
+const downloadAsWord = (markdown: string, filename: string) => {
+  const html = generateHtmlFromMarkdown(markdown);
+  const blob = new Blob(
+    [
+      `<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+      <head><meta charset="utf-8"><title>Referto Clinico</title>
+      <!--[if gte mso 9]><xml><w:WordDocument><w:View>Print</w:View></w:WordDocument></xml><![endif]-->
+      </head><body>${generateHtmlFromMarkdown(markdown).match(/<body>([\s\S]*)<\/body>/)?.[1] || ""}</body></html>`,
+    ],
+    { type: "application/msword" }
+  );
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `${filename}.doc`;
+  a.click();
+  URL.revokeObjectURL(url);
+};
+
+const downloadAsPdf = (markdown: string, filename: string) => {
+  const html = generateHtmlFromMarkdown(markdown);
+  const printWindow = window.open("", "_blank");
+  if (!printWindow) {
+    toast({ title: "Errore", description: "Abilita i popup per scaricare il PDF.", variant: "destructive" });
+    return;
+  }
+  printWindow.document.write(html);
+  printWindow.document.close();
+  printWindow.onload = () => {
+    setTimeout(() => {
+      printWindow.print();
+    }, 500);
+  };
+};
 
 const DiagnosisTool = () => {
   const [file, setFile] = useState<File | null>(null);
@@ -32,7 +124,7 @@ const DiagnosisTool = () => {
       setMonthlyUsage(data ?? 0);
     };
     fetchUsage();
-  }, [result]); // re-fetch after each analysis
+  }, [result]);
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const selected = e.target.files?.[0];
@@ -82,7 +174,6 @@ const DiagnosisTool = () => {
   const handleAnalyze = async () => {
     if (!extractedText) return;
 
-    // Check monthly limit
     if (monthlyUsage !== null && monthlyUsage >= MONTHLY_LIMIT) {
       toast({
         title: "Limite mensile raggiunto",
@@ -95,7 +186,6 @@ const DiagnosisTool = () => {
     setIsAnalyzing(true);
     setResult("");
 
-    // Log usage
     const { data: { user } } = await supabase.auth.getUser();
     if (user) {
       await supabase.from("ai_usage_log").insert({ user_id: user.id, tool_name: "diagnosis-support" });
@@ -165,6 +255,11 @@ const DiagnosisTool = () => {
     setExtractedText("");
     setResult("");
     if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  const getFilenameBase = () => {
+    const name = file?.name?.replace(/\.pdf$/i, "") || "referto";
+    return `Referto_${name}`;
   };
 
   if (!accepted) {
@@ -249,12 +344,12 @@ const DiagnosisTool = () => {
           {isAnalyzing ? (
             <>
               <Loader2 size={16} className="animate-spin" />
-              Analisi in corso...
+              Generazione referto in corso...
             </>
           ) : (
             <>
               <Brain size={16} />
-              Analizza documento
+              Genera Referto Clinico
             </>
           )}
         </Button>
@@ -265,15 +360,37 @@ const DiagnosisTool = () => {
         <div className="space-y-3">
           <h4 className="font-display text-base font-semibold text-foreground flex items-center gap-2">
             <Brain size={16} className="text-petrolio" />
-            Risultato Analisi
+            Referto Clinico Generato
           </h4>
           <div className="prose prose-sm max-w-none dark:prose-invert font-body border border-border rounded-lg p-5 bg-muted/20">
             <ReactMarkdown>{result}</ReactMarkdown>
           </div>
-          <Button variant="outline" onClick={handleReset} className="font-body gap-2">
-            <RotateCcw size={14} />
-            Nuova analisi
-          </Button>
+
+          {/* Download buttons */}
+          {!isAnalyzing && (
+            <div className="flex flex-wrap gap-2">
+              <Button
+                variant="default"
+                onClick={() => downloadAsWord(result, getFilenameBase())}
+                className="font-body gap-2"
+              >
+                <FileDown size={14} />
+                Scarica Word (editabile)
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => downloadAsPdf(result, getFilenameBase())}
+                className="font-body gap-2"
+              >
+                <Download size={14} />
+                Stampa / Salva PDF
+              </Button>
+              <Button variant="ghost" onClick={handleReset} className="font-body gap-2">
+                <RotateCcw size={14} />
+                Nuova analisi
+              </Button>
+            </div>
+          )}
         </div>
       )}
     </div>
