@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { LogOut, BookOpen, User, Shield, Wrench } from "lucide-react";
 import { Button } from "@/components/ui/button";
