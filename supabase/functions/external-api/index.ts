@@ -24,22 +24,46 @@ async function hashKey(key: string): Promise<string> {
 
 // ── Markdown → HTML converter (matches site PDF styling) ──
 function mdToHtml(md: string): string {
-  let html = md;
+  // First, process tables block by block
+  const lines = md.split("\n");
+  const processedLines: string[] = [];
+  let i = 0;
 
-  // Tables
-  html = html.replace(/\|(.+)\|/g, (match) => {
-    const cells = match.split("|").filter((c: string) => c.trim());
-    if (cells.every((c: string) => /^[\s:-]+$/.test(c))) return "<!--table-sep-->";
-    const hasStrong = cells.some((c: string) => c.includes("**"));
-    const tag = hasStrong ? "th" : "td";
-    const bgStyle = hasStrong ? "background:#f0f7f7;" : "";
-    const cellsHtml = cells.map((c: string) =>
-      `<${tag} style="padding:8px 12px;border:1px solid #ddd;text-align:left;${bgStyle}">${c.replace(/\*\*/g, "").trim()}</${tag}>`
-    ).join("");
-    return `<tr>${cellsHtml}</tr>`;
-  });
-  html = html.replace(/((<tr>.*<\/tr>\n?)+)/g, '<table style="width:100%;border-collapse:collapse;margin:16px 0;page-break-inside:avoid;">$1</table>');
-  html = html.replace(/<!--table-sep-->\n?/g, "");
+  while (i < lines.length) {
+    const line = lines[i];
+    // Detect start of a markdown table
+    if (line.trim().startsWith("|") && line.trim().endsWith("|")) {
+      // Collect all table lines
+      const tableLines: string[] = [];
+      while (i < lines.length && lines[i].trim().startsWith("|") && lines[i].trim().endsWith("|")) {
+        tableLines.push(lines[i]);
+        i++;
+      }
+      // Parse table: first row is header, second row is separator, rest are body
+      if (tableLines.length >= 2) {
+        let tableHtml = '<table style="width:100%;border-collapse:collapse;margin:16px 0;page-break-inside:avoid;">';
+        let isFirstDataRow = true;
+        for (const tl of tableLines) {
+          const cells = tl.split("|").slice(1, -1); // remove empty first/last from split
+          if (cells.every((c: string) => /^[\s:-]+$/.test(c.trim()))) continue; // skip separator row
+          const tag = isFirstDataRow ? "th" : "td";
+          const bgStyle = isFirstDataRow ? "background:#f0f7f7;font-weight:600;" : "";
+          const cellsHtml = cells.map((c: string) =>
+            `<${tag} style="padding:10px 14px;border:1px solid #ddd;text-align:left;${bgStyle}">${c.replace(/\*\*/g, "").trim()}</${tag}>`
+          ).join("");
+          tableHtml += `<tr>${cellsHtml}</tr>`;
+          isFirstDataRow = false;
+        }
+        tableHtml += "</table>";
+        processedLines.push(tableHtml);
+      }
+      continue;
+    }
+    processedLines.push(line);
+    i++;
+  }
+
+  let html = processedLines.join("\n");
 
   // Blockquotes
   html = html.replace(/^>\s*(.+)$/gm, '<blockquote style="border-left:3px solid #2a6f6f;padding:8px 16px;margin:12px 0;background:#f0f7f7;color:#333;">$1</blockquote>');
@@ -213,16 +237,75 @@ ALERT III CLASSE EVOLUTIVA:
 Se età < 11 anni E Go-Me/NS >= 1 → ALERT ROSSO
 Se età < 11 anni E Go-Me/NS tra 0.95 e 1.0 → ALERT ARANCIO
 
-OUTPUT RICHIESTO (in italiano, formato markdown professionale):
-1. Tabella con valore inserito, norma di riferimento e interpretazione
-2. Classe scheletrica risultante con spiegazione dettagliata
-3. Pattern di divergenza con spiegazione
-4. Dispositivo consigliato con motivazione diagnostica dettagliata
-5. Alert III classe evolutiva se applicabile
-6. Significato dell'angolo goniaco in relazione alla classe trovata
-7. Note cliniche e tempistica di rivalutazione
+REGOLE ANB-WITS DISCORDANTI:
+- ANB aumentato + Wits neutro/negativo: possibile rotazione mandibolare, ANB sovrastima la classe. Preferire INTEGRAL prima di SC.
+- ANB nella norma + Wits molto positivo: II classe occlusale, rivalutare.
+- ANB e Wits discordanti in generale: INTEGRAL, rivalutare a 4-5 mesi.
+
+SIGNIFICATO ANGOLO GONIACO PER CLASSE:
+| Classe | Angolo goniaco | Significato | Prognosi |
+|--------|----------------|-------------|----------|
+| I Classe | Ipodivergente (<123°) | Mandibola forte e compatta. Muscoli ipertonici. | Stabile ma attenzione a compressione |
+| I Classe | Iperdivergente (>137°) | Mandibola che scende. Sistema verticalmente instabile. | Rischio affollamento, open bite. Rischio recidiva |
+| II Classe | Iperdivergente (>137°) | Mandibola ruota indietro e in basso. Altezza facciale aumentata. | Classe II scheletrica vera. Muscoli deboli. Prognosi più delicata. |
+| II Classe | Ipodivergente (<123°) | Mandibola forte ma bloccata. Spesso funzionale o compensata. | Buona risposta a terapia funzionale |
+| III Classe | Ipodivergente (<123°) | Crescita orizzontale dominante. Rotazione antioraria. | Più impegnativa se non intercettata presto |
+| III Classe | Iperdivergente (>137°) | Componente verticale prevalente. | Controllo verticale difficile ma meno aggressiva in avanzamento |
+
+SPIEGAZIONI PER SCENARIO:
+- TC + OPEN: III Classe iperdivergente. Mandibola avanzata con crescita verticale. TC per sagittale, OPEN per verticale. ~1 anno.
+- TC + DEEP: III Classe ipodivergente. Mandibola propulsiva con forze muscolari elevate. Pattern più impegnativo. Rivalutare dopo 6 mesi.
+- SC + OPEN: II Classe iperdivergente (la più frequente). Mandibola ruota indietro/basso, muscoli deboli. Prognosi delicata.
+- SC + DEEP: II Classe ipodivergente. Mandibola forte ma bloccata, spesso funzionale/compensata. Buona risposta attesa.
+- INTEGRAL: Classe discordante o normorelazione. Osservare risposta del morso 4-5 mesi.
+
+=== FORMATO OUTPUT OBBLIGATORIO ===
+
+Devi SEMPRE produrre il report con ESATTAMENTE questa struttura e queste sezioni, nello stesso ordine. Non aggiungere sezioni extra, non cambiare i titoli delle sezioni, non omettere sezioni.
+
+## 1. Tabella dei Valori, Norme e Interpretazioni
+
+| **Misura** | **Valore Inserito** | **Norma di Riferimento** | **Interpretazione** |
+|---|---|---|---|
+| Angolo Sellare (N-S-Ar) | [valore]° | 123° ± 5° | [NORMO/TC/SC] |
+| ANB | [valore]° | 2° ± 2° | [NORMO/TC/SC] |
+| Wits | [valore] mm | [0 mm ± 2 mm o -1 mm ± 2 mm in base al sesso] | [NORMO/TC/SC] |
+| Angolo Articolare (S-Ar-Go) | [valore]° | 143° ± 5° | [NORMO/IPER/IPO] |
+| Angolo Goniaco (Ar-Go-Me) | [valore]° | 130° ± 7° | [NORMO/IPER/IPO] |
+
+Se forniti NS e Go-Me, aggiungi una riga:
+| Rapporto Go-Me/NS | [valore calcolato] | < 1.0 | [NORMO/ALERT] |
+
+## 2. Classe Scheletrica
+
+[Indica la classe risultante (I Classe / II Classe SC / III Classe TC / INTEGRAL) e spiega il ragionamento basato sui 3 indicatori (Sellare, ANB, Wits). Specifica quanti su 3 indicano TC, SC, NORMO e come si arriva alla conclusione.]
+
+## 3. Pattern di Divergenza
+
+[Indica il pattern (OPEN / DEEP / INTEGRAL) e spiega basandoti sui valori di Angolo Articolare e Angolo Goniaco.]
+
+## 4. Dispositivo Consigliato
+
+**Dispositivo: [NOME DISPOSITIVO]**
+
+[Motivazione diagnostica dettagliata. Includi lo scenario clinico corrispondente dalla tabella degli scenari. Indica la durata stimata del trattamento.]
+
+## 5. Alert III Classe Evolutiva
+
+[Se età < 11 e sono forniti NS e Go-Me: indica il livello di alert (ROSSO/ARANCIO/NESSUNO) con spiegazione. Se non applicabile scrivi "Non applicabile (età ≥ 11 anni o dati NS/Go-Me non forniti)."]
+
+## 6. Significato dell'Angolo Goniaco
+
+[Interpreta il valore dell'angolo goniaco in relazione alla classe scheletrica trovata, usando la tabella di riferimento fornita.]
+
+## 7. Note Cliniche e Rivalutazione
+
+[Indicazioni cliniche specifiche e tempistica di rivalutazione consigliata.]
+
+=== FINE FORMATO ===
 
 NON includere MAI disclaimer, avvisi legali o note sull'uso dell'intelligenza artificiale nell'output.
+NON includere header o footer dello studio (nome dottoressa, firma, data, indirizzo).
 Vai DIRETTAMENTE all'analisi. Produci SOLO il report formattato, nient'altro.`;
 
 // ── Helper: call AI (non-streaming) ──

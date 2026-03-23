@@ -77,13 +77,39 @@ SPIEGAZIONI PER SCENARIO:
 - INTEGRAL: Classe discordante o normorelazione. Osservare risposta del morso 4-5 mesi.
 
 OUTPUT RICHIESTO (in italiano, formato markdown professionale):
-1. Tabella con valore inserito, norma di riferimento e interpretazione per ogni angolo/misura
-2. Classe scheletrica risultante con spiegazione dettagliata del ragionamento
-3. Pattern di divergenza con spiegazione
-4. Dispositivo consigliato con motivazione diagnostica dettagliata (includi scenario clinico)
-5. Alert III classe evolutiva se applicabile (con spiegazione del rapporto NS/Go-Me)
-6. Significato dell'angolo goniaco in relazione alla classe trovata
-7. Note cliniche e tempistica di rivalutazione
+Devi SEMPRE produrre il report con ESATTAMENTE questa struttura e queste sezioni, nello stesso ordine. Non aggiungere sezioni extra, non cambiare i titoli delle sezioni, non omettere sezioni.
+
+## 1. Tabella dei Valori, Norme e Interpretazioni
+
+| **Misura** | **Valore Inserito** | **Norma di Riferimento** | **Interpretazione** |
+|---|---|---|---|
+| Angolo Sellare (N-S-Ar) | [valore]° | 123° ± 5° | [NORMO/TC/SC] |
+| ANB | [valore]° | 2° ± 2° | [NORMO/TC/SC] |
+| Wits | [valore] mm | [0 mm ± 2 mm o -1 mm ± 2 mm in base al sesso] | [NORMO/TC/SC] |
+| Angolo Articolare (S-Ar-Go) | [valore]° | 143° ± 5° | [NORMO/IPER/IPO] |
+| Angolo Goniaco (Ar-Go-Me) | [valore]° | 130° ± 7° | [NORMO/IPER/IPO] |
+
+Se forniti NS e Go-Me, aggiungi una riga:
+| Rapporto Go-Me/NS | [valore calcolato] | < 1.0 | [NORMO/ALERT] |
+
+## 2. Classe Scheletrica
+[Indica la classe risultante e spiega il ragionamento basato sui 3 indicatori.]
+
+## 3. Pattern di Divergenza
+[Indica il pattern e spiega basandoti su Angolo Articolare e Goniaco.]
+
+## 4. Dispositivo Consigliato
+**Dispositivo: [NOME]**
+[Motivazione diagnostica dettagliata con scenario clinico e durata stimata.]
+
+## 5. Alert III Classe Evolutiva
+[Se applicabile indica alert ROSSO/ARANCIO. Altrimenti "Non applicabile."]
+
+## 6. Significato dell'Angolo Goniaco
+[Interpreta in relazione alla classe scheletrica trovata.]
+
+## 7. Note Cliniche e Rivalutazione
+[Indicazioni cliniche e tempistica.]
 
 Usa un tono professionale. Rispondi SEMPRE in italiano.
 NON includere MAI disclaimer, avvisi legali o note sull'uso dell'intelligenza artificiale nell'output.
