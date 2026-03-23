@@ -35,6 +35,68 @@ export type Database = {
         }
         Relationships: []
       }
+      api_keys: {
+        Row: {
+          client_name: string
+          created_at: string
+          id: string
+          is_active: boolean
+          key_hash: string
+          last_used_at: string | null
+          monthly_limit: number
+          tools: string[]
+        }
+        Insert: {
+          client_name: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          key_hash: string
+          last_used_at?: string | null
+          monthly_limit?: number
+          tools?: string[]
+        }
+        Update: {
+          client_name?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          key_hash?: string
+          last_used_at?: string | null
+          monthly_limit?: number
+          tools?: string[]
+        }
+        Relationships: []
+      }
+      api_usage_log: {
+        Row: {
+          api_key_id: string
+          created_at: string
+          id: string
+          tool_name: string
+        }
+        Insert: {
+          api_key_id: string
+          created_at?: string
+          id?: string
+          tool_name: string
+        }
+        Update: {
+          api_key_id?: string
+          created_at?: string
+          id?: string
+          tool_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "api_usage_log_api_key_id_fkey"
+            columns: ["api_key_id"]
+            isOneToOne: false
+            referencedRelation: "api_keys"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       course_access_overrides: {
         Row: {
           created_at: string
@@ -202,6 +264,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_api_key_monthly_usage: {
+        Args: { _api_key_id: string; _tool_name: string }
+        Returns: number
+      }
       get_monthly_ai_usage: {
         Args: { _tool_name: string; _user_id: string }
         Returns: number
