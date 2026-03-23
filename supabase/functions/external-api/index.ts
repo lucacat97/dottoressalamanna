@@ -1,5 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import metodologia from "../diagnosis-support/metodologia.json" with { type: "json" };
+import metodologia from "./metodologia.json" with { type: "json" };
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
