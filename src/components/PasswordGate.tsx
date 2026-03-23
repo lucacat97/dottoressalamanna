@@ -1,40 +1,72 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Lock } from "lucide-react";
+import { Lock, Loader2 } from "lucide-react";
 
-const PASSWORD_HASH = "94499df1027d64ea9be1714dcb252fd0af43361196f95a184800696bb2457cac";
-const STORAGE_KEY = "site-access-granted";
-
-async function sha256(text: string): Promise<string> {
-  const data = new TextEncoder().encode(text);
-  const hashBuffer = await crypto.subtle.digest("SHA-256", data);
-  return Array.from(new Uint8Array(hashBuffer))
-    .map((b) => b.toString(16).padStart(2, "0"))
-    .join("");
-}
+const STORAGE_KEY = "site-access-token";
+const GATE_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/site-gate`;
 
 const PasswordGate = ({ children }: { children: React.ReactNode }) => {
   const [granted, setGranted] = useState(false);
+  const [checking, setChecking] = useState(true);
   const [input, setInput] = useState("");
   const [error, setError] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
+  // On mount, verify stored token server-side
   useEffect(() => {
-    if (sessionStorage.getItem(STORAGE_KEY) === "true") {
-      setGranted(true);
+    const token = sessionStorage.getItem(STORAGE_KEY);
+    if (!token) {
+      setChecking(false);
+      return;
     }
+    fetch(GATE_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "verify-token", token }),
+    })
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.valid) setGranted(true);
+        else sessionStorage.removeItem(STORAGE_KEY);
+      })
+      .catch(() => sessionStorage.removeItem(STORAGE_KEY))
+      .finally(() => setChecking(false));
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const inputHash = await sha256(input);
-    if (inputHash === PASSWORD_HASH) {
-      sessionStorage.setItem(STORAGE_KEY, "true");
-      setGranted(true);
-    } else {
+    setSubmitting(true);
+    setError(false);
+
+    try {
+      const resp = await fetch(GATE_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "verify-password", password: input }),
+      });
+      const data = await resp.json();
+      if (data.valid && data.token) {
+        sessionStorage.setItem(STORAGE_KEY, data.token);
+        setGranted(true);
+      } else {
+        setError(true);
+        setTimeout(() => setError(false), 2000);
+      }
+    } catch {
       setError(true);
       setTimeout(() => setError(false), 2000);
+    } finally {
+      setSubmitting(false);
     }
   };
+
+  if (checking) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
 
   if (granted) return <>{children}</>;
 
@@ -58,12 +90,13 @@ const PasswordGate = ({ children }: { children: React.ReactNode }) => {
             placeholder="Password"
             className="w-full px-4 py-3 rounded-md border border-input bg-background font-body text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring text-center"
             autoFocus
+            disabled={submitting}
           />
           {error && (
             <p className="font-body text-sm text-destructive">Password errata.</p>
           )}
-          <Button type="submit" className="w-full bg-primary text-primary-foreground font-body font-semibold hover:bg-accent">
-            Accedi
+          <Button type="submit" disabled={submitting} className="w-full bg-primary text-primary-foreground font-body font-semibold hover:bg-accent">
+            {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : "Accedi"}
           </Button>
         </form>
       </div>
