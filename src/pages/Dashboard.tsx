@@ -127,8 +127,8 @@ const Dashboard = () => {
   const displayName = user?.user_metadata?.full_name || user?.email || "";
 
   const tabs: { key: MainTab; label: string; icon: typeof BookOpen; adminOnly?: boolean }[] = [
-    { key: "corsi", label: "Corsi", icon: BookOpen },
     { key: "strumenti", label: "Strumenti", icon: Wrench },
+    { key: "corsi", label: "Corsi", icon: BookOpen },
     ...(isAdmin ? [{ key: "admin" as MainTab, label: "Admin", icon: Shield, adminOnly: true }] : []),
   ];
 
