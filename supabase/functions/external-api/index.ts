@@ -77,13 +77,6 @@ function mdToHtml(md: string): string {
 }
 
 function wrapInHtmlDocument(bodyHtml: string): string {
-  const studioHeader = `
-    <div style="text-align:center;margin-bottom:24px;border-bottom:2px solid #2a6f6f;padding-bottom:16px;">
-      <h2 style="margin:0;font-size:18px;color:#2a6f6f;font-family:Georgia,serif;">Studio Carella &amp; Lamanna</h2>
-      <p style="margin:4px 0 0;font-size:11px;color:#666;">Studio Dentistico Multidisciplinare — Occlusione e Postura</p>
-    </div>
-  `;
-
   return `<!DOCTYPE html>
 <html lang="it">
 <head>
@@ -101,7 +94,6 @@ function wrapInHtmlDocument(bodyHtml: string): string {
 </style>
 </head>
 <body>
-${studioHeader}
 ${bodyHtml}
 </body>
 </html>`;
