@@ -91,19 +91,18 @@ const Dashboard = () => {
   const handleDownload = async (material: CourseMaterial) => {
     const { data, error } = await supabase.storage
       .from("course-materials")
-      .download(material.file_path);
-    if (error || !data) {
+      .createSignedUrl(material.file_path, 120);
+    if (error || !data?.signedUrl) {
       toast({ title: "Download non riuscito", description: "Impossibile scaricare il file, riprova.", variant: "destructive" });
       return;
     }
-    const blobUrl = URL.createObjectURL(data);
     const link = document.createElement("a");
-    link.href = blobUrl;
+    link.href = data.signedUrl;
     link.download = material.file_name;
+    link.target = "_blank";
     document.body.appendChild(link);
     link.click();
     link.remove();
-    URL.revokeObjectURL(blobUrl);
   };
 
   const handleDeleteEdition = async (id: string) => {
