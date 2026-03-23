@@ -3,6 +3,7 @@ import { Brain, Sparkles, ArrowLeft, Ruler } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import DiagnosisTool from "./DiagnosisTool";
 import OrthodonticTool from "./OrthodonticTool";
+import BrandingSettings from "./BrandingSettings";
 
 interface ToolCard {
   id: string;
