@@ -150,9 +150,11 @@ const DiagnosisTool = () => {
     setIsAnalyzing(true);
     setResult("");
 
-    const { data: { user } } = await supabase.auth.getUser();
-    if (user) {
-      await supabase.from("ai_usage_log").insert({ user_id: user.id, tool_name: "diagnosis-support" });
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      toast({ title: "Errore", description: "Sessione scaduta. Effettua nuovamente il login.", variant: "destructive" });
+      setIsAnalyzing(false);
+      return;
     }
 
     try {
@@ -162,7 +164,7 @@ const DiagnosisTool = () => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+            Authorization: `Bearer ${session.access_token}`,
           },
           body: JSON.stringify({ documentText: extractedText.slice(0, 15000) }),
         }
