@@ -2,8 +2,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Lock } from "lucide-react";
 
-// SHA-256 hash of the password "anteprima2026"
-const PASSWORD_HASH = "a]HASH_PLACEHOLDER";
+const PASSWORD_HASH = "94499df1027d64ea9be1714dcb252fd0af43361196f95a184800696bb2457cac";
 const STORAGE_KEY = "site-access-granted";
 
 async function sha256(text: string): Promise<string> {
@@ -13,12 +12,6 @@ async function sha256(text: string): Promise<string> {
     .map((b) => b.toString(16).padStart(2, "0"))
     .join("");
 }
-
-// We compute the real hash at module load and store it
-let resolvedHash: string | null = null;
-(async () => {
-  resolvedHash = await sha256("anteprima2026");
-})();
 
 const PasswordGate = ({ children }: { children: React.ReactNode }) => {
   const [granted, setGranted] = useState(false);
