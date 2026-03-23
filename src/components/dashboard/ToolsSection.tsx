@@ -3,6 +3,7 @@ import { Brain, Sparkles, ArrowLeft, Ruler } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import DiagnosisTool from "./DiagnosisTool";
 import OrthodonticTool from "./OrthodonticTool";
+import BrandingSettings from "./BrandingSettings";
 
 interface ToolCard {
   id: string;
@@ -87,6 +88,7 @@ const ToolsSection = () => {
         <p className="font-body text-sm text-muted-foreground max-w-lg">
           Strumenti intelligenti per supportare il tuo lavoro clinico quotidiano.
         </p>
+        <BrandingSettings />
       </div>
 
       {/* Tool cards grid */}

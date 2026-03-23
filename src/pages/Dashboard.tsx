@@ -38,8 +38,8 @@ const Dashboard = () => {
   const [materials, setMaterials] = useState<CourseMaterial[]>([]);
   const [searchParams, setSearchParams] = useSearchParams();
   const tabParam = searchParams.get("tab");
-  const validTabs: MainTab[] = ["corsi", "strumenti", "admin"];
-  const activeTab: MainTab = validTabs.includes(tabParam as MainTab) ? (tabParam as MainTab) : "corsi";
+  const validTabs: MainTab[] = ["strumenti", "corsi", "admin"];
+  const activeTab: MainTab = validTabs.includes(tabParam as MainTab) ? (tabParam as MainTab) : "strumenti";
   const setActiveTab = (tab: MainTab) => setSearchParams({ tab });
   const navigate = useNavigate();
 
@@ -127,8 +127,8 @@ const Dashboard = () => {
   const displayName = user?.user_metadata?.full_name || user?.email || "";
 
   const tabs: { key: MainTab; label: string; icon: typeof BookOpen; adminOnly?: boolean }[] = [
-    { key: "corsi", label: "Corsi", icon: BookOpen },
     { key: "strumenti", label: "Strumenti", icon: Wrench },
+    { key: "corsi", label: "Corsi", icon: BookOpen },
     ...(isAdmin ? [{ key: "admin" as MainTab, label: "Admin", icon: Shield, adminOnly: true }] : []),
   ];
 
