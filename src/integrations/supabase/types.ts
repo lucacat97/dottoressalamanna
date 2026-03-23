@@ -268,6 +268,7 @@ export type Database = {
         Args: { _api_key_id: string; _tool_name: string }
         Returns: number
       }
+      get_auth_email: { Args: never; Returns: string }
       get_monthly_ai_usage: {
         Args: { _tool_name: string; _user_id: string }
         Returns: number
