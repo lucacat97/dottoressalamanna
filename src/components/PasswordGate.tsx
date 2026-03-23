@@ -27,7 +27,7 @@ const PasswordGate = ({ children }: { children: React.ReactNode }) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const inputHash = await sha256(input);
-    if (inputHash === resolvedHash) {
+    if (inputHash === PASSWORD_HASH) {
       sessionStorage.setItem(STORAGE_KEY, "true");
       setGranted(true);
     } else {
