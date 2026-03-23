@@ -24,22 +24,46 @@ async function hashKey(key: string): Promise<string> {
 
 // ── Markdown → HTML converter (matches site PDF styling) ──
 function mdToHtml(md: string): string {
-  let html = md;
+  // First, process tables block by block
+  const lines = md.split("\n");
+  const processedLines: string[] = [];
+  let i = 0;
 
-  // Tables
-  html = html.replace(/\|(.+)\|/g, (match) => {
-    const cells = match.split("|").filter((c: string) => c.trim());
-    if (cells.every((c: string) => /^[\s:-]+$/.test(c))) return "<!--table-sep-->";
-    const hasStrong = cells.some((c: string) => c.includes("**"));
-    const tag = hasStrong ? "th" : "td";
-    const bgStyle = hasStrong ? "background:#f0f7f7;" : "";
-    const cellsHtml = cells.map((c: string) =>
-      `<${tag} style="padding:8px 12px;border:1px solid #ddd;text-align:left;${bgStyle}">${c.replace(/\*\*/g, "").trim()}</${tag}>`
-    ).join("");
-    return `<tr>${cellsHtml}</tr>`;
-  });
-  html = html.replace(/((<tr>.*<\/tr>\n?)+)/g, '<table style="width:100%;border-collapse:collapse;margin:16px 0;page-break-inside:avoid;">$1</table>');
-  html = html.replace(/<!--table-sep-->\n?/g, "");
+  while (i < lines.length) {
+    const line = lines[i];
+    // Detect start of a markdown table
+    if (line.trim().startsWith("|") && line.trim().endsWith("|")) {
+      // Collect all table lines
+      const tableLines: string[] = [];
+      while (i < lines.length && lines[i].trim().startsWith("|") && lines[i].trim().endsWith("|")) {
+        tableLines.push(lines[i]);
+        i++;
+      }
+      // Parse table: first row is header, second row is separator, rest are body
+      if (tableLines.length >= 2) {
+        let tableHtml = '<table style="width:100%;border-collapse:collapse;margin:16px 0;page-break-inside:avoid;">';
+        let isFirstDataRow = true;
+        for (const tl of tableLines) {
+          const cells = tl.split("|").slice(1, -1); // remove empty first/last from split
+          if (cells.every((c: string) => /^[\s:-]+$/.test(c.trim()))) continue; // skip separator row
+          const tag = isFirstDataRow ? "th" : "td";
+          const bgStyle = isFirstDataRow ? "background:#f0f7f7;font-weight:600;" : "";
+          const cellsHtml = cells.map((c: string) =>
+            `<${tag} style="padding:10px 14px;border:1px solid #ddd;text-align:left;${bgStyle}">${c.replace(/\*\*/g, "").trim()}</${tag}>`
+          ).join("");
+          tableHtml += `<tr>${cellsHtml}</tr>`;
+          isFirstDataRow = false;
+        }
+        tableHtml += "</table>";
+        processedLines.push(tableHtml);
+      }
+      continue;
+    }
+    processedLines.push(line);
+    i++;
+  }
+
+  let html = processedLines.join("\n");
 
   // Blockquotes
   html = html.replace(/^>\s*(.+)$/gm, '<blockquote style="border-left:3px solid #2a6f6f;padding:8px 16px;margin:12px 0;background:#f0f7f7;color:#333;">$1</blockquote>');
