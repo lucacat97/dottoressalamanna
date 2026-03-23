@@ -23,9 +23,11 @@ const TOOL_LABELS: Record<string, string> = {
 // Generate a random API key
 function generateApiKey(): string {
   const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  const array = new Uint8Array(40);
+  crypto.getRandomValues(array);
   let result = "sk_live_";
-  for (let i = 0; i < 40; i++) {
-    result += chars.charAt(Math.floor(Math.random() * chars.length));
+  for (const byte of array) {
+    result += chars[byte % chars.length];
   }
   return result;
 }
