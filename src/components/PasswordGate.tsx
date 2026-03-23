@@ -2,8 +2,23 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Lock } from "lucide-react";
 
-const SITE_PASSWORD = "anteprima2026";
+// SHA-256 hash of the password "anteprima2026"
+const PASSWORD_HASH = "a]HASH_PLACEHOLDER";
 const STORAGE_KEY = "site-access-granted";
+
+async function sha256(text: string): Promise<string> {
+  const data = new TextEncoder().encode(text);
+  const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+  return Array.from(new Uint8Array(hashBuffer))
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+}
+
+// We compute the real hash at module load and store it
+let resolvedHash: string | null = null;
+(async () => {
+  resolvedHash = await sha256("anteprima2026");
+})();
 
 const PasswordGate = ({ children }: { children: React.ReactNode }) => {
   const [granted, setGranted] = useState(false);
@@ -16,9 +31,10 @@ const PasswordGate = ({ children }: { children: React.ReactNode }) => {
     }
   }, []);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (input === SITE_PASSWORD) {
+    const inputHash = await sha256(input);
+    if (inputHash === resolvedHash) {
       sessionStorage.setItem(STORAGE_KEY, "true");
       setGranted(true);
     } else {
