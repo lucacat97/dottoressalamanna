@@ -64,10 +64,10 @@ const MaterialThumbnail = ({ material, onDownload }: { material: CourseMaterial;
   const Icon = getFileIcon(material.file_name);
   const colorClass = getFileColor(material.file_name);
 
-  const handlePreview = () => {
+  const handlePreview = async () => {
     if (isImage && !previewUrl) {
-      const { data } = supabase.storage.from("course-materials").getPublicUrl(material.file_path);
-      if (data?.publicUrl) setPreviewUrl(data.publicUrl);
+      const { data } = await supabase.storage.from("course-materials").createSignedUrl(material.file_path, 300);
+      if (data?.signedUrl) setPreviewUrl(data.signedUrl);
     }
   };
 
