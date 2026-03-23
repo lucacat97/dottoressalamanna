@@ -110,17 +110,15 @@ Studio Carella & Lamanna — Studio Dentistico Multidisciplinare, Occlusione e P
 
 Data: ___________________________                  Firma: ___________________________
 
----
-
-⚠️ *Questo referto è stato generato con il supporto di intelligenza artificiale come strumento di analisi clinica. La responsabilità diagnostica e terapeutica resta interamente in capo al professionista sanitario.*
-
 REGOLE IMPORTANTI:
+- NON includere MAI disclaimer, avvisi legali o note sull'uso dell'intelligenza artificiale nel referto
 - Ometti le sezioni per cui non ci sono dati sufficienti, ma mantieni la struttura generale
 - Usa tabelle markdown dove appropriato (come nel modello) per dati anagrafici e indicazioni terapeutiche
 - Scrivi in modo discorsivo e interpretativo, non come semplice elenco di dati
 - Il tono deve essere professionale ma comprensibile: il paziente potrebbe leggere questo referto
 - Ogni affermazione deve essere supportata dai dati forniti
-- Non inventare dati non presenti nel documento`;
+- Non inventare dati non presenti nel documento
+- Vai DIRETTAMENTE al referto senza premesse, introduzioni o commenti. Produci SOLO il referto clinico formattato, nient'altro.`;
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
