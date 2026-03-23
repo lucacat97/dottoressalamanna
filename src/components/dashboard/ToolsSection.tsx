@@ -88,7 +88,7 @@ const ToolsSection = () => {
         <p className="font-body text-sm text-muted-foreground max-w-lg">
           Strumenti intelligenti per supportare il tuo lavoro clinico quotidiano.
         </p>
-      </div>
+        <BrandingSettings />
 
       {/* Tool cards grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
