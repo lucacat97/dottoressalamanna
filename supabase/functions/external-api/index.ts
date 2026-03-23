@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
 import metodologia from "./metodologia.json" with { type: "json" };
 
 const corsHeaders = {
@@ -6,6 +7,20 @@ const corsHeaders = {
   "Access-Control-Allow-Headers":
     "authorization, x-client-info, apikey, content-type, x-api-key",
 };
+
+// ── Supabase service client for key validation ──
+function getServiceClient() {
+  const url = Deno.env.get("SUPABASE_URL")!;
+  const key = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+  return createClient(url, key);
+}
+
+// ── Hash API key using Web Crypto (SHA-256) ──
+async function hashKey(key: string): Promise<string> {
+  const data = new TextEncoder().encode(key);
+  const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+  return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, "0")).join("");
+}
 
 // ── Markdown → HTML converter (matches site PDF styling) ──
 function mdToHtml(md: string): string {
@@ -253,16 +268,26 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
-  // ── Auth: validate X-Api-Key header ──
+  // ── Auth: validate X-Api-Key against database ──
   const apiKey = req.headers.get("x-api-key");
-  const expectedKey = Deno.env.get("EXTERNAL_API_KEY");
-  if (!expectedKey) {
-    return new Response(JSON.stringify({ error: "Server misconfigured: missing API key" }), {
-      status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+  if (!apiKey) {
+    return new Response(JSON.stringify({ error: "Unauthorized. Provide a valid X-Api-Key header." }), {
+      status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
-  if (!apiKey || apiKey !== expectedKey) {
-    return new Response(JSON.stringify({ error: "Unauthorized. Provide a valid X-Api-Key header." }), {
+
+  const supabaseAdmin = getServiceClient();
+  const keyHash = await hashKey(apiKey);
+
+  const { data: keyRecord, error: keyError } = await supabaseAdmin
+    .from("api_keys")
+    .select("*")
+    .eq("key_hash", keyHash)
+    .eq("is_active", true)
+    .maybeSingle();
+
+  if (keyError || !keyRecord) {
+    return new Response(JSON.stringify({ error: "Unauthorized. Invalid or revoked API key." }), {
       status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
@@ -270,7 +295,7 @@ serve(async (req) => {
   try {
     const body = await req.json();
     const { tool, format } = body;
-    const outputFormat = (format || "html").toLowerCase(); // "html", "markdown", "both"
+    const outputFormat = (format || "html").toLowerCase();
 
     if (!tool || !["diagnosis", "orthodontic"].includes(tool)) {
       return new Response(
@@ -282,6 +307,28 @@ serve(async (req) => {
           },
         }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // ── Check tool permission ──
+    const allowedTools: string[] = keyRecord.tools || [];
+    if (!allowedTools.includes(tool)) {
+      return new Response(
+        JSON.stringify({ error: `Accesso negato allo strumento '${tool}'. Strumenti abilitati: ${allowedTools.join(", ")}` }),
+        { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // ── Check rate limit ──
+    const { data: usageCount } = await supabaseAdmin.rpc("get_api_key_monthly_usage", {
+      _api_key_id: keyRecord.id,
+      _tool_name: tool,
+    });
+
+    if (usageCount !== null && usageCount >= keyRecord.monthly_limit) {
+      return new Response(
+        JSON.stringify({ error: `Limite mensile raggiunto (${keyRecord.monthly_limit} chiamate/mese). Contatta l'amministratore.` }),
+        { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
@@ -322,6 +369,10 @@ ${classe_dentale ? `- Classe dentale/funzionale confermata: ${classe_dentale}` :
 
       markdown = await callAI(ORTHODONTIC_SYSTEM_PROMPT, userMsg);
     }
+
+    // ── Log usage ──
+    await supabaseAdmin.from("api_usage_log").insert({ api_key_id: keyRecord.id, tool_name: tool });
+    await supabaseAdmin.from("api_keys").update({ last_used_at: new Date().toISOString() }).eq("id", keyRecord.id);
 
     // Build response based on format
     const htmlBody = mdToHtml(markdown);

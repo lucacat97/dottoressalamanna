@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { BookOpen, Users, Upload, KeyRound, Calendar, MapPin, Trash2, Shield } from "lucide-react";
+import { BookOpen, Users, Upload, KeyRound, Calendar, MapPin, Trash2, Shield, Key } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import AdminCreateEdition from "@/components/admin/AdminCreateEdition";
 import AdminRegistrations from "@/components/admin/AdminRegistrations";
 import AdminMaterials from "@/components/admin/AdminMaterials";
 import AdminAccessControl from "@/components/admin/AdminAccessControl";
+import AdminApiKeys from "@/components/admin/AdminApiKeys";
 
 interface CourseEdition {
   id: string;
@@ -33,7 +34,7 @@ interface AdminTabProps {
 }
 
 const AdminTab = ({ editions, materials, onFetchData, onDeleteEdition }: AdminTabProps) => {
-  const [adminTab, setAdminTab] = useState<"editions" | "registrations" | "materials" | "access">("editions");
+  const [adminTab, setAdminTab] = useState<"editions" | "registrations" | "materials" | "access" | "apikeys">("editions");
 
   const formatDate = (dateStr: string) =>
     new Date(dateStr).toLocaleDateString("it-IT", { day: "numeric", month: "long", year: "numeric" });
@@ -45,12 +46,13 @@ const AdminTab = ({ editions, materials, onFetchData, onDeleteEdition }: AdminTa
         <h2 className="font-display text-xl font-semibold text-foreground">Pannello Admin</h2>
       </div>
 
-      <div className="flex gap-1 mb-6 bg-muted rounded-lg p-1 w-fit">
+      <div className="flex gap-1 mb-6 bg-muted rounded-lg p-1 w-fit flex-wrap">
         {([
           { key: "editions" as const, label: "Edizioni", icon: BookOpen },
           { key: "registrations" as const, label: "Iscrizioni", icon: Users },
           { key: "materials" as const, label: "Materiali", icon: Upload },
           { key: "access" as const, label: "Accessi", icon: KeyRound },
+          { key: "apikeys" as const, label: "API Keys", icon: Key },
         ]).map(({ key, label, icon: Icon }) => (
           <button
             key={key}
@@ -100,6 +102,7 @@ const AdminTab = ({ editions, materials, onFetchData, onDeleteEdition }: AdminTa
       {adminTab === "registrations" && <AdminRegistrations editions={editions} />}
       {adminTab === "materials" && <AdminMaterials editions={editions} materials={materials} onUpdated={onFetchData} />}
       {adminTab === "access" && <AdminAccessControl editions={editions} />}
+      {adminTab === "apikeys" && <AdminApiKeys />}
     </div>
   );
 };
