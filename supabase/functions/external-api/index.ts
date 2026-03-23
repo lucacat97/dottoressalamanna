@@ -7,30 +7,33 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-api-key",
 };
 
-// ── Markdown → HTML converter (lightweight, no deps) ──
+// ── Markdown → HTML converter (matches site PDF styling) ──
 function mdToHtml(md: string): string {
   let html = md;
 
   // Tables
-  html = html.replace(/^(\|.+\|)\n(\|[\s:-]+\|)\n((?:\|.+\|\n?)+)/gm, (_m, header: string, _sep, body: string) => {
-    const ths = header.split("|").filter((c: string) => c.trim()).map((c: string) => `<th style="border:1px solid #ccc;padding:6px 12px;background:#f5f5f5;">${c.trim()}</th>`).join("");
-    const rows = body.trim().split("\n").map((row: string) => {
-      const tds = row.split("|").filter((c: string) => c.trim()).map((c: string) => `<td style="border:1px solid #ccc;padding:6px 12px;">${c.trim()}</td>`).join("");
-      return `<tr>${tds}</tr>`;
-    }).join("");
-    return `<table style="border-collapse:collapse;width:100%;margin:12px 0;"><thead><tr>${ths}</tr></thead><tbody>${rows}</tbody></table>`;
+  html = html.replace(/\|(.+)\|/g, (match) => {
+    const cells = match.split("|").filter((c: string) => c.trim());
+    if (cells.every((c: string) => /^[\s:-]+$/.test(c))) return "<!--table-sep-->";
+    const hasStrong = cells.some((c: string) => c.includes("**"));
+    const tag = hasStrong ? "th" : "td";
+    const bgStyle = hasStrong ? "background:#f0f7f7;" : "";
+    const cellsHtml = cells.map((c: string) =>
+      `<${tag} style="padding:8px 12px;border:1px solid #ddd;text-align:left;${bgStyle}">${c.replace(/\*\*/g, "").trim()}</${tag}>`
+    ).join("");
+    return `<tr>${cellsHtml}</tr>`;
   });
+  html = html.replace(/((<tr>.*<\/tr>\n?)+)/g, '<table style="width:100%;border-collapse:collapse;margin:16px 0;page-break-inside:avoid;">$1</table>');
+  html = html.replace(/<!--table-sep-->\n?/g, "");
 
   // Blockquotes
-  html = html.replace(/^>\s*(.+)$/gm, '<blockquote style="border-left:4px solid #2563eb;padding:8px 16px;margin:12px 0;background:#eff6ff;">$1</blockquote>');
+  html = html.replace(/^>\s*(.+)$/gm, '<blockquote style="border-left:3px solid #2a6f6f;padding:8px 16px;margin:12px 0;background:#f0f7f7;color:#333;">$1</blockquote>');
 
   // Headers
-  html = html.replace(/^######\s+(.+)$/gm, '<h6 style="margin:8px 0;font-size:12px;">$1</h6>');
-  html = html.replace(/^#####\s+(.+)$/gm, '<h5 style="margin:8px 0;font-size:13px;">$1</h5>');
-  html = html.replace(/^####\s+(.+)$/gm, '<h4 style="margin:10px 0;font-size:14px;">$1</h4>');
-  html = html.replace(/^###\s+(.+)$/gm, '<h3 style="margin:12px 0;font-size:16px;">$1</h3>');
-  html = html.replace(/^##\s+(.+)$/gm, '<h2 style="margin:14px 0;font-size:18px;color:#1e40af;">$1</h2>');
-  html = html.replace(/^#\s+(.+)$/gm, '<h1 style="margin:16px 0;font-size:22px;color:#1e3a5f;">$1</h1>');
+  html = html.replace(/^####\s+(.+)$/gm, '<h4 style="font-size:14px;color:#333;margin:16px 0 8px;">$1</h4>');
+  html = html.replace(/^###\s+(.+)$/gm, '<h3 style="font-size:15px;color:#333;margin:20px 0 8px;">$1</h3>');
+  html = html.replace(/^##\s+(.+)$/gm, '<h2 style="font-size:17px;color:#2a6f6f;margin:24px 0 10px;font-family:Georgia,serif;">$1</h2>');
+  html = html.replace(/^#\s+(.+)$/gm, '<h1 style="font-size:20px;color:#2a6f6f;margin:28px 0 12px;font-family:Georgia,serif;border-bottom:1px solid #eee;padding-bottom:8px;page-break-after:avoid;">$1</h1>');
 
   // Bold & italic
   html = html.replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>');
@@ -39,20 +42,20 @@ function mdToHtml(md: string): string {
 
   // Unordered lists
   html = html.replace(/^[-*]\s+(.+)$/gm, '<li style="margin:4px 0;">$1</li>');
-  html = html.replace(/((?:<li[^>]*>.*<\/li>\n?)+)/g, '<ul style="margin:8px 0;padding-left:24px;">$1</ul>');
+  html = html.replace(/((<li[^>]*>.*<\/li>\n?)+)/g, '<ul style="margin:8px 0 8px 20px;padding:0;">$1</ul>');
 
   // Ordered lists
   html = html.replace(/^\d+\.\s+(.+)$/gm, '<li style="margin:4px 0;">$1</li>');
 
   // Horizontal rule
-  html = html.replace(/^---+$/gm, '<hr style="border:none;border-top:2px solid #ccc;margin:20px 0;">');
+  html = html.replace(/^---+$/gm, '<hr style="border:none;border-top:1px solid #ddd;margin:24px 0;">');
 
   // Paragraphs for remaining text lines
   html = html.split("\n").map(line => {
     const trimmed = line.trim();
     if (!trimmed) return "";
     if (trimmed.startsWith("<")) return line;
-    return `<p style="margin:6px 0;line-height:1.6;">${trimmed}</p>`;
+    return `<p style="margin:8px 0;line-height:1.6;">${trimmed}</p>`;
   }).join("\n");
 
   return html;
