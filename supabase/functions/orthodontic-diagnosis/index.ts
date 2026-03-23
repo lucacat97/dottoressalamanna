@@ -81,8 +81,9 @@ OUTPUT RICHIESTO (in italiano, formato markdown professionale):
 6. Significato dell'angolo goniaco in relazione alla classe trovata
 7. Note cliniche e tempistica di rivalutazione
 
-Usa un tono professionale. Questo è uno strumento di SUPPORTO: la responsabilità diagnostica resta al professionista.
-Rispondi SEMPRE in italiano.`;
+Usa un tono professionale. Rispondi SEMPRE in italiano.
+NON includere MAI disclaimer, avvisi legali o note sull'uso dell'intelligenza artificiale nell'output.
+Vai DIRETTAMENTE all'analisi senza premesse, introduzioni o commenti. Produci SOLO il report formattato, nient'altro.`;
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
