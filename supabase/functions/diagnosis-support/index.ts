@@ -229,7 +229,7 @@ serve(async (req) => {
   } catch (e) {
     console.error("diagnosis-support error:", e);
     return new Response(
-      JSON.stringify({ error: e instanceof Error ? e.message : "Errore sconosciuto" }),
+      JSON.stringify({ error: "Si è verificato un errore interno. Riprova più tardi." }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }

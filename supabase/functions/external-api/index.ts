@@ -382,7 +382,7 @@ ${classe_dentale ? `- Classe dentale/funzionale confermata: ${classe_dentale}` :
   } catch (e) {
     console.error("external-api error:", e);
     return new Response(
-      JSON.stringify({ error: e instanceof Error ? e.message : "Errore sconosciuto" }),
+      JSON.stringify({ error: "Si è verificato un errore interno. Riprova più tardi." }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }

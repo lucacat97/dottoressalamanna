@@ -82,7 +82,19 @@ serve(async (req) => {
 
       const data = token.slice(0, lastColon);
       const sig = token.slice(lastColon + 1);
-      const valid = await hmacVerify(data, sig, secret);
+      const signatureValid = await hmacVerify(data, sig, secret);
+
+      // Check token expiry (24 hours)
+      let expired = false;
+      if (signatureValid) {
+        const parts = data.split(":");
+        const ts = parseInt(parts[1], 10);
+        const MAX_AGE_MS = 24 * 60 * 60 * 1000;
+        if (isNaN(ts) || Date.now() - ts > MAX_AGE_MS) {
+          expired = true;
+        }
+      }
+      const valid = signatureValid && !expired;
 
       return new Response(JSON.stringify({ valid }), {
         status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" },
