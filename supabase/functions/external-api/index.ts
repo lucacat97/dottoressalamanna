@@ -268,16 +268,26 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
-  // ── Auth: validate X-Api-Key header ──
+  // ── Auth: validate X-Api-Key against database ──
   const apiKey = req.headers.get("x-api-key");
-  const expectedKey = Deno.env.get("EXTERNAL_API_KEY");
-  if (!expectedKey) {
-    return new Response(JSON.stringify({ error: "Server misconfigured: missing API key" }), {
-      status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+  if (!apiKey) {
+    return new Response(JSON.stringify({ error: "Unauthorized. Provide a valid X-Api-Key header." }), {
+      status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
-  if (!apiKey || apiKey !== expectedKey) {
-    return new Response(JSON.stringify({ error: "Unauthorized. Provide a valid X-Api-Key header." }), {
+
+  const supabaseAdmin = getServiceClient();
+  const keyHash = await hashKey(apiKey);
+
+  const { data: keyRecord, error: keyError } = await supabaseAdmin
+    .from("api_keys")
+    .select("*")
+    .eq("key_hash", keyHash)
+    .eq("is_active", true)
+    .maybeSingle();
+
+  if (keyError || !keyRecord) {
+    return new Response(JSON.stringify({ error: "Unauthorized. Invalid or revoked API key." }), {
       status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
@@ -285,7 +295,7 @@ serve(async (req) => {
   try {
     const body = await req.json();
     const { tool, format } = body;
-    const outputFormat = (format || "html").toLowerCase(); // "html", "markdown", "both"
+    const outputFormat = (format || "html").toLowerCase();
 
     if (!tool || !["diagnosis", "orthodontic"].includes(tool)) {
       return new Response(
@@ -297,6 +307,28 @@ serve(async (req) => {
           },
         }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // ── Check tool permission ──
+    const allowedTools: string[] = keyRecord.tools || [];
+    if (!allowedTools.includes(tool)) {
+      return new Response(
+        JSON.stringify({ error: `Accesso negato allo strumento '${tool}'. Strumenti abilitati: ${allowedTools.join(", ")}` }),
+        { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // ── Check rate limit ──
+    const { data: usageCount } = await supabaseAdmin.rpc("get_api_key_monthly_usage", {
+      _api_key_id: keyRecord.id,
+      _tool_name: tool,
+    });
+
+    if (usageCount !== null && usageCount >= keyRecord.monthly_limit) {
+      return new Response(
+        JSON.stringify({ error: `Limite mensile raggiunto (${keyRecord.monthly_limit} chiamate/mese). Contatta l'amministratore.` }),
+        { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
