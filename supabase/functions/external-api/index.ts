@@ -62,22 +62,31 @@ function mdToHtml(md: string): string {
 }
 
 function wrapInHtmlDocument(bodyHtml: string): string {
+  const studioHeader = `
+    <div style="text-align:center;margin-bottom:24px;border-bottom:2px solid #2a6f6f;padding-bottom:16px;">
+      <h2 style="margin:0;font-size:18px;color:#2a6f6f;font-family:Georgia,serif;">Studio Carella &amp; Lamanna</h2>
+      <p style="margin:4px 0 0;font-size:11px;color:#666;">Studio Dentistico Multidisciplinare — Occlusione e Postura</p>
+    </div>
+  `;
+
   return `<!DOCTYPE html>
 <html lang="it">
 <head>
 <meta charset="UTF-8">
 <style>
-  body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 14px; color: #1a1a1a; max-width: 800px; margin: 0 auto; padding: 20px; }
-  h1 { color: #1e3a5f; border-bottom: 2px solid #2563eb; padding-bottom: 6px; }
-  h2 { color: #1e40af; }
-  table { border-collapse: collapse; width: 100%; }
-  th, td { border: 1px solid #ccc; padding: 6px 12px; text-align: left; }
-  th { background: #f5f5f5; }
-  blockquote { border-left: 4px solid #2563eb; padding: 8px 16px; margin: 12px 0; background: #eff6ff; }
-  strong { color: #1e3a5f; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; font-size: 12px; color: #222; max-width: 800px; margin: 0 auto; padding: 40px; line-height: 1.6; }
+  table { page-break-inside: avoid; border-collapse: collapse; width: 100%; }
+  h1 { color: #2a6f6f; font-family: Georgia, serif; page-break-after: avoid; }
+  h2 { color: #2a6f6f; font-family: Georgia, serif; }
+  th { background: #f0f7f7; }
+  th, td { border: 1px solid #ddd; padding: 8px 12px; text-align: left; }
+  blockquote { border-left: 3px solid #2a6f6f; padding: 8px 16px; margin: 12px 0; background: #f0f7f7; color: #333; }
+  strong { color: #2a6f6f; }
+  @media print { body { padding: 20px; } }
 </style>
 </head>
 <body>
+${studioHeader}
 ${bodyHtml}
 </body>
 </html>`;
