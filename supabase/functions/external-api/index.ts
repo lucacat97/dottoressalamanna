@@ -370,6 +370,10 @@ ${classe_dentale ? `- Classe dentale/funzionale confermata: ${classe_dentale}` :
       markdown = await callAI(ORTHODONTIC_SYSTEM_PROMPT, userMsg);
     }
 
+    // ── Log usage ──
+    await supabaseAdmin.from("api_usage_log").insert({ api_key_id: keyRecord.id, tool_name: tool });
+    await supabaseAdmin.from("api_keys").update({ last_used_at: new Date().toISOString() }).eq("id", keyRecord.id);
+
     // Build response based on format
     const htmlBody = mdToHtml(markdown);
     const fullHtml = wrapInHtmlDocument(htmlBody);
