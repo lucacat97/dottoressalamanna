@@ -185,6 +185,7 @@ interface HumanBodyModelProps {
   onHoverRegion: (region: BodyRegion | null) => void;
   showAcupoints: boolean;
   relevantMeridians: Set<string>;
+  offsetY: number;
 }
 
 function HumanBodyModel({
@@ -196,6 +197,7 @@ function HumanBodyModel({
   onHoverRegion,
   showAcupoints,
   relevantMeridians,
+  offsetY,
 }: HumanBodyModelProps) {
   const modelRef = useRef<THREE.Group>(null);
   const { scene } = useGLTF("/geometries/human_body.glb");
@@ -263,7 +265,7 @@ function HumanBodyModel({
   const handlePointerOut = () => { onHoverRegion(null); document.body.style.cursor = "default"; };
 
   return (
-    <group position={[0, -0.70, 0]} scale={bodyScale}>
+    <group position={[0, offsetY, 0]} scale={bodyScale}>
       <group ref={modelRef} rotation={[0, -Math.PI / 2, 0]}>
         <primitive
           object={clonedScene}
