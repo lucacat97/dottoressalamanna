@@ -177,15 +177,6 @@ function findClosestRegion(localPt: THREE.Vector3, regionVolumes: RegionVolume[]
 /* ─── Inner scene component (inside Canvas) ─── */
 
 interface HumanBodyModelProps {
-  sex,
-  selectedRegions,
-  markerPositions,
-  onSelectRegion,
-  onMarkerPoint,
-  onHoverRegion,
-  showAcupoints,
-  relevantMeridians,
-}: {
   sex: "M" | "F";
   selectedRegions: Set<string>;
   markerPositions: Map<string, [number, number, number]>;
@@ -331,7 +322,6 @@ interface BodyModel3DProps {
   relevantMeridians: Set<string>;
 }
 
-export default function BodyModel3D({ sex, selectedRegions, onToggleRegion, showAcupoints, relevantMeridians }: BodyModel3DProps) {
 const BodyModel3D = forwardRef<HTMLDivElement, BodyModel3DProps>(function BodyModel3D({ sex, selectedRegions, onToggleRegion, showAcupoints, relevantMeridians }, forwardedRef) {
   const [hoveredRegion, setHoveredRegion] = useState<BodyRegion | null>(null);
   const [markerPositions, setMarkerPositions] = useState<Map<string, [number, number, number]>>(new Map());
