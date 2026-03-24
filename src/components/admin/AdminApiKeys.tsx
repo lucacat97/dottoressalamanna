@@ -8,8 +8,10 @@ interface ApiKey {
   id: string;
   key_hash: string;
   client_name: string;
+  client_email: string | null;
   tools: string[];
   monthly_limit: number;
+  tool_limits: Record<string, number> | null;
   is_active: boolean;
   created_at: string;
   last_used_at: string | null;
@@ -18,6 +20,8 @@ interface ApiKey {
 const TOOL_LABELS: Record<string, string> = {
   diagnosis: "Supporto Diagnosi",
   orthodontic: "Diagnosi Ortodontica",
+  mtc_sistemica: "MTC Sistemica",
+  mtc_organica: "MTC Organica",
 };
 
 // Generate a random API key
