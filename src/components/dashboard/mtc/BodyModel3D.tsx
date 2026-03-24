@@ -1,50 +1,67 @@
-import { useState, useRef, useMemo, useEffect, Suspense } from "react";
+import { useState, useRef, useMemo, Suspense } from "react";
 import { Canvas, useFrame, ThreeEvent } from "@react-three/fiber";
 import { OrbitControls, useGLTF, Text } from "@react-three/drei";
 import * as THREE from "three";
 import { BODY_REGIONS, ACUPOINTS, type BodyRegion, type AcuPoint } from "./bodyRegions";
 
-// Map a click point (in model-local space) to the nearest BodyRegion
-function findClosestRegion(localPoint: THREE.Vector3, modelScale: number): BodyRegion | null {
+/**
+ * Coordinate mapping between bodyRegions.ts positions and GLB model local space.
+ *
+ * bodyRegions.ts:
+ *   x = left(-) / right(+)
+ *   y = height  (feet ≈ -0.1, head ≈ 1.85)
+ *   z = front(+) / back(-)
+ *
+ * GLB model local space (after rotation=[0, -PI/2, 0]):
+ *   x = front(+) / back(-)
+ *   y = height  (feet ≈ -0.42, head ≈ 0.38)
+ *   z = left(-) / right(+)
+ *
+ * Conversion: region → modelLocal
+ *   modelX = regionZ / 3.3
+ *   modelY = (regionY - 0.93) / 2.44
+ *   modelZ = regionX / 3.5
+ */
+function regionToModelLocal(regionPos: [number, number, number]): THREE.Vector3 {
+  return new THREE.Vector3(
+    regionPos[2] / 3.3,               // front/back
+    (regionPos[1] - 0.93) / 2.44,     // height
+    regionPos[0] / 3.5                 // left/right
+  );
+}
+
+function findClosestRegion(localPoint: THREE.Vector3): BodyRegion | null {
   let best: BodyRegion | null = null;
   let bestDist = Infinity;
 
   for (const region of BODY_REGIONS) {
-    // Convert region position to model-local coordinates
-    // The model is scaled by modelScale and positioned at groupPosition
-    const rp = new THREE.Vector3(...region.position);
-    // Region positions are in the old coordinate system centered around y~0.9
-    // The GLB model space: y from ~-0.1 (feet) to ~0.45 (head), z is front/back, x is left/right
-    // Transform: modelLocalY ≈ (regionY - 0.9) * 0.28, modelLocalX ≈ regionX * 0.35, modelLocalZ ≈ -regionZ * 0.35
-    const mappedX = rp.x * 0.35;
-    const mappedY = (rp.y - 0.9) * 0.28;
-    const mappedZ = -rp.z * 0.35;
-
-    const dist = localPoint.distanceTo(new THREE.Vector3(mappedX, mappedY, mappedZ));
+    const mapped = regionToModelLocal(region.position);
+    const dist = localPoint.distanceTo(mapped);
     if (dist < bestDist) {
       bestDist = dist;
       best = region;
     }
   }
 
-  // Only match if reasonably close
-  return bestDist < 0.15 ? best : null;
+  // Only match if reasonably close (threshold in model-local units)
+  return bestDist < 0.12 ? best : null;
 }
 
 function HumanBodyModel({
+  sex,
   selectedRegions,
   onSelectRegion,
   onHoverRegion,
   showAcupoints,
   relevantMeridians,
 }: {
+  sex: "M" | "F";
   selectedRegions: Set<string>;
   onSelectRegion: (region: BodyRegion) => void;
   onHoverRegion: (region: BodyRegion | null) => void;
   showAcupoints: boolean;
   relevantMeridians: Set<string>;
 }) {
-  const groupRef = useRef<THREE.Group>(null);
   const modelRef = useRef<THREE.Group>(null);
   const { scene } = useGLTF("/geometries/human_body.glb");
 
@@ -62,25 +79,28 @@ function HumanBodyModel({
     return clone;
   }, [scene]);
 
-  // Highlight selected regions with markers
+  // Scale adjustments for female body shape
+  const bodyScale: [number, number, number] = sex === "F"
+    ? [3.8, 4.0, 3.8]   // slightly narrower shoulders
+    : [4.0, 4.0, 4.0];
+
+  // Hip scale for female (applied to a wrapper)
+  // We apply a non-uniform scale to approximate female proportions
+
+  // Selected region markers (in model-local space)
   const selectedMarkers = useMemo(() => {
     return BODY_REGIONS.filter((r) => selectedRegions.has(r.id)).map((region) => {
-      // Map region position to model space
-      const x = region.position[0] * 0.35;
-      const y = (region.position[1] - 0.9) * 0.28;
-      const z = -region.position[2] * 0.35;
-      return { ...region, mappedPos: [x, y, z] as [number, number, number] };
+      const pos = regionToModelLocal(region.position);
+      return { id: region.id, pos: [pos.x, pos.y, pos.z] as [number, number, number] };
     });
   }, [selectedRegions]);
 
-  // Visible acupoints
+  // Visible acupoints (in model-local space)
   const visibleAcupoints = useMemo(() => {
     if (!showAcupoints) return [];
     return ACUPOINTS.filter((p) => relevantMeridians.has(p.meridian)).map((point) => {
-      const x = point.position[0] * 0.35;
-      const y = (point.position[1] - 0.9) * 0.28;
-      const z = -point.position[2] * 0.35;
-      return { ...point, mappedPos: [x, y, z] as [number, number, number] };
+      const pos = regionToModelLocal(point.position);
+      return { ...point, mappedPos: [pos.x, pos.y, pos.z] as [number, number, number] };
     });
   }, [showAcupoints, relevantMeridians]);
 
@@ -88,7 +108,7 @@ function HumanBodyModel({
     e.stopPropagation();
     if (e.point && modelRef.current) {
       const localPoint = modelRef.current.worldToLocal(e.point.clone());
-      const region = findClosestRegion(localPoint, 4);
+      const region = findClosestRegion(localPoint);
       if (region) onSelectRegion(region);
     }
   };
@@ -97,7 +117,7 @@ function HumanBodyModel({
     e.stopPropagation();
     if (e.point && modelRef.current) {
       const localPoint = modelRef.current.worldToLocal(e.point.clone());
-      const region = findClosestRegion(localPoint, 4);
+      const region = findClosestRegion(localPoint);
       onHoverRegion(region);
       document.body.style.cursor = region ? "pointer" : "default";
     }
@@ -109,7 +129,7 @@ function HumanBodyModel({
   };
 
   return (
-    <group ref={groupRef} position={[0, 0.1, 0]} scale={[4.0, 4.0, 4.0]}>
+    <group position={[0, 0.1, 0]} scale={bodyScale}>
       <group ref={modelRef} rotation={[0, -Math.PI / 2, 0]}>
         <primitive
           object={clonedScene}
@@ -118,15 +138,26 @@ function HumanBodyModel({
           onPointerOut={handlePointerOut}
         />
 
-        {/* Selected region markers */}
+        {/* Red markers on selected regions */}
         {selectedMarkers.map((m) => (
-          <PulsingMarker key={`sel-${m.id}`} position={m.mappedPos} color="#ef4444" emissive="#dc2626" size={0.012} />
+          <PulsingMarker
+            key={`sel-${m.id}`}
+            position={m.pos}
+            color="#ef4444"
+            emissive="#dc2626"
+            size={0.014}
+          />
         ))}
 
         {/* Acupoint markers */}
         {visibleAcupoints.map((p) => (
           <group key={p.id}>
-            <PulsingMarker position={p.mappedPos} color="#22c55e" emissive="#16a34a" size={0.008} />
+            <PulsingMarker
+              position={p.mappedPos}
+              color="#22c55e"
+              emissive="#16a34a"
+              size={0.008}
+            />
             <Text
               position={[p.mappedPos[0], p.mappedPos[1] + 0.015, p.mappedPos[2]]}
               fontSize={0.008}
@@ -159,14 +190,14 @@ function PulsingMarker({
   const ref = useRef<THREE.Mesh>(null);
   useFrame(({ clock }) => {
     if (ref.current) {
-      const s = 1 + Math.sin(clock.elapsedTime * 3) * 0.2;
+      const s = 1 + Math.sin(clock.elapsedTime * 3) * 0.25;
       ref.current.scale.setScalar(s);
     }
   });
   return (
     <mesh ref={ref} position={position}>
       <sphereGeometry args={[size, 12, 12]} />
-      <meshStandardMaterial color={color} emissive={emissive} emissiveIntensity={0.6} />
+      <meshStandardMaterial color={color} emissive={emissive} emissiveIntensity={0.7} />
     </mesh>
   );
 }
@@ -179,14 +210,19 @@ interface BodyModel3DProps {
   relevantMeridians: Set<string>;
 }
 
-export default function BodyModel3D({ sex, selectedRegions, onToggleRegion, showAcupoints, relevantMeridians }: BodyModel3DProps) {
+export default function BodyModel3D({
+  sex,
+  selectedRegions,
+  onToggleRegion,
+  showAcupoints,
+  relevantMeridians,
+}: BodyModel3DProps) {
   const [hoveredRegion, setHoveredRegion] = useState<BodyRegion | null>(null);
 
   return (
     <div className="relative w-full" style={{ height: "520px" }}>
       <Canvas
         camera={{ position: [0, 0.3, 1.8], fov: 50 }}
-        shadows
         gl={{ antialias: true }}
       >
         <ambientLight intensity={0.5} />
@@ -196,6 +232,7 @@ export default function BodyModel3D({ sex, selectedRegions, onToggleRegion, show
         <hemisphereLight args={["#c8e0ff", "#b08050", 0.25]} />
         <Suspense fallback={null}>
           <HumanBodyModel
+            sex={sex}
             selectedRegions={selectedRegions}
             onSelectRegion={onToggleRegion}
             onHoverRegion={setHoveredRegion}
@@ -243,11 +280,13 @@ export default function BodyModel3D({ sex, selectedRegions, onToggleRegion, show
             <span className="font-body text-[10px] text-muted-foreground">Agopunto consigliato</span>
           </div>
         )}
-        <p className="font-body text-[10px] text-muted-foreground/60 mt-1">Ruota con il mouse • Clicca per segnare</p>
+        <p className="font-body text-[10px] text-muted-foreground/60 mt-1">
+          Ruota con il mouse • Clicca per segnare
+        </p>
       </div>
     </div>
   );
 }
 
-// Preload the model
+// Preload model
 useGLTF.preload("/geometries/human_body.glb");
