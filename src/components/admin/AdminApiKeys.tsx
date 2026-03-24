@@ -94,8 +94,10 @@ const AdminApiKeys = () => {
     const { error } = await supabase.from("api_keys").insert({
       key_hash: keyHash,
       client_name: newClientName.trim(),
+      client_email: newClientEmail.trim() || null,
       tools: newTools,
       monthly_limit: newLimit,
+      tool_limits: Object.fromEntries(newTools.map(t => [t, newToolLimits[t] || newLimit])),
     } as any);
 
     if (error) {
@@ -104,6 +106,7 @@ const AdminApiKeys = () => {
       setGeneratedKey(plainKey);
       setShowKey(true);
       setNewClientName("");
+      setNewClientEmail("");
       toast({ title: "Chiave API creata", description: "Copia la chiave ora — non sarà più visibile." });
       fetchKeys();
     }
