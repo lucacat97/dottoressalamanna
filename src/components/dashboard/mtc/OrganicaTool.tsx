@@ -323,22 +323,24 @@ export default function OrganicaTool() {
       {/* Results */}
       {resultMarkdown && (
         <div className="bg-card border border-border rounded-xl p-5 space-y-4">
-          <div className="flex items-center gap-2">
-            <Sparkles size={16} className="text-primary" />
-            <h3 className="font-display text-sm font-bold text-foreground">Pattern di Disarmonia Identificato</h3>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Sparkles size={16} className="text-primary" />
+              <h3 className="font-display text-sm font-bold text-foreground">Pattern di Disarmonia Identificato</h3>
+            </div>
+            <div className="flex gap-2">
+              <Button variant="outline" size="sm" onClick={() => downloadDoc("doc")}>
+                <Download size={14} className="mr-1.5" />
+                Word
+              </Button>
+              <Button variant="outline" size="sm" onClick={() => downloadDoc("pdf")}>
+                <FileDown size={14} className="mr-1.5" />
+                PDF/HTML
+              </Button>
+            </div>
           </div>
-          <p className="font-body text-xs text-muted-foreground">
-            Il referto è pronto. Scaricalo nel formato desiderato.
-          </p>
-          <div className="flex gap-3">
-            <Button variant="outline" size="sm" onClick={() => downloadDoc("doc")}>
-              <Download size={14} className="mr-1.5" />
-              Scarica Word
-            </Button>
-            <Button variant="outline" size="sm" onClick={() => downloadDoc("pdf")}>
-              <FileDown size={14} className="mr-1.5" />
-              Scarica PDF/HTML
-            </Button>
+          <div className="border-t border-border pt-4">
+            <ReportRenderer markdown={resultMarkdown} />
           </div>
         </div>
       )}
