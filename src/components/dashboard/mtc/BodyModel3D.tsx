@@ -133,11 +133,11 @@ function getRegionScore(localPt: THREE.Vector3, volume: RegionVolume) {
   const frontBackMismatch = Math.sign(localPt.x) !== 0 && Math.sign(volume.center.x) !== 0 && Math.sign(localPt.x) !== Math.sign(volume.center.x);
 
   let score: number;
-  if (volume.region.geometry === "sphere") {
+  if (volume.region.geometry.type === "sphere") {
     const radius = Math.max(((volume.halfExtents.x + volume.halfExtents.y + volume.halfExtents.z) / 3) * 1.5, 0.006);
     const dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
     score = (dist / radius) ** 2;
-  } else if (volume.region.geometry === "capsule") {
+  } else if (volume.region.geometry.type === "capsule") {
     score =
       (dx / (volume.halfExtents.x * 1.25)) ** 2 +
       (dy / (volume.halfExtents.y * 1.8)) ** 2 +
