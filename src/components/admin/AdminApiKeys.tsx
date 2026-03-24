@@ -278,12 +278,15 @@ const AdminApiKeys = () => {
                       {apiKey.is_active ? "Attiva" : "Disattivata"}
                     </span>
                   </div>
+                  {(apiKey as any).client_email && (
+                    <p className="font-body text-xs text-muted-foreground mb-1">📧 {(apiKey as any).client_email}</p>
+                  )}
                   <div className="flex flex-wrap items-center gap-3 mt-2 text-xs text-muted-foreground font-body">
                     <span>Creata: {formatDate(apiKey.created_at)}</span>
                     {apiKey.last_used_at && <span>Ultimo uso: {formatDate(apiKey.last_used_at)}</span>}
                     <span className="flex items-center gap-1">
                       <BarChart3 size={11} />
-                      {usageCounts[apiKey.id] || 0}/{apiKey.monthly_limit} questo mese
+                      {usageCounts[apiKey.id] || 0} totali questo mese
                     </span>
                   </div>
                   {/* Inline tools + limit editing */}
