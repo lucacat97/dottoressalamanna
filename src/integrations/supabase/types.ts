@@ -37,6 +37,7 @@ export type Database = {
       }
       api_keys: {
         Row: {
+          client_email: string | null
           client_name: string
           created_at: string
           id: string
@@ -44,9 +45,11 @@ export type Database = {
           key_hash: string
           last_used_at: string | null
           monthly_limit: number
+          tool_limits: Json | null
           tools: string[]
         }
         Insert: {
+          client_email?: string | null
           client_name: string
           created_at?: string
           id?: string
@@ -54,9 +57,11 @@ export type Database = {
           key_hash: string
           last_used_at?: string | null
           monthly_limit?: number
+          tool_limits?: Json | null
           tools?: string[]
         }
         Update: {
+          client_email?: string | null
           client_name?: string
           created_at?: string
           id?: string
@@ -64,6 +69,7 @@ export type Database = {
           key_hash?: string
           last_used_at?: string | null
           monthly_limit?: number
+          tool_limits?: Json | null
           tools?: string[]
         }
         Relationships: []
