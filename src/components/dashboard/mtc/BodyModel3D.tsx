@@ -251,8 +251,9 @@ function HumanBodyModel({
     console.log("[BodyModel3D] CLICK local:", result.local.toArray().map(n => n.toFixed(4)),
       "→ region:", result.regionPt.map(n => Number(n.toFixed(2))),
       "→", result.region.name);
-    const wasSel = selectedRegions.has(result.region.id);
-    onMarkerPoint(result.region.id, [result.local.x, result.local.y, result.local.z], wasSel);
+    const rk = regionKey(result.region);
+    const wasSel = selectedRegions.has(rk);
+    onMarkerPoint(rk, [result.local.x, result.local.y, result.local.z], wasSel);
     onSelectRegion(result.region);
   };
 
