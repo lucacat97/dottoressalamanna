@@ -1,5 +1,5 @@
-import { useState, useRef, useMemo, useEffect, useCallback, Suspense } from "react";
-import { Canvas, useFrame, useThree, ThreeEvent } from "@react-three/fiber";
+import { useState, useRef, useMemo, useEffect, useCallback, Suspense, forwardRef } from "react";
+import { Canvas, useFrame, ThreeEvent } from "@react-three/fiber";
 import { OrbitControls, useGLTF, Text } from "@react-three/drei";
 import * as THREE from "three";
 import { BODY_REGIONS, ACUPOINTS, type BodyRegion } from "./bodyRegions";
@@ -28,6 +28,12 @@ const ANAT: Bounds3D = (() => {
   }
   return b;
 })();
+
+const ANAT_SPAN = {
+  x: ANAT.xMax - ANAT.xMin,
+  y: ANAT.yMax - ANAT.yMin,
+  z: ANAT.zMax - ANAT.zMin,
+};
 
 /* ─────────────── Compute GLB local-space bounding box ─────────────── */
 
@@ -87,25 +93,90 @@ function regionToGlb(regionPos: [number, number, number], glb: Bounds3D): [numbe
   ];
 }
 
-/* ─── Find nearest region purely in anatomy space ─── */
+/* ─── Region hit-volumes in GLB local space ─── */
 
-function findClosestRegion(regionPt: [number, number, number]): BodyRegion {
-  let best = BODY_REGIONS[0];
-  let bestD = Infinity;
+interface RegionVolume {
+  center: THREE.Vector3;
+  halfExtents: THREE.Vector3;
+  region: BodyRegion;
+}
 
-  for (const r of BODY_REGIONS) {
-    const dx = r.position[0] - regionPt[0];
-    const dy = (r.position[1] - regionPt[1]) * 1.6; // weight height (body is tall & narrow)
-    const dz = r.position[2] - regionPt[2];
-    const d = dx * dx + dy * dy + dz * dz;
-    if (d < bestD) { bestD = d; best = r; }
+function regionScaleToGlbHalfExtents(scale: [number, number, number], glb: Bounds3D) {
+  const glbXSpan = glb.xMax - glb.xMin;
+  const glbYSpan = glb.yMax - glb.yMin;
+  const glbZSpan = glb.zMax - glb.zMin;
+
+  return new THREE.Vector3(
+    Math.max((scale[2] / ANAT_SPAN.z) * glbXSpan * 0.5, 0.005), // local X maps anatomy Z
+    Math.max((scale[1] / ANAT_SPAN.y) * glbYSpan * 0.5, 0.005), // local Y maps anatomy Y
+    Math.max((scale[0] / ANAT_SPAN.x) * glbZSpan * 0.5, 0.005), // local Z maps anatomy X
+  );
+}
+
+function buildRegionVolumes(glb: Bounds3D): RegionVolume[] {
+  return BODY_REGIONS.map((region) => {
+    const [x, y, z] = regionToGlb(region.position, glb);
+    return {
+      region,
+      center: new THREE.Vector3(x, y, z),
+      halfExtents: regionScaleToGlbHalfExtents(region.scale, glb),
+    };
+  });
+}
+
+function getRegionScore(localPt: THREE.Vector3, volume: RegionVolume) {
+  const dx = Math.abs(localPt.x - volume.center.x);
+  const dy = Math.abs(localPt.y - volume.center.y);
+  const dz = Math.abs(localPt.z - volume.center.z);
+
+  const sideMismatch = Math.sign(localPt.z) !== 0 && Math.sign(volume.center.z) !== 0 && Math.sign(localPt.z) !== Math.sign(volume.center.z);
+  const frontBackMismatch = Math.sign(localPt.x) !== 0 && Math.sign(volume.center.x) !== 0 && Math.sign(localPt.x) !== Math.sign(volume.center.x);
+
+  let score: number;
+  if (volume.region.geometry === "sphere") {
+    const radius = Math.max(((volume.halfExtents.x + volume.halfExtents.y + volume.halfExtents.z) / 3) * 1.5, 0.006);
+    const dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
+    score = (dist / radius) ** 2;
+  } else if (volume.region.geometry === "capsule") {
+    score =
+      (dx / (volume.halfExtents.x * 1.25)) ** 2 +
+      (dy / (volume.halfExtents.y * 1.8)) ** 2 +
+      (dz / (volume.halfExtents.z * 1.25)) ** 2;
+  } else {
+    score =
+      (dx / (volume.halfExtents.x * 1.35)) ** 2 +
+      (dy / (volume.halfExtents.y * 1.35)) ** 2 +
+      (dz / (volume.halfExtents.z * 1.35)) ** 2;
   }
-  return best;
+
+  if (dy > volume.halfExtents.y * 4) {
+    score += (dy / Math.max(volume.halfExtents.y, 0.01) - 4) * 0.8;
+  }
+
+  if (sideMismatch) score *= 2.8;
+  if (frontBackMismatch) score *= 1.7;
+
+  return score;
+}
+
+function findClosestRegion(localPt: THREE.Vector3, regionVolumes: RegionVolume[]): BodyRegion {
+  let best = regionVolumes[0];
+  let bestScore = Infinity;
+
+  for (const volume of regionVolumes) {
+    const score = getRegionScore(localPt, volume);
+    if (score < bestScore) {
+      bestScore = score;
+      best = volume;
+    }
+  }
+
+  return best.region;
 }
 
 /* ─── Inner scene component (inside Canvas) ─── */
 
-function HumanBodyModel({
+interface HumanBodyModelProps {
   sex,
   selectedRegions,
   markerPositions,
@@ -123,7 +194,18 @@ function HumanBodyModel({
   onHoverRegion: (region: BodyRegion | null) => void;
   showAcupoints: boolean;
   relevantMeridians: Set<string>;
-}) {
+}
+
+const HumanBodyModel = forwardRef<THREE.Group, HumanBodyModelProps>(function HumanBodyModel({
+  sex,
+  selectedRegions,
+  markerPositions,
+  onSelectRegion,
+  onMarkerPoint,
+  onHoverRegion,
+  showAcupoints,
+  relevantMeridians,
+}, _forwardedRef) {
   const modelRef = useRef<THREE.Group>(null);
   const { scene } = useGLTF("/geometries/human_body.glb");
 
@@ -143,6 +225,7 @@ function HumanBodyModel({
 
   // Compute bounding box from raw geometry vertices (reliable, no world-matrix issues)
   const glb = useMemo(() => computeLocalBounds(clonedScene), [clonedScene]);
+  const regionVolumes = useMemo(() => buildRegionVolumes(glb), [glb]);
 
   const bodyScale: [number, number, number] = sex === "F" ? [3.7, 3.9, 3.7] : [4.0, 4.0, 4.0];
 
@@ -165,8 +248,8 @@ function HumanBodyModel({
     if (!modelRef.current) return null;
     const local = modelRef.current.worldToLocal(e.point.clone());
     const regionPt = glbToRegion(local, glb);
-    return { region: findClosestRegion(regionPt), local, regionPt };
-  }, [glb]);
+    return { region: findClosestRegion(local, regionVolumes), local, regionPt };
+  }, [glb, regionVolumes]);
 
   const handleClick = (e: ThreeEvent<MouseEvent>) => {
     e.stopPropagation();
@@ -213,13 +296,17 @@ function HumanBodyModel({
       </group>
     </group>
   );
-}
+});
+
+HumanBodyModel.displayName = "HumanBodyModel";
 
 /* ─── Pulsing marker ─── */
 
-function PulsingMarker({ position, color, emissive, size }: {
+interface PulsingMarkerProps {
   position: [number, number, number]; color: string; emissive: string; size: number;
-}) {
+}
+
+const PulsingMarker = forwardRef<THREE.Mesh, PulsingMarkerProps>(function PulsingMarker({ position, color, emissive, size }, _forwardedRef) {
   const ref = useRef<THREE.Mesh>(null);
   useFrame(({ clock }) => {
     if (ref.current) ref.current.scale.setScalar(1 + Math.sin(clock.elapsedTime * 3) * 0.25);
@@ -230,7 +317,9 @@ function PulsingMarker({ position, color, emissive, size }: {
       <meshStandardMaterial color={color} emissive={emissive} emissiveIntensity={0.7} />
     </mesh>
   );
-}
+});
+
+PulsingMarker.displayName = "PulsingMarker";
 
 /* ─── Public component ─── */
 
@@ -243,6 +332,7 @@ interface BodyModel3DProps {
 }
 
 export default function BodyModel3D({ sex, selectedRegions, onToggleRegion, showAcupoints, relevantMeridians }: BodyModel3DProps) {
+const BodyModel3D = forwardRef<HTMLDivElement, BodyModel3DProps>(function BodyModel3D({ sex, selectedRegions, onToggleRegion, showAcupoints, relevantMeridians }, forwardedRef) {
   const [hoveredRegion, setHoveredRegion] = useState<BodyRegion | null>(null);
   const [markerPositions, setMarkerPositions] = useState<Map<string, [number, number, number]>>(new Map());
 
@@ -266,7 +356,7 @@ export default function BodyModel3D({ sex, selectedRegions, onToggleRegion, show
   };
 
   return (
-    <div className="relative w-full" style={{ height: "620px" }}>
+    <div ref={forwardedRef} className="relative w-full" style={{ height: "620px" }}>
       <Canvas camera={{ position: [0, 0.05, 3.6], fov: 44 }} gl={{ antialias: true }}>
         <ambientLight intensity={0.5} />
         <directionalLight position={[5, 5, 5]} intensity={0.7} castShadow />
@@ -285,7 +375,7 @@ export default function BodyModel3D({ sex, selectedRegions, onToggleRegion, show
             relevantMeridians={relevantMeridians}
           />
         </Suspense>
-        <OrbitControls enablePan={false} enableZoom={false} enableRotate={true}
+        <OrbitControls enablePan={false} enableZoom={false} enableRotate={false}
           minPolarAngle={Math.PI * 0.15} maxPolarAngle={Math.PI * 0.85} />
       </Canvas>
 
@@ -316,6 +406,10 @@ export default function BodyModel3D({ sex, selectedRegions, onToggleRegion, show
       </div>
     </div>
   );
-}
+});
+
+BodyModel3D.displayName = "BodyModel3D";
+
+export default BodyModel3D;
 
 useGLTF.preload("/geometries/human_body.glb");
