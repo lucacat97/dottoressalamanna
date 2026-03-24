@@ -50,8 +50,10 @@ const AdminApiKeys = () => {
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
   const [newClientName, setNewClientName] = useState("");
-  const [newTools, setNewTools] = useState<string[]>(["diagnosis", "orthodontic"]);
+  const [newClientEmail, setNewClientEmail] = useState("");
+  const [newTools, setNewTools] = useState<string[]>(["diagnosis", "orthodontic", "mtc_sistemica", "mtc_organica"]);
   const [newLimit, setNewLimit] = useState(30);
+  const [newToolLimits, setNewToolLimits] = useState<Record<string, number>>({ diagnosis: 30, orthodontic: 30, mtc_sistemica: 30, mtc_organica: 30 });
   const [generatedKey, setGeneratedKey] = useState<string | null>(null);
   const [showKey, setShowKey] = useState(false);
   const [usageCounts, setUsageCounts] = useState<Record<string, number>>({});
