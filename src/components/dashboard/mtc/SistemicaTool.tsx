@@ -91,15 +91,15 @@ export default function SistemicaTool() {
         return;
       }
 
-      const painPoints = Array.from(selectedRegions).map(id => {
-        const region = BODY_REGIONS.find(r => r.id === id)!;
-        return { region: region.name, description: region.description };
+      const painPoints = Array.from(selectedRegions).map(rk => {
+        const region = BODY_REGIONS.find(r => regionKey(r) === rk)!;
+        return { region: region.name, description: region.description, side: region.side };
       });
 
       // Collect meridians from selected regions
       const meridiansSet = new Set<string>();
-      selectedRegions.forEach(id => {
-        const region = BODY_REGIONS.find(r => r.id === id);
+      selectedRegions.forEach(rk => {
+        const region = BODY_REGIONS.find(r => regionKey(r) === rk);
         region?.meridians.forEach(m => meridiansSet.add(m));
       });
       setRelevantMeridians(meridiansSet);
