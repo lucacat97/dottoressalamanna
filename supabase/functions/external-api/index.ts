@@ -372,13 +372,15 @@ serve(async (req) => {
     const { tool, format } = body;
     const outputFormat = (format || "html").toLowerCase();
 
-    if (!tool || !["diagnosis", "orthodontic"].includes(tool)) {
+    if (!tool || !["diagnosis", "orthodontic", "mtc_sistemica", "mtc_organica"].includes(tool)) {
       return new Response(
         JSON.stringify({
-          error: "Campo 'tool' obbligatorio. Valori: 'diagnosis' o 'orthodontic'.",
+          error: "Campo 'tool' obbligatorio. Valori: 'diagnosis', 'orthodontic', 'mtc_sistemica', 'mtc_organica'.",
           usage: {
             diagnosis: { tool: "diagnosis", documentText: "Testo del documento clinico..." },
             orthodontic: { tool: "orthodontic", age: 10, sex: "F", angolo_sellare: 125, anb: 3, wits: 1, angolo_articolare: 145, angolo_goniaco: 132 },
+            mtc_sistemica: { tool: "mtc_sistemica", sex: "F", painPoints: [{ region: "Zona lombare", description: "Dolore lombare cronico" }] },
+            mtc_organica: { tool: "mtc_organica", sex: "F", age: 45, symptoms: [{ category: "Fegato", name: "Irritabilità" }] },
           },
         }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -394,15 +396,18 @@ serve(async (req) => {
       );
     }
 
-    // ── Check rate limit ──
+    // ── Check rate limit (per-tool if tool_limits exists) ──
     const { data: usageCount } = await supabaseAdmin.rpc("get_api_key_monthly_usage", {
       _api_key_id: keyRecord.id,
       _tool_name: tool,
     });
 
-    if (usageCount !== null && usageCount >= keyRecord.monthly_limit) {
+    const toolLimits = keyRecord.tool_limits as Record<string, number> | null;
+    const effectiveLimit = toolLimits?.[tool] ?? keyRecord.monthly_limit;
+
+    if (usageCount !== null && usageCount >= effectiveLimit) {
       return new Response(
-        JSON.stringify({ error: `Limite mensile raggiunto (${keyRecord.monthly_limit} chiamate/mese). Contatta l'amministratore.` }),
+        JSON.stringify({ error: `Limite mensile raggiunto (${effectiveLimit} chiamate/mese per ${tool}). Contatta l'amministratore.` }),
         { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
@@ -421,8 +426,7 @@ serve(async (req) => {
         DIAGNOSIS_SYSTEM_PROMPT,
         `Analizza il seguente documento clinico e genera un REFERTO CLINICO COMPLETO:\n\n---\n${documentText}\n---`
       );
-    } else {
-      // orthodontic
+    } else if (tool === "orthodontic") {
       const { age, sex, angolo_sellare, anb, wits, angolo_articolare, angolo_goniaco, ns_mm, gome_mm, classe_dentale } = body;
       if (!age || !sex || angolo_sellare == null || anb == null || wits == null || angolo_articolare == null || angolo_goniaco == null) {
         return new Response(
@@ -441,8 +445,30 @@ serve(async (req) => {
 ${ns_mm ? `- NS: ${ns_mm} mm` : ""}
 ${gome_mm ? `- Go-Me: ${gome_mm} mm` : ""}
 ${classe_dentale ? `- Classe dentale/funzionale confermata: ${classe_dentale}` : ""}`;
-
       markdown = await callAI(ORTHODONTIC_SYSTEM_PROMPT, userMsg);
+    } else if (tool === "mtc_sistemica") {
+      const { sex, painPoints } = body;
+      if (!painPoints || !Array.isArray(painPoints) || painPoints.length === 0) {
+        return new Response(
+          JSON.stringify({ error: "Campo 'painPoints' obbligatorio (array di {region, description})." }),
+          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+      const pointsList = painPoints.map((p: any, i: number) => `${i+1}. Regione: ${p.region} — Descrizione: ${p.description}`).join("\n");
+      const mtcSistemicaPrompt = `Sei un assistente MTC specializzato in analisi sistemica del dolore con doppia interpretazione (MTC + medicina occidentale/neurobiomodulazione). Analizza i punti dolorosi e suggerisci agopunti terapeutici, meridiani coinvolti e piano terapeutico integrato. Rispondi in italiano. NON includere disclaimer.`;
+      markdown = await callAI(mtcSistemicaPrompt, `Paziente: Sesso ${sex || "non specificato"}\n\nPunti dolorosi:\n${pointsList}`);
+    } else {
+      // mtc_organica
+      const { sex, age, symptoms } = body;
+      if (!symptoms || !Array.isArray(symptoms) || symptoms.length === 0) {
+        return new Response(
+          JSON.stringify({ error: "Campo 'symptoms' obbligatorio (array di {category, name})." }),
+          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+      const symptomsList = symptoms.map((s: any) => `- [${s.category}] ${s.name}`).join("\n");
+      const mtcOrganicaPrompt = `Sei un assistente MTC specializzato in identificazione di pattern di disarmonia da sintomi con doppia interpretazione (MTC + medicina occidentale/neurobiomodulazione). Identifica pattern Zang-Fu, agopunti e piano terapeutico. Rispondi in italiano. NON includere disclaimer.`;
+      markdown = await callAI(mtcOrganicaPrompt, `Paziente: Sesso ${sex || "non specificato"}, Età ${age || "non specificata"}\n\nSintomi:\n${symptomsList}`);
     }
 
     // ── Log usage ──
