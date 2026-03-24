@@ -1,201 +1,38 @@
-import { useState, useRef, useMemo, Suspense } from "react";
+import { useState, useRef, useMemo, useEffect, Suspense } from "react";
 import { Canvas, useFrame, ThreeEvent } from "@react-three/fiber";
 import { OrbitControls, useGLTF, Text } from "@react-three/drei";
 import * as THREE from "three";
 import { BODY_REGIONS, ACUPOINTS, type BodyRegion } from "./bodyRegions";
 
-/**
- * Maps a local-space point (in the GLB model's coordinate system after rotation)
- * to a generic body zone ID. These thresholds come from the reference implementation
- * that was built for this exact GLB model.
- *
- * Model local coords (after rotation=[0, -PI/2, 0]):
- *   y = height (feet ≈ -0.44, head ≈ 0.40)
- *   x = front(+) / back(-)
- *   z = left(-) / right(+)
- */
-function getZoneFromPoint(p: THREE.Vector3): string {
-  const { x, y, z } = p;
+const BACK_REGION_IDS = new Set([
+  "occiput",
+  "neck_back",
+  "scapula_l",
+  "scapula_r",
+  "upper_back",
+  "mid_back",
+  "lower_back",
+  "sacrum",
+  "gluteal_l",
+  "gluteal_r",
+  "thigh_back_l",
+  "thigh_back_r",
+  "knee_back_l",
+  "knee_back_r",
+  "calf_l",
+  "calf_r",
+  "heel_l",
+  "heel_r",
+]);
 
-  // Head
-  if (y > 0.36) return "head";
-  // Neck
-  if (y > 0.30) {
-    if (Math.abs(z) > 0.05) return z < 0 ? "neckLateralL" : "neckLateralR";
-    return "neck";
-  }
-  // Upper torso / shoulders
-  if (y > 0.22) {
-    if (Math.abs(z) > 0.08) return z < 0 ? "leftShoulder" : "rightShoulder";
-    if (x < -0.03) return "scapulaBack";
-    return "upperChest";
-  }
-  // Mid torso / arms
-  if (y > 0.12) {
-    if (Math.abs(z) > 0.10) {
-      // Distinguish elbow from upper arm
-      if (y < 0.16) return z < 0 ? "leftElbow" : "rightElbow";
-      return z < 0 ? "leftArm" : "rightArm";
-    }
-    if (x < -0.03) return "midBack";
-    if (Math.abs(z) > 0.06) return z < 0 ? "ribsLateralL" : "ribsLateralR";
-    return "chest";
-  }
-  // Lower torso / forearms
-  if (y > -0.04) {
-    if (Math.abs(z) > 0.10) {
-      if (y < 0.02) return z < 0 ? "leftHand" : "rightHand";
-      if (y < 0.06) return z < 0 ? "leftWrist" : "rightWrist";
-      return z < 0 ? "leftForearm" : "rightForearm";
-    }
-    if (x < -0.03) return "lowerBack";
-    if (y > 0.06) {
-      if (Math.abs(z) > 0.06) return z < 0 ? "flankL" : "flankR";
-      return "epigastrium";
-    }
-    if (y < -0.01) {
-      if (Math.abs(z) > 0.04) return z < 0 ? "inguinalL" : "inguinalR";
-      return "lowerAbdomen";
-    }
-    return "abdomen";
-  }
-  // Pelvis / hips
-  if (y > -0.18) {
-    if (x < -0.02) {
-      if (Math.abs(z) > 0.04) return z < 0 ? "glutealL" : "glutealR";
-      return "sacrum";
-    }
-    return z < 0 ? "hipLeft" : "hipRight";
-  }
-  // Thighs
-  if (y > -0.30) {
-    if (x < -0.02) return z < 0 ? "thighBackL" : "thighBackR";
-    if (Math.abs(z) > 0.05) return z < 0 ? "thighLateralL" : "thighLateralR";
-    return z < 0 ? "thighFrontL" : "thighFrontR";
-  }
-  // Knees
-  if (y > -0.36) {
-    if (x < -0.01) return z < 0 ? "kneeBackL" : "kneeBackR";
-    return z < 0 ? "kneeLeft" : "kneeRight";
-  }
-  // Lower legs
-  if (y > -0.42) {
-    if (x < -0.01) return z < 0 ? "calfL" : "calfR";
-    return z < 0 ? "lowerLegLeft" : "lowerLegRight";
-  }
-  // Ankles & feet
-  if (y > -0.44) return z < 0 ? "ankleL" : "ankleR";
-  if (x < -0.01) return z < 0 ? "heelL" : "heelR";
-  return z < 0 ? "footLeft" : "footRight";
-}
+type RegionSide = "left" | "right" | "center";
 
-// Direct zone → region ID mapping
-const ZONE_TO_REGION: Record<string, string> = {
-  // Head sub-zones handled separately in refineRegionInZone
-  head: "forehead",
-  neck: "neck_front",
-  neckLateralL: "neck_lateral_l",
-  neckLateralR: "neck_lateral_r",
-  leftShoulder: "shoulder_l",
-  rightShoulder: "shoulder_r",
-  scapulaBack: "upper_back",
-  upperChest: "chest_upper",
-  leftArm: "upper_arm_l",
-  rightArm: "upper_arm_r",
-  leftElbow: "elbow_l",
-  rightElbow: "elbow_r",
-  chest: "chest_upper",
-  ribsLateralL: "ribs_lateral_l",
-  ribsLateralR: "ribs_lateral_r",
-  midBack: "mid_back",
-  leftForearm: "forearm_l",
-  rightForearm: "forearm_r",
-  leftWrist: "wrist_l",
-  rightWrist: "wrist_r",
-  leftHand: "hand_l",
-  rightHand: "hand_r",
-  lowerBack: "lower_back",
-  epigastrium: "epigastrium",
-  flankL: "flank_l",
-  flankR: "flank_r",
-  abdomen: "umbilical",
-  lowerAbdomen: "lower_abdomen",
-  inguinalL: "inguinal_l",
-  inguinalR: "inguinal_r",
-  sacrum: "sacrum",
-  glutealL: "gluteal_l",
-  glutealR: "gluteal_r",
-  hipLeft: "hip_l",
-  hipRight: "hip_r",
-  thighFrontL: "thigh_front_l",
-  thighFrontR: "thigh_front_r",
-  thighLateralL: "thigh_lateral_l",
-  thighLateralR: "thigh_lateral_r",
-  thighBackL: "thigh_back_l",
-  thighBackR: "thigh_back_r",
-  kneeLeft: "knee_l",
-  kneeRight: "knee_r",
-  kneeBackL: "knee_back_l",
-  kneeBackR: "knee_back_r",
-  lowerLegLeft: "lower_leg_l",
-  lowerLegRight: "lower_leg_r",
-  calfL: "calf_l",
-  calfR: "calf_r",
-  ankleL: "ankle_l",
-  ankleR: "ankle_r",
-  heelL: "heel_l",
-  heelR: "heel_r",
-  footLeft: "foot_l",
-  footRight: "foot_r",
-};
-
-function refineRegionInZone(zone: string, localPoint: THREE.Vector3): BodyRegion {
-  // Head has sub-zone refinement
-  if (zone === "head") {
-    const { x, y, z } = localPoint;
-    if (y > 0.42) return BODY_REGIONS.find((r) => r.id === "head_top")!;
-    if (x < -0.02) return BODY_REGIONS.find((r) => r.id === "occiput")!;
-    if (Math.abs(z) > 0.04) {
-      const side = z < 0 ? "l" : "r";
-      if (y > 0.38) return BODY_REGIONS.find((r) => r.id === `temple_${side}`)!;
-      // Check for ear vs jaw
-      if (Math.abs(z) > 0.06) return BODY_REGIONS.find((r) => r.id === `ear_${side}`)!;
-      if (y < 0.37) return BODY_REGIONS.find((r) => r.id === `jaw_${side}`)!;
-      return BODY_REGIONS.find((r) => r.id === `temple_${side}`)!;
-    }
-    if (y < 0.38 && x > 0) {
-      // Lower central face
-      if (y < 0.37) return BODY_REGIONS.find((r) => r.id === "nose")!;
-      // Eyes
-      if (z < -0.01) return BODY_REGIONS.find((r) => r.id === "eye_l")!;
-      if (z > 0.01) return BODY_REGIONS.find((r) => r.id === "eye_r")!;
-    }
-    return BODY_REGIONS.find((r) => r.id === "forehead")!;
-  }
-
-  // Neck front/back refinement
-  if (zone === "neck") {
-    return BODY_REGIONS.find((r) => r.id === (localPoint.x < 0 ? "neck_back" : "neck_front"))!;
-  }
-
-  // Chest left/right
-  if (zone === "chest") {
-    if (localPoint.z < -0.03) return BODY_REGIONS.find((r) => r.id === "chest_l")!;
-    if (localPoint.z > 0.03) return BODY_REGIONS.find((r) => r.id === "chest_r")!;
-    return BODY_REGIONS.find((r) => r.id === "chest_upper")!;
-  }
-
-  // Scapula back zone - distinguish left/right scapula from upper back center
-  if (zone === "scapulaBack") {
-    if (localPoint.z < -0.04) return BODY_REGIONS.find((r) => r.id === "scapula_l")!;
-    if (localPoint.z > 0.04) return BODY_REGIONS.find((r) => r.id === "scapula_r")!;
-    return BODY_REGIONS.find((r) => r.id === "upper_back")!;
-  }
-
-  // Direct mapping for all other zones
-  const regionId = ZONE_TO_REGION[zone];
-  const region = regionId ? BODY_REGIONS.find((r) => r.id === regionId) : null;
-  return region || BODY_REGIONS.find((r) => r.id === "chest_upper")!;
+interface RegionAnchor {
+  region: BodyRegion;
+  center: [number, number, number];
+  halfSize: [number, number, number];
+  side: RegionSide;
+  isBack: boolean;
 }
 
 /**
@@ -216,17 +53,78 @@ function regionPosToModelLocal(regionPos: [number, number, number]): [number, nu
   return [modelX, modelY, modelZ];
 }
 
+function regionScaleToModelLocal(regionScale: [number, number, number]): [number, number, number] {
+  const sx = Math.max(regionScale[2] * 0.30 * 1.25, 0.02);
+  const sy = Math.max(regionScale[1] * 0.42 * 1.25, 0.02);
+  const sz = Math.max(regionScale[0] * 0.29 * 1.25, 0.02);
+  return [sx, sy, sz];
+}
+
+function getRegionSide(regionId: string): RegionSide {
+  if (regionId.endsWith("_l")) return "left";
+  if (regionId.endsWith("_r")) return "right";
+  return "center";
+}
+
+function getRegionAnchors(): RegionAnchor[] {
+  return BODY_REGIONS.map((region) => ({
+    region,
+    center: regionPosToModelLocal(region.position),
+    halfSize: regionScaleToModelLocal(region.scale),
+    side: getRegionSide(region.id),
+    isBack: BACK_REGION_IDS.has(region.id) || region.position[2] < -0.02,
+  }));
+}
+
+function findClosestRegion(localPoint: THREE.Vector3, anchors: RegionAnchor[]): BodyRegion {
+  let bestRegion = anchors[0]?.region ?? BODY_REGIONS[0];
+  let bestScore = Number.POSITIVE_INFINITY;
+
+  const pointIsBack = localPoint.x < -0.01;
+
+  for (const anchor of anchors) {
+    const [cx, cy, cz] = anchor.center;
+    const [sx, sy, sz] = anchor.halfSize;
+
+    const dx = (localPoint.x - cx) / sx;
+    const dy = (localPoint.y - cy) / sy;
+    const dz = (localPoint.z - cz) / sz;
+
+    let score = dx * dx + dy * dy * 1.45 + dz * dz;
+
+    if (anchor.side === "left" && localPoint.z > 0.02) score += 0.9;
+    if (anchor.side === "right" && localPoint.z < -0.02) score += 0.9;
+
+    if (Math.abs(cx) > 0.01 && anchor.isBack !== pointIsBack) score += 0.75;
+
+    if (score < bestScore) {
+      bestScore = score;
+      bestRegion = anchor.region;
+    }
+  }
+
+  return bestRegion;
+}
+
 function HumanBodyModel({
   sex,
   selectedRegions,
+  selectedMarkerPositions,
   onSelectRegion,
+  onSelectMarkerPoint,
   onHoverRegion,
   showAcupoints,
   relevantMeridians,
 }: {
   sex: "M" | "F";
   selectedRegions: Set<string>;
+  selectedMarkerPositions: Map<string, [number, number, number]>;
   onSelectRegion: (region: BodyRegion) => void;
+  onSelectMarkerPoint: (
+    regionId: string,
+    point: [number, number, number],
+    wasSelected: boolean
+  ) => void;
   onHoverRegion: (region: BodyRegion | null) => void;
   showAcupoints: boolean;
   relevantMeridians: Set<string>;
@@ -248,6 +146,8 @@ function HumanBodyModel({
     return clone;
   }, [scene]);
 
+  const regionAnchors = useMemo(() => getRegionAnchors(), []);
+
   // Female proportions: narrower shoulders, slightly wider hips
   const bodyScale: [number, number, number] = sex === "F"
     ? [3.7, 3.9, 3.7]
@@ -256,9 +156,9 @@ function HumanBodyModel({
   const selectedMarkers = useMemo(() => {
     return BODY_REGIONS.filter((r) => selectedRegions.has(r.id)).map((region) => ({
       id: region.id,
-      pos: regionPosToModelLocal(region.position),
+      pos: selectedMarkerPositions.get(region.id) ?? regionPosToModelLocal(region.position),
     }));
-  }, [selectedRegions]);
+  }, [selectedRegions, selectedMarkerPositions]);
 
   const visibleAcupoints = useMemo(() => {
     if (!showAcupoints) return [];
@@ -272,9 +172,10 @@ function HumanBodyModel({
     e.stopPropagation();
     if (e.point && modelRef.current) {
       const localPoint = modelRef.current.worldToLocal(e.point.clone());
-      const zone = getZoneFromPoint(localPoint);
-      const region = refineRegionInZone(zone, localPoint);
-      if (region) onSelectRegion(region);
+      const region = findClosestRegion(localPoint, regionAnchors);
+      const wasSelected = selectedRegions.has(region.id);
+      onSelectMarkerPoint(region.id, [localPoint.x, localPoint.y, localPoint.z], wasSelected);
+      onSelectRegion(region);
     }
   };
 
@@ -282,8 +183,7 @@ function HumanBodyModel({
     e.stopPropagation();
     if (e.point && modelRef.current) {
       const localPoint = modelRef.current.worldToLocal(e.point.clone());
-      const zone = getZoneFromPoint(localPoint);
-      const region = refineRegionInZone(zone, localPoint);
+      const region = findClosestRegion(localPoint, regionAnchors);
       onHoverRegion(region);
       document.body.style.cursor = "pointer";
     }
@@ -384,11 +284,42 @@ export default function BodyModel3D({
   relevantMeridians,
 }: BodyModel3DProps) {
   const [hoveredRegion, setHoveredRegion] = useState<BodyRegion | null>(null);
+  const [selectedMarkerPositions, setSelectedMarkerPositions] = useState<Map<string, [number, number, number]>>(new Map());
+
+  useEffect(() => {
+    setSelectedMarkerPositions((prev) => {
+      const next = new Map(prev);
+      let changed = false;
+      for (const regionId of Array.from(next.keys())) {
+        if (!selectedRegions.has(regionId)) {
+          next.delete(regionId);
+          changed = true;
+        }
+      }
+      return changed ? next : prev;
+    });
+  }, [selectedRegions]);
+
+  const handleSelectMarkerPoint = (
+    regionId: string,
+    point: [number, number, number],
+    wasSelected: boolean
+  ) => {
+    setSelectedMarkerPositions((prev) => {
+      const next = new Map(prev);
+      if (wasSelected) {
+        next.delete(regionId);
+      } else {
+        next.set(regionId, point);
+      }
+      return next;
+    });
+  };
 
   return (
     <div className="relative w-full" style={{ height: "520px" }}>
       <Canvas
-        camera={{ position: [0, 0.3, 2.2], fov: 45 }}
+        camera={{ position: [0, 0.28, 2.45], fov: 50 }}
         gl={{ antialias: true }}
       >
         <ambientLight intensity={0.5} />
@@ -400,7 +331,9 @@ export default function BodyModel3D({
           <HumanBodyModel
             sex={sex}
             selectedRegions={selectedRegions}
+            selectedMarkerPositions={selectedMarkerPositions}
             onSelectRegion={onToggleRegion}
+            onSelectMarkerPoint={handleSelectMarkerPoint}
             onHoverRegion={setHoveredRegion}
             showAcupoints={showAcupoints}
             relevantMeridians={relevantMeridians}
