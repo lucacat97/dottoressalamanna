@@ -203,7 +203,7 @@ const AdminApiKeys = () => {
       <div className="bg-card border border-border rounded-lg p-5">
         <h4 className="font-display text-sm font-semibold text-foreground mb-1">Nuova Chiave API</h4>
         <p className="font-body text-xs text-muted-foreground mb-3">
-          Ogni licenza software dovrebbe avere la propria chiave API univoca.
+          Ogni licenza software dovrebbe avere la propria chiave API univoca. L'email collega la licenza all'account sul sito.
         </p>
         <div className="flex flex-col gap-3">
           <div className="flex flex-col sm:flex-row gap-3">
@@ -215,29 +215,44 @@ const AdminApiKeys = () => {
               className="flex-1 px-4 py-2.5 rounded-md border border-input bg-background font-body text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
             />
             <input
-              type="number"
-              value={newLimit}
-              onChange={(e) => setNewLimit(parseInt(e.target.value) || 30)}
-              min={1}
-              className="w-32 px-4 py-2.5 rounded-md border border-input bg-background font-body text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-              placeholder="Limite/mese"
+              type="email"
+              value={newClientEmail}
+              onChange={(e) => setNewClientEmail(e.target.value)}
+              placeholder="Email cliente..."
+              className="flex-1 px-4 py-2.5 rounded-md border border-input bg-background font-body text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
             />
           </div>
-          <div className="flex items-center gap-4">
-            <span className="font-body text-xs text-muted-foreground">Strumenti:</span>
+          <div className="flex flex-wrap items-center gap-4">
+            <span className="font-body text-xs text-muted-foreground">Strumenti e limiti:</span>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
             {Object.entries(TOOL_LABELS).map(([key, label]) => (
-              <label key={key} className="flex items-center gap-1.5 font-body text-sm">
-                <input
-                  type="checkbox"
-                  checked={newTools.includes(key)}
-                  onChange={(e) => {
-                    if (e.target.checked) setNewTools([...newTools, key]);
-                    else setNewTools(newTools.filter((t) => t !== key));
-                  }}
-                  className="rounded border-input"
-                />
-                {label}
-              </label>
+              <div key={key} className={`border rounded-lg p-2.5 ${newTools.includes(key) ? "border-primary/40 bg-primary/5" : "border-border bg-muted/20 opacity-50"}`}>
+                <label className="flex items-center gap-1.5 font-body text-xs font-medium cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={newTools.includes(key)}
+                    onChange={(e) => {
+                      if (e.target.checked) setNewTools([...newTools, key]);
+                      else setNewTools(newTools.filter((t) => t !== key));
+                    }}
+                    className="rounded border-input"
+                  />
+                  {label}
+                </label>
+                {newTools.includes(key) && (
+                  <div className="mt-1.5 flex items-center gap-1">
+                    <input
+                      type="number"
+                      value={newToolLimits[key] || 30}
+                      onChange={(e) => setNewToolLimits({ ...newToolLimits, [key]: parseInt(e.target.value) || 30 })}
+                      min={1}
+                      className="w-16 px-2 py-1 rounded border border-input bg-background font-body text-xs text-foreground"
+                    />
+                    <span className="font-body text-[10px] text-muted-foreground">/mese</span>
+                  </div>
+                )}
+              </div>
             ))}
           </div>
           <Button onClick={handleCreate} disabled={!newClientName.trim() || creating || newTools.length === 0} className="w-fit bg-primary text-primary-foreground font-body">
