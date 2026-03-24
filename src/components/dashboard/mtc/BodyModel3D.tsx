@@ -185,6 +185,7 @@ interface HumanBodyModelProps {
   onHoverRegion: (region: BodyRegion | null) => void;
   showAcupoints: boolean;
   relevantMeridians: Set<string>;
+  offsetY: number;
 }
 
 function HumanBodyModel({
@@ -196,6 +197,7 @@ function HumanBodyModel({
   onHoverRegion,
   showAcupoints,
   relevantMeridians,
+  offsetY,
 }: HumanBodyModelProps) {
   const modelRef = useRef<THREE.Group>(null);
   const { scene } = useGLTF("/geometries/human_body.glb");
@@ -263,7 +265,7 @@ function HumanBodyModel({
   const handlePointerOut = () => { onHoverRegion(null); document.body.style.cursor = "default"; };
 
   return (
-    <group position={[0, -0.70, 0]} scale={bodyScale}>
+    <group position={[0, offsetY, 0]} scale={bodyScale}>
       <group ref={modelRef} rotation={[0, -Math.PI / 2, 0]}>
         <primitive
           object={clonedScene}
@@ -321,6 +323,7 @@ interface BodyModel3DProps {
 const BodyModel3D = forwardRef<HTMLDivElement, BodyModel3DProps>(function BodyModel3D({ sex, selectedRegions, onToggleRegion, showAcupoints, relevantMeridians }, forwardedRef) {
   const [hoveredRegion, setHoveredRegion] = useState<BodyRegion | null>(null);
   const [markerPositions, setMarkerPositions] = useState<Map<string, [number, number, number]>>(new Map());
+  const [offsetY, setOffsetY] = useState(-0.70);
 
   useEffect(() => {
     setMarkerPositions(prev => {
@@ -359,6 +362,7 @@ const BodyModel3D = forwardRef<HTMLDivElement, BodyModel3DProps>(function BodyMo
             onHoverRegion={setHoveredRegion}
             showAcupoints={showAcupoints}
             relevantMeridians={relevantMeridians}
+            offsetY={offsetY}
           />
         </Suspense>
         <OrbitControls enablePan={false} enableZoom={false} enableRotate={false}
@@ -378,6 +382,18 @@ const BodyModel3D = forwardRef<HTMLDivElement, BodyModel3DProps>(function BodyMo
       </div>
 
       <div className="absolute bottom-3 left-3 bg-card/90 backdrop-blur-sm border border-border rounded-lg px-3 py-2 space-y-1">
+        <div className="flex items-center gap-2 mb-2">
+          <span className="font-body text-[10px] text-muted-foreground whitespace-nowrap">Offset Y: {offsetY.toFixed(2)}</span>
+          <input
+            type="range"
+            min={-1.5}
+            max={0.5}
+            step={0.01}
+            value={offsetY}
+            onChange={(e) => setOffsetY(parseFloat(e.target.value))}
+            className="w-24 h-3"
+          />
+        </div>
         <div className="flex items-center gap-2">
           <div className="w-3 h-3 rounded-full bg-destructive/80" />
           <span className="font-body text-[10px] text-muted-foreground">Punto doloroso</span>
