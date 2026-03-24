@@ -263,7 +263,7 @@ function HumanBodyModel({
   const handlePointerOut = () => { onHoverRegion(null); document.body.style.cursor = "default"; };
 
   return (
-    <group position={[0, -0.22, 0]} scale={bodyScale}>
+    <group position={[0, -0.70, 0]} scale={bodyScale}>
       <group ref={modelRef} rotation={[0, -Math.PI / 2, 0]}>
         <primitive
           object={clonedScene}
