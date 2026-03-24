@@ -36,28 +36,16 @@ interface RegionAnchor {
 }
 
 /**
- * Convert a body region position to approximate model-local coordinates
- * for placing markers on the 3D model surface.
- *
- * These are calibrated approximate positions — they don't need to be pixel-perfect
- * since markers just need to appear near the correct body part.
+ * Region coords: x=left/right, y=height[-0.1..1.85], z=front/back
+ * Model local (after rotation [0,-PI/2,0]):
+ *   y ∈ [≈-0.44, ≈0.42], x=front(+)/back(-), z=left(-)/right(+)
  */
 function regionPosToModelLocal(regionPos: [number, number, number]): [number, number, number] {
-  // regionY [−0.1, 1.85] → modelY [−0.44, 0.40]
-  const modelY = regionPos[1] * 0.42 - 0.38;
-  // regionX (left/right) → modelZ (left/right), same sign
-  const modelZ = regionPos[0] * 0.29;
-  // regionZ (front/back) → modelX (front/back), same sign
-  const modelX = regionPos[2] * 0.30;
-
+  // Map regionY [-0.1, 1.85] → modelY [-0.44, 0.42]
+  const modelY = (regionPos[1] + 0.1) / 1.95 * 0.86 - 0.44;
+  const modelZ = regionPos[0] * 0.28;
+  const modelX = regionPos[2] * 0.28;
   return [modelX, modelY, modelZ];
-}
-
-function regionScaleToModelLocal(regionScale: [number, number, number]): [number, number, number] {
-  const sx = Math.max(regionScale[2] * 0.30 * 1.25, 0.02);
-  const sy = Math.max(regionScale[1] * 0.42 * 1.25, 0.02);
-  const sz = Math.max(regionScale[0] * 0.29 * 1.25, 0.02);
-  return [sx, sy, sz];
 }
 
 function getRegionSide(regionId: string): RegionSide {
@@ -70,7 +58,7 @@ function getRegionAnchors(): RegionAnchor[] {
   return BODY_REGIONS.map((region) => ({
     region,
     center: regionPosToModelLocal(region.position),
-    halfSize: regionScaleToModelLocal(region.scale),
+    halfSize: [1, 1, 1] as [number, number, number],
     side: getRegionSide(region.id),
     isBack: BACK_REGION_IDS.has(region.id) || region.position[2] < -0.02,
   }));
@@ -84,18 +72,20 @@ function findClosestRegion(localPoint: THREE.Vector3, anchors: RegionAnchor[]): 
 
   for (const anchor of anchors) {
     const [cx, cy, cz] = anchor.center;
-    const [sx, sy, sz] = anchor.halfSize;
 
-    const dx = (localPoint.x - cx) / sx;
-    const dy = (localPoint.y - cy) / sy;
-    const dz = (localPoint.z - cz) / sz;
+    // Pure Euclidean distance with Y weighted more (body is tall & narrow)
+    const dx = localPoint.x - cx;
+    const dy = (localPoint.y - cy) * 2.0;
+    const dz = localPoint.z - cz;
 
-    let score = dx * dx + dy * dy * 1.45 + dz * dz;
+    let score = dx * dx + dy * dy + dz * dz;
 
-    if (anchor.side === "left" && localPoint.z > 0.02) score += 0.9;
-    if (anchor.side === "right" && localPoint.z < -0.02) score += 0.9;
+    // Penalize wrong left/right side
+    if (anchor.side === "left" && localPoint.z > 0.01) score += 0.06;
+    if (anchor.side === "right" && localPoint.z < -0.01) score += 0.06;
 
-    if (Math.abs(cx) > 0.01 && anchor.isBack !== pointIsBack) score += 0.75;
+    // Penalize front/back mismatch
+    if (anchor.isBack !== pointIsBack) score += 0.04;
 
     if (score < bestScore) {
       bestScore = score;
@@ -195,7 +185,7 @@ function HumanBodyModel({
   };
 
   return (
-    <group position={[0, 0.1, 0]} scale={bodyScale}>
+    <group position={[0, -0.1, 0]} scale={bodyScale}>
       <group ref={modelRef} rotation={[0, -Math.PI / 2, 0]}>
         <primitive
           object={clonedScene}
@@ -317,9 +307,9 @@ export default function BodyModel3D({
   };
 
   return (
-    <div className="relative w-full" style={{ height: "520px" }}>
+    <div className="relative w-full" style={{ height: "600px" }}>
       <Canvas
-        camera={{ position: [0, 0.28, 2.45], fov: 50 }}
+        camera={{ position: [0, 0, 3.4], fov: 42 }}
         gl={{ antialias: true }}
       >
         <ambientLight intensity={0.5} />
