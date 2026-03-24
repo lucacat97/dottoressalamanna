@@ -1,0 +1,294 @@
+import { useState } from "react";
+import { Loader2, Download, FileDown, RotateCcw, AlertTriangle, Sparkles } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
+import { toast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { getBranding, generateHtmlHeader } from "../BrandingSettings";
+import BodyModel3D from "./BodyModel3D";
+import { BODY_REGIONS, type BodyRegion } from "./bodyRegions";
+
+const DISCLAIMER = `⚠️ Disclaimer: Questo strumento fornisce esclusivamente un supporto all'analisi clinica basata sui principi della Medicina Tradizionale Cinese e NON costituisce in alcun modo una diagnosi medica. La responsabilità diagnostica e terapeutica resta interamente in capo al professionista sanitario.`;
+
+const mdToHtml = (markdown: string) => {
+  let html = markdown
+    .replace(/\|(.+)\|/g, (match) => {
+      const cells = match.split("|").filter(c => c.trim());
+      if (cells.every(c => /^[\s:-]+$/.test(c))) return "<!--table-sep-->";
+      const isHeader = cells.some(c => c.includes("**"));
+      const tag = isHeader ? "th" : "td";
+      const cellsHtml = cells.map(c =>
+        `<${tag} style="padding:8px 12px;border:1px solid #ddd;text-align:left;${isHeader ? "background:#f0f7f7;font-weight:600;" : ""}">${c.replace(/\*\*/g, "").trim()}</${tag}>`
+      ).join("");
+      return `<tr>${cellsHtml}</tr>`;
+    })
+    .replace(/((<tr>.*<\/tr>\n?)+)/g, '<table style="width:100%;border-collapse:collapse;margin:16px 0;">$1</table>')
+    .replace(/<!--table-sep-->\n?/g, "")
+    .replace(/^## (.+)$/gm, '<h2 style="font-size:17px;color:#2a6f6f;margin:24px 0 10px;font-family:Georgia,serif;">$1</h2>')
+    .replace(/^### (.+)$/gm, '<h3 style="font-size:15px;color:#333;margin:20px 0 8px;">$1</h3>')
+    .replace(/^# (.+)$/gm, '<h1 style="font-size:20px;color:#2a6f6f;margin:28px 0 12px;font-family:Georgia,serif;border-bottom:1px solid #eee;padding-bottom:8px;">$1</h1>')
+    .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+    .replace(/\*(.+?)\*/g, "<em>$1</em>")
+    .replace(/^- (.+)$/gm, '<li style="margin:4px 0;">$1</li>')
+    .replace(/((<li[^>]*>.*<\/li>\n?)+)/g, '<ul style="margin:8px 0 8px 20px;padding:0;">$1</ul>')
+    .replace(/^> (.+)$/gm, '<blockquote style="border-left:3px solid #2a6f6f;padding:8px 16px;margin:12px 0;background:#f0f7f7;color:#333;">$1</blockquote>')
+    .replace(/^---$/gm, '<hr style="border:none;border-top:1px solid #ddd;margin:24px 0;">')
+    .replace(/^(?!<[hublot]|<\/)(.+)$/gm, '<p style="margin:8px 0;line-height:1.6;">$1</p>');
+  return html;
+};
+
+const generateDoc = (markdown: string) => {
+  const branding = getBranding();
+  const header = generateHtmlHeader(branding);
+  const body = mdToHtml(markdown);
+  const disclaimer = `<div style="margin-top:32px;padding:16px;background:#fff3cd;border:1px solid #ffc107;border-radius:8px;font-size:11px;color:#856404;">${DISCLAIMER}</div>`;
+  return `<!DOCTYPE html><html><head><meta charset="utf-8"><style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; font-size: 12px; color: #222; max-width: 800px; margin: 0 auto; padding: 40px; line-height: 1.6; }
+    table { page-break-inside: avoid; } h1 { page-break-after: avoid; }
+    @media print { body { padding: 20px; } }
+  </style></head><body>${header}${body}${disclaimer}</body></html>`;
+};
+
+export default function SistemicaTool() {
+  const [sex, setSex] = useState<"M" | "F">("F");
+  const [selectedRegions, setSelectedRegions] = useState<Set<string>>(new Set());
+  const [disclaimerAccepted, setDisclaimerAccepted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [resultMarkdown, setResultMarkdown] = useState<string | null>(null);
+  const [showAcupoints, setShowAcupoints] = useState(false);
+  const [relevantMeridians, setRelevantMeridians] = useState<Set<string>>(new Set());
+
+  const handleToggleRegion = (region: BodyRegion) => {
+    setSelectedRegions(prev => {
+      const next = new Set(prev);
+      if (next.has(region.id)) {
+        next.delete(region.id);
+      } else {
+        next.add(region.id);
+      }
+      return next;
+    });
+  };
+
+  const handleAnalyze = async () => {
+    if (selectedRegions.size === 0) {
+      toast({ title: "Seleziona almeno un punto doloroso", variant: "destructive" });
+      return;
+    }
+
+    setLoading(true);
+    setResultMarkdown(null);
+
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        toast({ title: "Sessione scaduta", description: "Effettua nuovamente il login.", variant: "destructive" });
+        return;
+      }
+
+      const painPoints = Array.from(selectedRegions).map(id => {
+        const region = BODY_REGIONS.find(r => r.id === id)!;
+        return { region: region.name, description: region.description };
+      });
+
+      // Collect meridians from selected regions
+      const meridiansSet = new Set<string>();
+      selectedRegions.forEach(id => {
+        const region = BODY_REGIONS.find(r => r.id === id);
+        region?.meridians.forEach(m => meridiansSet.add(m));
+      });
+      setRelevantMeridians(meridiansSet);
+      setShowAcupoints(true);
+
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/mtc-diagnosis`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${session.access_token}`,
+          },
+          body: JSON.stringify({ subTool: "sistemica", sex, painPoints }),
+        }
+      );
+
+      if (!response.ok) {
+        const errData = await response.json().catch(() => ({}));
+        throw new Error(errData.error || `Errore ${response.status}`);
+      }
+
+      // Stream SSE
+      const reader = response.body?.getReader();
+      if (!reader) throw new Error("Nessun stream ricevuto");
+
+      const decoder = new TextDecoder();
+      let fullText = "";
+      let buffer = "";
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+
+        let newlineIndex: number;
+        while ((newlineIndex = buffer.indexOf("\n")) !== -1) {
+          let line = buffer.slice(0, newlineIndex);
+          buffer = buffer.slice(newlineIndex + 1);
+          if (line.endsWith("\r")) line = line.slice(0, -1);
+          if (!line.startsWith("data: ")) continue;
+          const jsonStr = line.slice(6).trim();
+          if (jsonStr === "[DONE]") break;
+          try {
+            const parsed = JSON.parse(jsonStr);
+            const content = parsed.choices?.[0]?.delta?.content;
+            if (content) fullText += content;
+          } catch {}
+        }
+      }
+
+      setResultMarkdown(fullText);
+    } catch (err: any) {
+      toast({ title: "Errore Analisi", description: err.message, variant: "destructive" });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const downloadDoc = (type: "doc" | "pdf") => {
+    if (!resultMarkdown) return;
+    const html = generateDoc(resultMarkdown);
+    const blob = new Blob([html], { type: "application/msword" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `referto_mtc_sistemica.${type === "doc" ? "doc" : "html"}`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleReset = () => {
+    setSelectedRegions(new Set());
+    setResultMarkdown(null);
+    setShowAcupoints(false);
+    setRelevantMeridians(new Set());
+  };
+
+  if (!disclaimerAccepted) {
+    return (
+      <div className="space-y-4">
+        <div className="bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800 rounded-xl p-5">
+          <div className="flex items-start gap-3">
+            <AlertTriangle className="text-amber-600 mt-0.5 flex-shrink-0" size={20} />
+            <div>
+              <h3 className="font-display text-sm font-bold text-amber-800 dark:text-amber-200">Disclaimer Obbligatorio</h3>
+              <p className="font-body text-xs text-amber-700 dark:text-amber-300 mt-2 leading-relaxed">{DISCLAIMER}</p>
+            </div>
+          </div>
+        </div>
+        <Button onClick={() => setDisclaimerAccepted(true)} className="bg-primary text-primary-foreground">
+          Ho letto e accetto — Procedi
+        </Button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-4">
+      {/* Sex selection */}
+      <div className="flex items-center gap-4">
+        <span className="font-body text-sm text-muted-foreground">Sesso:</span>
+        <RadioGroup value={sex} onValueChange={(v) => setSex(v as "M" | "F")} className="flex gap-4">
+          <div className="flex items-center gap-2">
+            <RadioGroupItem value="F" id="sex-f" />
+            <Label htmlFor="sex-f" className="font-body text-sm">♀ Femminile</Label>
+          </div>
+          <div className="flex items-center gap-2">
+            <RadioGroupItem value="M" id="sex-m" />
+            <Label htmlFor="sex-m" className="font-body text-sm">♂ Maschile</Label>
+          </div>
+        </RadioGroup>
+      </div>
+
+      {/* 3D Body */}
+      <div className="border border-border rounded-xl overflow-hidden bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-950">
+        <BodyModel3D
+          sex={sex}
+          selectedRegions={selectedRegions}
+          onToggleRegion={handleToggleRegion}
+          showAcupoints={showAcupoints}
+          relevantMeridians={relevantMeridians}
+        />
+      </div>
+
+      {/* Selected regions summary */}
+      {selectedRegions.size > 0 && (
+        <div className="bg-card border border-border rounded-lg p-3">
+          <p className="font-body text-xs text-muted-foreground mb-2">Punti dolorosi selezionati ({selectedRegions.size}):</p>
+          <div className="flex flex-wrap gap-1.5">
+            {Array.from(selectedRegions).map(id => {
+              const region = BODY_REGIONS.find(r => r.id === id);
+              return (
+                <span
+                  key={id}
+                  className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 text-[10px] font-body cursor-pointer hover:bg-red-200 dark:hover:bg-red-900/50 transition"
+                  onClick={() => handleToggleRegion(region!)}
+                >
+                  {region?.name} ✕
+                </span>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Actions */}
+      <div className="flex gap-3">
+        <Button
+          onClick={handleAnalyze}
+          disabled={loading || selectedRegions.size === 0}
+          className="bg-primary text-primary-foreground"
+        >
+          {loading ? (
+            <>
+              <Loader2 size={16} className="mr-2 animate-spin" />
+              Analisi in corso...
+            </>
+          ) : (
+            <>
+              <Sparkles size={16} className="mr-2" />
+              Analizza con AI
+            </>
+          )}
+        </Button>
+        <Button variant="outline" onClick={handleReset} disabled={loading}>
+          <RotateCcw size={14} className="mr-1.5" />
+          Reset
+        </Button>
+      </div>
+
+      {/* Results - download only */}
+      {resultMarkdown && (
+        <div className="bg-card border border-border rounded-xl p-5 space-y-4">
+          <div className="flex items-center gap-2">
+            <Sparkles size={16} className="text-primary" />
+            <h3 className="font-display text-sm font-bold text-foreground">Referto MTC Generato</h3>
+          </div>
+          <p className="font-body text-xs text-muted-foreground">
+            Il referto è pronto. Scaricalo nel formato desiderato.
+          </p>
+          <div className="flex gap-3">
+            <Button variant="outline" size="sm" onClick={() => downloadDoc("doc")}>
+              <Download size={14} className="mr-1.5" />
+              Scarica Word
+            </Button>
+            <Button variant="outline" size="sm" onClick={() => downloadDoc("pdf")}>
+              <FileDown size={14} className="mr-1.5" />
+              Scarica PDF/HTML
+            </Button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
