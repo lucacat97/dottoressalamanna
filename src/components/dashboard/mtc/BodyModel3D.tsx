@@ -187,7 +187,7 @@ interface HumanBodyModelProps {
   relevantMeridians: Set<string>;
 }
 
-const HumanBodyModel = forwardRef<THREE.Group, HumanBodyModelProps>(function HumanBodyModel({
+function HumanBodyModel({
   sex,
   selectedRegions,
   markerPositions,
@@ -196,7 +196,7 @@ const HumanBodyModel = forwardRef<THREE.Group, HumanBodyModelProps>(function Hum
   onHoverRegion,
   showAcupoints,
   relevantMeridians,
-}, _forwardedRef) {
+}: HumanBodyModelProps) {
   const modelRef = useRef<THREE.Group>(null);
   const { scene } = useGLTF("/geometries/human_body.glb");
 
@@ -287,9 +287,7 @@ const HumanBodyModel = forwardRef<THREE.Group, HumanBodyModelProps>(function Hum
       </group>
     </group>
   );
-});
-
-HumanBodyModel.displayName = "HumanBodyModel";
+}
 
 /* ─── Pulsing marker ─── */
 
@@ -297,7 +295,7 @@ interface PulsingMarkerProps {
   position: [number, number, number]; color: string; emissive: string; size: number;
 }
 
-const PulsingMarker = forwardRef<THREE.Mesh, PulsingMarkerProps>(function PulsingMarker({ position, color, emissive, size }, _forwardedRef) {
+function PulsingMarker({ position, color, emissive, size }: PulsingMarkerProps) {
   const ref = useRef<THREE.Mesh>(null);
   useFrame(({ clock }) => {
     if (ref.current) ref.current.scale.setScalar(1 + Math.sin(clock.elapsedTime * 3) * 0.25);
@@ -308,9 +306,7 @@ const PulsingMarker = forwardRef<THREE.Mesh, PulsingMarkerProps>(function Pulsin
       <meshStandardMaterial color={color} emissive={emissive} emissiveIntensity={0.7} />
     </mesh>
   );
-});
-
-PulsingMarker.displayName = "PulsingMarker";
+}
 
 /* ─── Public component ─── */
 
