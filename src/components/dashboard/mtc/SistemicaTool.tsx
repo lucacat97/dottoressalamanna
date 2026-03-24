@@ -9,7 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { getBranding, generateHtmlHeader } from "../BrandingSettings";
 import BodyModel3D from "./BodyModel3D";
 import ReportRenderer from "./ReportRenderer";
-import { BODY_REGIONS, type BodyRegion } from "./bodyRegions";
+import { BODY_REGIONS, type BodyRegion, regionKey } from "./bodyRegions";
 
 const DISCLAIMER = `⚠️ Disclaimer: Questo strumento fornisce esclusivamente un supporto all'analisi clinica basata sui principi della Medicina Tradizionale Cinese e NON costituisce in alcun modo una diagnosi medica. La responsabilità diagnostica e terapeutica resta interamente in capo al professionista sanitario.`;
 
