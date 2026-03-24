@@ -388,7 +388,7 @@ export default function BodyModel3D({
   return (
     <div className="relative w-full" style={{ height: "520px" }}>
       <Canvas
-        camera={{ position: [0, 0.3, 1.8], fov: 50 }}
+        camera={{ position: [0, 0.3, 2.2], fov: 45 }}
         gl={{ antialias: true }}
       >
         <ambientLight intensity={0.5} />
