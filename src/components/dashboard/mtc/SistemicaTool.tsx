@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { getBranding, generateHtmlHeader } from "../BrandingSettings";
-import BodyModel3D from "./BodyModel3D";
+import BodyMap2D from "./BodyMap2D";
 import ReportRenderer from "./ReportRenderer";
 import { BODY_REGIONS, type BodyRegion } from "./bodyRegions";
 
@@ -211,9 +211,9 @@ export default function SistemicaTool() {
         </RadioGroup>
       </div>
 
-      {/* 3D Body */}
+      {/* Deterministic 2D Body Map */}
       <div className="border border-border rounded-xl overflow-hidden bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-950">
-        <BodyModel3D
+        <BodyMap2D
           sex={sex}
           selectedRegions={selectedRegions}
           onToggleRegion={handleToggleRegion}
