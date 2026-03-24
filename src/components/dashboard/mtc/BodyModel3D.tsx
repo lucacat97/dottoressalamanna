@@ -2,7 +2,7 @@ import { useState, useRef, useMemo, useEffect, useCallback, Suspense, forwardRef
 import { Canvas, useFrame, ThreeEvent } from "@react-three/fiber";
 import { OrbitControls, useGLTF, Text } from "@react-three/drei";
 import * as THREE from "three";
-import { BODY_REGIONS, ACUPOINTS, type BodyRegion } from "./bodyRegions";
+import { BODY_REGIONS, ACUPOINTS, type BodyRegion, regionKey, meridianLabels } from "./bodyRegions";
 
 /* ─────────────────────── Bounds helpers ─────────────────────── */
 
