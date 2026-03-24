@@ -1,208 +1,125 @@
-import { useState, useRef, useMemo, useEffect, Suspense } from "react";
-import { Canvas, useFrame, ThreeEvent } from "@react-three/fiber";
+import { useState, useRef, useMemo, useEffect, useCallback, Suspense } from "react";
+import { Canvas, useFrame, useThree, ThreeEvent } from "@react-three/fiber";
 import { OrbitControls, useGLTF, Text } from "@react-three/drei";
 import * as THREE from "three";
 import { BODY_REGIONS, ACUPOINTS, type BodyRegion } from "./bodyRegions";
 
-const BACK_REGION_IDS = new Set([
-  "occiput",
-  "neck_back",
-  "scapula_l",
-  "scapula_r",
-  "upper_back",
-  "mid_back",
-  "lower_back",
-  "sacrum",
-  "gluteal_l",
-  "gluteal_r",
-  "thigh_back_l",
-  "thigh_back_r",
-  "knee_back_l",
-  "knee_back_r",
-  "calf_l",
-  "calf_r",
-  "heel_l",
-  "heel_r",
-]);
-
-type RegionSide = "left" | "right" | "center";
-
-interface RegionAnchor {
-  region: BodyRegion;
-  center: [number, number, number];
-  verticalBand: number;
-  side: RegionSide;
-  isBack: boolean;
-}
+/* ─────────────────────── Bounds helpers ─────────────────────── */
 
 interface Bounds3D {
-  xMin: number;
-  xMax: number;
-  yMin: number;
-  yMax: number;
-  zMin: number;
-  zMax: number;
+  xMin: number; xMax: number;
+  yMin: number; yMax: number;
+  zMin: number; zMax: number;
 }
 
-const ANATOMY_SPACE_BOUNDS = (() => {
-  const points: [number, number, number][] = [
-    ...BODY_REGIONS.map((r) => r.position),
-    ...ACUPOINTS.map((p) => p.position),
-  ];
+function mapLinear(v: number, a: number, b: number, c: number, d: number) {
+  if (Math.abs(b - a) < 1e-8) return (c + d) / 2;
+  return c + ((v - a) / (b - a)) * (d - c);
+}
 
-  return points.reduce<Bounds3D>(
-    (acc, [x, y, z]) => ({
-      xMin: Math.min(acc.xMin, x),
-      xMax: Math.max(acc.xMax, x),
-      yMin: Math.min(acc.yMin, y),
-      yMax: Math.max(acc.yMax, y),
-      zMin: Math.min(acc.zMin, z),
-      zMax: Math.max(acc.zMax, z),
-    }),
-    {
-      xMin: Number.POSITIVE_INFINITY,
-      xMax: Number.NEGATIVE_INFINITY,
-      yMin: Number.POSITIVE_INFINITY,
-      yMax: Number.NEGATIVE_INFINITY,
-      zMin: Number.POSITIVE_INFINITY,
-      zMax: Number.NEGATIVE_INFINITY,
-    }
-  );
+/** Pre-computed anatomy-space bounds (from region + acupoint positions). */
+const ANAT: Bounds3D = (() => {
+  const pts = [...BODY_REGIONS.map(r => r.position), ...ACUPOINTS.map(p => p.position)];
+  const b: Bounds3D = { xMin: Infinity, xMax: -Infinity, yMin: Infinity, yMax: -Infinity, zMin: Infinity, zMax: -Infinity };
+  for (const [x, y, z] of pts) {
+    if (x < b.xMin) b.xMin = x; if (x > b.xMax) b.xMax = x;
+    if (y < b.yMin) b.yMin = y; if (y > b.yMax) b.yMax = y;
+    if (z < b.zMin) b.zMin = z; if (z > b.zMax) b.zMax = z;
+  }
+  return b;
 })();
 
-function mapLinear(value: number, inMin: number, inMax: number, outMin: number, outMax: number): number {
-  if (Math.abs(inMax - inMin) < 1e-6) return (outMin + outMax) / 2;
-  const t = (value - inMin) / (inMax - inMin);
-  return outMin + t * (outMax - outMin);
-}
+/* ─────────────── Compute GLB local-space bounding box ─────────────── */
 
-/**
- * Region coords: x=left/right, y=height, z=front/back
- * Model local (after rotation [0,-PI/2,0]):
- *   y ∈ [≈-0.44, ≈0.42], x=front(+)/back(-), z=left(-)/right(+)
- */
-function regionPosToModelLocal(
-  regionPos: [number, number, number],
-  modelBounds: Bounds3D
-): [number, number, number] {
-  const modelY = mapLinear(
-    regionPos[1],
-    ANATOMY_SPACE_BOUNDS.yMin,
-    ANATOMY_SPACE_BOUNDS.yMax,
-    modelBounds.yMin,
-    modelBounds.yMax
-  );
+function computeLocalBounds(obj: THREE.Object3D): Bounds3D {
+  const min = new THREE.Vector3(Infinity, Infinity, Infinity);
+  const max = new THREE.Vector3(-Infinity, -Infinity, -Infinity);
+  const v = new THREE.Vector3();
 
-  const modelZ = mapLinear(
-    regionPos[0],
-    ANATOMY_SPACE_BOUNDS.xMin,
-    ANATOMY_SPACE_BOUNDS.xMax,
-    modelBounds.zMin,
-    modelBounds.zMax
-  );
+  // Force-update internal transforms (scene is not yet mounted)
+  obj.updateMatrixWorld(true);
 
-  const modelX = mapLinear(
-    regionPos[2],
-    ANATOMY_SPACE_BOUNDS.zMin,
-    ANATOMY_SPACE_BOUNDS.zMax,
-    modelBounds.xMin,
-    modelBounds.xMax
-  );
-
-  return [modelX, modelY, modelZ];
-}
-
-function getRegionSide(regionId: string): RegionSide {
-  if (regionId.endsWith("_l")) return "left";
-  if (regionId.endsWith("_r")) return "right";
-  return "center";
-}
-
-function getVerticalBand(y: number, bounds: Bounds3D): number {
-  const t = (y - bounds.yMin) / Math.max(bounds.yMax - bounds.yMin, 1e-6);
-  if (t > 0.89) return 0; // head
-  if (t > 0.79) return 1; // neck
-  if (t > 0.57) return 2; // torso/arms
-  if (t > 0.43) return 3; // pelvis
-  if (t > 0.30) return 4; // thighs
-  if (t > 0.22) return 5; // knees
-  if (t > 0.10) return 6; // lower legs
-  return 7; // feet/ankles
-}
-
-function getRegionAnchors(modelBounds: Bounds3D): RegionAnchor[] {
-  return BODY_REGIONS.map((region) => ({
-    region,
-    center: regionPosToModelLocal(region.position, modelBounds),
-    verticalBand: getVerticalBand(
-      regionPosToModelLocal(region.position, modelBounds)[1],
-      modelBounds
-    ),
-    side: getRegionSide(region.id),
-    isBack: BACK_REGION_IDS.has(region.id) || region.position[2] < -0.02,
-  }));
-}
-
-function findClosestRegion(
-  localPoint: THREE.Vector3,
-  anchors: RegionAnchor[],
-  modelBounds: Bounds3D
-): BodyRegion {
-  let bestRegion = anchors[0]?.region ?? BODY_REGIONS[0];
-  let bestScore = Number.POSITIVE_INFINITY;
-
-  const pointIsBack = localPoint.x < -0.01;
-  const pointBand = getVerticalBand(localPoint.y, modelBounds);
-
-  for (const anchor of anchors) {
-    const [cx, cy, cz] = anchor.center;
-
-    // Pure Euclidean distance with Y weighted more (body is tall & narrow)
-    const dx = localPoint.x - cx;
-    const dy = (localPoint.y - cy) * 2.0;
-    const dz = localPoint.z - cz;
-
-    let score = dx * dx + dy * dy + dz * dz;
-
-    // Penalize wrong left/right side
-    if (anchor.side === "left" && localPoint.z > 0.01) score += 0.06;
-    if (anchor.side === "right" && localPoint.z < -0.01) score += 0.06;
-
-    // Penalize front/back mismatch
-    if (anchor.isBack !== pointIsBack) score += 0.04;
-
-    // Stronger anatomical vertical gating (prevents knee->thigh swaps)
-    if (Math.abs(anchor.verticalBand - pointBand) >= 2) score += 0.12;
-    else if (Math.abs(anchor.verticalBand - pointBand) === 1) score += 0.03;
-
-    if (score < bestScore) {
-      bestScore = score;
-      bestRegion = anchor.region;
+  obj.traverse((child) => {
+    if (!(child instanceof THREE.Mesh)) return;
+    const pos = child.geometry?.attributes?.position;
+    if (!pos) return;
+    for (let i = 0; i < pos.count; i++) {
+      v.set(pos.getX(i), pos.getY(i), pos.getZ(i));
+      // Apply the mesh's own chain of local transforms within the GLB
+      v.applyMatrix4(child.matrixWorld);
+      min.min(v);
+      max.max(v);
     }
-  }
+  });
 
-  return bestRegion;
+  console.log("[BodyModel3D] GLB local bounds", {
+    x: [min.x.toFixed(4), max.x.toFixed(4)],
+    y: [min.y.toFixed(4), max.y.toFixed(4)],
+    z: [min.z.toFixed(4), max.z.toFixed(4)],
+  });
+
+  return { xMin: min.x, xMax: max.x, yMin: min.y, yMax: max.y, zMin: min.z, zMax: max.z };
 }
+
+/* ─── Mapping: GLB local space ↔ anatomy region space ─── */
+/*
+ * GLB model (original orientation, before parent rotation):
+ *   The model originally faces +X → rotated -90° Y so it faces camera (+Z).
+ *   In the group's local space (what worldToLocal gives us):
+ *     X = front(+)/back(-)  →  maps to regionZ (front/back)
+ *     Y = height             →  maps to regionY (height)
+ *     Z = left/right         →  maps to regionX (left/right)
+ */
+
+function glbToRegion(local: THREE.Vector3, glb: Bounds3D): [number, number, number] {
+  return [
+    mapLinear(local.z, glb.zMin, glb.zMax, ANAT.xMin, ANAT.xMax),
+    mapLinear(local.y, glb.yMin, glb.yMax, ANAT.yMin, ANAT.yMax),
+    mapLinear(local.x, glb.xMin, glb.xMax, ANAT.zMin, ANAT.zMax),
+  ];
+}
+
+function regionToGlb(regionPos: [number, number, number], glb: Bounds3D): [number, number, number] {
+  return [
+    mapLinear(regionPos[2], ANAT.zMin, ANAT.zMax, glb.xMin, glb.xMax),
+    mapLinear(regionPos[1], ANAT.yMin, ANAT.yMax, glb.yMin, glb.yMax),
+    mapLinear(regionPos[0], ANAT.xMin, ANAT.xMax, glb.zMin, glb.zMax),
+  ];
+}
+
+/* ─── Find nearest region purely in anatomy space ─── */
+
+function findClosestRegion(regionPt: [number, number, number]): BodyRegion {
+  let best = BODY_REGIONS[0];
+  let bestD = Infinity;
+
+  for (const r of BODY_REGIONS) {
+    const dx = r.position[0] - regionPt[0];
+    const dy = (r.position[1] - regionPt[1]) * 1.6; // weight height (body is tall & narrow)
+    const dz = r.position[2] - regionPt[2];
+    const d = dx * dx + dy * dy + dz * dz;
+    if (d < bestD) { bestD = d; best = r; }
+  }
+  return best;
+}
+
+/* ─── Inner scene component (inside Canvas) ─── */
 
 function HumanBodyModel({
   sex,
   selectedRegions,
-  selectedMarkerPositions,
+  markerPositions,
   onSelectRegion,
-  onSelectMarkerPoint,
+  onMarkerPoint,
   onHoverRegion,
   showAcupoints,
   relevantMeridians,
 }: {
   sex: "M" | "F";
   selectedRegions: Set<string>;
-  selectedMarkerPositions: Map<string, [number, number, number]>;
+  markerPositions: Map<string, [number, number, number]>;
   onSelectRegion: (region: BodyRegion) => void;
-  onSelectMarkerPoint: (
-    regionId: string,
-    point: [number, number, number],
-    wasSelected: boolean
-  ) => void;
+  onMarkerPoint: (id: string, pt: [number, number, number], wasSel: boolean) => void;
   onHoverRegion: (region: BodyRegion | null) => void;
   showAcupoints: boolean;
   relevantMeridians: Set<string>;
@@ -224,71 +141,52 @@ function HumanBodyModel({
     return clone;
   }, [scene]);
 
-  const modelBounds = useMemo(() => {
-    const box = new THREE.Box3().setFromObject(clonedScene);
-    const size = new THREE.Vector3();
-    box.getSize(size);
-    const padX = size.x * 0.02;
-    const padY = size.y * 0.01;
-    const padZ = size.z * 0.02;
+  // Compute bounding box from raw geometry vertices (reliable, no world-matrix issues)
+  const glb = useMemo(() => computeLocalBounds(clonedScene), [clonedScene]);
 
-    return {
-      xMin: box.min.x - padX,
-      xMax: box.max.x + padX,
-      yMin: box.min.y - padY,
-      yMax: box.max.y + padY,
-      zMin: box.min.z - padZ,
-      zMax: box.max.z + padZ,
-    } as Bounds3D;
-  }, [clonedScene]);
+  const bodyScale: [number, number, number] = sex === "F" ? [3.7, 3.9, 3.7] : [4.0, 4.0, 4.0];
 
-  const regionAnchors = useMemo(() => getRegionAnchors(modelBounds), [modelBounds]);
-
-  // Female proportions: narrower shoulders, slightly wider hips
-  const bodyScale: [number, number, number] = sex === "F"
-    ? [3.7, 3.9, 3.7]
-    : [4.0, 4.0, 4.0];
-
-  const selectedMarkers = useMemo(() => {
-    return BODY_REGIONS.filter((r) => selectedRegions.has(r.id)).map((region) => ({
-      id: region.id,
-      pos: selectedMarkerPositions.get(region.id) ?? regionPosToModelLocal(region.position, modelBounds),
-    }));
-  }, [selectedRegions, selectedMarkerPositions, modelBounds]);
+  const selectedMarkers = useMemo(() =>
+    BODY_REGIONS.filter(r => selectedRegions.has(r.id)).map(r => ({
+      id: r.id,
+      pos: markerPositions.get(r.id) ?? regionToGlb(r.position, glb),
+    })),
+  [selectedRegions, markerPositions, glb]);
 
   const visibleAcupoints = useMemo(() => {
     if (!showAcupoints) return [];
-    return ACUPOINTS.filter((p) => relevantMeridians.has(p.meridian)).map((point) => ({
-      ...point,
-      mappedPos: regionPosToModelLocal(point.position, modelBounds),
+    return ACUPOINTS.filter(p => relevantMeridians.has(p.meridian)).map(p => ({
+      ...p,
+      mapped: regionToGlb(p.position, glb),
     }));
-  }, [showAcupoints, relevantMeridians, modelBounds]);
+  }, [showAcupoints, relevantMeridians, glb]);
+
+  const resolveRegion = useCallback((e: { point: THREE.Vector3 }) => {
+    if (!modelRef.current) return null;
+    const local = modelRef.current.worldToLocal(e.point.clone());
+    const regionPt = glbToRegion(local, glb);
+    return { region: findClosestRegion(regionPt), local, regionPt };
+  }, [glb]);
 
   const handleClick = (e: ThreeEvent<MouseEvent>) => {
     e.stopPropagation();
-    if (e.point && modelRef.current) {
-      const localPoint = modelRef.current.worldToLocal(e.point.clone());
-      const region = findClosestRegion(localPoint, regionAnchors, modelBounds);
-      const wasSelected = selectedRegions.has(region.id);
-      onSelectMarkerPoint(region.id, [localPoint.x, localPoint.y, localPoint.z], wasSelected);
-      onSelectRegion(region);
-    }
+    const result = resolveRegion(e);
+    if (!result) return;
+    console.log("[BodyModel3D] CLICK local:", result.local.toArray().map(n => n.toFixed(4)),
+      "→ region:", result.regionPt.map(n => Number(n.toFixed(2))),
+      "→", result.region.name);
+    const wasSel = selectedRegions.has(result.region.id);
+    onMarkerPoint(result.region.id, [result.local.x, result.local.y, result.local.z], wasSel);
+    onSelectRegion(result.region);
   };
 
   const handlePointerMove = (e: ThreeEvent<PointerEvent>) => {
     e.stopPropagation();
-    if (e.point && modelRef.current) {
-      const localPoint = modelRef.current.worldToLocal(e.point.clone());
-      const region = findClosestRegion(localPoint, regionAnchors, modelBounds);
-      onHoverRegion(region);
-      document.body.style.cursor = "pointer";
-    }
+    const result = resolveRegion(e);
+    if (result) { onHoverRegion(result.region); document.body.style.cursor = "pointer"; }
   };
 
-  const handlePointerOut = () => {
-    onHoverRegion(null);
-    document.body.style.cursor = "default";
-  };
+  const handlePointerOut = () => { onHoverRegion(null); document.body.style.cursor = "default"; };
 
   return (
     <group position={[0, -0.14, 0]} scale={bodyScale}>
@@ -299,38 +197,17 @@ function HumanBodyModel({
           onPointerMove={handlePointerMove}
           onPointerOut={handlePointerOut}
         />
-
-        {/* Red pulsing markers on selected regions */}
-        {selectedMarkers.map((m) => (
-          <PulsingMarker
-            key={`sel-${m.id}`}
-            position={m.pos}
-            color="#ef4444"
-            emissive="#dc2626"
-            size={0.015}
-          />
+        {selectedMarkers.map(m => (
+          <PulsingMarker key={`sel-${m.id}`} position={m.pos} color="#ef4444" emissive="#dc2626" size={0.015} />
         ))}
-
-        {/* Green acupoint markers */}
-        {visibleAcupoints.map((p) => (
+        {visibleAcupoints.map(p => (
           <group key={p.id}>
-            <PulsingMarker
-              position={p.mappedPos}
-              color="#22c55e"
-              emissive="#16a34a"
-              size={0.008}
-            />
+            <PulsingMarker position={p.mapped} color="#22c55e" emissive="#16a34a" size={0.008} />
             <Text
-              position={[p.mappedPos[0], p.mappedPos[1] + 0.016, p.mappedPos[2]]}
-              fontSize={0.008}
-              color="#16a34a"
-              anchorX="center"
-              anchorY="bottom"
-              outlineWidth={0.001}
-              outlineColor="#ffffff"
-            >
-              {p.id.replace(/R$/, "")}
-            </Text>
+              position={[p.mapped[0], p.mapped[1] + 0.016, p.mapped[2]]}
+              fontSize={0.008} color="#16a34a" anchorX="center" anchorY="bottom"
+              outlineWidth={0.001} outlineColor="#ffffff"
+            >{p.id.replace(/R$/, "")}</Text>
           </group>
         ))}
       </group>
@@ -338,23 +215,14 @@ function HumanBodyModel({
   );
 }
 
-function PulsingMarker({
-  position,
-  color,
-  emissive,
-  size,
-}: {
-  position: [number, number, number];
-  color: string;
-  emissive: string;
-  size: number;
+/* ─── Pulsing marker ─── */
+
+function PulsingMarker({ position, color, emissive, size }: {
+  position: [number, number, number]; color: string; emissive: string; size: number;
 }) {
   const ref = useRef<THREE.Mesh>(null);
   useFrame(({ clock }) => {
-    if (ref.current) {
-      const s = 1 + Math.sin(clock.elapsedTime * 3) * 0.25;
-      ref.current.scale.setScalar(s);
-    }
+    if (ref.current) ref.current.scale.setScalar(1 + Math.sin(clock.elapsedTime * 3) * 0.25);
   });
   return (
     <mesh ref={ref} position={position}>
@@ -364,6 +232,8 @@ function PulsingMarker({
   );
 }
 
+/* ─── Public component ─── */
+
 interface BodyModel3DProps {
   sex: "M" | "F";
   selectedRegions: Set<string>;
@@ -372,52 +242,32 @@ interface BodyModel3DProps {
   relevantMeridians: Set<string>;
 }
 
-export default function BodyModel3D({
-  sex,
-  selectedRegions,
-  onToggleRegion,
-  showAcupoints,
-  relevantMeridians,
-}: BodyModel3DProps) {
+export default function BodyModel3D({ sex, selectedRegions, onToggleRegion, showAcupoints, relevantMeridians }: BodyModel3DProps) {
   const [hoveredRegion, setHoveredRegion] = useState<BodyRegion | null>(null);
-  const [selectedMarkerPositions, setSelectedMarkerPositions] = useState<Map<string, [number, number, number]>>(new Map());
+  const [markerPositions, setMarkerPositions] = useState<Map<string, [number, number, number]>>(new Map());
 
   useEffect(() => {
-    setSelectedMarkerPositions((prev) => {
+    setMarkerPositions(prev => {
       const next = new Map(prev);
       let changed = false;
-      for (const regionId of Array.from(next.keys())) {
-        if (!selectedRegions.has(regionId)) {
-          next.delete(regionId);
-          changed = true;
-        }
+      for (const id of Array.from(next.keys())) {
+        if (!selectedRegions.has(id)) { next.delete(id); changed = true; }
       }
       return changed ? next : prev;
     });
   }, [selectedRegions]);
 
-  const handleSelectMarkerPoint = (
-    regionId: string,
-    point: [number, number, number],
-    wasSelected: boolean
-  ) => {
-    setSelectedMarkerPositions((prev) => {
+  const handleMarkerPoint = (id: string, pt: [number, number, number], wasSel: boolean) => {
+    setMarkerPositions(prev => {
       const next = new Map(prev);
-      if (wasSelected) {
-        next.delete(regionId);
-      } else {
-        next.set(regionId, point);
-      }
+      wasSel ? next.delete(id) : next.set(id, pt);
       return next;
     });
   };
 
   return (
-    <div className="relative w-full" style={{ height: "640px" }}>
-      <Canvas
-        camera={{ position: [0, 0, 3.8], fov: 46 }}
-        gl={{ antialias: true }}
-      >
+    <div className="relative w-full" style={{ height: "620px" }}>
+      <Canvas camera={{ position: [0, 0.05, 3.6], fov: 44 }} gl={{ antialias: true }}>
         <ambientLight intensity={0.5} />
         <directionalLight position={[5, 5, 5]} intensity={0.7} castShadow />
         <directionalLight position={[-5, 5, -5]} intensity={0.35} />
@@ -427,42 +277,30 @@ export default function BodyModel3D({
           <HumanBodyModel
             sex={sex}
             selectedRegions={selectedRegions}
-            selectedMarkerPositions={selectedMarkerPositions}
+            markerPositions={markerPositions}
             onSelectRegion={onToggleRegion}
-            onSelectMarkerPoint={handleSelectMarkerPoint}
+            onMarkerPoint={handleMarkerPoint}
             onHoverRegion={setHoveredRegion}
             showAcupoints={showAcupoints}
             relevantMeridians={relevantMeridians}
           />
         </Suspense>
-        <OrbitControls
-          enablePan={false}
-          enableZoom={false}
-          enableRotate={true}
-          minPolarAngle={Math.PI * 0.15}
-          maxPolarAngle={Math.PI * 0.85}
-        />
+        <OrbitControls enablePan={false} enableZoom={false} enableRotate={true}
+          minPolarAngle={Math.PI * 0.15} maxPolarAngle={Math.PI * 0.85} />
       </Canvas>
 
-      {/* Hover tooltip */}
       {hoveredRegion && (
         <div className="absolute top-3 left-3 bg-card/95 backdrop-blur-sm border border-border rounded-lg px-3 py-2 shadow-lg pointer-events-none max-w-xs">
           <p className="font-display text-xs font-bold text-foreground">{hoveredRegion.name}</p>
           <p className="font-body text-[10px] text-muted-foreground mt-0.5">{hoveredRegion.description}</p>
-          <p className="font-body text-[10px] text-primary/70 mt-1">
-            Meridiani: {hoveredRegion.meridians.join(", ")}
-          </p>
+          <p className="font-body text-[10px] text-primary/70 mt-1">Meridiani: {hoveredRegion.meridians.join(", ")}</p>
         </div>
       )}
 
-      {/* Sex indicator */}
       <div className="absolute top-3 right-3 bg-card/90 backdrop-blur-sm border border-border rounded-lg px-3 py-1.5">
-        <span className="font-body text-xs text-muted-foreground">
-          {sex === "M" ? "♂ Maschile" : "♀ Femminile"}
-        </span>
+        <span className="font-body text-xs text-muted-foreground">{sex === "M" ? "♂ Maschile" : "♀ Femminile"}</span>
       </div>
 
-      {/* Legend */}
       <div className="absolute bottom-3 left-3 bg-card/90 backdrop-blur-sm border border-border rounded-lg px-3 py-2 space-y-1">
         <div className="flex items-center gap-2">
           <div className="w-3 h-3 rounded-full bg-destructive/80" />
@@ -470,13 +308,11 @@ export default function BodyModel3D({
         </div>
         {showAcupoints && (
           <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-green-500" />
+            <div className="w-3 h-3 rounded-full bg-emerald-500" />
             <span className="font-body text-[10px] text-muted-foreground">Agopunto consigliato</span>
           </div>
         )}
-        <p className="font-body text-[10px] text-muted-foreground/60 mt-1">
-          Ruota con il mouse • Clicca per segnare
-        </p>
+        <p className="font-body text-[10px] text-muted-foreground/60 mt-1">Ruota con il mouse • Clicca per segnare</p>
       </div>
     </div>
   );
