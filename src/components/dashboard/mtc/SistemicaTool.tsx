@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { Loader2, Download, FileDown, RotateCcw, AlertTriangle, Sparkles } from "lucide-react";
+import { Loader2, Download, FileDown, RotateCcw, AlertTriangle, Sparkles, MessageSquareText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { getBranding, generateHtmlHeader } from "../BrandingSettings";
@@ -59,6 +60,7 @@ export default function SistemicaTool() {
   const [resultMarkdown, setResultMarkdown] = useState<string | null>(null);
   const [showAcupoints, setShowAcupoints] = useState(false);
   const [relevantMeridians, setRelevantMeridians] = useState<Set<string>>(new Set());
+  const [clinicalNotes, setClinicalNotes] = useState("");
 
   const handleToggleRegion = (region: BodyRegion) => {
     setSelectedRegions(prev => {
@@ -110,7 +112,7 @@ export default function SistemicaTool() {
             "Content-Type": "application/json",
             Authorization: `Bearer ${session.access_token}`,
           },
-          body: JSON.stringify({ subTool: "sistemica", sex, painPoints }),
+      body: JSON.stringify({ subTool: "sistemica", sex, painPoints, clinicalNotes: clinicalNotes.trim() || undefined }),
         }
       );
 
@@ -173,6 +175,7 @@ export default function SistemicaTool() {
     setResultMarkdown(null);
     setShowAcupoints(false);
     setRelevantMeridians(new Set());
+    setClinicalNotes("");
   };
 
   if (!disclaimerAccepted) {
@@ -211,15 +214,38 @@ export default function SistemicaTool() {
         </RadioGroup>
       </div>
 
-      {/* 3D Body */}
-      <div className="border border-border rounded-xl overflow-hidden bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-950">
-        <BodyModel3D
-          sex={sex}
-          selectedRegions={selectedRegions}
-          onToggleRegion={handleToggleRegion}
-          showAcupoints={showAcupoints}
-          relevantMeridians={relevantMeridians}
-        />
+      {/* 3D Body + Clinical Notes side by side */}
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-4">
+        <div className="border border-border rounded-xl overflow-hidden bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-950">
+          <BodyModel3D
+            sex={sex}
+            selectedRegions={selectedRegions}
+            onToggleRegion={handleToggleRegion}
+            showAcupoints={showAcupoints}
+            relevantMeridians={relevantMeridians}
+          />
+        </div>
+
+        <div className="space-y-3">
+          <div className="border border-border rounded-xl p-4 bg-card h-full flex flex-col">
+            <div className="flex items-center gap-2 mb-3">
+              <MessageSquareText size={16} className="text-primary" />
+              <h3 className="font-display text-sm font-bold text-foreground">Note cliniche</h3>
+            </div>
+            <p className="font-body text-[11px] text-muted-foreground mb-3">
+              Descrivi sintomi, anamnesi o osservazioni aggiuntive da includere nell'analisi AI.
+            </p>
+            <Textarea
+              value={clinicalNotes}
+              onChange={(e) => setClinicalNotes(e.target.value)}
+              placeholder="Es: Paziente lamenta dolore lombare cronico da 6 mesi, peggioramento notturno, lingua pallida con patina bianca, polso profondo e debole..."
+              className="flex-1 min-h-[200px] resize-none font-body text-sm"
+            />
+            <p className="font-body text-[10px] text-muted-foreground/60 mt-2">
+              {clinicalNotes.length > 0 ? `${clinicalNotes.length} caratteri` : "Facoltativo — arricchisce l'analisi"}
+            </p>
+          </div>
+        </div>
       </div>
 
       {/* Selected regions summary */}
