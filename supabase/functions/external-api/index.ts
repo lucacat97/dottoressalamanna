@@ -372,13 +372,15 @@ serve(async (req) => {
     const { tool, format } = body;
     const outputFormat = (format || "html").toLowerCase();
 
-    if (!tool || !["diagnosis", "orthodontic"].includes(tool)) {
+    if (!tool || !["diagnosis", "orthodontic", "mtc_sistemica", "mtc_organica"].includes(tool)) {
       return new Response(
         JSON.stringify({
-          error: "Campo 'tool' obbligatorio. Valori: 'diagnosis' o 'orthodontic'.",
+          error: "Campo 'tool' obbligatorio. Valori: 'diagnosis', 'orthodontic', 'mtc_sistemica', 'mtc_organica'.",
           usage: {
             diagnosis: { tool: "diagnosis", documentText: "Testo del documento clinico..." },
             orthodontic: { tool: "orthodontic", age: 10, sex: "F", angolo_sellare: 125, anb: 3, wits: 1, angolo_articolare: 145, angolo_goniaco: 132 },
+            mtc_sistemica: { tool: "mtc_sistemica", sex: "F", painPoints: [{ region: "Zona lombare", description: "Dolore lombare cronico" }] },
+            mtc_organica: { tool: "mtc_organica", sex: "F", age: 45, symptoms: [{ category: "Fegato", name: "Irritabilità" }] },
           },
         }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
