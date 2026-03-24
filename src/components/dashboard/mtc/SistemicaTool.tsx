@@ -218,6 +218,9 @@ export default function SistemicaTool() {
         </RadioGroup>
       </div>
 
+      {/* Body region checkboxes */}
+      <BodyRegionCheckboxes selectedRegions={selectedRegions} onToggleRegion={handleToggleRegion} />
+
       {/* 3D Body + Clinical Notes side by side */}
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-4">
         <div className="border border-border rounded-xl overflow-hidden bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-950">
@@ -257,15 +260,16 @@ export default function SistemicaTool() {
         <div className="bg-card border border-border rounded-lg p-3">
           <p className="font-body text-xs text-muted-foreground mb-2">Punti dolorosi selezionati ({selectedRegions.size}):</p>
           <div className="flex flex-wrap gap-1.5">
-            {Array.from(selectedRegions).map(id => {
-              const region = BODY_REGIONS.find(r => r.id === id);
+            {Array.from(selectedRegions).map(rk => {
+              const region = BODY_REGIONS.find(r => regionKey(r) === rk);
+              const label = region ? `${region.name}${region.side && region.side !== "center" ? ` (${region.side === "left" ? "sx" : "dx"})` : ""}` : rk;
               return (
                 <span
-                  key={id}
-                  className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 text-[10px] font-body cursor-pointer hover:bg-red-200 dark:hover:bg-red-900/50 transition"
-                  onClick={() => handleToggleRegion(region!)}
+                  key={rk}
+                  className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-destructive/10 text-destructive text-[10px] font-body cursor-pointer hover:bg-destructive/20 transition"
+                  onClick={() => region && handleToggleRegion(region)}
                 >
-                  {region?.name} ✕
+                  {label} ✕
                 </span>
               );
             })}
