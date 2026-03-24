@@ -17,118 +17,185 @@ import { BODY_REGIONS, ACUPOINTS, type BodyRegion } from "./bodyRegions";
 function getZoneFromPoint(p: THREE.Vector3): string {
   const { x, y, z } = p;
 
+  // Head
   if (y > 0.36) return "head";
-  if (y > 0.30) return "neck";
-
+  // Neck
+  if (y > 0.30) {
+    if (Math.abs(z) > 0.05) return z < 0 ? "neckLateralL" : "neckLateralR";
+    return "neck";
+  }
+  // Upper torso / shoulders
   if (y > 0.22) {
     if (Math.abs(z) > 0.08) return z < 0 ? "leftShoulder" : "rightShoulder";
-    if (x < -0.03) return "upperBack";
+    if (x < -0.03) return "scapulaBack";
     return "upperChest";
   }
-
+  // Mid torso / arms
   if (y > 0.12) {
-    if (Math.abs(z) > 0.10) return z < 0 ? "leftArm" : "rightArm";
+    if (Math.abs(z) > 0.10) {
+      // Distinguish elbow from upper arm
+      if (y < 0.16) return z < 0 ? "leftElbow" : "rightElbow";
+      return z < 0 ? "leftArm" : "rightArm";
+    }
     if (x < -0.03) return "midBack";
+    if (Math.abs(z) > 0.06) return z < 0 ? "ribsLateralL" : "ribsLateralR";
     return "chest";
   }
-
+  // Lower torso / forearms
   if (y > -0.04) {
-    if (Math.abs(z) > 0.10) return z < 0 ? "leftForearm" : "rightForearm";
+    if (Math.abs(z) > 0.10) {
+      if (y < 0.02) return z < 0 ? "leftHand" : "rightHand";
+      if (y < 0.06) return z < 0 ? "leftWrist" : "rightWrist";
+      return z < 0 ? "leftForearm" : "rightForearm";
+    }
     if (x < -0.03) return "lowerBack";
-    if (y > 0.06) return "epigastrium";
+    if (y > 0.06) {
+      if (Math.abs(z) > 0.06) return z < 0 ? "flankL" : "flankR";
+      return "epigastrium";
+    }
+    if (y < -0.01) {
+      if (Math.abs(z) > 0.04) return z < 0 ? "inguinalL" : "inguinalR";
+      return "lowerAbdomen";
+    }
     return "abdomen";
   }
-
+  // Pelvis / hips
   if (y > -0.18) {
-    if (x < -0.02) return "sacrum";
+    if (x < -0.02) {
+      if (Math.abs(z) > 0.04) return z < 0 ? "glutealL" : "glutealR";
+      return "sacrum";
+    }
     return z < 0 ? "hipLeft" : "hipRight";
   }
-
-  if (y > -0.30) return z < 0 ? "thighLeft" : "thighRight";
-  if (y > -0.38) return z < 0 ? "kneeLeft" : "kneeRight";
-  if (y > -0.42) return z < 0 ? "lowerLegLeft" : "lowerLegRight";
-
+  // Thighs
+  if (y > -0.30) {
+    if (x < -0.02) return z < 0 ? "thighBackL" : "thighBackR";
+    if (Math.abs(z) > 0.05) return z < 0 ? "thighLateralL" : "thighLateralR";
+    return z < 0 ? "thighFrontL" : "thighFrontR";
+  }
+  // Knees
+  if (y > -0.36) {
+    if (x < -0.01) return z < 0 ? "kneeBackL" : "kneeBackR";
+    return z < 0 ? "kneeLeft" : "kneeRight";
+  }
+  // Lower legs
+  if (y > -0.42) {
+    if (x < -0.01) return z < 0 ? "calfL" : "calfR";
+    return z < 0 ? "lowerLegLeft" : "lowerLegRight";
+  }
+  // Ankles & feet
+  if (y > -0.44) return z < 0 ? "ankleL" : "ankleR";
+  if (x < -0.01) return z < 0 ? "heelL" : "heelR";
   return z < 0 ? "footLeft" : "footRight";
 }
 
-// Map generic zone IDs to our detailed body region IDs
-const ZONE_TO_REGIONS: Record<string, string[]> = {
-  head: ["head_top", "forehead", "temple_l", "temple_r", "jaw_l", "jaw_r", "occiput"],
-  neck: ["neck_front", "neck_back"],
-  leftShoulder: ["shoulder_l"],
-  rightShoulder: ["shoulder_r"],
-  upperChest: ["chest_upper"],
-  chest: ["chest_l", "chest_r", "chest_upper"],
-  upperBack: ["upper_back"],
-  midBack: ["mid_back", "upper_back"],
-  lowerBack: ["lower_back"],
-  epigastrium: ["epigastrium", "flank_l", "flank_r"],
-  abdomen: ["umbilical", "lower_abdomen", "flank_l", "flank_r"],
-  leftArm: ["upper_arm_l"],
-  rightArm: ["upper_arm_r"],
-  leftForearm: ["forearm_l", "hand_l"],
-  rightForearm: ["forearm_r", "hand_r"],
-  sacrum: ["sacrum", "lower_back"],
-  hipLeft: ["hip_l"],
-  hipRight: ["hip_r"],
-  thighLeft: ["thigh_l"],
-  thighRight: ["thigh_r"],
-  kneeLeft: ["knee_l"],
-  kneeRight: ["knee_r"],
-  lowerLegLeft: ["lower_leg_l", "ankle_l"],
-  lowerLegRight: ["lower_leg_r", "ankle_r"],
-  footLeft: ["foot_l"],
-  footRight: ["foot_r"],
+// Direct zone → region ID mapping
+const ZONE_TO_REGION: Record<string, string> = {
+  // Head sub-zones handled separately in refineRegionInZone
+  head: "forehead",
+  neck: "neck_front",
+  neckLateralL: "neck_lateral_l",
+  neckLateralR: "neck_lateral_r",
+  leftShoulder: "shoulder_l",
+  rightShoulder: "shoulder_r",
+  scapulaBack: "upper_back",
+  upperChest: "chest_upper",
+  leftArm: "upper_arm_l",
+  rightArm: "upper_arm_r",
+  leftElbow: "elbow_l",
+  rightElbow: "elbow_r",
+  chest: "chest_upper",
+  ribsLateralL: "ribs_lateral_l",
+  ribsLateralR: "ribs_lateral_r",
+  midBack: "mid_back",
+  leftForearm: "forearm_l",
+  rightForearm: "forearm_r",
+  leftWrist: "wrist_l",
+  rightWrist: "wrist_r",
+  leftHand: "hand_l",
+  rightHand: "hand_r",
+  lowerBack: "lower_back",
+  epigastrium: "epigastrium",
+  flankL: "flank_l",
+  flankR: "flank_r",
+  abdomen: "umbilical",
+  lowerAbdomen: "lower_abdomen",
+  inguinalL: "inguinal_l",
+  inguinalR: "inguinal_r",
+  sacrum: "sacrum",
+  glutealL: "gluteal_l",
+  glutealR: "gluteal_r",
+  hipLeft: "hip_l",
+  hipRight: "hip_r",
+  thighFrontL: "thigh_front_l",
+  thighFrontR: "thigh_front_r",
+  thighLateralL: "thigh_lateral_l",
+  thighLateralR: "thigh_lateral_r",
+  thighBackL: "thigh_back_l",
+  thighBackR: "thigh_back_r",
+  kneeLeft: "knee_l",
+  kneeRight: "knee_r",
+  kneeBackL: "knee_back_l",
+  kneeBackR: "knee_back_r",
+  lowerLegLeft: "lower_leg_l",
+  lowerLegRight: "lower_leg_r",
+  calfL: "calf_l",
+  calfR: "calf_r",
+  ankleL: "ankle_l",
+  ankleR: "ankle_r",
+  heelL: "heel_l",
+  heelR: "heel_r",
+  footLeft: "foot_l",
+  footRight: "foot_r",
 };
 
-// Refine zone selection using click position details
 function refineRegionInZone(zone: string, localPoint: THREE.Vector3): BodyRegion {
-  const candidateIds = ZONE_TO_REGIONS[zone] || ["chest_upper"];
-  const candidates = BODY_REGIONS.filter((r) => candidateIds.includes(r.id));
-  if (candidates.length === 1) return candidates[0];
-
-  // For head zone, use position to pick sub-region
+  // Head has sub-zone refinement
   if (zone === "head") {
     const { x, y, z } = localPoint;
     if (y > 0.42) return BODY_REGIONS.find((r) => r.id === "head_top")!;
     if (x < -0.02) return BODY_REGIONS.find((r) => r.id === "occiput")!;
-    if (z < -0.04) return BODY_REGIONS.find((r) => r.id === (y > 0.38 ? "temple_l" : "jaw_l"))!;
-    if (z > 0.04) return BODY_REGIONS.find((r) => r.id === (y > 0.38 ? "temple_r" : "jaw_r"))!;
+    if (Math.abs(z) > 0.04) {
+      const side = z < 0 ? "l" : "r";
+      if (y > 0.38) return BODY_REGIONS.find((r) => r.id === `temple_${side}`)!;
+      // Check for ear vs jaw
+      if (Math.abs(z) > 0.06) return BODY_REGIONS.find((r) => r.id === `ear_${side}`)!;
+      if (y < 0.37) return BODY_REGIONS.find((r) => r.id === `jaw_${side}`)!;
+      return BODY_REGIONS.find((r) => r.id === `temple_${side}`)!;
+    }
+    if (y < 0.38 && x > 0) {
+      // Lower central face
+      if (y < 0.37) return BODY_REGIONS.find((r) => r.id === "nose")!;
+      // Eyes
+      if (z < -0.01) return BODY_REGIONS.find((r) => r.id === "eye_l")!;
+      if (z > 0.01) return BODY_REGIONS.find((r) => r.id === "eye_r")!;
+    }
     return BODY_REGIONS.find((r) => r.id === "forehead")!;
   }
 
+  // Neck front/back refinement
   if (zone === "neck") {
     return BODY_REGIONS.find((r) => r.id === (localPoint.x < 0 ? "neck_back" : "neck_front"))!;
   }
 
+  // Chest left/right
   if (zone === "chest") {
     if (localPoint.z < -0.03) return BODY_REGIONS.find((r) => r.id === "chest_l")!;
     if (localPoint.z > 0.03) return BODY_REGIONS.find((r) => r.id === "chest_r")!;
     return BODY_REGIONS.find((r) => r.id === "chest_upper")!;
   }
 
-  if (zone === "abdomen") {
-    if (Math.abs(localPoint.z) > 0.06) return BODY_REGIONS.find((r) => r.id === (localPoint.z < 0 ? "flank_l" : "flank_r"))!;
-    if (localPoint.y > -0.01) return BODY_REGIONS.find((r) => r.id === "umbilical")!;
-    return BODY_REGIONS.find((r) => r.id === "lower_abdomen")!;
+  // Scapula back zone - distinguish left/right scapula from upper back center
+  if (zone === "scapulaBack") {
+    if (localPoint.z < -0.04) return BODY_REGIONS.find((r) => r.id === "scapula_l")!;
+    if (localPoint.z > 0.04) return BODY_REGIONS.find((r) => r.id === "scapula_r")!;
+    return BODY_REGIONS.find((r) => r.id === "upper_back")!;
   }
 
-  if (zone === "epigastrium") {
-    if (Math.abs(localPoint.z) > 0.06) return BODY_REGIONS.find((r) => r.id === (localPoint.z < 0 ? "flank_l" : "flank_r"))!;
-    return BODY_REGIONS.find((r) => r.id === "epigastrium")!;
-  }
-
-  if (zone === "leftForearm" || zone === "rightForearm") {
-    const side = zone === "leftForearm" ? "l" : "r";
-    return BODY_REGIONS.find((r) => r.id === (localPoint.y < 0.02 ? `hand_${side}` : `forearm_${side}`))!;
-  }
-
-  if (zone === "lowerLegLeft" || zone === "lowerLegRight") {
-    const side = zone.includes("Left") ? "l" : "r";
-    return BODY_REGIONS.find((r) => r.id === (localPoint.y < -0.40 ? `ankle_${side}` : `lower_leg_${side}`))!;
-  }
-
-  return candidates[0];
+  // Direct mapping for all other zones
+  const regionId = ZONE_TO_REGION[zone];
+  const region = regionId ? BODY_REGIONS.find((r) => r.id === regionId) : null;
+  return region || BODY_REGIONS.find((r) => r.id === "chest_upper")!;
 }
 
 /**
