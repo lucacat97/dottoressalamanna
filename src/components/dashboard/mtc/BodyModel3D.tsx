@@ -2,49 +2,151 @@ import { useState, useRef, useMemo, Suspense } from "react";
 import { Canvas, useFrame, ThreeEvent } from "@react-three/fiber";
 import { OrbitControls, useGLTF, Text } from "@react-three/drei";
 import * as THREE from "three";
-import { BODY_REGIONS, ACUPOINTS, type BodyRegion, type AcuPoint } from "./bodyRegions";
+import { BODY_REGIONS, ACUPOINTS, type BodyRegion } from "./bodyRegions";
 
 /**
- * Coordinate mapping between bodyRegions.ts positions and GLB model local space.
+ * Maps a local-space point (in the GLB model's coordinate system after rotation)
+ * to a generic body zone ID. These thresholds come from the reference implementation
+ * that was built for this exact GLB model.
  *
- * bodyRegions.ts:
- *   x = left(-) / right(+)
- *   y = height  (feet ≈ -0.1, head ≈ 1.85)
- *   z = front(+) / back(-)
- *
- * GLB model local space (after rotation=[0, -PI/2, 0]):
+ * Model local coords (after rotation=[0, -PI/2, 0]):
+ *   y = height (feet ≈ -0.44, head ≈ 0.40)
  *   x = front(+) / back(-)
- *   y = height  (feet ≈ -0.42, head ≈ 0.38)
  *   z = left(-) / right(+)
- *
- * Conversion: region → modelLocal
- *   modelX = regionZ / 3.3
- *   modelY = (regionY - 0.93) / 2.44
- *   modelZ = regionX / 3.5
  */
-function regionToModelLocal(regionPos: [number, number, number]): THREE.Vector3 {
-  return new THREE.Vector3(
-    regionPos[2] / 3.3,               // front/back
-    (regionPos[1] - 0.93) / 2.44,     // height
-    regionPos[0] / 3.5                 // left/right
-  );
-}
+function getZoneFromPoint(p: THREE.Vector3): string {
+  const { x, y, z } = p;
 
-function findClosestRegion(localPoint: THREE.Vector3): BodyRegion | null {
-  let best: BodyRegion | null = null;
-  let bestDist = Infinity;
+  if (y > 0.36) return "head";
+  if (y > 0.30) return "neck";
 
-  for (const region of BODY_REGIONS) {
-    const mapped = regionToModelLocal(region.position);
-    const dist = localPoint.distanceTo(mapped);
-    if (dist < bestDist) {
-      bestDist = dist;
-      best = region;
-    }
+  if (y > 0.22) {
+    if (Math.abs(z) > 0.08) return z < 0 ? "leftShoulder" : "rightShoulder";
+    if (x < -0.03) return "upperBack";
+    return "upperChest";
   }
 
-  // Only match if reasonably close (threshold in model-local units)
-  return bestDist < 0.12 ? best : null;
+  if (y > 0.12) {
+    if (Math.abs(z) > 0.10) return z < 0 ? "leftArm" : "rightArm";
+    if (x < -0.03) return "midBack";
+    return "chest";
+  }
+
+  if (y > -0.04) {
+    if (Math.abs(z) > 0.10) return z < 0 ? "leftForearm" : "rightForearm";
+    if (x < -0.03) return "lowerBack";
+    if (y > 0.06) return "epigastrium";
+    return "abdomen";
+  }
+
+  if (y > -0.18) {
+    if (x < -0.02) return "sacrum";
+    return z < 0 ? "hipLeft" : "hipRight";
+  }
+
+  if (y > -0.30) return z < 0 ? "thighLeft" : "thighRight";
+  if (y > -0.38) return z < 0 ? "kneeLeft" : "kneeRight";
+  if (y > -0.42) return z < 0 ? "lowerLegLeft" : "lowerLegRight";
+
+  return z < 0 ? "footLeft" : "footRight";
+}
+
+// Map generic zone IDs to our detailed body region IDs
+const ZONE_TO_REGIONS: Record<string, string[]> = {
+  head: ["head_top", "forehead", "temple_l", "temple_r", "jaw_l", "jaw_r", "occiput"],
+  neck: ["neck_front", "neck_back"],
+  leftShoulder: ["shoulder_l"],
+  rightShoulder: ["shoulder_r"],
+  upperChest: ["chest_upper"],
+  chest: ["chest_l", "chest_r", "chest_upper"],
+  upperBack: ["upper_back"],
+  midBack: ["mid_back", "upper_back"],
+  lowerBack: ["lower_back"],
+  epigastrium: ["epigastrium", "flank_l", "flank_r"],
+  abdomen: ["umbilical", "lower_abdomen", "flank_l", "flank_r"],
+  leftArm: ["upper_arm_l"],
+  rightArm: ["upper_arm_r"],
+  leftForearm: ["forearm_l", "hand_l"],
+  rightForearm: ["forearm_r", "hand_r"],
+  sacrum: ["sacrum", "lower_back"],
+  hipLeft: ["hip_l"],
+  hipRight: ["hip_r"],
+  thighLeft: ["thigh_l"],
+  thighRight: ["thigh_r"],
+  kneeLeft: ["knee_l"],
+  kneeRight: ["knee_r"],
+  lowerLegLeft: ["lower_leg_l", "ankle_l"],
+  lowerLegRight: ["lower_leg_r", "ankle_r"],
+  footLeft: ["foot_l"],
+  footRight: ["foot_r"],
+};
+
+// Refine zone selection using click position details
+function refineRegionInZone(zone: string, localPoint: THREE.Vector3): BodyRegion {
+  const candidateIds = ZONE_TO_REGIONS[zone] || ["chest_upper"];
+  const candidates = BODY_REGIONS.filter((r) => candidateIds.includes(r.id));
+  if (candidates.length === 1) return candidates[0];
+
+  // For head zone, use position to pick sub-region
+  if (zone === "head") {
+    const { x, y, z } = localPoint;
+    if (y > 0.42) return BODY_REGIONS.find((r) => r.id === "head_top")!;
+    if (x < -0.02) return BODY_REGIONS.find((r) => r.id === "occiput")!;
+    if (z < -0.04) return BODY_REGIONS.find((r) => r.id === (y > 0.38 ? "temple_l" : "jaw_l"))!;
+    if (z > 0.04) return BODY_REGIONS.find((r) => r.id === (y > 0.38 ? "temple_r" : "jaw_r"))!;
+    return BODY_REGIONS.find((r) => r.id === "forehead")!;
+  }
+
+  if (zone === "neck") {
+    return BODY_REGIONS.find((r) => r.id === (localPoint.x < 0 ? "neck_back" : "neck_front"))!;
+  }
+
+  if (zone === "chest") {
+    if (localPoint.z < -0.03) return BODY_REGIONS.find((r) => r.id === "chest_l")!;
+    if (localPoint.z > 0.03) return BODY_REGIONS.find((r) => r.id === "chest_r")!;
+    return BODY_REGIONS.find((r) => r.id === "chest_upper")!;
+  }
+
+  if (zone === "abdomen") {
+    if (Math.abs(localPoint.z) > 0.06) return BODY_REGIONS.find((r) => r.id === (localPoint.z < 0 ? "flank_l" : "flank_r"))!;
+    if (localPoint.y > -0.01) return BODY_REGIONS.find((r) => r.id === "umbilical")!;
+    return BODY_REGIONS.find((r) => r.id === "lower_abdomen")!;
+  }
+
+  if (zone === "epigastrium") {
+    if (Math.abs(localPoint.z) > 0.06) return BODY_REGIONS.find((r) => r.id === (localPoint.z < 0 ? "flank_l" : "flank_r"))!;
+    return BODY_REGIONS.find((r) => r.id === "epigastrium")!;
+  }
+
+  if (zone === "leftForearm" || zone === "rightForearm") {
+    const side = zone === "leftForearm" ? "l" : "r";
+    return BODY_REGIONS.find((r) => r.id === (localPoint.y < 0.02 ? `hand_${side}` : `forearm_${side}`))!;
+  }
+
+  if (zone === "lowerLegLeft" || zone === "lowerLegRight") {
+    const side = zone.includes("Left") ? "l" : "r";
+    return BODY_REGIONS.find((r) => r.id === (localPoint.y < -0.40 ? `ankle_${side}` : `lower_leg_${side}`))!;
+  }
+
+  return candidates[0];
+}
+
+/**
+ * Convert a body region position to approximate model-local coordinates
+ * for placing markers on the 3D model surface.
+ *
+ * These are calibrated approximate positions — they don't need to be pixel-perfect
+ * since markers just need to appear near the correct body part.
+ */
+function regionPosToModelLocal(regionPos: [number, number, number]): [number, number, number] {
+  // regionY [−0.1, 1.85] → modelY [−0.44, 0.40]
+  const modelY = regionPos[1] * 0.42 - 0.38;
+  // regionX (left/right) → modelZ (left/right), same sign
+  const modelZ = regionPos[0] * 0.29;
+  // regionZ (front/back) → modelX (front/back), same sign
+  const modelX = regionPos[2] * 0.30;
+
+  return [modelX, modelY, modelZ];
 }
 
 function HumanBodyModel({
@@ -79,36 +181,32 @@ function HumanBodyModel({
     return clone;
   }, [scene]);
 
-  // Scale adjustments for female body shape
+  // Female proportions: narrower shoulders, slightly wider hips
   const bodyScale: [number, number, number] = sex === "F"
-    ? [3.8, 4.0, 3.8]   // slightly narrower shoulders
+    ? [3.7, 3.9, 3.7]
     : [4.0, 4.0, 4.0];
 
-  // Hip scale for female (applied to a wrapper)
-  // We apply a non-uniform scale to approximate female proportions
-
-  // Selected region markers (in model-local space)
   const selectedMarkers = useMemo(() => {
-    return BODY_REGIONS.filter((r) => selectedRegions.has(r.id)).map((region) => {
-      const pos = regionToModelLocal(region.position);
-      return { id: region.id, pos: [pos.x, pos.y, pos.z] as [number, number, number] };
-    });
+    return BODY_REGIONS.filter((r) => selectedRegions.has(r.id)).map((region) => ({
+      id: region.id,
+      pos: regionPosToModelLocal(region.position),
+    }));
   }, [selectedRegions]);
 
-  // Visible acupoints (in model-local space)
   const visibleAcupoints = useMemo(() => {
     if (!showAcupoints) return [];
-    return ACUPOINTS.filter((p) => relevantMeridians.has(p.meridian)).map((point) => {
-      const pos = regionToModelLocal(point.position);
-      return { ...point, mappedPos: [pos.x, pos.y, pos.z] as [number, number, number] };
-    });
+    return ACUPOINTS.filter((p) => relevantMeridians.has(p.meridian)).map((point) => ({
+      ...point,
+      mappedPos: regionPosToModelLocal(point.position),
+    }));
   }, [showAcupoints, relevantMeridians]);
 
   const handleClick = (e: ThreeEvent<MouseEvent>) => {
     e.stopPropagation();
     if (e.point && modelRef.current) {
       const localPoint = modelRef.current.worldToLocal(e.point.clone());
-      const region = findClosestRegion(localPoint);
+      const zone = getZoneFromPoint(localPoint);
+      const region = refineRegionInZone(zone, localPoint);
       if (region) onSelectRegion(region);
     }
   };
@@ -117,9 +215,10 @@ function HumanBodyModel({
     e.stopPropagation();
     if (e.point && modelRef.current) {
       const localPoint = modelRef.current.worldToLocal(e.point.clone());
-      const region = findClosestRegion(localPoint);
+      const zone = getZoneFromPoint(localPoint);
+      const region = refineRegionInZone(zone, localPoint);
       onHoverRegion(region);
-      document.body.style.cursor = region ? "pointer" : "default";
+      document.body.style.cursor = "pointer";
     }
   };
 
@@ -138,18 +237,18 @@ function HumanBodyModel({
           onPointerOut={handlePointerOut}
         />
 
-        {/* Red markers on selected regions */}
+        {/* Red pulsing markers on selected regions */}
         {selectedMarkers.map((m) => (
           <PulsingMarker
             key={`sel-${m.id}`}
             position={m.pos}
             color="#ef4444"
             emissive="#dc2626"
-            size={0.014}
+            size={0.015}
           />
         ))}
 
-        {/* Acupoint markers */}
+        {/* Green acupoint markers */}
         {visibleAcupoints.map((p) => (
           <group key={p.id}>
             <PulsingMarker
@@ -159,7 +258,7 @@ function HumanBodyModel({
               size={0.008}
             />
             <Text
-              position={[p.mappedPos[0], p.mappedPos[1] + 0.015, p.mappedPos[2]]}
+              position={[p.mappedPos[0], p.mappedPos[1] + 0.016, p.mappedPos[2]]}
               fontSize={0.008}
               color="#16a34a"
               anchorX="center"
@@ -242,11 +341,10 @@ export default function BodyModel3D({
         </Suspense>
         <OrbitControls
           enablePan={false}
-          enableZoom={true}
-          minDistance={1.0}
-          maxDistance={4}
-          minPolarAngle={Math.PI * 0.1}
-          maxPolarAngle={Math.PI * 0.9}
+          enableZoom={false}
+          enableRotate={true}
+          minPolarAngle={Math.PI * 0.15}
+          maxPolarAngle={Math.PI * 0.85}
         />
       </Canvas>
 
@@ -288,5 +386,4 @@ export default function BodyModel3D({
   );
 }
 
-// Preload model
 useGLTF.preload("/geometries/human_body.glb");
