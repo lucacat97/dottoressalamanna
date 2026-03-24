@@ -7,6 +7,7 @@ import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { getBranding, generateHtmlHeader } from "../BrandingSettings";
 import BodyModel3D from "./BodyModel3D";
+import ReportRenderer from "./ReportRenderer";
 import { BODY_REGIONS, type BodyRegion } from "./bodyRegions";
 
 const DISCLAIMER = `⚠️ Disclaimer: Questo strumento fornisce esclusivamente un supporto all'analisi clinica basata sui principi della Medicina Tradizionale Cinese e NON costituisce in alcun modo una diagnosi medica. La responsabilità diagnostica e terapeutica resta interamente in capo al professionista sanitario.`;
@@ -270,22 +271,24 @@ export default function SistemicaTool() {
       {/* Results - download only */}
       {resultMarkdown && (
         <div className="bg-card border border-border rounded-xl p-5 space-y-4">
-          <div className="flex items-center gap-2">
-            <Sparkles size={16} className="text-primary" />
-            <h3 className="font-display text-sm font-bold text-foreground">Referto MTC Generato</h3>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Sparkles size={16} className="text-primary" />
+              <h3 className="font-display text-sm font-bold text-foreground">Referto MTC Generato</h3>
+            </div>
+            <div className="flex gap-2">
+              <Button variant="outline" size="sm" onClick={() => downloadDoc("doc")}>
+                <Download size={14} className="mr-1.5" />
+                Word
+              </Button>
+              <Button variant="outline" size="sm" onClick={() => downloadDoc("pdf")}>
+                <FileDown size={14} className="mr-1.5" />
+                PDF/HTML
+              </Button>
+            </div>
           </div>
-          <p className="font-body text-xs text-muted-foreground">
-            Il referto è pronto. Scaricalo nel formato desiderato.
-          </p>
-          <div className="flex gap-3">
-            <Button variant="outline" size="sm" onClick={() => downloadDoc("doc")}>
-              <Download size={14} className="mr-1.5" />
-              Scarica Word
-            </Button>
-            <Button variant="outline" size="sm" onClick={() => downloadDoc("pdf")}>
-              <FileDown size={14} className="mr-1.5" />
-              Scarica PDF/HTML
-            </Button>
+          <div className="border-t border-border pt-4">
+            <ReportRenderer markdown={resultMarkdown} />
           </div>
         </div>
       )}
