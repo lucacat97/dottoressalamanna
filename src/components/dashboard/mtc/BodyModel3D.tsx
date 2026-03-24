@@ -373,7 +373,7 @@ const BodyModel3D = forwardRef<HTMLDivElement, BodyModel3DProps>(function BodyMo
         <div className="absolute top-3 left-3 bg-card/95 backdrop-blur-sm border border-border rounded-lg px-3 py-2 shadow-lg pointer-events-none max-w-xs">
           <p className="font-display text-xs font-bold text-foreground">{hoveredRegion.name}</p>
           <p className="font-body text-[10px] text-muted-foreground mt-0.5">{hoveredRegion.description}</p>
-          <p className="font-body text-[10px] text-primary/70 mt-1">Meridiani: {hoveredRegion.meridians.join(", ")}</p>
+          <p className="font-body text-[10px] text-primary/70 mt-1">Meridiani: {meridianLabels(hoveredRegion.meridians)}</p>
         </div>
       )}
 
