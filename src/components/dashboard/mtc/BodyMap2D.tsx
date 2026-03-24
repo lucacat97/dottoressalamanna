@@ -90,7 +90,7 @@ export default function BodyMap2D({
 
         return (
           <button
-            key={`${view}-${region.id}`}
+            key={`${view}-${regionKey(region)}`}
             type="button"
             title={region.name}
             onMouseEnter={() => setHoveredRegion(region)}
