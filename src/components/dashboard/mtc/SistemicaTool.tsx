@@ -1,15 +1,18 @@
-import { useState } from "react";
-import { Loader2, Download, FileDown, RotateCcw, AlertTriangle, Sparkles, MessageSquareText } from "lucide-react";
+import { useState, useMemo } from "react";
+import { Loader2, Download, FileDown, RotateCcw, AlertTriangle, Sparkles, MessageSquareText, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { getBranding, generateHtmlHeader } from "../BrandingSettings";
 import BodyModel3D from "./BodyModel3D";
 import ReportRenderer from "./ReportRenderer";
-import { BODY_REGIONS, type BodyRegion, regionKey } from "./bodyRegions";
+import { BODY_REGIONS, type BodyRegion, regionKey, meridianLabels } from "./bodyRegions";
+import { cn } from "@/lib/utils";
 
 const DISCLAIMER = `⚠️ Disclaimer: Questo strumento fornisce esclusivamente un supporto all'analisi clinica basata sui principi della Medicina Tradizionale Cinese e NON costituisce in alcun modo una diagnosi medica. La responsabilità diagnostica e terapeutica resta interamente in capo al professionista sanitario.`;
 
