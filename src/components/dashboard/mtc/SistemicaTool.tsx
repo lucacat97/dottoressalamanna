@@ -65,10 +65,11 @@ export default function SistemicaTool() {
   const handleToggleRegion = (region: BodyRegion) => {
     setSelectedRegions(prev => {
       const next = new Set(prev);
-      if (next.has(region.id)) {
-        next.delete(region.id);
+      const rk = regionKey(region);
+      if (next.has(rk)) {
+        next.delete(rk);
       } else {
-        next.add(region.id);
+        next.add(rk);
       }
       return next;
     });
