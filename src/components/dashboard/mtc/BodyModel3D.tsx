@@ -223,9 +223,9 @@ function HumanBodyModel({
   const bodyScale: [number, number, number] = sex === "F" ? [3.7, 3.9, 3.7] : [4.0, 4.0, 4.0];
 
   const selectedMarkers = useMemo(() =>
-    BODY_REGIONS.filter(r => selectedRegions.has(r.id)).map(r => ({
-      id: r.id,
-      pos: markerPositions.get(r.id) ?? regionToGlb(r.position, glb),
+    BODY_REGIONS.filter(r => selectedRegions.has(regionKey(r))).map(r => ({
+      id: regionKey(r),
+      pos: markerPositions.get(regionKey(r)) ?? regionToGlb(r.position, glb),
     })),
   [selectedRegions, markerPositions, glb]);
 
