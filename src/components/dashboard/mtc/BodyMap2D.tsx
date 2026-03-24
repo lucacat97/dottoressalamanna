@@ -86,7 +86,7 @@ export default function BodyMap2D({
 
       {regions.map((region) => {
         const { x, y } = toPercent(region.position, regionBounds);
-        const isSelected = selectedRegions.has(region.id);
+        const isSelected = selectedRegions.has(regionKey(region));
 
         return (
           <button
