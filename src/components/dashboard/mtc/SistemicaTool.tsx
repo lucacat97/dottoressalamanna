@@ -9,7 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { getBranding, generateHtmlHeader } from "../BrandingSettings";
 import BodyModel3D from "./BodyModel3D";
 import ReportRenderer from "./ReportRenderer";
-import { BODY_REGIONS, type BodyRegion } from "./bodyRegions";
+import { BODY_REGIONS, type BodyRegion, regionKey } from "./bodyRegions";
 
 const DISCLAIMER = `⚠️ Disclaimer: Questo strumento fornisce esclusivamente un supporto all'analisi clinica basata sui principi della Medicina Tradizionale Cinese e NON costituisce in alcun modo una diagnosi medica. La responsabilità diagnostica e terapeutica resta interamente in capo al professionista sanitario.`;
 
@@ -65,10 +65,11 @@ export default function SistemicaTool() {
   const handleToggleRegion = (region: BodyRegion) => {
     setSelectedRegions(prev => {
       const next = new Set(prev);
-      if (next.has(region.id)) {
-        next.delete(region.id);
+      const rk = regionKey(region);
+      if (next.has(rk)) {
+        next.delete(rk);
       } else {
-        next.add(region.id);
+        next.add(rk);
       }
       return next;
     });
@@ -90,15 +91,15 @@ export default function SistemicaTool() {
         return;
       }
 
-      const painPoints = Array.from(selectedRegions).map(id => {
-        const region = BODY_REGIONS.find(r => r.id === id)!;
-        return { region: region.name, description: region.description };
+      const painPoints = Array.from(selectedRegions).map(rk => {
+        const region = BODY_REGIONS.find(r => regionKey(r) === rk)!;
+        return { region: region.name, description: region.description, side: region.side };
       });
 
       // Collect meridians from selected regions
       const meridiansSet = new Set<string>();
-      selectedRegions.forEach(id => {
-        const region = BODY_REGIONS.find(r => r.id === id);
+      selectedRegions.forEach(rk => {
+        const region = BODY_REGIONS.find(r => regionKey(r) === rk);
         region?.meridians.forEach(m => meridiansSet.add(m));
       });
       setRelevantMeridians(meridiansSet);

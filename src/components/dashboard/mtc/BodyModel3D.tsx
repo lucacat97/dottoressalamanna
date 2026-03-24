@@ -2,7 +2,7 @@ import { useState, useRef, useMemo, useEffect, useCallback, Suspense, forwardRef
 import { Canvas, useFrame, ThreeEvent } from "@react-three/fiber";
 import { OrbitControls, useGLTF, Text } from "@react-three/drei";
 import * as THREE from "three";
-import { BODY_REGIONS, ACUPOINTS, type BodyRegion } from "./bodyRegions";
+import { BODY_REGIONS, ACUPOINTS, type BodyRegion, regionKey, meridianLabels } from "./bodyRegions";
 
 /* ─────────────────────── Bounds helpers ─────────────────────── */
 
@@ -133,11 +133,11 @@ function getRegionScore(localPt: THREE.Vector3, volume: RegionVolume) {
   const frontBackMismatch = Math.sign(localPt.x) !== 0 && Math.sign(volume.center.x) !== 0 && Math.sign(localPt.x) !== Math.sign(volume.center.x);
 
   let score: number;
-  if (volume.region.geometry === "sphere") {
+  if (volume.region.geometry.type === "sphere") {
     const radius = Math.max(((volume.halfExtents.x + volume.halfExtents.y + volume.halfExtents.z) / 3) * 1.5, 0.006);
     const dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
     score = (dist / radius) ** 2;
-  } else if (volume.region.geometry === "capsule") {
+  } else if (volume.region.geometry.type === "capsule") {
     score =
       (dx / (volume.halfExtents.x * 1.25)) ** 2 +
       (dy / (volume.halfExtents.y * 1.8)) ** 2 +
@@ -223,9 +223,9 @@ function HumanBodyModel({
   const bodyScale: [number, number, number] = sex === "F" ? [3.7, 3.9, 3.7] : [4.0, 4.0, 4.0];
 
   const selectedMarkers = useMemo(() =>
-    BODY_REGIONS.filter(r => selectedRegions.has(r.id)).map(r => ({
-      id: r.id,
-      pos: markerPositions.get(r.id) ?? regionToGlb(r.position, glb),
+    BODY_REGIONS.filter(r => selectedRegions.has(regionKey(r))).map(r => ({
+      id: regionKey(r),
+      pos: markerPositions.get(regionKey(r)) ?? regionToGlb(r.position, glb),
     })),
   [selectedRegions, markerPositions, glb]);
 
@@ -251,8 +251,9 @@ function HumanBodyModel({
     console.log("[BodyModel3D] CLICK local:", result.local.toArray().map(n => n.toFixed(4)),
       "→ region:", result.regionPt.map(n => Number(n.toFixed(2))),
       "→", result.region.name);
-    const wasSel = selectedRegions.has(result.region.id);
-    onMarkerPoint(result.region.id, [result.local.x, result.local.y, result.local.z], wasSel);
+    const rk = regionKey(result.region);
+    const wasSel = selectedRegions.has(rk);
+    onMarkerPoint(rk, [result.local.x, result.local.y, result.local.z], wasSel);
     onSelectRegion(result.region);
   };
 
@@ -373,7 +374,7 @@ const BodyModel3D = forwardRef<HTMLDivElement, BodyModel3DProps>(function BodyMo
         <div className="absolute top-3 left-3 bg-card/95 backdrop-blur-sm border border-border rounded-lg px-3 py-2 shadow-lg pointer-events-none max-w-xs">
           <p className="font-display text-xs font-bold text-foreground">{hoveredRegion.name}</p>
           <p className="font-body text-[10px] text-muted-foreground mt-0.5">{hoveredRegion.description}</p>
-          <p className="font-body text-[10px] text-primary/70 mt-1">Meridiani: {hoveredRegion.meridians.join(", ")}</p>
+          <p className="font-body text-[10px] text-primary/70 mt-1">Meridiani: {meridianLabels(hoveredRegion.meridians)}</p>
         </div>
       )}
 

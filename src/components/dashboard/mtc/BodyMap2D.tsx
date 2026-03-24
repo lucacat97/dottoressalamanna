@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { ACUPOINTS, BODY_REGIONS, type BodyRegion } from "./bodyRegions";
+import { ACUPOINTS, BODY_REGIONS, type BodyRegion, regionKey, meridianLabels } from "./bodyRegions";
 
 interface BodyMap2DProps {
   sex: "M" | "F";
@@ -86,11 +86,11 @@ export default function BodyMap2D({
 
       {regions.map((region) => {
         const { x, y } = toPercent(region.position, regionBounds);
-        const isSelected = selectedRegions.has(region.id);
+        const isSelected = selectedRegions.has(regionKey(region));
 
         return (
           <button
-            key={`${view}-${region.id}`}
+            key={`${view}-${regionKey(region)}`}
             type="button"
             title={region.name}
             onMouseEnter={() => setHoveredRegion(region)}
@@ -145,7 +145,7 @@ export default function BodyMap2D({
           <p className="font-display text-xs font-bold text-foreground">{hoveredRegion.name}</p>
           <p className="mt-0.5 font-body text-[10px] text-muted-foreground">{hoveredRegion.description}</p>
           <p className="mt-1 font-body text-[10px] text-primary/70">
-            Meridiani: {hoveredRegion.meridians.join(", ")}
+            Meridiani: {meridianLabels(hoveredRegion.meridians)}
           </p>
         </div>
       )}
