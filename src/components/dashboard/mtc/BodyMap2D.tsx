@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { ACUPOINTS, BODY_REGIONS, type BodyRegion } from "./bodyRegions";
+import { ACUPOINTS, BODY_REGIONS, type BodyRegion, regionKey, meridianLabels } from "./bodyRegions";
 
 interface BodyMap2DProps {
   sex: "M" | "F";
