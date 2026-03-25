@@ -162,44 +162,36 @@ const ToolsSection = () => {
                 <button
                   key={tool.id}
                   onClick={() => allowed && setActiveTool(tool.id)}
-                  disabled={!allowed}
-                  className={`group relative overflow-hidden rounded-2xl border text-left transition-all w-full ${
+                  className={`group relative overflow-hidden rounded-2xl border text-left transition-all w-full border-border bg-card ${
                     allowed
-                      ? "border-border bg-card hover:shadow-lg hover:border-primary/30 hover:-translate-y-1 cursor-pointer"
-                      : "border-border/50 bg-muted/30 cursor-not-allowed opacity-60"
+                      ? "hover:shadow-lg hover:border-primary/30 hover:-translate-y-1 cursor-pointer"
+                      : "cursor-not-allowed"
                   }`}
                 >
-                  <div className={`h-2 bg-gradient-to-r ${allowed ? tool.gradient : "from-muted to-muted"}`} />
+                  <div className={`h-2 bg-gradient-to-r ${tool.gradient}`} />
                   <div className="p-6 space-y-4">
-                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center border transition-transform ${
-                      allowed
-                        ? "bg-gradient-to-br from-primary/10 to-primary/5 border-primary/10 group-hover:scale-110"
-                        : "bg-muted/50 border-border/30"
-                    }`}>
-                      {allowed ? (
-                        <tool.icon size={24} className={tool.accentColor} />
-                      ) : (
-                        <Lock size={20} className="text-muted-foreground" />
+                    <div className="w-12 h-12 rounded-xl flex items-center justify-center border bg-gradient-to-br from-primary/10 to-primary/5 border-primary/10 transition-transform group-hover:scale-110 relative">
+                      <tool.icon size={24} className={tool.accentColor} />
+                      {!allowed && (
+                        <div className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-destructive/90 flex items-center justify-center">
+                          <Lock size={10} className="text-destructive-foreground" />
+                        </div>
                       )}
                     </div>
                     <div className="space-y-1.5">
-                      <h3 className={`font-display text-base font-bold transition-colors ${
-                        allowed ? "text-foreground group-hover:text-primary" : "text-muted-foreground"
-                      }`}>
+                      <h3 className="font-display text-base font-bold transition-colors text-foreground group-hover:text-primary">
                         {tool.title}
                       </h3>
-                      <p className={`font-body text-xs font-medium uppercase tracking-wider ${
-                        allowed ? "text-primary/70" : "text-muted-foreground/50"
-                      }`}>
+                      <p className="font-body text-xs font-medium uppercase tracking-wider text-primary/70">
                         {tool.subtitle}
                       </p>
                       <p className="font-body text-sm text-muted-foreground leading-relaxed">
                         {tool.description}
                       </p>
                     </div>
-                    <div className={`flex items-center gap-1.5 font-body text-xs font-semibold ${
-                      allowed ? "text-primary group-hover:gap-2.5" : "text-muted-foreground/50"
-                    } transition-all`}>
+                    <div className={`flex items-center gap-1.5 font-body text-xs font-semibold transition-all ${
+                      allowed ? "text-primary group-hover:gap-2.5" : "text-muted-foreground"
+                    }`}>
                       {allowed ? (
                         <>
                           Apri strumento
