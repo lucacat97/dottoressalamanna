@@ -37,7 +37,7 @@ const tools: ToolCard[] = [
     subtitle: "Cefalometria Bjork-Jarabak",
     description: "Inserisci i valori cefalometrici e ottieni classe scheletrica, divergenza e dispositivo terapeutico consigliato.",
     icon: Ruler,
-    gradient: "from-[hsl(var(--gold))]/80 via-[hsl(var(--gold))]/60 to-[hsl(var(--gold))]/40",
+    gradient: "from-petrolio via-petrolio-dark to-petrolio",
     accentColor: "text-petrolio",
     apiToolKeys: ["orthodontic"],
   },
