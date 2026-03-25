@@ -208,6 +208,7 @@ export type Database = {
       }
       course_registrations: {
         Row: {
+          confirmed: boolean
           created_at: string
           edition_id: string
           email: string
@@ -218,6 +219,7 @@ export type Database = {
           registered_by: string | null
         }
         Insert: {
+          confirmed?: boolean
           created_at?: string
           edition_id: string
           email: string
@@ -228,6 +230,7 @@ export type Database = {
           registered_by?: string | null
         }
         Update: {
+          confirmed?: boolean
           created_at?: string
           edition_id?: string
           email?: string

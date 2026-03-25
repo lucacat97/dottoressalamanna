@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Mail, Phone, Calendar, Trash2, ChevronDown, ChevronUp } from "lucide-react";
+import { Mail, Phone, Calendar, Trash2, ChevronDown, ChevronUp, CheckCircle, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
 
@@ -12,6 +12,7 @@ interface Registration {
   phone: string | null;
   notes: string | null;
   created_at: string;
+  confirmed: boolean;
 }
 
 interface Edition {
@@ -37,6 +38,21 @@ const AdminRegistrations = ({ editions }: { editions: Edition[] }) => {
   useEffect(() => {
     fetchRegistrations();
   }, []);
+
+  const handleToggleConfirm = async (id: string, currentValue: boolean) => {
+    const { error } = await supabase
+      .from("course_registrations")
+      .update({ confirmed: !currentValue } as any)
+      .eq("id", id);
+    if (error) {
+      toast({ title: "Errore", description: "Impossibile aggiornare lo stato.", variant: "destructive" });
+    } else {
+      setRegistrations((prev) =>
+        prev.map((r) => (r.id === id ? { ...r, confirmed: !currentValue } : r))
+      );
+      toast({ title: !currentValue ? "Iscrizione confermata" : "Conferma revocata" });
+    }
+  };
 
   const handleDelete = async (id: string) => {
     const { error } = await supabase.from("course_registrations").delete().eq("id", id);
@@ -112,14 +128,25 @@ const AdminRegistrations = ({ editions }: { editions: Edition[] }) => {
                           <p className="font-body text-xs text-muted-foreground mt-1 italic">"{reg.notes}"</p>
                         )}
                       </div>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="text-destructive hover:text-destructive hover:bg-destructive/10 flex-shrink-0"
-                        onClick={() => handleDelete(reg.id)}
-                      >
-                        <Trash2 size={14} />
-                      </Button>
+                      <div className="flex items-center gap-1 flex-shrink-0">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className={reg.confirmed ? "text-green-600 hover:text-green-700 hover:bg-green-50" : "text-muted-foreground hover:text-foreground hover:bg-muted"}
+                          onClick={() => handleToggleConfirm(reg.id, reg.confirmed)}
+                          title={reg.confirmed ? "Confermata – clicca per revocare" : "Non confermata – clicca per confermare"}
+                        >
+                          {reg.confirmed ? <CheckCircle size={16} /> : <XCircle size={16} />}
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                          onClick={() => handleDelete(reg.id)}
+                        >
+                          <Trash2 size={14} />
+                        </Button>
+                      </div>
                     </div>
                   ))
                 )}
