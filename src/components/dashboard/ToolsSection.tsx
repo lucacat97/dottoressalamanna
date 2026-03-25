@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Brain, Sparkles, ArrowLeft, Ruler, Leaf, Lock } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import DiagnosisTool from "./DiagnosisTool";
@@ -153,68 +154,86 @@ const ToolsSection = () => {
       {loadingPerms ? (
         <p className="font-body text-sm text-muted-foreground">Caricamento permessi...</p>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {tools.map((tool) => {
-            const allowed = isToolAllowed(tool);
-            return (
-              <button
-                key={tool.id}
-                onClick={() => allowed && setActiveTool(tool.id)}
-                disabled={!allowed}
-                className={`group relative overflow-hidden rounded-2xl border text-left transition-all ${
-                  allowed
-                    ? "border-border bg-card hover:shadow-lg hover:border-primary/30 hover:-translate-y-1 cursor-pointer"
-                    : "border-border/50 bg-muted/30 cursor-not-allowed opacity-60"
-                }`}
-              >
-                <div className={`h-2 bg-gradient-to-r ${allowed ? tool.gradient : "from-muted to-muted"}`} />
-                <div className="p-6 space-y-4">
-                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center border transition-transform ${
+        <TooltipProvider delayDuration={300}>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            {tools.map((tool) => {
+              const allowed = isToolAllowed(tool);
+              const card = (
+                <button
+                  key={tool.id}
+                  onClick={() => allowed && setActiveTool(tool.id)}
+                  disabled={!allowed}
+                  className={`group relative overflow-hidden rounded-2xl border text-left transition-all w-full ${
                     allowed
-                      ? "bg-gradient-to-br from-primary/10 to-primary/5 border-primary/10 group-hover:scale-110"
-                      : "bg-muted/50 border-border/30"
-                  }`}>
-                    {allowed ? (
-                      <tool.icon size={24} className={tool.accentColor} />
-                    ) : (
-                      <Lock size={20} className="text-muted-foreground" />
-                    )}
-                  </div>
-                  <div className="space-y-1.5">
-                    <h3 className={`font-display text-base font-bold transition-colors ${
-                      allowed ? "text-foreground group-hover:text-primary" : "text-muted-foreground"
+                      ? "border-border bg-card hover:shadow-lg hover:border-primary/30 hover:-translate-y-1 cursor-pointer"
+                      : "border-border/50 bg-muted/30 cursor-not-allowed opacity-60"
+                  }`}
+                >
+                  <div className={`h-2 bg-gradient-to-r ${allowed ? tool.gradient : "from-muted to-muted"}`} />
+                  <div className="p-6 space-y-4">
+                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center border transition-transform ${
+                      allowed
+                        ? "bg-gradient-to-br from-primary/10 to-primary/5 border-primary/10 group-hover:scale-110"
+                        : "bg-muted/50 border-border/30"
                     }`}>
-                      {tool.title}
-                    </h3>
-                    <p className={`font-body text-xs font-medium uppercase tracking-wider ${
-                      allowed ? "text-primary/70" : "text-muted-foreground/50"
-                    }`}>
-                      {tool.subtitle}
-                    </p>
-                    <p className="font-body text-sm text-muted-foreground leading-relaxed">
-                      {allowed ? tool.description : "Non sei abilitato a questo strumento. Contatta l'amministratore per richiedere l'accesso."}
-                    </p>
+                      {allowed ? (
+                        <tool.icon size={24} className={tool.accentColor} />
+                      ) : (
+                        <Lock size={20} className="text-muted-foreground" />
+                      )}
+                    </div>
+                    <div className="space-y-1.5">
+                      <h3 className={`font-display text-base font-bold transition-colors ${
+                        allowed ? "text-foreground group-hover:text-primary" : "text-muted-foreground"
+                      }`}>
+                        {tool.title}
+                      </h3>
+                      <p className={`font-body text-xs font-medium uppercase tracking-wider ${
+                        allowed ? "text-primary/70" : "text-muted-foreground/50"
+                      }`}>
+                        {tool.subtitle}
+                      </p>
+                      <p className="font-body text-sm text-muted-foreground leading-relaxed">
+                        {tool.description}
+                      </p>
+                    </div>
+                    <div className={`flex items-center gap-1.5 font-body text-xs font-semibold ${
+                      allowed ? "text-primary group-hover:gap-2.5" : "text-muted-foreground/50"
+                    } transition-all`}>
+                      {allowed ? (
+                        <>
+                          Apri strumento
+                          <ArrowLeft size={12} className="rotate-180" />
+                        </>
+                      ) : (
+                        <>
+                          <Lock size={11} />
+                          Accesso non abilitato
+                        </>
+                      )}
+                    </div>
                   </div>
-                  <div className={`flex items-center gap-1.5 font-body text-xs font-semibold ${
-                    allowed ? "text-primary group-hover:gap-2.5" : "text-muted-foreground/50"
-                  } transition-all`}>
-                    {allowed ? (
-                      <>
-                        Apri strumento
-                        <ArrowLeft size={12} className="rotate-180" />
-                      </>
-                    ) : (
-                      <>
-                        <Lock size={11} />
-                        Accesso non abilitato
-                      </>
-                    )}
-                  </div>
-                </div>
-              </button>
-            );
-          })}
-        </div>
+                </button>
+              );
+
+              if (!allowed) {
+                return (
+                  <Tooltip key={tool.id}>
+                    <TooltipTrigger asChild>
+                      <div>{card}</div>
+                    </TooltipTrigger>
+                    <TooltipContent side="top" className="flex items-center gap-2 max-w-xs">
+                      <Lock size={14} className="text-muted-foreground shrink-0" />
+                      <span>Non sei abilitato a questo strumento. Contatta l'amministratore per richiedere l'accesso.</span>
+                    </TooltipContent>
+                  </Tooltip>
+                );
+              }
+
+              return card;
+            })}
+          </div>
+        </TooltipProvider>
       )}
     </div>
   );
