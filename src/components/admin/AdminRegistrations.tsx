@@ -39,6 +39,21 @@ const AdminRegistrations = ({ editions }: { editions: Edition[] }) => {
     fetchRegistrations();
   }, []);
 
+  const handleToggleConfirm = async (id: string, currentValue: boolean) => {
+    const { error } = await supabase
+      .from("course_registrations")
+      .update({ confirmed: !currentValue } as any)
+      .eq("id", id);
+    if (error) {
+      toast({ title: "Errore", description: "Impossibile aggiornare lo stato.", variant: "destructive" });
+    } else {
+      setRegistrations((prev) =>
+        prev.map((r) => (r.id === id ? { ...r, confirmed: !currentValue } : r))
+      );
+      toast({ title: !currentValue ? "Iscrizione confermata" : "Conferma revocata" });
+    }
+  };
+
   const handleDelete = async (id: string) => {
     const { error } = await supabase.from("course_registrations").delete().eq("id", id);
     if (error) {
