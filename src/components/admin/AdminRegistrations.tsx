@@ -12,6 +12,7 @@ interface Registration {
   phone: string | null;
   notes: string | null;
   created_at: string;
+  confirmed: boolean;
 }
 
 interface Edition {
