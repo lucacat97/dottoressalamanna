@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Mail, Phone, Calendar, Trash2, ChevronDown, ChevronUp } from "lucide-react";
+import { Mail, Phone, Calendar, Trash2, ChevronDown, ChevronUp, CheckCircle, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
 
