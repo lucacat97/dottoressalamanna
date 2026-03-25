@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Brain, Sparkles, ArrowLeft, Ruler, Leaf, Lock } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import DiagnosisTool from "./DiagnosisTool";
