@@ -128,14 +128,25 @@ const AdminRegistrations = ({ editions }: { editions: Edition[] }) => {
                           <p className="font-body text-xs text-muted-foreground mt-1 italic">"{reg.notes}"</p>
                         )}
                       </div>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="text-destructive hover:text-destructive hover:bg-destructive/10 flex-shrink-0"
-                        onClick={() => handleDelete(reg.id)}
-                      >
-                        <Trash2 size={14} />
-                      </Button>
+                      <div className="flex items-center gap-1 flex-shrink-0">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className={reg.confirmed ? "text-green-600 hover:text-green-700 hover:bg-green-50" : "text-muted-foreground hover:text-foreground hover:bg-muted"}
+                          onClick={() => handleToggleConfirm(reg.id, reg.confirmed)}
+                          title={reg.confirmed ? "Confermata – clicca per revocare" : "Non confermata – clicca per confermare"}
+                        >
+                          {reg.confirmed ? <CheckCircle size={16} /> : <XCircle size={16} />}
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                          onClick={() => handleDelete(reg.id)}
+                        >
+                          <Trash2 size={14} />
+                        </Button>
+                      </div>
                     </div>
                   ))
                 )}
