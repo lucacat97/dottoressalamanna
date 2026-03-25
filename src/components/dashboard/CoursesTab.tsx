@@ -1,7 +1,7 @@
-import { Calendar, MapPin, FileText, Download, Monitor, Brain, Image, FileSpreadsheet, File, Eye } from "lucide-react";
+import { Calendar, MapPin, FileText, Download, Monitor, Brain, Image, FileSpreadsheet, File, Lock } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 interface CourseEdition {
   id: string;
@@ -77,7 +77,6 @@ const MaterialThumbnail = ({ material, onDownload }: { material: CourseMaterial;
       onClick={() => onDownload(material)}
       onMouseEnter={handlePreview}
     >
-      {/* Thumbnail area */}
       <div className={`w-full aspect-square rounded-md flex items-center justify-center mb-2 overflow-hidden ${isImage && previewUrl ? "" : colorClass}`}>
         {isImage && previewUrl ? (
           <img src={previewUrl} alt={material.file_name} className="w-full h-full object-cover rounded-md" />
@@ -88,16 +87,12 @@ const MaterialThumbnail = ({ material, onDownload }: { material: CourseMaterial;
           </div>
         )}
       </div>
-
-      {/* File name */}
       <p className="font-body text-xs text-foreground text-center truncate w-full" title={material.file_name}>
         {material.file_name}
       </p>
       {material.file_size && (
         <p className="font-body text-[10px] text-muted-foreground">{formatSize(material.file_size)}</p>
       )}
-
-      {/* Hover overlay */}
       <div className="absolute inset-0 rounded-lg bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
         <Download size={20} className="text-primary" />
       </div>
@@ -106,6 +101,33 @@ const MaterialThumbnail = ({ material, onDownload }: { material: CourseMaterial;
 };
 
 const CoursesTab = ({ editions, materials, onDownload }: CoursesTabProps) => {
+  const [accessMap, setAccessMap] = useState<Record<string, boolean>>({});
+  const [accessLoading, setAccessLoading] = useState(true);
+
+  useEffect(() => {
+    const checkAccess = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user || editions.length === 0) {
+        setAccessLoading(false);
+        return;
+      }
+
+      const results: Record<string, boolean> = {};
+      await Promise.all(
+        editions.map(async (edition) => {
+          const { data } = await supabase.rpc("has_course_access", {
+            _user_id: user.id,
+            _edition_id: edition.id,
+          });
+          results[edition.id] = data === true;
+        })
+      );
+      setAccessMap(results);
+      setAccessLoading(false);
+    };
+    checkAccess();
+  }, [editions]);
+
   const getMaterialsForEdition = (editionId: string) =>
     materials.filter((m) => m.edition_id === editionId);
 
@@ -126,56 +148,76 @@ const CoursesTab = ({ editions, materials, onDownload }: CoursesTabProps) => {
           </TabsTrigger>
         </TabsList>
 
-        {["live", "webinar"].map((type) => (
-          <TabsContent key={type} value={type}>
-            <div className="grid gap-6">
-              {editions.filter((e) => (e.type || "live") === type).map((edition) => {
-                const editionMaterials = getMaterialsForEdition(edition.id);
-                return (
-                  <div key={edition.id} className="bg-card border border-border rounded-lg p-6 hover:shadow-card transition-shadow">
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
-                      <div>
-                        <h3 className="font-display text-lg font-semibold text-foreground">{edition.title}</h3>
-                        <div className="flex flex-wrap items-center gap-4 mt-1 text-sm text-muted-foreground">
-                          <span className="flex items-center gap-1"><Calendar size={14} />{formatDate(edition.date)}</span>
-                          {edition.location && <span className="flex items-center gap-1"><MapPin size={14} />{edition.location}</span>}
-                        </div>
-                      </div>
-                      <span className={`font-body text-xs font-semibold px-3 py-1 rounded-full whitespace-nowrap ${edition.status === "completed" ? "bg-primary/10 text-petrolio" : "bg-gold/10 text-gold"}`}>
-                        {edition.status === "completed" ? "Completato" : "In programma"}
-                      </span>
-                    </div>
+        {["live", "webinar"].map((type) => {
+          const typeEditions = editions.filter((e) => (e.type || "live") === type);
+          return (
+            <TabsContent key={type} value={type}>
+              <div className="grid gap-6">
+                {typeEditions.map((edition) => {
+                  const hasAccess = accessMap[edition.id] ?? false;
+                  const editionMaterials = getMaterialsForEdition(edition.id);
 
-                    {editionMaterials.length > 0 ? (
-                      <div className="border-t border-border pt-4">
-                        <p className="font-body text-xs uppercase tracking-wider text-muted-foreground mb-3">
-                          <FileText size={12} className="inline mr-1" />
-                          {editionMaterials.length} materiale/i disponibile/i
-                        </p>
-                        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3">
-                          {editionMaterials.map((mat) => (
-                            <MaterialThumbnail key={mat.id} material={mat} onDownload={onDownload} />
-                          ))}
+                  return (
+                    <div key={edition.id} className="bg-card border border-border rounded-lg p-6 hover:shadow-card transition-shadow">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+                        <div>
+                          <h3 className="font-display text-lg font-semibold text-foreground">{edition.title}</h3>
+                          <div className="flex flex-wrap items-center gap-4 mt-1 text-sm text-muted-foreground">
+                            <span className="flex items-center gap-1"><Calendar size={14} />{formatDate(edition.date)}</span>
+                            {edition.location && <span className="flex items-center gap-1"><MapPin size={14} />{edition.location}</span>}
+                          </div>
                         </div>
+                        <span className={`font-body text-xs font-semibold px-3 py-1 rounded-full whitespace-nowrap ${edition.status === "completed" ? "bg-primary/10 text-petrolio" : "bg-gold/10 text-gold"}`}>
+                          {edition.status === "completed" ? "Completato" : "In programma"}
+                        </span>
                       </div>
-                    ) : (
-                      <div className="border-t border-border pt-4">
-                        <p className="font-body text-sm text-muted-foreground italic">Nessun materiale disponibile al momento.</p>
-                      </div>
-                    )}
+
+                      {accessLoading ? (
+                        <div className="border-t border-border pt-4">
+                          <p className="font-body text-sm text-muted-foreground italic">Verifica accesso...</p>
+                        </div>
+                      ) : hasAccess ? (
+                        editionMaterials.length > 0 ? (
+                          <div className="border-t border-border pt-4">
+                            <p className="font-body text-xs uppercase tracking-wider text-muted-foreground mb-3">
+                              <FileText size={12} className="inline mr-1" />
+                              {editionMaterials.length} materiale/i disponibile/i
+                            </p>
+                            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3">
+                              {editionMaterials.map((mat) => (
+                                <MaterialThumbnail key={mat.id} material={mat} onDownload={onDownload} />
+                              ))}
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="border-t border-border pt-4">
+                            <p className="font-body text-sm text-muted-foreground italic">Nessun materiale disponibile al momento.</p>
+                          </div>
+                        )
+                      ) : (
+                        <div className="border-t border-border pt-4">
+                          <div className="flex items-center gap-3 py-3 px-4 rounded-md bg-muted/50">
+                            <Lock size={16} className="text-muted-foreground shrink-0" />
+                            <p className="font-body text-sm text-muted-foreground">
+                              Accesso consentito solo agli iscritti
+                            </p>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+                {typeEditions.length === 0 && (
+                  <div className="bg-muted/30 rounded-lg p-8 text-center">
+                    <p className="font-body text-muted-foreground">
+                      Nessun {type === "live" ? "corso live" : "webinar"} disponibile al momento.
+                    </p>
                   </div>
-                );
-              })}
-              {editions.filter((e) => (e.type || "live") === type).length === 0 && (
-                <div className="bg-cream rounded-lg p-8 text-center">
-                  <p className="font-body text-muted-foreground">
-                    Nessun {type === "live" ? "corso live" : "webinar"} disponibile al momento.
-                  </p>
-                </div>
-              )}
-            </div>
-          </TabsContent>
-        ))}
+                )}
+              </div>
+            </TabsContent>
+          );
+        })}
       </Tabs>
     </div>
   );
