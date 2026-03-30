@@ -30,12 +30,15 @@ REGOLE PER LA CLASSE SCHELETRICA:
 Conta quanti angoli indicano TC e quanti SC:
 - 3/3 TC → TC confermata
 - 2/3 TC → TC (rivalutare con INTEGRAL dopo 6 mesi)
-- 1/3 TC + classe dentale/funzionale confermata → TC
+- 1/3 TC + classe dentale/funzionale "III classe" → TC
 - 1/3 TC senza conferma clinica → INTEGRAL, rivalutare a 4-5 mesi
 - 2/3 o 3/3 SC → SC
 - 1/3 SC senza altri concordanti → INTEGRAL
 - 2/3 o 3/3 NORMO → INTEGRAL
 - Nessuna maggioranza → INTEGRAL, rivalutare
+
+REGOLA IMPORTANTE PER III CLASSE:
+Se anche un solo indicatore risulta TC (III classe), devi SEMPRE suggerire di valutare attentamente l'opportunità di prescrivere un dispositivo TC (Trazione Cervicale / apparecchio per III classe), anche quando la classificazione complessiva non è TC. Includi una nota specifica nella sezione "Note Cliniche e Rivalutazione" che sottolinei la necessità di monitoraggio ravvicinato.
 
 REGOLE PER LA DIVERGENZA:
 - S-Ar-Go > 148 = IPER; < 138 = IPO; altrimenti NORMO
