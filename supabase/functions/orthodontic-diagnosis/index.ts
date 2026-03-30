@@ -92,8 +92,8 @@ Devi SEMPRE produrre il report con ESATTAMENTE questa struttura e queste sezioni
 | Angolo Articolare (S-Ar-Go) | [valore]° | 143° ± 5° | [NORMO/IPER/IPO] |
 | Angolo Goniaco (Ar-Go-Me) | [valore]° | 130° ± 7° | [NORMO/IPER/IPO] |
 
-Se forniti NS e Go-Me, aggiungi una riga:
-| Rapporto Go-Me/NS | [valore calcolato] | < 1.0 | [NORMO/ALERT] |
+Se fornito il Rapporto NS/GoMe, aggiungi una riga:
+| Rapporto NS/GoMe | [valore] | < 1.0 | [NORMO/ALERT] |
 
 ## 2. Classe Scheletrica
 [Indica la classe risultante e spiega il ragionamento basato sui 3 indicatori.]
