@@ -232,8 +232,7 @@ const OrthodonticTool = () => {
     { key: "wits", label: "Wits", norma: "0 ± 2 mm (F) / -1 ± 2 mm (M)", required: true, unit: "mm" },
     { key: "angolo_articolare", label: "Angolo Articolare (S-Ar-Go)", norma: "143° ± 5", required: true, unit: "°" },
     { key: "angolo_goniaco", label: "Angolo Goniaco (Ar-Go-Me)", norma: "130° ± 7", required: true, unit: "°" },
-    { key: "ns_mm", label: "NS", norma: "Opzionale — per alert III classe", unit: "mm" },
-    { key: "gome_mm", label: "Go-Me", norma: "Opzionale — per alert III classe", unit: "mm" },
+    { key: "rapporto_ns_gome", label: "Rapporto NS/GoMe", norma: "< 1.0 (≥1 = alert III classe)", unit: "" },
   ];
 
   return (
