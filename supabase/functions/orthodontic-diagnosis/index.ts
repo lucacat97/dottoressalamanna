@@ -54,8 +54,8 @@ Se uno dei due è INTEGRAL → dispositivo finale = INTEGRAL
 Esempi: TC + OPEN, SC + DEEP, INTEGRAL
 
 ALERT III CLASSE EVOLUTIVA:
-Se età < 11 anni E Go-Me/NS >= 1 → ALERT ROSSO (intercettare subito)
-Se età < 11 anni E Go-Me/NS tra 0.95 e 1.0 → ALERT ARANCIO (monitorare)
+Se età < 11 anni E Rapporto NS/GoMe >= 1 → ALERT ROSSO (intercettare subito)
+Se età < 11 anni E Rapporto NS/GoMe tra 0.95 e 1.0 → ALERT ARANCIO (monitorare)
 
 REGOLE ANB-WITS DISCORDANTI:
 - ANB aumentato + Wits neutro/negativo: possibile rotazione mandibolare, ANB sovrastima la classe. Preferire INTEGRAL prima di SC.
