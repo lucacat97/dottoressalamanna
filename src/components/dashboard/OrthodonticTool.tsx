@@ -93,7 +93,7 @@ interface FormData {
 
 const initialForm: FormData = {
   age: "", sex: "F", angolo_sellare: "", anb: "", wits: "",
-  angolo_articolare: "", angolo_goniaco: "", ns_mm: "", gome_mm: "", classe_dentale: "",
+  angolo_articolare: "", angolo_goniaco: "", rapporto_ns_gome: "", classe_dentale: "",
 };
 
 const OrthodonticTool = () => {
