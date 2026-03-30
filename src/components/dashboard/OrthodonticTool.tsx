@@ -87,8 +87,7 @@ interface FormData {
   wits: string;
   angolo_articolare: string;
   angolo_goniaco: string;
-  ns_mm: string;
-  gome_mm: string;
+  rapporto_ns_gome: string;
   classe_dentale: string;
 }
 
