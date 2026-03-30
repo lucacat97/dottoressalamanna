@@ -19,8 +19,8 @@ DATI DI INPUT che ti verranno forniti:
 - Wits in mm (norma 0±2 femmine, -1±2 maschi)
 - Angolo Articolare S-Ar-Go (norma 143±5)
 - Angolo Goniaco Ar-Go-Me (norma 130±7)
-- [Opzionale] NS in mm e Go-Me in mm per alert III classe
-- [Opzionale] Classe dentale o funzionale presente (si/no)
+- [Opzionale] Rapporto NS/GoMe (se fornito, per alert III classe)
+- [Opzionale] Classe dentale o funzionale: II classe / III classe
 
 REGOLE PER LA CLASSE SCHELETRICA:
 - Angolo Sellare < 118 = TC; > 128 = SC; altrimenti NORMO
@@ -30,12 +30,15 @@ REGOLE PER LA CLASSE SCHELETRICA:
 Conta quanti angoli indicano TC e quanti SC:
 - 3/3 TC → TC confermata
 - 2/3 TC → TC (rivalutare con INTEGRAL dopo 6 mesi)
-- 1/3 TC + classe dentale/funzionale confermata → TC
+- 1/3 TC + classe dentale/funzionale "III classe" → TC
 - 1/3 TC senza conferma clinica → INTEGRAL, rivalutare a 4-5 mesi
 - 2/3 o 3/3 SC → SC
 - 1/3 SC senza altri concordanti → INTEGRAL
 - 2/3 o 3/3 NORMO → INTEGRAL
 - Nessuna maggioranza → INTEGRAL, rivalutare
+
+REGOLA IMPORTANTE PER III CLASSE:
+Se anche un solo indicatore risulta TC (III classe), devi SEMPRE suggerire di valutare attentamente l'opportunità di prescrivere un dispositivo TC (Trazione Cervicale / apparecchio per III classe), anche quando la classificazione complessiva non è TC. Includi una nota specifica nella sezione "Note Cliniche e Rivalutazione" che sottolinei la necessità di monitoraggio ravvicinato.
 
 REGOLE PER LA DIVERGENZA:
 - S-Ar-Go > 148 = IPER; < 138 = IPO; altrimenti NORMO
@@ -51,8 +54,8 @@ Se uno dei due è INTEGRAL → dispositivo finale = INTEGRAL
 Esempi: TC + OPEN, SC + DEEP, INTEGRAL
 
 ALERT III CLASSE EVOLUTIVA:
-Se età < 11 anni E Go-Me/NS >= 1 → ALERT ROSSO (intercettare subito)
-Se età < 11 anni E Go-Me/NS tra 0.95 e 1.0 → ALERT ARANCIO (monitorare)
+Se età < 11 anni E Rapporto NS/GoMe >= 1 → ALERT ROSSO (intercettare subito)
+Se età < 11 anni E Rapporto NS/GoMe tra 0.95 e 1.0 → ALERT ARANCIO (monitorare)
 
 REGOLE ANB-WITS DISCORDANTI:
 - ANB aumentato + Wits neutro/negativo: possibile rotazione mandibolare, ANB sovrastima la classe. Preferire INTEGRAL prima di SC.
@@ -89,8 +92,8 @@ Devi SEMPRE produrre il report con ESATTAMENTE questa struttura e queste sezioni
 | Angolo Articolare (S-Ar-Go) | [valore]° | 143° ± 5° | [NORMO/IPER/IPO] |
 | Angolo Goniaco (Ar-Go-Me) | [valore]° | 130° ± 7° | [NORMO/IPER/IPO] |
 
-Se forniti NS e Go-Me, aggiungi una riga:
-| Rapporto Go-Me/NS | [valore calcolato] | < 1.0 | [NORMO/ALERT] |
+Se fornito il Rapporto NS/GoMe, aggiungi una riga:
+| Rapporto NS/GoMe | [valore] | < 1.0 | [NORMO/ALERT] |
 
 ## 2. Classe Scheletrica
 [Indica la classe risultante e spiega il ragionamento basato sui 3 indicatori.]
@@ -157,7 +160,7 @@ serve(async (req) => {
     }
 
     const body = await req.json();
-    const { age, sex, angolo_sellare, anb, wits, angolo_articolare, angolo_goniaco, ns_mm, gome_mm, classe_dentale } = body;
+    const { age, sex, angolo_sellare, anb, wits, angolo_articolare, angolo_goniaco, rapporto_ns_gome, classe_dentale } = body;
 
     if (!age || !sex || angolo_sellare == null || anb == null || wits == null || angolo_articolare == null || angolo_goniaco == null) {
       return new Response(
@@ -175,9 +178,8 @@ serve(async (req) => {
 - Wits: ${wits} mm
 - Angolo Articolare (S-Ar-Go): ${angolo_articolare}°
 - Angolo Goniaco (Ar-Go-Me): ${angolo_goniaco}°
-${ns_mm ? `- NS: ${ns_mm} mm` : ""}
-${gome_mm ? `- Go-Me: ${gome_mm} mm` : ""}
-${classe_dentale ? `- Classe dentale/funzionale confermata: ${classe_dentale}` : ""}`;
+${rapporto_ns_gome ? `- Rapporto NS/GoMe: ${rapporto_ns_gome}` : ""}
+${classe_dentale ? `- Classe dentale/funzionale: ${classe_dentale}` : ""}`;
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) {

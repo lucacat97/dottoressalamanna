@@ -87,14 +87,13 @@ interface FormData {
   wits: string;
   angolo_articolare: string;
   angolo_goniaco: string;
-  ns_mm: string;
-  gome_mm: string;
+  rapporto_ns_gome: string;
   classe_dentale: string;
 }
 
 const initialForm: FormData = {
   age: "", sex: "F", angolo_sellare: "", anb: "", wits: "",
-  angolo_articolare: "", angolo_goniaco: "", ns_mm: "", gome_mm: "", classe_dentale: "",
+  angolo_articolare: "", angolo_goniaco: "", rapporto_ns_gome: "", classe_dentale: "",
 };
 
 const OrthodonticTool = () => {
@@ -158,8 +157,7 @@ const OrthodonticTool = () => {
             wits: parseFloat(form.wits),
             angolo_articolare: parseFloat(form.angolo_articolare),
             angolo_goniaco: parseFloat(form.angolo_goniaco),
-            ns_mm: form.ns_mm ? parseFloat(form.ns_mm) : null,
-            gome_mm: form.gome_mm ? parseFloat(form.gome_mm) : null,
+            rapporto_ns_gome: form.rapporto_ns_gome ? parseFloat(form.rapporto_ns_gome) : null,
             classe_dentale: form.classe_dentale || null,
           }),
         }
@@ -233,8 +231,7 @@ const OrthodonticTool = () => {
     { key: "wits", label: "Wits", norma: "0 ± 2 mm (F) / -1 ± 2 mm (M)", required: true, unit: "mm" },
     { key: "angolo_articolare", label: "Angolo Articolare (S-Ar-Go)", norma: "143° ± 5", required: true, unit: "°" },
     { key: "angolo_goniaco", label: "Angolo Goniaco (Ar-Go-Me)", norma: "130° ± 7", required: true, unit: "°" },
-    { key: "ns_mm", label: "NS", norma: "Opzionale — per alert III classe", unit: "mm" },
-    { key: "gome_mm", label: "Go-Me", norma: "Opzionale — per alert III classe", unit: "mm" },
+    { key: "rapporto_ns_gome", label: "Rapporto NS/GoMe", norma: "< 1.0 (≥1 = alert III classe)", unit: "" },
   ];
 
   return (
@@ -294,10 +291,28 @@ const OrthodonticTool = () => {
             </div>
           </div>
 
+          {/* Alert III classe */}
+          {form.rapporto_ns_gome && parseFloat(form.age) > 0 && parseFloat(form.age) < 11 && (
+            <div className={`flex items-start gap-2 p-3 rounded-md border ${
+              parseFloat(form.rapporto_ns_gome) >= 1
+                ? "bg-red-50 dark:bg-red-950/30 border-red-300 dark:border-red-800"
+                : parseFloat(form.rapporto_ns_gome) >= 0.95
+                  ? "bg-amber-50 dark:bg-amber-950/30 border-amber-300 dark:border-amber-800"
+                  : "hidden"
+            }`}>
+              <AlertTriangle size={14} className={`mt-0.5 shrink-0 ${parseFloat(form.rapporto_ns_gome) >= 1 ? "text-red-600" : "text-amber-600"}`} />
+              <p className={`font-body text-xs leading-relaxed ${parseFloat(form.rapporto_ns_gome) >= 1 ? "text-red-800 dark:text-red-200" : "text-amber-800 dark:text-amber-200"}`}>
+                {parseFloat(form.rapporto_ns_gome) >= 1
+                  ? "🔴 ALERT ROSSO: Rapporto NS/GoMe ≥ 1 in paziente < 11 anni — rischio III classe evolutiva. Intercettare subito!"
+                  : "🟠 ALERT ARANCIO: Rapporto NS/GoMe tra 0.95 e 1.0 in paziente < 11 anni — monitorare attentamente."}
+              </p>
+            </div>
+          )}
+
           <div className="space-y-1.5">
-            <Label className="font-body text-xs text-foreground">Classe dentale/funzionale confermata (opzionale)</Label>
+            <Label className="font-body text-xs text-foreground">Classe dentale/funzionale (opzionale)</Label>
             <div className="flex gap-2">
-              {["Sì", "No", ""].map(val => (
+              {["II classe", "III classe", ""].map(val => (
                 <button key={val || "none"} onClick={() => updateField("classe_dentale", val)} className={`px-4 py-2 rounded-md font-body text-xs border transition-colors ${form.classe_dentale === val ? "bg-primary text-primary-foreground border-primary" : "bg-background border-border text-muted-foreground hover:border-primary/50"}`}>
                   {val || "Non specificato"}
                 </button>
