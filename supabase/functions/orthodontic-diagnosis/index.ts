@@ -160,7 +160,7 @@ serve(async (req) => {
     }
 
     const body = await req.json();
-    const { age, sex, angolo_sellare, anb, wits, angolo_articolare, angolo_goniaco, ns_mm, gome_mm, classe_dentale } = body;
+    const { age, sex, angolo_sellare, anb, wits, angolo_articolare, angolo_goniaco, rapporto_ns_gome, classe_dentale } = body;
 
     if (!age || !sex || angolo_sellare == null || anb == null || wits == null || angolo_articolare == null || angolo_goniaco == null) {
       return new Response(
