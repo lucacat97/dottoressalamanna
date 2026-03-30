@@ -178,9 +178,8 @@ serve(async (req) => {
 - Wits: ${wits} mm
 - Angolo Articolare (S-Ar-Go): ${angolo_articolare}°
 - Angolo Goniaco (Ar-Go-Me): ${angolo_goniaco}°
-${ns_mm ? `- NS: ${ns_mm} mm` : ""}
-${gome_mm ? `- Go-Me: ${gome_mm} mm` : ""}
-${classe_dentale ? `- Classe dentale/funzionale confermata: ${classe_dentale}` : ""}`;
+${rapporto_ns_gome ? `- Rapporto NS/GoMe: ${rapporto_ns_gome}` : ""}
+${classe_dentale ? `- Classe dentale/funzionale: ${classe_dentale}` : ""}`;
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) {

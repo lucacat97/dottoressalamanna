@@ -157,8 +157,7 @@ const OrthodonticTool = () => {
             wits: parseFloat(form.wits),
             angolo_articolare: parseFloat(form.angolo_articolare),
             angolo_goniaco: parseFloat(form.angolo_goniaco),
-            ns_mm: form.ns_mm ? parseFloat(form.ns_mm) : null,
-            gome_mm: form.gome_mm ? parseFloat(form.gome_mm) : null,
+            rapporto_ns_gome: form.rapporto_ns_gome ? parseFloat(form.rapporto_ns_gome) : null,
             classe_dentale: form.classe_dentale || null,
           }),
         }
