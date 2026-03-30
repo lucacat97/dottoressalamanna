@@ -19,8 +19,8 @@ DATI DI INPUT che ti verranno forniti:
 - Wits in mm (norma 0±2 femmine, -1±2 maschi)
 - Angolo Articolare S-Ar-Go (norma 143±5)
 - Angolo Goniaco Ar-Go-Me (norma 130±7)
-- [Opzionale] NS in mm e Go-Me in mm per alert III classe
-- [Opzionale] Classe dentale o funzionale presente (si/no)
+- [Opzionale] Rapporto NS/GoMe (se fornito, per alert III classe)
+- [Opzionale] Classe dentale o funzionale: II classe / III classe
 
 REGOLE PER LA CLASSE SCHELETRICA:
 - Angolo Sellare < 118 = TC; > 128 = SC; altrimenti NORMO
