@@ -359,6 +359,7 @@ const OrthodonticTool = () => {
               Nuova analisi
             </Button>
           </div>
+          <RetroFeedback toolName="orthodontic-diagnosis" />
         </div>
       )}
     </div>
