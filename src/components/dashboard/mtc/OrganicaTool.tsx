@@ -1,14 +1,14 @@
 import { useState } from "react";
-import { Loader2, Download, FileDown, RotateCcw, AlertTriangle, Sparkles, ChevronDown, ChevronRight, MessageSquareText } from "lucide-react";
+import { Loader2, Download, FileDown, RotateCcw, AlertTriangle, Sparkles, ChevronDown, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Textarea } from "@/components/ui/textarea";
 import { getBranding, generateHtmlHeader } from "../BrandingSettings";
 import ReportRenderer from "./ReportRenderer";
 import { SYMPTOM_CATEGORIES, type Symptom } from "./symptomCategories";
+import RetroFeedback from "../RetroFeedback";
 
 const DISCLAIMER = `⚠️ Disclaimer: Questo strumento fornisce esclusivamente un supporto all'analisi clinica basata sui principi della Medicina Tradizionale Cinese e NON costituisce in alcun modo una diagnosi medica. La responsabilità diagnostica e terapeutica resta interamente in capo al professionista sanitario.`;
 
@@ -58,7 +58,6 @@ export default function OrganicaTool() {
   const [disclaimerAccepted, setDisclaimerAccepted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [resultMarkdown, setResultMarkdown] = useState<string | null>(null);
-  const [clinicalNotes, setClinicalNotes] = useState("");
 
   const toggleCategory = (catId: string) => {
     setExpandedCategories(prev => {
@@ -114,7 +113,6 @@ export default function OrganicaTool() {
             sex,
             age: age ? parseInt(age) : undefined,
             symptoms,
-            clinicalNotes: clinicalNotes.trim() || undefined,
           }),
         }
       );
@@ -175,7 +173,6 @@ export default function OrganicaTool() {
   const handleReset = () => {
     setSelectedSymptoms(new Map());
     setResultMarkdown(null);
-    setClinicalNotes("");
   };
 
   if (!disclaimerAccepted) {
@@ -303,26 +300,6 @@ export default function OrganicaTool() {
         </div>
       )}
 
-      {/* Clinical notes retro-feedback */}
-      <div className="border border-border rounded-lg p-4 bg-card space-y-2">
-        <div className="flex items-center gap-2">
-          <MessageSquareText size={14} className="text-primary" />
-          <h4 className="font-display text-sm font-semibold text-foreground">Considerazioni cliniche (retro-feedback)</h4>
-        </div>
-        <p className="font-body text-[11px] text-muted-foreground">
-          Aggiungi osservazioni o indicazioni da passare all'IA per arricchire l'analisi MTC.
-        </p>
-        <Textarea
-          value={clinicalNotes}
-          onChange={(e) => setClinicalNotes(e.target.value)}
-          placeholder="Es: Paziente con astenia cronica, lingua pallida con patina bianca, polso profondo e debole..."
-          className="min-h-[100px] resize-none font-body text-sm"
-        />
-        {clinicalNotes.length > 0 && (
-          <p className="font-body text-[10px] text-muted-foreground/60">{clinicalNotes.length} caratteri</p>
-        )}
-      </div>
-
       {/* Actions */}
       <div className="flex gap-3">
         <Button onClick={handleAnalyze} disabled={loading || selectedSymptoms.size === 0} className="bg-primary text-primary-foreground">
@@ -366,6 +343,7 @@ export default function OrganicaTool() {
           <div className="border-t border-border pt-4">
             <ReportRenderer markdown={resultMarkdown} />
           </div>
+          <RetroFeedback toolName="mtc_organica" />
         </div>
       )}
     </div>

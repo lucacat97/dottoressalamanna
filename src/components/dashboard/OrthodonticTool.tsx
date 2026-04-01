@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
-import { Brain, AlertTriangle, Loader2, RotateCcw, Download, FileDown, Info, MessageSquareText } from "lucide-react";
+import { Brain, AlertTriangle, Loader2, RotateCcw, Download, FileDown, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Textarea } from "@/components/ui/textarea";
 import { getBranding, generateHtmlHeader } from "./BrandingSettings";
+import RetroFeedback from "./RetroFeedback";
 
 const MONTHLY_LIMIT = 30;
 const TOOL_NAME = "orthodontic-diagnosis";
@@ -103,7 +103,6 @@ const OrthodonticTool = () => {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [accepted, setAccepted] = useState(false);
   const [monthlyUsage, setMonthlyUsage] = useState<number | null>(null);
-  const [clinicalNotes, setClinicalNotes] = useState("");
 
   useEffect(() => {
     const fetchUsage = async () => {
@@ -161,7 +160,6 @@ const OrthodonticTool = () => {
             angolo_goniaco: parseFloat(form.angolo_goniaco),
             rapporto_ns_gome: form.rapporto_ns_gome ? parseFloat(form.rapporto_ns_gome) : null,
             classe_dentale: form.classe_dentale || null,
-            clinicalNotes: clinicalNotes.trim() || undefined,
           }),
         }
       );
@@ -212,7 +210,6 @@ const OrthodonticTool = () => {
   const handleReset = () => {
     setForm(initialForm);
     setResult("");
-    setClinicalNotes("");
   };
 
   if (!accepted) {
@@ -324,25 +321,6 @@ const OrthodonticTool = () => {
             </div>
           </div>
 
-          <div className="border border-border rounded-lg p-4 bg-card space-y-2">
-            <div className="flex items-center gap-2">
-              <MessageSquareText size={14} className="text-primary" />
-              <h4 className="font-display text-sm font-semibold text-foreground">Considerazioni cliniche (retro-feedback)</h4>
-            </div>
-            <p className="font-body text-[11px] text-muted-foreground">
-              Aggiungi osservazioni o indicazioni da passare all'IA per arricchire l'analisi cefalometrica.
-            </p>
-            <Textarea
-              value={clinicalNotes}
-              onChange={(e) => setClinicalNotes(e.target.value)}
-              placeholder="Es: Paziente con respirazione orale, facies adenoidea, sospetto morso aperto funzionale..."
-              className="min-h-[100px] resize-none font-body text-sm"
-            />
-            {clinicalNotes.length > 0 && (
-              <p className="font-body text-[10px] text-muted-foreground/60">{clinicalNotes.length} caratteri</p>
-            )}
-          </div>
-
           <Button onClick={handleAnalyze} disabled={!isFormValid()} className="w-full font-body gap-2">
             <Brain size={16} />
             Analizza e Suggerisci Dispositivo
@@ -381,6 +359,7 @@ const OrthodonticTool = () => {
               Nuova analisi
             </Button>
           </div>
+          <RetroFeedback toolName="orthodontic-diagnosis" />
         </div>
       )}
     </div>

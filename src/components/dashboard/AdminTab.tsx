@@ -1,11 +1,12 @@
 import { useState } from "react";
-import { BookOpen, Users, Upload, KeyRound, Calendar, MapPin, Trash2, Shield, Key } from "lucide-react";
+import { BookOpen, Users, Upload, KeyRound, Calendar, MapPin, Trash2, Shield, Key, MessageSquareText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import AdminCreateEdition from "@/components/admin/AdminCreateEdition";
 import AdminRegistrations from "@/components/admin/AdminRegistrations";
 import AdminMaterials from "@/components/admin/AdminMaterials";
 import AdminAccessControl from "@/components/admin/AdminAccessControl";
 import AdminApiKeys from "@/components/admin/AdminApiKeys";
+import AdminFeedback from "@/components/admin/AdminFeedback";
 
 interface CourseEdition {
   id: string;
@@ -34,7 +35,7 @@ interface AdminTabProps {
 }
 
 const AdminTab = ({ editions, materials, onFetchData, onDeleteEdition }: AdminTabProps) => {
-  const [adminTab, setAdminTab] = useState<"editions" | "registrations" | "materials" | "access" | "apikeys">("editions");
+  const [adminTab, setAdminTab] = useState<"editions" | "registrations" | "materials" | "access" | "apikeys" | "feedback">("editions");
 
   const formatDate = (dateStr: string) =>
     new Date(dateStr).toLocaleDateString("it-IT", { day: "numeric", month: "long", year: "numeric" });
@@ -53,6 +54,7 @@ const AdminTab = ({ editions, materials, onFetchData, onDeleteEdition }: AdminTa
           { key: "materials" as const, label: "Materiali", icon: Upload },
           { key: "access" as const, label: "Accessi", icon: KeyRound },
           { key: "apikeys" as const, label: "API Keys", icon: Key },
+          { key: "feedback" as const, label: "Feedback IA", icon: MessageSquareText },
         ]).map(({ key, label, icon: Icon }) => (
           <button
             key={key}
@@ -103,6 +105,7 @@ const AdminTab = ({ editions, materials, onFetchData, onDeleteEdition }: AdminTa
       {adminTab === "materials" && <AdminMaterials editions={editions} materials={materials} onUpdated={onFetchData} />}
       {adminTab === "access" && <AdminAccessControl editions={editions} />}
       {adminTab === "apikeys" && <AdminApiKeys />}
+      {adminTab === "feedback" && <AdminFeedback />}
     </div>
   );
 };

@@ -250,6 +250,36 @@ export type Database = {
           },
         ]
       }
+      tool_feedback: {
+        Row: {
+          created_at: string
+          feedback: string
+          id: string
+          is_active: boolean
+          submitted_by: string
+          submitted_by_email: string | null
+          tool_name: string
+        }
+        Insert: {
+          created_at?: string
+          feedback: string
+          id?: string
+          is_active?: boolean
+          submitted_by: string
+          submitted_by_email?: string | null
+          tool_name: string
+        }
+        Update: {
+          created_at?: string
+          feedback?: string
+          id?: string
+          is_active?: boolean
+          submitted_by?: string
+          submitted_by_email?: string | null
+          tool_name?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           id: string
@@ -281,6 +311,13 @@ export type Database = {
       get_monthly_ai_usage: {
         Args: { _tool_name: string; _user_id: string }
         Returns: number
+      }
+      get_tool_feedback: {
+        Args: { _tool_name: string }
+        Returns: {
+          created_at: string
+          feedback: string
+        }[]
       }
       has_course_access: {
         Args: { _edition_id: string; _user_id: string }

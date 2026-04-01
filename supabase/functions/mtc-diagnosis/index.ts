@@ -192,7 +192,7 @@ serve(async (req) => {
     const userId = user.id;
 
     const body = await req.json();
-    const { subTool, sex, painPoints, symptoms, age, clinicalNotes } = body;
+    const { subTool, sex, painPoints, symptoms, age } = body;
 
     if (!subTool || !["sistemica", "organica"].includes(subTool)) {
       return new Response(
@@ -216,8 +216,10 @@ serve(async (req) => {
       );
     }
 
-    const clinicalNotesSection = clinicalNotes && typeof clinicalNotes === "string" && clinicalNotes.trim().length > 0
-      ? `\n\n--- CONSIDERAZIONI CLINICHE DEL PROFESSIONISTA (RETRO-FEEDBACK) ---\n${clinicalNotes.trim()}\n--- FINE CONSIDERAZIONI ---\nTieni conto di queste considerazioni nell'analisi, integrandole nel referto.`
+    // Fetch accumulated retro-feedback
+    const { data: feedbackRows } = await serviceClient.rpc("get_tool_feedback", { _tool_name: toolName });
+    const feedbackSection = feedbackRows && feedbackRows.length > 0
+      ? `\n\n=== RETRO-FEEDBACK DAL PROFESSIONISTA (CORREZIONI ACCUMULATE) ===\nQueste sono indicazioni fornite dal professionista dopo aver analizzato referti precedenti. DEVI tenerne conto SEMPRE:\n${feedbackRows.map((r: { feedback: string }, i: number) => `${i + 1}. ${r.feedback}`).join("\n")}\n=== FINE RETRO-FEEDBACK ===`
       : "";
 
     let systemPrompt: string;
@@ -234,7 +236,7 @@ serve(async (req) => {
       const pointsList = painPoints.map((p: { region: string; description: string }, i: number) =>
         `${i + 1}. Regione: ${p.region} — Descrizione: ${p.description}`
       ).join("\n");
-      userMessage = `Paziente: Sesso ${sex || "non specificato"}\n\nPunti dolorosi segnalati:\n${pointsList}${clinicalNotesSection}`;
+      userMessage = `Paziente: Sesso ${sex || "non specificato"}\n\nPunti dolorosi segnalati:\n${pointsList}`;
     } else {
       if (!symptoms || !Array.isArray(symptoms) || symptoms.length === 0) {
         return new Response(
@@ -246,7 +248,7 @@ serve(async (req) => {
       const symptomsList = symptoms.map((s: { category: string; name: string }) =>
         `- [${s.category}] ${s.name}`
       ).join("\n");
-      userMessage = `Paziente: Sesso ${sex || "non specificato"}, Età ${age || "non specificata"}\n\nSintomi riportati:\n${symptomsList}${clinicalNotesSection}`;
+      userMessage = `Paziente: Sesso ${sex || "non specificato"}, Età ${age || "non specificata"}\n\nSintomi riportati:\n${symptomsList}`;
     }
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
@@ -261,7 +263,7 @@ serve(async (req) => {
       body: JSON.stringify({
         model: "openai/gpt-5-mini",
         messages: [
-          { role: "system", content: systemPrompt },
+          { role: "system", content: systemPrompt + feedbackSection },
           { role: "user", content: userMessage },
         ],
         stream: true,

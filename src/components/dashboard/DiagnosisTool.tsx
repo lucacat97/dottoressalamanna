@@ -1,13 +1,12 @@
 import { useState, useRef, useEffect } from "react";
-import { Upload, Brain, AlertTriangle, FileText, Loader2, RotateCcw, Download, FileDown, MessageSquareText } from "lucide-react";
+import { Upload, Brain, AlertTriangle, FileText, Loader2, RotateCcw, Download, FileDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Textarea } from "@/components/ui/textarea";
 import * as pdfjsLib from "pdfjs-dist";
 import pdfjsWorker from "pdfjs-dist/build/pdf.worker.min.mjs?url";
 import { getBranding, generateHtmlHeader } from "./BrandingSettings";
-
+import RetroFeedback from "./RetroFeedback";
 const MONTHLY_LIMIT = 30;
 pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorker;
 
@@ -87,7 +86,6 @@ const DiagnosisTool = () => {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [accepted, setAccepted] = useState(false);
   const [monthlyUsage, setMonthlyUsage] = useState<number | null>(null);
-  const [clinicalNotes, setClinicalNotes] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -168,7 +166,7 @@ const DiagnosisTool = () => {
             "Content-Type": "application/json",
             Authorization: `Bearer ${session.access_token}`,
           },
-          body: JSON.stringify({ documentText: extractedText.slice(0, 15000), clinicalNotes: clinicalNotes.trim() || undefined }),
+          body: JSON.stringify({ documentText: extractedText.slice(0, 15000) }),
         }
       );
 
@@ -219,7 +217,6 @@ const DiagnosisTool = () => {
     setFile(null);
     setExtractedText("");
     setResult("");
-    setClinicalNotes("");
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
@@ -287,30 +284,10 @@ const DiagnosisTool = () => {
       )}
 
       {file && !result && !isAnalyzing && (
-        <div className="space-y-4">
-          <div className="border border-border rounded-lg p-4 bg-card space-y-2">
-            <div className="flex items-center gap-2">
-              <MessageSquareText size={14} className="text-primary" />
-              <h4 className="font-display text-sm font-semibold text-foreground">Considerazioni cliniche (retro-feedback)</h4>
-            </div>
-            <p className="font-body text-[11px] text-muted-foreground">
-              Aggiungi osservazioni, ipotesi o indicazioni da passare all'IA per arricchire l'analisi.
-            </p>
-            <Textarea
-              value={clinicalNotes}
-              onChange={(e) => setClinicalNotes(e.target.value)}
-              placeholder="Es: Paziente con storia di bruxismo, sospetto sindrome posturale discendente, da valutare correlazione con problematiche cervicali..."
-              className="min-h-[100px] resize-none font-body text-sm"
-            />
-            {clinicalNotes.length > 0 && (
-              <p className="font-body text-[10px] text-muted-foreground/60">{clinicalNotes.length} caratteri</p>
-            )}
-          </div>
-          <Button onClick={handleAnalyze} className="w-full font-body gap-2">
-            <Brain size={16} />
-            Genera Referto Clinico
-          </Button>
-        </div>
+        <Button onClick={handleAnalyze} className="w-full font-body gap-2">
+          <Brain size={16} />
+          Genera Referto Clinico
+        </Button>
       )}
 
       {isAnalyzing && (
@@ -344,6 +321,7 @@ const DiagnosisTool = () => {
               Nuova analisi
             </Button>
           </div>
+          <RetroFeedback toolName="diagnosis-support" />
         </div>
       )}
     </div>
