@@ -221,37 +221,14 @@ export default function SistemicaTool() {
       <BodyRegionCheckboxes selectedRegions={selectedRegions} onToggleRegion={handleToggleRegion} />
 
       {/* 3D Body + Clinical Notes side by side */}
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-4">
-        <div className="border border-border rounded-xl overflow-hidden bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-950">
-          <BodyModel3D
-            sex={sex}
-            selectedRegions={selectedRegions}
-            onToggleRegion={handleToggleRegion}
-            showAcupoints={showAcupoints}
-            relevantMeridians={relevantMeridians}
-          />
-        </div>
-
-        <div className="space-y-3">
-          <div className="border border-border rounded-xl p-4 bg-card h-full flex flex-col">
-            <div className="flex items-center gap-2 mb-3">
-              <MessageSquareText size={16} className="text-primary" />
-              <h3 className="font-display text-sm font-bold text-foreground">Note cliniche</h3>
-            </div>
-            <p className="font-body text-[11px] text-muted-foreground mb-3">
-              Descrivi sintomi, anamnesi o osservazioni aggiuntive da includere nell'analisi AI.
-            </p>
-            <Textarea
-              value={clinicalNotes}
-              onChange={(e) => setClinicalNotes(e.target.value)}
-              placeholder="Es: Paziente lamenta dolore lombare cronico da 6 mesi, peggioramento notturno, lingua pallida con patina bianca, polso profondo e debole..."
-              className="flex-1 min-h-[200px] resize-none font-body text-sm"
-            />
-            <p className="font-body text-[10px] text-muted-foreground/60 mt-2">
-              {clinicalNotes.length > 0 ? `${clinicalNotes.length} caratteri` : "Facoltativo — arricchisce l'analisi"}
-            </p>
-          </div>
-        </div>
+      <div className="border border-border rounded-xl overflow-hidden bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-950">
+        <BodyModel3D
+          sex={sex}
+          selectedRegions={selectedRegions}
+          onToggleRegion={handleToggleRegion}
+          showAcupoints={showAcupoints}
+          relevantMeridians={relevantMeridians}
+        />
       </div>
 
       {/* Selected regions summary */}
