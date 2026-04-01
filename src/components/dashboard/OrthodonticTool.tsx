@@ -103,6 +103,7 @@ const OrthodonticTool = () => {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [accepted, setAccepted] = useState(false);
   const [monthlyUsage, setMonthlyUsage] = useState<number | null>(null);
+  const [clinicalNotes, setClinicalNotes] = useState("");
 
   useEffect(() => {
     const fetchUsage = async () => {
