@@ -117,7 +117,7 @@ export default function SistemicaTool() {
             "Content-Type": "application/json",
             Authorization: `Bearer ${session.access_token}`,
           },
-      body: JSON.stringify({ subTool: "sistemica", sex, painPoints, clinicalNotes: clinicalNotes.trim() || undefined }),
+      body: JSON.stringify({ subTool: "sistemica", sex, painPoints }),
         }
       );
 
