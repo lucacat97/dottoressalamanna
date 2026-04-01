@@ -194,10 +194,10 @@ serve(async (req) => {
       body: JSON.stringify({
         model: "openai/gpt-5-mini",
         messages: [
-          { role: "system", content: SYSTEM_PROMPT },
+          { role: "system", content: SYSTEM_PROMPT + feedbackSection },
           {
             role: "user",
-            content: `Analizza il seguente documento clinico e genera un REFERTO CLINICO COMPLETO nel formato professionale dello Studio Carella & Lamanna, secondo la metodologia della Dott.ssa Lamanna:\n\n---\n${documentText}${clinicalNotesSection}\n---`,
+            content: `Analizza il seguente documento clinico e genera un REFERTO CLINICO COMPLETO nel formato professionale dello Studio Carella & Lamanna, secondo la metodologia della Dott.ssa Lamanna:\n\n---\n${documentText}\n---`,
           },
         ],
         stream: true,
