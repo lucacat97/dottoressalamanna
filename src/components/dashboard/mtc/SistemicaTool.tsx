@@ -300,6 +300,7 @@ export default function SistemicaTool() {
           <div className="border-t border-border pt-4">
             <ReportRenderer markdown={resultMarkdown} />
           </div>
+          <RetroFeedback toolName="mtc_sistemica" />
         </div>
       )}
     </div>
