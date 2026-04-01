@@ -175,6 +175,7 @@ export default function OrganicaTool() {
   const handleReset = () => {
     setSelectedSymptoms(new Map());
     setResultMarkdown(null);
+    setClinicalNotes("");
   };
 
   if (!disclaimerAccepted) {
