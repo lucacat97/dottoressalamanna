@@ -65,7 +65,6 @@ export default function SistemicaTool() {
   const [resultMarkdown, setResultMarkdown] = useState<string | null>(null);
   const [showAcupoints, setShowAcupoints] = useState(false);
   const [relevantMeridians, setRelevantMeridians] = useState<Set<string>>(new Set());
-  const [clinicalNotes, setClinicalNotes] = useState("");
 
   const handleToggleRegion = (region: BodyRegion) => {
     setSelectedRegions(prev => {
