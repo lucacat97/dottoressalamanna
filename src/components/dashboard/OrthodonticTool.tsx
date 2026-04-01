@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Brain, AlertTriangle, Loader2, RotateCcw, Download, FileDown, Info } from "lucide-react";
+import { Brain, AlertTriangle, Loader2, RotateCcw, Download, FileDown, Info, MessageSquareText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
