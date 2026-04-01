@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
-import { Brain, AlertTriangle, Loader2, RotateCcw, Download, FileDown, Info, MessageSquareText } from "lucide-react";
+import { Brain, AlertTriangle, Loader2, RotateCcw, Download, FileDown, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Textarea } from "@/components/ui/textarea";
 import { getBranding, generateHtmlHeader } from "./BrandingSettings";
+import RetroFeedback from "./RetroFeedback";
 
 const MONTHLY_LIMIT = 30;
 const TOOL_NAME = "orthodontic-diagnosis";
