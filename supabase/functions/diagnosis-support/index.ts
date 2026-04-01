@@ -165,7 +165,7 @@ serve(async (req) => {
       );
     }
 
-    const { documentText, clinicalNotes } = await req.json();
+    const { documentText } = await req.json();
 
     if (!documentText || typeof documentText !== "string" || documentText.trim().length < 20) {
       return new Response(
@@ -174,8 +174,10 @@ serve(async (req) => {
       );
     }
 
-    const clinicalNotesSection = clinicalNotes && typeof clinicalNotes === "string" && clinicalNotes.trim().length > 0
-      ? `\n\n--- CONSIDERAZIONI CLINICHE DEL PROFESSIONISTA (RETRO-FEEDBACK) ---\n${clinicalNotes.trim()}\n--- FINE CONSIDERAZIONI ---\nTieni conto di queste considerazioni nell'analisi, integrandole nel referto.`
+    // Fetch accumulated retro-feedback for this tool
+    const { data: feedbackRows } = await serviceClient.rpc("get_tool_feedback", { _tool_name: TOOL_NAME });
+    const feedbackSection = feedbackRows && feedbackRows.length > 0
+      ? `\n\n=== RETRO-FEEDBACK DAL PROFESSIONISTA (CORREZIONI ACCUMULATE) ===\nQueste sono indicazioni fornite dal professionista dopo aver analizzato referti precedenti. DEVI tenerne conto SEMPRE nelle analisi future per evitare gli stessi errori:\n${feedbackRows.map((r: { feedback: string }, i: number) => `${i + 1}. ${r.feedback}`).join("\n")}\n=== FINE RETRO-FEEDBACK ===`
       : "";
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
