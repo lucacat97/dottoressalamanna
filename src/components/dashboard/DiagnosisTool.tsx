@@ -321,6 +321,7 @@ const DiagnosisTool = () => {
               Nuova analisi
             </Button>
           </div>
+          <RetroFeedback toolName="diagnosis-support" />
         </div>
       )}
     </div>
