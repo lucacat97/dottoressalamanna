@@ -168,7 +168,7 @@ const DiagnosisTool = () => {
             "Content-Type": "application/json",
             Authorization: `Bearer ${session.access_token}`,
           },
-          body: JSON.stringify({ documentText: extractedText.slice(0, 15000) }),
+          body: JSON.stringify({ documentText: extractedText.slice(0, 15000), clinicalNotes: clinicalNotes.trim() || undefined }),
         }
       );
 
