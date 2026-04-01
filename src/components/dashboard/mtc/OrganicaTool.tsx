@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Loader2, Download, FileDown, RotateCcw, AlertTriangle, Sparkles, ChevronDown, ChevronRight } from "lucide-react";
+import { Loader2, Download, FileDown, RotateCcw, AlertTriangle, Sparkles, ChevronDown, ChevronRight, MessageSquareText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
