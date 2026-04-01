@@ -160,7 +160,6 @@ const OrthodonticTool = () => {
             angolo_goniaco: parseFloat(form.angolo_goniaco),
             rapporto_ns_gome: form.rapporto_ns_gome ? parseFloat(form.rapporto_ns_gome) : null,
             classe_dentale: form.classe_dentale || null,
-            clinicalNotes: clinicalNotes.trim() || undefined,
           }),
         }
       );
