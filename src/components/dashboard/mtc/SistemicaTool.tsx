@@ -1,9 +1,9 @@
 import { useState, useMemo } from "react";
-import { Loader2, Download, FileDown, RotateCcw, AlertTriangle, Sparkles, MessageSquareText, ChevronDown } from "lucide-react";
+import { Loader2, Download, FileDown, RotateCcw, AlertTriangle, Sparkles, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { toast } from "@/hooks/use-toast";
