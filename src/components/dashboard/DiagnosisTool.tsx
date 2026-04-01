@@ -87,6 +87,7 @@ const DiagnosisTool = () => {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [accepted, setAccepted] = useState(false);
   const [monthlyUsage, setMonthlyUsage] = useState<number | null>(null);
+  const [clinicalNotes, setClinicalNotes] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
