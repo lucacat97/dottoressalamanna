@@ -58,6 +58,7 @@ export default function OrganicaTool() {
   const [disclaimerAccepted, setDisclaimerAccepted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [resultMarkdown, setResultMarkdown] = useState<string | null>(null);
+  const [clinicalNotes, setClinicalNotes] = useState("");
 
   const toggleCategory = (catId: string) => {
     setExpandedCategories(prev => {
