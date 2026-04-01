@@ -210,7 +210,6 @@ const OrthodonticTool = () => {
   const handleReset = () => {
     setForm(initialForm);
     setResult("");
-    setClinicalNotes("");
   };
 
   if (!accepted) {
