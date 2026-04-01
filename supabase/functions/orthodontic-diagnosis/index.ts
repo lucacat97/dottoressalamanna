@@ -160,7 +160,7 @@ serve(async (req) => {
     }
 
     const body = await req.json();
-    const { age, sex, angolo_sellare, anb, wits, angolo_articolare, angolo_goniaco, rapporto_ns_gome, classe_dentale } = body;
+    const { age, sex, angolo_sellare, anb, wits, angolo_articolare, angolo_goniaco, rapporto_ns_gome, classe_dentale, clinicalNotes } = body;
 
     if (!age || !sex || angolo_sellare == null || anb == null || wits == null || angolo_articolare == null || angolo_goniaco == null) {
       return new Response(
@@ -168,6 +168,10 @@ serve(async (req) => {
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
+
+    const clinicalNotesSection = clinicalNotes && typeof clinicalNotes === "string" && clinicalNotes.trim().length > 0
+      ? `\n\n--- CONSIDERAZIONI CLINICHE DEL PROFESSIONISTA (RETRO-FEEDBACK) ---\n${clinicalNotes.trim()}\n--- FINE CONSIDERAZIONI ---\nTieni conto di queste considerazioni nell'analisi, integrandole nel report.`
+      : "";
 
     const userMessage = `Analizza i seguenti valori cefalometrici e fornisci la diagnosi ortodontica con scelta del dispositivo terapeutico:
 
@@ -179,7 +183,7 @@ serve(async (req) => {
 - Angolo Articolare (S-Ar-Go): ${angolo_articolare}°
 - Angolo Goniaco (Ar-Go-Me): ${angolo_goniaco}°
 ${rapporto_ns_gome ? `- Rapporto NS/GoMe: ${rapporto_ns_gome}` : ""}
-${classe_dentale ? `- Classe dentale/funzionale: ${classe_dentale}` : ""}`;
+${classe_dentale ? `- Classe dentale/funzionale: ${classe_dentale}` : ""}${clinicalNotesSection}`;
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) {

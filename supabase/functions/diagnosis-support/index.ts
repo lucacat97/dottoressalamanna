@@ -195,7 +195,7 @@ serve(async (req) => {
           { role: "system", content: SYSTEM_PROMPT },
           {
             role: "user",
-            content: `Analizza il seguente documento clinico e genera un REFERTO CLINICO COMPLETO nel formato professionale dello Studio Carella & Lamanna, secondo la metodologia della Dott.ssa Lamanna:\n\n---\n${documentText}\n---`,
+            content: `Analizza il seguente documento clinico e genera un REFERTO CLINICO COMPLETO nel formato professionale dello Studio Carella & Lamanna, secondo la metodologia della Dott.ssa Lamanna:\n\n---\n${documentText}${clinicalNotesSection}\n---`,
           },
         ],
         stream: true,
