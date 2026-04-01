@@ -1,9 +1,8 @@
 import { useState, useRef, useEffect } from "react";
-import { Upload, Brain, AlertTriangle, FileText, Loader2, RotateCcw, Download, FileDown, MessageSquareText } from "lucide-react";
+import { Upload, Brain, AlertTriangle, FileText, Loader2, RotateCcw, Download, FileDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Textarea } from "@/components/ui/textarea";
 import * as pdfjsLib from "pdfjs-dist";
 import pdfjsWorker from "pdfjs-dist/build/pdf.worker.min.mjs?url";
 import { getBranding, generateHtmlHeader } from "./BrandingSettings";
