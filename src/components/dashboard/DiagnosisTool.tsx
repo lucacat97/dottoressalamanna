@@ -217,7 +217,6 @@ const DiagnosisTool = () => {
     setFile(null);
     setExtractedText("");
     setResult("");
-    setClinicalNotes("");
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
