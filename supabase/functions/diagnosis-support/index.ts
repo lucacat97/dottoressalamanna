@@ -165,7 +165,7 @@ serve(async (req) => {
       );
     }
 
-    const { documentText } = await req.json();
+    const { documentText, clinicalNotes } = await req.json();
 
     if (!documentText || typeof documentText !== "string" || documentText.trim().length < 20) {
       return new Response(
@@ -173,6 +173,10 @@ serve(async (req) => {
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
+
+    const clinicalNotesSection = clinicalNotes && typeof clinicalNotes === "string" && clinicalNotes.trim().length > 0
+      ? `\n\n--- CONSIDERAZIONI CLINICHE DEL PROFESSIONISTA (RETRO-FEEDBACK) ---\n${clinicalNotes.trim()}\n--- FINE CONSIDERAZIONI ---\nTieni conto di queste considerazioni nell'analisi, integrandole nel referto.`
+      : "";
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) {
@@ -191,7 +195,7 @@ serve(async (req) => {
           { role: "system", content: SYSTEM_PROMPT },
           {
             role: "user",
-            content: `Analizza il seguente documento clinico e genera un REFERTO CLINICO COMPLETO nel formato professionale dello Studio Carella & Lamanna, secondo la metodologia della Dott.ssa Lamanna:\n\n---\n${documentText}\n---`,
+            content: `Analizza il seguente documento clinico e genera un REFERTO CLINICO COMPLETO nel formato professionale dello Studio Carella & Lamanna, secondo la metodologia della Dott.ssa Lamanna:\n\n---\n${documentText}${clinicalNotesSection}\n---`,
           },
         ],
         stream: true,

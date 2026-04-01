@@ -415,25 +415,33 @@ serve(async (req) => {
     let markdown: string;
 
     if (tool === "diagnosis") {
-      const { documentText } = body;
+      const { documentText, clinicalNotes } = body;
       if (!documentText || typeof documentText !== "string" || documentText.trim().length < 20) {
         return new Response(
           JSON.stringify({ error: "Campo 'documentText' obbligatorio (min 20 caratteri)." }),
           { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
+      const notesSection = clinicalNotes && typeof clinicalNotes === "string" && clinicalNotes.trim().length > 0
+        ? `\n\n--- CONSIDERAZIONI CLINICHE DEL PROFESSIONISTA ---\n${clinicalNotes.trim()}\n--- FINE CONSIDERAZIONI ---\nTieni conto di queste considerazioni nell'analisi.`
+        : "";
       markdown = await callAI(
         DIAGNOSIS_SYSTEM_PROMPT,
-        `Analizza il seguente documento clinico e genera un REFERTO CLINICO COMPLETO:\n\n---\n${documentText}\n---`
+        `Analizza il seguente documento clinico e genera un REFERTO CLINICO COMPLETO:\n\n---\n${documentText}${notesSection}\n---`
       );
     } else if (tool === "orthodontic") {
-      const { age, sex, angolo_sellare, anb, wits, angolo_articolare, angolo_goniaco, ns_mm, gome_mm, classe_dentale } = body;
+      const { age, sex, angolo_sellare, anb, wits, angolo_articolare, angolo_goniaco, ns_mm, gome_mm, rapporto_ns_gome, classe_dentale, clinicalNotes } = body;
       if (!age || !sex || angolo_sellare == null || anb == null || wits == null || angolo_articolare == null || angolo_goniaco == null) {
         return new Response(
           JSON.stringify({ error: "Campi obbligatori: age, sex, angolo_sellare, anb, wits, angolo_articolare, angolo_goniaco" }),
           { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
+      // Support both old (ns_mm/gome_mm) and new (rapporto_ns_gome) format
+      const ratio = rapporto_ns_gome ?? (ns_mm && gome_mm ? (gome_mm / ns_mm) : null);
+      const notesSection = clinicalNotes && typeof clinicalNotes === "string" && clinicalNotes.trim().length > 0
+        ? `\n\n--- CONSIDERAZIONI CLINICHE DEL PROFESSIONISTA ---\n${clinicalNotes.trim()}\n--- FINE CONSIDERAZIONI ---\nTieni conto di queste considerazioni nell'analisi.`
+        : "";
       const userMsg = `Analizza i seguenti valori cefalometrici:
 - Età: ${age} anni
 - Sesso: ${sex}
@@ -442,9 +450,8 @@ serve(async (req) => {
 - Wits: ${wits} mm
 - Angolo Articolare (S-Ar-Go): ${angolo_articolare}°
 - Angolo Goniaco (Ar-Go-Me): ${angolo_goniaco}°
-${ns_mm ? `- NS: ${ns_mm} mm` : ""}
-${gome_mm ? `- Go-Me: ${gome_mm} mm` : ""}
-${classe_dentale ? `- Classe dentale/funzionale confermata: ${classe_dentale}` : ""}`;
+${ratio ? `- Rapporto NS/GoMe: ${ratio}` : ""}
+${classe_dentale ? `- Classe dentale/funzionale confermata: ${classe_dentale}` : ""}${notesSection}`;
       markdown = await callAI(ORTHODONTIC_SYSTEM_PROMPT, userMsg);
     } else if (tool === "mtc_sistemica") {
       const { sex, painPoints } = body;
