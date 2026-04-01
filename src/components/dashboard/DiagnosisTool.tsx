@@ -284,30 +284,10 @@ const DiagnosisTool = () => {
       )}
 
       {file && !result && !isAnalyzing && (
-        <div className="space-y-4">
-          <div className="border border-border rounded-lg p-4 bg-card space-y-2">
-            <div className="flex items-center gap-2">
-              <MessageSquareText size={14} className="text-primary" />
-              <h4 className="font-display text-sm font-semibold text-foreground">Considerazioni cliniche (retro-feedback)</h4>
-            </div>
-            <p className="font-body text-[11px] text-muted-foreground">
-              Aggiungi osservazioni, ipotesi o indicazioni da passare all'IA per arricchire l'analisi.
-            </p>
-            <Textarea
-              value={clinicalNotes}
-              onChange={(e) => setClinicalNotes(e.target.value)}
-              placeholder="Es: Paziente con storia di bruxismo, sospetto sindrome posturale discendente, da valutare correlazione con problematiche cervicali..."
-              className="min-h-[100px] resize-none font-body text-sm"
-            />
-            {clinicalNotes.length > 0 && (
-              <p className="font-body text-[10px] text-muted-foreground/60">{clinicalNotes.length} caratteri</p>
-            )}
-          </div>
-          <Button onClick={handleAnalyze} className="w-full font-body gap-2">
-            <Brain size={16} />
-            Genera Referto Clinico
-          </Button>
-        </div>
+        <Button onClick={handleAnalyze} className="w-full font-body gap-2">
+          <Brain size={16} />
+          Genera Referto Clinico
+        </Button>
       )}
 
       {isAnalyzing && (
