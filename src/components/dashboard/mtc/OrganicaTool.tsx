@@ -114,6 +114,7 @@ export default function OrganicaTool() {
             sex,
             age: age ? parseInt(age) : undefined,
             symptoms,
+            clinicalNotes: clinicalNotes.trim() || undefined,
           }),
         }
       );
