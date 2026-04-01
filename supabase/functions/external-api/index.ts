@@ -415,16 +415,19 @@ serve(async (req) => {
     let markdown: string;
 
     if (tool === "diagnosis") {
-      const { documentText } = body;
+      const { documentText, clinicalNotes } = body;
       if (!documentText || typeof documentText !== "string" || documentText.trim().length < 20) {
         return new Response(
           JSON.stringify({ error: "Campo 'documentText' obbligatorio (min 20 caratteri)." }),
           { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
+      const notesSection = clinicalNotes && typeof clinicalNotes === "string" && clinicalNotes.trim().length > 0
+        ? `\n\n--- CONSIDERAZIONI CLINICHE DEL PROFESSIONISTA ---\n${clinicalNotes.trim()}\n--- FINE CONSIDERAZIONI ---\nTieni conto di queste considerazioni nell'analisi.`
+        : "";
       markdown = await callAI(
         DIAGNOSIS_SYSTEM_PROMPT,
-        `Analizza il seguente documento clinico e genera un REFERTO CLINICO COMPLETO:\n\n---\n${documentText}\n---`
+        `Analizza il seguente documento clinico e genera un REFERTO CLINICO COMPLETO:\n\n---\n${documentText}${notesSection}\n---`
       );
     } else if (tool === "orthodontic") {
       const { age, sex, angolo_sellare, anb, wits, angolo_articolare, angolo_goniaco, ns_mm, gome_mm, classe_dentale } = body;
