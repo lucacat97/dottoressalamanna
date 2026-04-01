@@ -1,11 +1,12 @@
 import { useState } from "react";
-import { BookOpen, Users, Upload, KeyRound, Calendar, MapPin, Trash2, Shield, Key } from "lucide-react";
+import { BookOpen, Users, Upload, KeyRound, Calendar, MapPin, Trash2, Shield, Key, MessageSquareText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import AdminCreateEdition from "@/components/admin/AdminCreateEdition";
 import AdminRegistrations from "@/components/admin/AdminRegistrations";
 import AdminMaterials from "@/components/admin/AdminMaterials";
 import AdminAccessControl from "@/components/admin/AdminAccessControl";
 import AdminApiKeys from "@/components/admin/AdminApiKeys";
+import AdminFeedback from "@/components/admin/AdminFeedback";
 
 interface CourseEdition {
   id: string;
