@@ -180,7 +180,6 @@ export default function SistemicaTool() {
     setResultMarkdown(null);
     setShowAcupoints(false);
     setRelevantMeridians(new Set());
-    setClinicalNotes("");
   };
 
   if (!disclaimerAccepted) {
