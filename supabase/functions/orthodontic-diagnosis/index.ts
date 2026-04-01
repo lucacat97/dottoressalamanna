@@ -160,7 +160,7 @@ serve(async (req) => {
     }
 
     const body = await req.json();
-    const { age, sex, angolo_sellare, anb, wits, angolo_articolare, angolo_goniaco, rapporto_ns_gome, classe_dentale, clinicalNotes } = body;
+    const { age, sex, angolo_sellare, anb, wits, angolo_articolare, angolo_goniaco, rapporto_ns_gome, classe_dentale } = body;
 
     if (!age || !sex || angolo_sellare == null || anb == null || wits == null || angolo_articolare == null || angolo_goniaco == null) {
       return new Response(
@@ -169,8 +169,10 @@ serve(async (req) => {
       );
     }
 
-    const clinicalNotesSection = clinicalNotes && typeof clinicalNotes === "string" && clinicalNotes.trim().length > 0
-      ? `\n\n--- CONSIDERAZIONI CLINICHE DEL PROFESSIONISTA (RETRO-FEEDBACK) ---\n${clinicalNotes.trim()}\n--- FINE CONSIDERAZIONI ---\nTieni conto di queste considerazioni nell'analisi, integrandole nel report.`
+    // Fetch accumulated retro-feedback
+    const { data: feedbackRows } = await serviceClient.rpc("get_tool_feedback", { _tool_name: TOOL_NAME });
+    const feedbackSection = feedbackRows && feedbackRows.length > 0
+      ? `\n\n=== RETRO-FEEDBACK DAL PROFESSIONISTA (CORREZIONI ACCUMULATE) ===\nQueste sono indicazioni fornite dal professionista dopo aver analizzato referti precedenti. DEVI tenerne conto SEMPRE:\n${feedbackRows.map((r: { feedback: string }, i: number) => `${i + 1}. ${r.feedback}`).join("\n")}\n=== FINE RETRO-FEEDBACK ===`
       : "";
 
     const userMessage = `Analizza i seguenti valori cefalometrici e fornisci la diagnosi ortodontica con scelta del dispositivo terapeutico:
@@ -183,7 +185,7 @@ serve(async (req) => {
 - Angolo Articolare (S-Ar-Go): ${angolo_articolare}°
 - Angolo Goniaco (Ar-Go-Me): ${angolo_goniaco}°
 ${rapporto_ns_gome ? `- Rapporto NS/GoMe: ${rapporto_ns_gome}` : ""}
-${classe_dentale ? `- Classe dentale/funzionale: ${classe_dentale}` : ""}${clinicalNotesSection}`;
+${classe_dentale ? `- Classe dentale/funzionale: ${classe_dentale}` : ""}`;
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) {
@@ -199,7 +201,7 @@ ${classe_dentale ? `- Classe dentale/funzionale: ${classe_dentale}` : ""}${clini
       body: JSON.stringify({
         model: "openai/gpt-5-mini",
         messages: [
-          { role: "system", content: SYSTEM_PROMPT },
+          { role: "system", content: SYSTEM_PROMPT + feedbackSection },
           { role: "user", content: userMessage },
         ],
         stream: true,
