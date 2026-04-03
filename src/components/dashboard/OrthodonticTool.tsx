@@ -153,6 +153,8 @@ const OrthodonticTool = () => {
             Authorization: `Bearer ${session.access_token}`,
           },
           body: JSON.stringify({
+            nome: form.nome,
+            cognome: form.cognome,
             age: parseFloat(form.age),
             sex: form.sex,
             angolo_sellare: parseFloat(form.angolo_sellare),
