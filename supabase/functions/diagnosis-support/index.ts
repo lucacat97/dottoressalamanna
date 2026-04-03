@@ -455,7 +455,7 @@ serve(async (req) => {
           { role: "system", content: SYSTEM_PROMPT + feedbackSection },
           {
             role: "user",
-            content: `Analizza i seguenti dati clinici e genera il referto finale completo rispettando rigorosamente struttura, ordine, logica clinica, tono e stile descritti nelle istruzioni.${clinicalNotesSection}\n\n---\n${documentText}\n---`,
+            content: `Analizza i seguenti dati clinici e genera il referto finale completo rispettando rigorosamente struttura, ordine, logica clinica, tono e stile descritti nelle istruzioni.${clinicalNotesSection}${terapieSection}\n\n---\n${documentText}\n---`,
           },
         ],
         stream: true,
