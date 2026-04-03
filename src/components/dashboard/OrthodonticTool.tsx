@@ -360,7 +360,7 @@ const OrthodonticTool = () => {
             </div>
           </div>
           <div className="flex flex-wrap gap-2">
-            <Button variant="default" onClick={() => downloadAsWord(result, "Diagnosi_Ortodontica")} className="font-body gap-2">
+            <Button variant="default" onClick={() => downloadAsWord(result, `Cefalometria_${form.cognome}_${form.nome}`)} className="font-body gap-2">
               <FileDown size={14} />
               Scarica Word
             </Button>
