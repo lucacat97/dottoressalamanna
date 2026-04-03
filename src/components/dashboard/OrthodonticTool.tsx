@@ -81,6 +81,8 @@ const downloadAsPdf = (markdown: string) => {
 };
 
 interface FormData {
+  nome: string;
+  cognome: string;
   age: string;
   sex: "M" | "F";
   angolo_sellare: string;
@@ -93,7 +95,7 @@ interface FormData {
 }
 
 const initialForm: FormData = {
-  age: "", sex: "F", angolo_sellare: "", anb: "", wits: "",
+  nome: "", cognome: "", age: "", sex: "F", angolo_sellare: "", anb: "", wits: "",
   angolo_articolare: "", angolo_goniaco: "", rapporto_ns_gome: "", classe_dentale: "",
 };
 
