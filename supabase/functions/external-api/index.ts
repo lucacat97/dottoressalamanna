@@ -581,8 +581,11 @@ Entrambi IPO → Dispositivo con rialzo anteriore
 Discordanti → Dispositivo con Piano neutro (rivalutare 4-5 mesi)
 Entrambi NORMO → Dispositivo con Piano neutro
 
+REGOLA PRIORITARIA TC E DIVERGENZA:
+Quando la priorità terapeutica è TC (Terza Classe), il pattern di divergenza DEVE essere SEMPRE a rialzo posteriore, indipendentemente dai valori degli angoli di divergenza (S-Ar-Go e Ar-Go-Me). Questa regola ha la precedenza sulle regole generali di divergenza sopra indicate.
+
 DISPOSITIVO FINALE = componente CLASSE + componente DIVERGENZA
-Esempi: TC + Dispositivo con rialzo posteriore, SC + Dispositivo con rialzo anteriore, IC + Dispositivo con Piano neutro
+Esempi: TC + Dispositivo con rialzo posteriore (SEMPRE per TC), SC + Dispositivo con rialzo anteriore, IC + Dispositivo con Piano neutro
 
 ALERT III CLASSE EVOLUTIVA:
 Se età < 11 anni E Rapporto NS/GoMe >= 1 → ALERT ROSSO (intercettare subito)
