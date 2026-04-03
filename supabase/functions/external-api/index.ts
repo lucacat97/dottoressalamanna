@@ -724,19 +724,20 @@ serve(async (req) => {
         `Analizza il seguente documento clinico e genera un REFERTO CLINICO COMPLETO:\n\n---\n${documentText}${notesSection}\n---`
       );
     } else if (tool === "orthodontic") {
-      const { age, sex, angolo_sellare, anb, wits, angolo_articolare, angolo_goniaco, ns_mm, gome_mm, rapporto_ns_gome, classe_dentale, clinicalNotes } = body;
+      const { nome, cognome, age, sex, angolo_sellare, anb, wits, angolo_articolare, angolo_goniaco, ns_mm, gome_mm, rapporto_ns_gome, classe_dentale, clinicalNotes } = body;
       if (!age || !sex || angolo_sellare == null || anb == null || wits == null || angolo_articolare == null || angolo_goniaco == null) {
         return new Response(
           JSON.stringify({ error: "Campi obbligatori: age, sex, angolo_sellare, anb, wits, angolo_articolare, angolo_goniaco" }),
           { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
-      // Support both old (ns_mm/gome_mm) and new (rapporto_ns_gome) format
       const ratio = rapporto_ns_gome ?? (ns_mm && gome_mm ? (gome_mm / ns_mm) : null);
+      const patientName = nome && cognome ? `${nome} ${cognome}` : (nome || cognome || "Paziente");
       const notesSection = clinicalNotes && typeof clinicalNotes === "string" && clinicalNotes.trim().length > 0
         ? `\n\n--- CONSIDERAZIONI CLINICHE DEL PROFESSIONISTA ---\n${clinicalNotes.trim()}\n--- FINE CONSIDERAZIONI ---\nTieni conto di queste considerazioni nell'analisi.`
         : "";
       const userMsg = `Analizza i seguenti valori cefalometrici:
+- Paziente: ${patientName}
 - Età: ${age} anni
 - Sesso: ${sex}
 - Angolo Sellare (N-S-Ar): ${angolo_sellare}°
