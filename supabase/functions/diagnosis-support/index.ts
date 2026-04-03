@@ -434,6 +434,10 @@ serve(async (req) => {
       ? `\n\n--- CONSIDERAZIONI CLINICHE DEL PROFESSIONISTA (RETRO-FEEDBACK) ---\n${clinicalNotes.trim()}\n--- FINE CONSIDERAZIONI ---`
       : "";
 
+    const terapieSection = terapie && typeof terapie === "string" && terapie.trim().length > 0
+      ? `\n\n--- TERAPIE CONSIGLIATE DAL PROFESSIONISTA ---\nIncludi nel referto SOLO le seguenti terapie: ${terapie.trim()}\nNon aggiungere altre terapie non elencate qui.\n--- FINE TERAPIE ---`
+      : "";
+
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) {
       throw new Error("LOVABLE_API_KEY is not configured");
