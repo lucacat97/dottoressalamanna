@@ -261,6 +261,16 @@ const OrthodonticTool = () => {
         <div className="space-y-5">
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1.5">
+              <Label className="font-body text-sm">Nome *</Label>
+              <Input type="text" placeholder="es. Mario" value={form.nome} onChange={(e) => updateField("nome", e.target.value)} className="font-body" />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="font-body text-sm">Cognome *</Label>
+              <Input type="text" placeholder="es. Rossi" value={form.cognome} onChange={(e) => updateField("cognome", e.target.value)} className="font-body" />
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-1.5">
               <Label className="font-body text-sm">Età del paziente *</Label>
               <Input type="number" placeholder="es. 9" value={form.age} onChange={(e) => updateField("age", e.target.value)} className="font-body" />
             </div>
