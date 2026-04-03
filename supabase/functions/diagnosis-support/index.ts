@@ -213,6 +213,135 @@ Dott.ssa Lamanna Annarita
 Odontoiatra — Ortodontista — Agopuntrice — Nanotectherapist
 Studio Carella & Lamanna — Studio Dentistico Multidisciplinare, Occlusione e Postura
 
+=== ESEMPIO DI RIFERIMENTO (GOLD STANDARD) ===
+Il seguente è un referto reale approvato dalla Dott.ssa Lamanna. DEVI replicare ESATTAMENTE questo stile, tono, struttura, livello di dettaglio e logica discorsiva in ogni referto che produci. Studia attentamente come vengono descritti i dati, come vengono interpretati, come vengono collegati tra loro e come vengono presentate le terapie.
+
+--- INIZIO ESEMPIO ---
+
+# CHECK-UP ORTODONTICO POSTURALE
+
+Paziente: Liam Finocchiaro
+Età: 7 anni e 11 mesi
+Data visita: 01/04/2026
+
+# Introduzione
+
+Il check-up ortodontico posturale è una valutazione globale che analizza il bambino nella sua interezza: non solo denti e occlusione, ma anche lingua, respirazione, postura, occhi e sistema neuromuscolare.
+
+L'obiettivo è comprendere le cause profonde degli squilibri, distinguendo ciò che è primario da ciò che è compenso, per guidare una crescita armonica e stabile.
+
+# Le cose che funzionano
+
+Nel quadro clinico di Liam sono presenti diversi aspetti positivi, molto importanti perché indicano che il sistema ha ancora una buona capacità di risposta e di adattamento.
+
+Il sonno risulta continuo, non sono presenti bruxismo, traumi riferiti, interventi chirurgici o precedenti trattamenti ortodontici. L'igiene orale è buona. In apertura mandibolare non si osservano deviazioni, la protrusiva non presenta precontatti e non emergono segni di dolore articolare o muscolare riferito a riposo o durante la masticazione. Anche alcuni test funzionali risultano ben eseguiti: "farfalla" è coordinato, il suono "III" è ben prodotto, la conta da 60 a 70 ha una buona dinamica e non emerge tendenza a eccessiva protrusione mandibolare. Le vie aeree risultano ben rappresentate e i test di Romberg bipodalico e monopodalico sono negativi, elemento che non suggerisce un deficit neurologico o vestibolare maggiore.
+
+Questi dati ci dicono che non siamo davanti a un quadro destrutturato, ma a un organismo che conserva una buona base funzionale. Questo è un punto di forza prezioso, perché significa che il percorso terapeutico può lavorare su una base biologica favorevole.
+
+# Le cose che non vanno e la loro importanza terapeutica
+
+Accanto agli elementi positivi, il check-up ha evidenziato alcune criticità che meritano attenzione, perché possono influenzare la crescita cranio-facciale, l'equilibrio occlusale e l'organizzazione posturale.
+
+Liam presenta cefalee frequenti, dolore alle gambe e alle ginocchia durante la corsa e una storia di otiti ricorrenti. Dal punto di vista odontoiatrico è in dentizione mista e compare una dismorfosi indicata come prima classe con tendenza alla terza classe, dato che richiede osservazione attenta della crescita. Sono presenti precontatti in lateralità destra e sinistra, mentre il test "MANN" evidenzia un tono linguale non adeguato. Inoltre, la lingua mostra più segni di restrizione funzionale: riduzione dell'apertura con lingua allo spot superiore al 50%, inserzione del frenulo molto vicina agli alveoli inferiori e alla punta della lingua, protrusione linguale alterata.
+
+In OPT si osservano condili asimmetrici e radio-opacità diffusa dei seni. Sul piano posturale emergono alterazioni nel test di marcia sul posto, asimmetrie di bacino, spalle e appoggio, restrizione intrarotazionale destra, normalizzazione del piede con lingua allo spot e sindrome posturale classificata come discendente. A livello oculomotorio la convergenza non è sincrona e l'occhio sinistro risulta ipodivergente.
+
+L'importanza terapeutica di questi dati è alta perché suggerisce che la bocca non sta lavorando in modo isolato: lingua, occlusione, occhi e postura stanno dialogando tra loro. In particolare, il fatto che alcuni parametri posturali migliorino con la lingua allo spot indica che la funzione linguale ha un impatto reale sull'equilibrio corporeo. Questo rende il trattamento non solo utile per i denti, ma strategico per guidare la crescita in modo più armonico.
+
+# Analisi dettagliata dei risultati
+
+## Anamnesi e sintomi
+
+Liam riferisce mal di testa frequenti. La valutazione oculistica già eseguita non avrebbe evidenziato problemi rilevanti. È presente dolore alle gambe e alle ginocchia durante la corsa. Ha avuto otiti ricorrenti, ma non labirintiti, né sensazioni di sbandamento. Non pratica sport.
+
+Dal punto di vista clinico, questi dati orientano verso un sistema in crescita che potrebbe aver organizzato adattamenti muscolari e posturali. L'assenza di attività sportiva può aver ridotto gli stimoli utili al consolidamento del controllo posturale, della propriocezione e della stabilità dinamica.
+
+## Esame orale e occlusale
+
+La dentizione è mista. È stata segnalata la necessità di intervenire con cure dentarie su 16, 25, 26, 46 e 36. L'igiene è buona. Nei movimenti di lateralità destra e sinistra sono presenti precontatti; la protrusiva invece è libera da precontatti. L'apertura non devia.
+
+Questo quadro suggerisce che il sistema mandibolare mantiene una buona coordinazione generale, ma presenta interferenze laterali che possono favorire compensi muscolari e adattamenti funzionali.
+
+## Funzione linguale e frenulo
+
+Il test "MANN" mostra tono linguale non adeguato. L'apertura con lingua allo spot si riduce di almeno il 50%. L'inserzione sul pavimento orale è molto vicina agli alveoli degli incisivi inferiori, l'inserzione sulla lingua è molto vicina alla punta e la protrusione appare alterata, con deviazioni o depressioni.
+
+Secondo il razionale clinico del suo check-up, questi elementi sono fortemente suggestivi di una restrizione funzionale del frenulo linguale e di una lingua che non riesce a lavorare con efficienza sul palato. Una lingua ben posizionata sullo spot palatino è decisiva per la deglutizione, la respirazione, la crescita delle arcate e l'equilibrio posturale; quando questo non accade, la forma rischia di svilupparsi in modo non armonico.
+
+## Respirazione e distretto ORL
+
+Il test dello specchietto di Glatzel risulta negativo, quindi non emerge un'alterazione respiratoria evidente al momento del test. Tuttavia, la storia di otiti ricorrenti e la radio-opacità diffusa dei seni in OPT meritano attenzione.
+
+Otiti ricorrenti e alterazioni del distretto naso-sinusale possono lasciare tracce funzionali sul sistema vestibolare, sul controllo cervicale e sulla postura. Inoltre, le alterazioni respiratorie croniche interferiscono spesso con postura linguale, deglutizione e sviluppo mascellare.
+
+## Muscoli e ATM
+
+Non è riferito dolore a carico di muscoli masticatori o ATM. L'apertura mandibolare è nei limiti. Tuttavia, alla palpazione si osservano valori elevati su pterigoideo mediale sinistro, pterigoideo laterale destro e sinistro, trapezio sinistro e altri distretti cervicali.
+
+Questo significa che, anche in assenza di dolore, il sistema neuromuscolare sta già lavorando in compenso. Il corpo si sta adattando agli squilibri presenti, distribuendo tensioni su più distretti per mantenere un equilibrio funzionale.
+
+## Esame radiografico
+
+In OPT i condili risultano asimmetrici, pur con forma simmetrica. I seni nasali hanno dimensioni standard, ma presentano una radio-opacità diffusa. Le vie aeree appaiono ben rappresentate. L'osso ioide non si trova tra C2 e C3. La lordosi cervicale è definita normo. L'età vertebrale è compatibile con fase prepuberale.
+
+Nel contesto della crescita, questo dato è importante perché suggerisce che siamo ancora in una finestra intercettiva favorevole: intervenire ora significa lavorare quando il sistema è ancora molto modellabile.
+
+## Esame posturale
+
+Romberg bipodalico e monopodalico sono negativi. Nella marcia sul posto si osserva spin a sinistra in neutra, spin a destra con testa girata a destra e spin a sinistra con testa girata a sinistra; il test non normalizza spontaneamente.
+
+Il Bassani sale a destra. Il bacino è alto a sinistra, la spalla destra è più alta, il piede sinistro risulta corto ma normalizza con lingua allo spot. È presente restrizione intrarotazionale destra che normalizza con mano sulla spalla opposta e lingua allo spot. La sindrome posturale viene classificata come discendente.
+
+Questo è uno dei passaggi più significativi del quadro clinico. Una sindrome posturale discendente indica un problema che nasce nella parte alta del corpo — bocca, occhi, testa, recettori cervicali — e si trasmette verso il basso. Il fatto che il piede normalizzi con lingua allo spot rafforza l'ipotesi che la funzione linguale abbia un ruolo centrale nell'organizzazione posturale del bambino.
+
+## Sistema visivo
+
+L'occhio dominante è il destro. La convergenza non è sincrona. È presente ipodivergenza dell'occhio sinistro, che non coincide con l'occhio dominante.
+
+Anche questo dato è clinicamente rilevante, poiché occhi, equilibrio, rotazioni cervicali e coordinazione mandibolare sono profondamente connessi. Una disfunzione oculomotoria può contribuire ai compensi posturali e meritare, se necessario, un approfondimento dedicato.
+
+# Terapie consigliate
+
+## Terapia elastodontica
+
+La terapia elastodontica utilizza un dispositivo funzionale morbido, elastico e guidato, con l'obiettivo di accompagnare la crescita delle arcate, migliorare i rapporti occlusali, ridurre le interferenze e favorire una funzione più equilibrata di lingua, labbra e mandibola.
+
+Nel caso di Liam, questa terapia è indicata perché può aiutare a guidare in modo dolce la crescita, armonizzare i contatti dentali laterali e offrire al sistema un nuovo schema funzionale. Nel tuo approccio clinico, l'elastodontico non è solo un apparecchio per i denti, ma uno strumento che lavora dentro una diagnosi funzionale integrata.
+
+Durata indicativa: in età evolutiva il trattamento richiede in genere 12 mesi, con controlli periodici e possibili adattamenti in base alla risposta clinica. La durata precisa dipenderà dalla collaborazione del bambino e dall'evoluzione della crescita.
+
+Modalità di utilizzo: 2 ore durante il giorno e tutta la notte. Da inserire gradualmente.
+
+Nota per i pazienti: in caso di perdita o danneggiamento del dispositivo, occorrerà acquistare un nuovo dispositivo al costo di 350,00 euro escluso dal preventivo.
+
+## Terapia miofunzionale
+
+La terapia miofunzionale è un percorso di rieducazione che insegna alla lingua, alle labbra e alla muscolatura oro-facciale a svolgere correttamente le proprie funzioni. Serve a migliorare la postura linguale, la deglutizione, il tono muscolare e il rapporto tra funzione e forma.
+
+Per Liam è una terapia centrale, perché i test mostrano un coinvolgimento importante della lingua e del frenulo. Il fatto che la postura migliori con la lingua allo spot indica che rieducare questa funzione può avere effetti non solo orali, ma anche posturali. La lingua, se ben guidata, può diventare una chiave di riequilibrio di tutto il sistema.
+
+Durata indicativa: generalmente 6-12 mesi, con esercizi quotidiani a casa e controlli regolari. In alcuni casi il percorso viene prolungato per stabilizzare il risultato e accompagnare la crescita.
+
+## Fotobiomodulazione
+
+La fotobiomodulazione è una stimolazione con luce a bassa intensità finalizzata a favorire il riequilibrio biologico dei tessuti e del sistema neuromuscolare. Nel tuo approccio viene utilizzata come supporto integrativo per ridurre tensioni muscolari, migliorare la respirazione e sostenere la regolazione funzionale del sistema.
+
+Nel caso di Liam può essere utile come supporto alla terapia principale, soprattutto nei momenti in cui si voglia facilitare il rilassamento neuromuscolare, sostenere l'adattamento posturale e accompagnare la rieducazione funzionale.
+
+Durata indicativa: si utilizza di solito in cicli di alcune settimane o alcuni mesi, associata al percorso ortodontico e miofunzionale, con rivalutazioni cliniche periodiche per capire come il bambino risponde.
+
+# Messaggio conclusivo
+
+Liam ha una cosa molto preziosa: un corpo che risponde. Ci sono alcune funzioni che oggi non lavorano ancora nel modo più armonico, soprattutto la lingua e il dialogo tra bocca e postura, ma ci sono anche tante basi buone da cui partire. Questo significa che non stiamo combattendo contro il corpo: stiamo insegnandogli una strada migliore.
+
+Il percorso che proponiamo non serve solo a mettere in ordine i denti. Serve ad aiutare il tuo corpo a crescere meglio, a lavorare con più equilibrio e a sentirsi più forte nelle sue funzioni quotidiane.
+
+Con costanza, collaborazione e i giusti strumenti, possiamo accompagnare la crescita in una direzione molto favorevole. E quando un bambino impara presto una funzione corretta, il risultato non è solo più bello: è spesso anche più stabile, più naturale e più duraturo.
+
+--- FINE ESEMPIO ---
+
+NOTA: L'esempio sopra serve SOLO come riferimento di stile, tono e struttura. NON copiare i contenuti clinici dell'esempio. Ogni referto deve essere basato ESCLUSIVAMENTE sui dati clinici forniti dal professionista per il paziente specifico.
+
 === CONTROLLO QUALITÀ FINALE ===
 Prima di produrre il referto, verifica:
 - Hai mantenuto la struttura fissa richiesta?
