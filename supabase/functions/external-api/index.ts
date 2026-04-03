@@ -720,7 +720,7 @@ serve(async (req) => {
     let markdown: string;
 
     if (tool === "diagnosis") {
-      const { documentText, clinicalNotes } = body;
+      const { documentText, clinicalNotes, terapie } = body;
       if (!documentText || typeof documentText !== "string" || documentText.trim().length < 20) {
         return new Response(
           JSON.stringify({ error: "Campo 'documentText' obbligatorio (min 20 caratteri)." }),
@@ -730,9 +730,12 @@ serve(async (req) => {
       const notesSection = clinicalNotes && typeof clinicalNotes === "string" && clinicalNotes.trim().length > 0
         ? `\n\n--- CONSIDERAZIONI CLINICHE DEL PROFESSIONISTA ---\n${clinicalNotes.trim()}\n--- FINE CONSIDERAZIONI ---\nTieni conto di queste considerazioni nell'analisi.`
         : "";
+      const terapieSection = terapie && typeof terapie === "string" && terapie.trim().length > 0
+        ? `\n\n--- TERAPIE CONSIGLIATE DAL PROFESSIONISTA ---\nIncludi nel referto SOLO le seguenti terapie: ${terapie.trim()}\nNon aggiungere altre terapie non elencate qui.\n--- FINE TERAPIE ---`
+        : "";
       markdown = await callAI(
         DIAGNOSIS_SYSTEM_PROMPT,
-        `Analizza il seguente documento clinico e genera un REFERTO CLINICO COMPLETO:\n\n---\n${documentText}${notesSection}\n---`
+        `Analizza il seguente documento clinico e genera un REFERTO CLINICO COMPLETO:\n\n---\n${documentText}${notesSection}${terapieSection}\n---`
       );
     } else if (tool === "orthodontic") {
       const { nome, cognome, age, sex, angolo_sellare, anb, wits, angolo_articolare, angolo_goniaco, ns_mm, gome_mm, rapporto_ns_gome, classe_dentale, clinicalNotes } = body;
