@@ -414,7 +414,7 @@ serve(async (req) => {
       );
     }
 
-    const { documentText, clinicalNotes } = await req.json();
+    const { documentText, clinicalNotes, terapie } = await req.json();
 
     if (!documentText || typeof documentText !== "string" || documentText.trim().length < 20) {
       return new Response(
