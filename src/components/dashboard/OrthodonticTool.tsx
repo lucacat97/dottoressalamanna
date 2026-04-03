@@ -81,6 +81,8 @@ const downloadAsPdf = (markdown: string) => {
 };
 
 interface FormData {
+  nome: string;
+  cognome: string;
   age: string;
   sex: "M" | "F";
   angolo_sellare: string;
@@ -93,7 +95,7 @@ interface FormData {
 }
 
 const initialForm: FormData = {
-  age: "", sex: "F", angolo_sellare: "", anb: "", wits: "",
+  nome: "", cognome: "", age: "", sex: "F", angolo_sellare: "", anb: "", wits: "",
   angolo_articolare: "", angolo_goniaco: "", rapporto_ns_gome: "", classe_dentale: "",
 };
 
@@ -122,7 +124,7 @@ const OrthodonticTool = () => {
   };
 
   const isFormValid = () => {
-    return form.age && form.angolo_sellare && form.anb && form.wits && form.angolo_articolare && form.angolo_goniaco;
+    return form.nome && form.cognome && form.age && form.angolo_sellare && form.anb && form.wits && form.angolo_articolare && form.angolo_goniaco;
   };
 
   const handleAnalyze = async () => {
@@ -151,6 +153,8 @@ const OrthodonticTool = () => {
             Authorization: `Bearer ${session.access_token}`,
           },
           body: JSON.stringify({
+            nome: form.nome,
+            cognome: form.cognome,
             age: parseFloat(form.age),
             sex: form.sex,
             angolo_sellare: parseFloat(form.angolo_sellare),
@@ -257,6 +261,16 @@ const OrthodonticTool = () => {
         <div className="space-y-5">
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1.5">
+              <Label className="font-body text-sm">Nome *</Label>
+              <Input type="text" placeholder="es. Mario" value={form.nome} onChange={(e) => updateField("nome", e.target.value)} className="font-body" />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="font-body text-sm">Cognome *</Label>
+              <Input type="text" placeholder="es. Rossi" value={form.cognome} onChange={(e) => updateField("cognome", e.target.value)} className="font-body" />
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-1.5">
               <Label className="font-body text-sm">Età del paziente *</Label>
               <Input type="number" placeholder="es. 9" value={form.age} onChange={(e) => updateField("age", e.target.value)} className="font-body" />
             </div>
@@ -346,7 +360,7 @@ const OrthodonticTool = () => {
             </div>
           </div>
           <div className="flex flex-wrap gap-2">
-            <Button variant="default" onClick={() => downloadAsWord(result, "Diagnosi_Ortodontica")} className="font-body gap-2">
+            <Button variant="default" onClick={() => downloadAsWord(result, `Cefalometria_${form.cognome}_${form.nome}`)} className="font-body gap-2">
               <FileDown size={14} />
               Scarica Word
             </Button>
