@@ -1,0 +1,111 @@
+{
+  "corso_check_up_ortodontico_posturale": {
+    "titolo": "CHECK UP ORTODONTICO-POSTURALE - Approccio multidisciplinare per un riequilibrio occlusale, neuromuscolare e posturale",
+    "autore": "Dott.ssa Lamanna Annarita - Odontoiatra, Ortodontista, Agopuntrice, Nanotectherapist",
+    "contenuti": {
+      "linee_guida_nazionali": "Raccomandazione 4: L'esame clinico di un disturbo posturale deve prevedere un percorso in senso cranio-caudale (Forza A, Evidenza I). L'adattamento della postura eretta umana si è realizzato evolutivamente a partenza dal livello craniale (vista, occlusione, ossa mascellari e apparato vestibolare), in senso discendente. In fase diagnostica si prevedono: anamnesi con scala VAS, esame clinico obiettivo cranio-vertebrale, valutazione asse verticale del tronco, valutazione allineamento bacino nei tre piani, valutazione con esami radiografici a basso dosaggio.",
+      "malattia_posturale": "Si definisce malattia posturale una condizione in cui l'organismo perde la propria armonia di equilibrio statico e dinamico, a causa di una disfunzione nei sistemi di controllo posturale — visivo, vestibolare, podalico, stomatognatico o propriocettivo. Questo squilibrio può determinare compensi muscolari, asimmetrie, dolore cronico, disturbi dell'occlusione, cefalee, tensioni miofasciali, fino ad alterare la biomeccanica articolare e la funzione respiratoria.",
+      "cinque_recettori_posturali": [
+        "APPARATO STOMATOGNATICO (occlusione, ATM, deglutizione)",
+        "SISTEMA VESTIBOLARE",
+        "PIEDI",
+        "OCCHI",
+        "PELLE (cicatrici)"
+      ],
+      "occlusione_recettore_posturale": "L'apparato stomatognatico è uno dei 5 recettori posturali. È responsabilità del clinico funzionalizzarla per contribuire alla terapia posturale e non renderla disfunzionale in seguito a un intervento ortodontico, conservativo o protesico.",
+      "sistema_polivagale": {
+        "descrizione": "Il sistema polivagale (Porges) descrive come il nervo vago regola le risposte emotive, fisiologiche e posturali. Il vago ha tre circuiti distinti che determinano il comportamento in base al senso di sicurezza o minaccia percepito.",
+        "tre_circuiti": {
+          "vago_ventrale": "Sicurezza e fiducia: respiro fluido, spalle aperte, sguardo orizzontale",
+          "simpatico": "Allerta o paura: mandibola serrata, collo rigido, respiro corto, sguardo fisso",
+          "vago_dorsale": "Blocco o ritiro: spalle chiuse, torace collassato, respiro superficiale, voce flebile"
+        },
+        "principio": "La postura è una mappa visibile dello stato del sistema nervoso autonomo. Il sistema polivagale collega emozioni, respiro e postura: il corpo si apre nella sicurezza e si chiude nella paura."
+      },
+      "classificazione_dolore_IASP": {
+        "nocicettivo": "Coerenza stimolo-risposta, dolore associato a movimento o trauma, origina da tessuti non neurali. Risoluzione coerente con tempi di guarigione. Risponde ai FANS.",
+        "neuropatico": "Alterazione strutturale e funzionale del sistema nervoso somatosensoriale. Bruciore, formicolio, scossa. Severità alta, test neurodinamici spesso positivi.",
+        "nociplastico": "Alterata modulazione del dolore senza evidenza di lesione. No coerenza stimolo-risposta. Durata molto lunga, scarsa risposta ai FANS. Forte associazione con fattori psicosociali."
+      },
+      "anamnesi": {
+        "tipo_di_parto": {
+          "spontaneo": "Il passaggio nel canale del parto stimola il sistema cranio-sacrale, comprimendo fisiologicamente le ossa craniche e favorendo la maturazione dei riflessi orali.",
+          "cesareo": "Necessaria visita osteopata. Possibile ipomobilità occipitale-atlantea: suzione debole, lingua ipotonica, persistenza pattern deglutitorio infantile, tendenza a respirazione orale.",
+          "indotto": "Necessaria visita osteopata. Micro-tensioni craniche possono interferire con nervi cranici IX, X e XII. Possibili: difficoltà suzione, riflesso del vomito accentuato, retrazione linguale, deglutizione asimmetrica."
+        },
+        "sonno": "La lingua stimola lo spot? La mancata stimolazione porta a deficit di Acetilcolina necessaria per la fase REM. La respirazione orale causa congestione nasale e posizione bassa della lingua.",
+        "sport": {
+          "benefici": ["Migliora postura direttamente", "Migliora sistema respiratorio e diaframma", "Potenzia sistema cardiovascolare", "Rinforza sistema osteo-muscolare", "Migliora equilibrio e controllo posturale", "Riduce infiammazione e dolore", "Migliora funzione cognitiva e umore", "Regola peso corporeo", "Migliora qualità del sonno"],
+          "consigliati": ["Pilates", "Nuoto stile libero (no rana che aumenta iperlordosi)", "Ginnastica posturale", "Camminata veloce", "Tai Qi, Qi Gong"]
+        },
+        "traumi": "I traumi anche lontani nel tempo possono modificare equilibrio, postura e funzione mandibolare. Un colpo di frusta, caduta, trauma cranico possono alterare tono muscoli posturali, propriocezione vestibolare, mobilità cervicale. Questi adattamenti diventano nuove mappe posturali interne.",
+        "traumi_emotivi": "Il trauma emotivo modifica il tono del sistema polivagale: il corpo entra in difesa, la muscolatura si irrigidisce, il respiro si restringe. La postura diventa una memoria del trauma.",
+        "interventi_chirurgici": "Le cicatrici possono modificare tensioni, recettori cutanei e catene miofasciali. Ogni cicatrice è un possibile punto di interferenza che può influenzare postura, equilibrio e funzione.",
+        "occhiali": "Gli occhiali modificano il modo in cui l'occhio organizza le informazioni visive, influenzando equilibrio e catene posturali.",
+        "apparecchi_ortodontici": "L'ortodonzia modella l'occlusione ma anche i movimenti mandibolari, il lavoro linguale e l'adattamento dell'ATM. Trattamenti pregressi possono aver generato nuovi squilibri.",
+        "apparecchi_acustici": "Modificano l'elaborazione dei segnali uditivi e possono influenzare il sistema vestibolare. Possono contribuire a instabilità, compensi cervicali.",
+        "patologie_orecchio": "Labirintiti, neuriti vestibolari, Ménière, ipoacusia, otiti ricorrenti possono alterare persistentemente il sistema vestibolare.",
+        "solette_plantari": "Modificano la percezione del suolo e l'attività dei recettori podalici. Se non adeguati, possono generare compensi ascendenti."
+      },
+      "esame_orale": "Valutare: dentizione, carie, usure, recessioni gengivali, colletti, impianti, protesi, ponti e corone, igiene, mediana. Movimenti mandibolari: apertura e chiusura, protrusione, lateralità, linea mediana, prevalenza masticatoria."
+    }
+  },
+  "corso_terapia_miofunzionale": {
+    "titolo": "TERAPIA MIOFUNZIONALE - La chiave terapeutica per un riequilibrio occlusale, neuromuscolare e posturale",
+    "autore": "Dott.ssa Lamanna Annarita",
+    "contenuti": {
+      "catene_muscolari": {
+        "descrizione": "Le catene muscolari sono gruppi di muscoli che lavorano in maniera complementare per compiere un movimento e mantenere postura e stabilità. Sono uniti in un programma di attivazione comune conservato a livello neurologico cerebellare.",
+        "catena_linguale_antero_mediana": "Inizia dai muscoli della lingua, attraversa sternocleidomastoideo, quinta costola, grande retto dell'addome, adduttori, gemello interno del polpaccio, fino all'estensore breve dell'alluce. Ipertono causa: alterazioni suzione, fonazione, postura anteriore e flessione, compressioni lombari, predisposizione ernie del disco. Frenulo corto + deglutizione disfunzionale → II classe scheletrica, ipomandibulia.",
+        "catena_postero_mediana": "Bilanciante alla catena linguale. Dall'occipite attraverso fascia occipitale e dorsale fino al sacro e flessori plantari. Ipertono porta postura in estensione con testa estesa e piede cavo. Possibili: III classe scheletrica, problemi ATM, bruxismo, disfunzioni podaliche, problemi convergenza oculare, colpi di frusta.",
+        "catena_postero_anteriore": "Specifica del tronco, responsabile dell'allungamento della colonna. Coinvolge multifidi, retto anteriore del collo, piccolo obliquo della testa, muscoli oculari, muscoli del sorriso, diaframma. Punto di ancoraggio: fascia faringea. Alterazioni deglutizione possono compromettere respirazione diaframmatica e causare forie o alterazioni convergenza.",
+        "catena_antero_posteriore": "Bilancia la postero-anteriore. Eccesso di tensione può provocare iperlordosi cervicale e lombare ed estensione del ginocchio.",
+        "catene_laterali": {
+          "antero_laterale": "Coinvolge mastoide e mandibola. Aumento tensione causa rotazione interna di spalle, mani e piedi.",
+          "postero_laterale": "Include pterigoidei e trapezio. Eccesso tensione provoca rotazione esterna di spalle, mani e piedi e ginocchio varo."
+        },
+        "collegamento_piedi_mandibola": "Problemi ai piedi e alla mandibola sono strettamente collegati e si influenzano reciprocamente."
+      },
+      "spot_palatino": {
+        "descrizione": "Lo SPOT (Sensore Primitivo Orale Trigeminale) è un interruttore nervoso che stimola costantemente una risposta del SNC. Durante la deglutizione corretta si ha una costante stimolazione dello spot palatino. La stimolazione neurologica avviene SOLO per la pressione dello spot, resta assente se la lingua viene semplicemente appoggiata.",
+        "posizione_lingua": "La punta della lingua a riposo si poggia sullo spot. Questa posizione è determinata dall'equilibrio dei muscoli elevatori (stiloglosso, palatoglosso, longitudinale superiore) e protrusori (genioglosso, trasversale). Durante l'atto deglutitorio la lingua schiaccia l'apice dello spot che costituisce il fulcro del suo movimento di sollevamento progressivo del dorso contro il palato.",
+        "esterocettori": "Nello spot troviamo 5 tipi di esterocettori (gli stessi della pianta del piede): corpuscoli di Meissner, Pacini, Ruffini, terminazioni lanceolate, terminazioni libere.",
+        "aree_cerebrali_stimolate": [
+          "Area dell'insula: implicata nelle crisi di panico quando la stimolazione manca",
+          "Area limbica: memoria, attenzione (ADHD), concentrazione, emotività, controllo ansia e depressione",
+          "Area talamica e ipotalamica: produzione di neuromediatori",
+          "Cervelletto: memorie motorie, tono muscolare, coordinazione motoria",
+          "Ghiandola pineale: stimolata dalla noradrenalina → serotonina → melatonina"
+        ],
+        "effetto_posturale": "La posizione della lingua e la deglutizione hanno effetti sulla postura. La lingua allo spot modifica la contrazione della muscolatura masticatoria e la posizione della mandibola. In pedana si riducono le oscillazioni."
+      },
+      "frenulo_linguale": {
+        "protocollo_marchesan": {
+          "test_apertura": "Misura bocca aperta e poi con lingua allo spot. Se riduzione supera 50%, il frenulo è corto.",
+          "forma_punta": "In massima apertura valutare: punta quadrata, fessura o depressione, punta a cuore, impossibilità ad alzarsi.",
+          "inserzione_pavimento": "Frenulo corto se visibile dalla cresta alveolare superiore, medio se visibile dalle caruncole. Più l'inserzione è anteriore, più è ostacolata l'elevazione.",
+          "inserzione_lingua": "Più è vicino all'apice, maggiore è il limite del movimento.",
+          "protrusione": "Frenulo disfunzionale se la punta devia da un lato o mostra depressione nel terzo anteriore."
+        }
+      },
+      "pazienti_da_riabilitare": ["Frenulo corto", "Respiratori orali", "Anziani con protesi", "Pazienti con problemi di sonno", "Bruxisti", "Disarmonie dentali", "Problemi di ATM", "Dolori cronici persistenti"],
+      "protocollo_frenulo_corto": {
+        "pre_intervento": "2 appuntamenti alla settimana per 2 settimane. Esercizi mobilizzazione passivi (garzina per allungare lingua verso spot, protrusiva, lateralità). Esercizi attivi: Leone, Freccia, Passeggiata. Utilizzo TFL taopatch o vibrazione locale.",
+        "intervento": "Preferibile laser a diodo per miglior controllo sanguinamento, senza punti. Guarigione in seconda intenzione.",
+        "post_intervento": "Un giorno sì e uno no per i primi 10 giorni, poi 3 volte a settimana per i successivi 10 giorni. Stessi esercizi + applicazione taopatch zona pavimento."
+      },
+      "esercizi_miofunzionali": {
+        "leone": "Schiacciare con forza la lingua sotto il palato, aprire la bocca portando in basso la mandibola finché possibile senza staccare la lingua. 2 volte al giorno, da pochi secondi a 4 minuti. Dopo frenulectomia 3 volte per 4 minuti.",
+        "passeggiata": "Scorrere la punta della lingua dal margine posteriore di una emi-arcata all'altro lato passando sulla superficie vestibolare. 2-3 passeggiate arcata superiore e inferiore, 2 volte al giorno.",
+        "freccia": "Spingere la punta della lingua fuori dalla bocca verso la commessura labiale da un lato poi dall'altro. Stretching dopo liberazione frenulo. 2 volte per 2 volte al dì."
+      },
+      "nanotecnologia": {
+        "taopatch": "Dispositivo medico di 14mm contenente nanocristalli di quantum dots (Nobel 2023). Assorbono luce del corpo/ambiente e la riemettono come fotoni a lunghezze d'onda benefiche. Sfruttano fotoneuromodulazione e neurocezione.",
+        "tfl": "Laser LED che emette luce rossa e vicino infrarosso con nanotecnologia.",
+        "protocollo_pre_frenulectomia": "Luce pulsata ALL per muscolatura intrinseca e pavimento (5 min). Per muscolatura estrinseca: sessione pulsata ALL + fissa ALL.",
+        "protocollo_post_frenulectomia": "Luce blu pulsata primi 2 giorni per fotobiomodulazione ed effetto su patogeni. Poi luce pulsata ALL per muscolatura intrinseca, pulsata+fissa ALL per estrinseca."
+      },
+      "nota_importante": "Il paziente e i genitori devono comprendere l'importanza della respirazione nasale. Alcuni pazienti non riusciranno ad usare l'elastodontico se non respirano con il naso. A volte occorre riabilitare prima la respirazione e poi l'occlusione."
+    }
+  }
+}
