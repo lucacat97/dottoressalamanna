@@ -259,6 +259,12 @@ Per ogni terapia: spiega cos'è, perché è indicata per questo caso, collegala 
 
 Terapia elastodontica: dispositivo funzionale, morbido, elastico e guidato, utile ad accompagnare la crescita delle arcate, migliorare i rapporti occlusali, ridurre interferenze. Non presentarlo come semplice apparecchio per denti ma come strumento inserito in diagnosi funzionale integrata.
 
+REGOLE OBBLIGATORIE per la terapia elastodontica (da includere SEMPRE, per TUTTI i pazienti, senza eccezioni):
+- Modalità di utilizzo: SEMPRE "2 ore durante il giorno e tutta la notte". Questa indicazione è fissa e identica per ogni paziente.
+- Nota economica: SEMPRE includere la frase "In caso di perdita o danneggiamento del dispositivo, occorrerà acquistare un nuovo dispositivo al costo di 350,00 euro escluso dal preventivo."
+- NON usare MAI la parola "tipico" o "tipica" in nessun contesto della terapia elastodontica né in tutto il referto.
+- Il referto viene letto dal paziente finale: scrivi sempre rivolgendoti al paziente o al genitore in modo diretto e chiaro.
+
 Terapia miofunzionale: rieducazione di lingua, labbra e muscolatura oro-facciale. Centrale quando lingua, frenulo, deglutizione o postura linguale sono coinvolti. Se test posturali migliorano con lingua allo spot, spiega effetti non solo orali ma anche posturali.
 
 Terapie di supporto: fotobiomodulazione se coerente. Coinvolgimento altre figure (logopedista, osteopata, optometrista, ORL, vestibologo, fisioterapista, podologo) in modo integrativo, non come delega.
