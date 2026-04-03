@@ -199,8 +199,10 @@ serve(async (req) => {
       ? `\n\n=== RETRO-FEEDBACK DAL PROFESSIONISTA (CORREZIONI ACCUMULATE) ===\nQueste sono indicazioni fornite dal professionista dopo aver analizzato referti precedenti. DEVI tenerne conto SEMPRE:\n${feedbackRows.map((r: { feedback: string }, i: number) => `${i + 1}. ${r.feedback}`).join("\n")}\n=== FINE RETRO-FEEDBACK ===`
       : "";
 
+    const patientName = nome && cognome ? `${nome} ${cognome}` : (nome || cognome || "Paziente");
     const userMessage = `Analizza i seguenti valori cefalometrici e fornisci la diagnosi ortodontica con scelta del dispositivo terapeutico:
 
+- Paziente: ${patientName}
 - Età: ${age} anni
 - Sesso: ${sex}
 - Angolo Sellare (N-S-Ar): ${angolo_sellare}°
