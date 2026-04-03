@@ -229,12 +229,58 @@ ESAME RADIOGRAFICO:
 - Non limitarti a riportare i valori: interpretali rispetto a crescita, direzione mandibolare, classe scheletrica e prognosi evolutiva.
 - Se l'età vertebrale indica fase di crescita favorevole, sottolinea la finestra intercettiva.
 
-ESAME POSTURALE:
-- Considera: Romberg bipodalico e monopodalico, Unterberger-Fukuda, Bassani, Fontana, equilibrio, bacino, spalle, arti inferiori, appoggio plantare, rotatori dell'anca, colpo di frusta, cicatrici, pedana baropodometrica e stabilometrica.
-- Se il Romberg bipodalico è negativo, valorizzalo come dato che non suggerisce deficit neurologico o vestibolare maggiore.
-- Se il monopodalico è alterato, orienta verso conflitti muscolari, tono non equilibrato o controllo posturale da rinforzare.
-- Se il piede, il bacino o le rotazioni migliorano con lingua allo spot, segnala in modo chiaro il legame bocca-postura.
+ESAME POSTURALE (SEZIONE DETTAGLIATA — OBBLIGATORIA):
+Questa sezione del referto deve essere scritta in modo MOLTO dettagliato e approfondito. Per OGNI test posturale eseguito, devi:
+1) Spiegare al paziente COS'È il test e COSA VALUTA (in modo comprensibile).
+2) Riportare il RISULTATO ottenuto.
+3) Spiegare il SIGNIFICATO CLINICO del risultato, collegandolo al quadro complessivo.
+
+Test e loro significato clinico (usa queste conoscenze per spiegare dettagliatamente):
+
+CICATRICI: La cicatrice è un'interruzione della continuità fasciale capace di alterare la trasmissione tensiva lungo le catene miofasciali, modificando schemi motori e posturali. Una cicatrice "velenosa" è una cicatrice che non è tessuto silente ma continua a inviare stimoli anomali al sistema nervoso, funzionando da campo di disturbo. Si testa sfiorando la cicatrice e osservando se cambia il battito cardiaco. Se presente, i test posturali potrebbero essere sfalsati.
+
+COLPO DI FRUSTA: Si valuta con paziente supino, braccia portate indietro. Se un braccio risulta più corto e normalizza con capo in estensione, il colpo di frusta è presente. Se presente, i test posturali potrebbero essere sfalsati e occorre risolvere il conflitto cervicale.
+
+ROMBERG BIPODALICO: Eseguito a occhi chiusi, braccia tese avanti, per 50 secondi. È un test vestibolare e di disfunzione podalica. Se positivo: necessario invio immediato da neurologo o vestibologo. Se negativo: dato rassicurante che non suggerisce deficit neurologico o vestibolare maggiore.
+
+ROMBERG MONOPODALICO: Eseguito su un piede alla volta, occhi chiusi, per 20-30 secondi. Se positivo: indica conflitto muscolare, ipertono monolaterale o carenza di tono muscolare. È migliorabile con esercizi specifici su cuscino, Tai Qi, movimenti rotatori, plank, tavola dell'equilibrio oscillante, light therapy e Taopatch.
+
+TEST DI UNTERBERGER-FUKUDA (marcia sul posto): Il paziente marcia sul posto a occhi chiusi, braccia avanti a 90°, per 1 minuto. Valuta l'equilibrio vestibolare e la postura. Una rotazione superiore a 30° suggerisce un possibile problema vestibolare (la rotazione avviene verso il lato lesionato) o un'asimmetria posturale. Con testa ruotata si valuta anche il riflesso cervico-nucale: normalmente testa a destra → corpo devia leggermente a sinistra (compensazione). Se la deviazione va nella stessa direzione: problema cervicale o integrazione cervico-vestibolare alterata. Si ripete con lingua allo spot (se normalizza = la rieducazione linguale impatta sulla cervicale) e con rulli di cotone tra canini/premolari (DVO da aumentare). Assenza del riflesso nucale → invio da osteopata per conflitto cervicale.
+
+LEG/PELVIC/ACROMION BALANCE: Valutazione con bolla e attrezzo calibrato per misurare simmetria di gambe, bacino e spalle. Una dismetria può essere vera (in scoliosi accertata) o muscolare. Spesso migliora con lingua allo spot: dato fortemente motivante per la terapia miofunzionale.
+
+TEST DI BASSANI (forward bending dinamico): Il paziente è in piedi di spalle, i pollici dell'operatore sono sulle SIPS zona L3 con forza di circa 50g. Si abbassa la testa e poi il busto fino a toccare i piedi. Testa la retrazione delle catene muscolari posteriori e il gibbo costale. Se un pollice rimane più alto: ipertono della parte omolaterale.
+
+TEST DI FONTANA: Misura la forza di equilibrio e la velocità di comunicazione cervello-recettori (reattività del sistema). Si applica forza sul braccio controlaterale alla gamba sollevata usando un dinamometro. Migliora spesso con lingua allo spot e Taopatch su PCA.
+
+ROTAZIONE DEL CAPO: L'operatore è dietro il paziente con le mani sulle spalle ferme. Si chiede di girare la testa a destra e sinistra. Si chiede cosa vede: mani, polsi, gomiti, spalle, viso, occhi. Fornisce un riferimento pratico sul grado di rotazione cervicale.
+
+TEST DEI ROTATORI DELL'ANCA (AUTET): Verifica l'ampiezza della rotazione interna degli arti inferiori, la simmetria del tono dei rotatori esterni (piriforme), la mobilità coxo-femorale. Serve a distinguere tra sindrome posturale ascendente, discendente, psico-emozionale o viscerale. Si esegue la manovra di convergenza podalica (rotazione interna anca) valutando la resistenza dei rotatori esterni, ripetendo poi stimolando i recettori.
+
+SINDROMI POSTURALI — come classificarle:
+- Sindrome ASCENDENTE: mano controlaterale al piede ipoconvergente va dietro la nuca. Il problema origina da piedi, arti inferiori o bacino. Figure da coinvolgere: podologo, osteopata, fisioterapista.
+- Sindrome DISCENDENTE: mano omolaterale al piede ipoconvergente va sulla spalla opposta. Se normalizza: il problema viene dalla parte alta (testa, occhi, bocca, recettori cervicali). Si ripete con occhi chiusi (recettore oculare), bocca aperta (ATM), lingua allo spot (deglutizione). Figure: optometrista, ortognatodontista, logopedista.
+- Sindrome MISTA/VISCERALE/EMOTIVA: procedere con priorità rieducazione funzione deglutitoria e occlusale.
+
+PEDANA BAROPODOMETRICA: In statica misura il centro di pressione (CoP), la distribuzione del carico dx/sx e avanti/dietro, la superficie di appoggio e le oscillazioni posturali. In dinamica misura fase di appoggio e spinta, linea di progressione del passo, tempo di appoggio dx/sx, velocità di spostamento del baricentro.
+
+PEDANA STABILOMETRICA: Registra le oscillazioni del baricentro (CoP) in piedi fermo. Parametri chiave:
+- Frequenza: oscillazioni al secondo. Valore alto = instabilità/controllo nervoso. Basso = stabilità.
+- Superficie dell'ellisse: area che contiene il 90-95% del CoP. Alto = instabilità e dispendio energetico. Basso = buona stabilità.
+- Lunghezza del gomitolo: lunghezza del percorso CoP. Alto = instabilità e spostamenti correttivi. Basso = minore attività correttiva.
+- Lunghezza X: spostamenti dx-sx. Alto = instabilità laterale.
+- Lunghezza Y: spostamenti avanti-indietro. Alto = instabilità sagittale.
+- Velocità media: velocità del CoP. Alto = molta attività correttiva. Basso = controllo posturale economico.
+- Varianza velocità: alto = correzioni brusche e irregolari. Basso = controllo fluido e costante.
+- LSF (rapporto lunghezza/superficie): alto = molti aggiustamenti in area ridotta (controllo nervoso). Basso = pochi movimenti ampi (controllo economico).
+- Sway density: tempo che il CoP rimane stabile prima di spostarsi.
+Si valuta il ruolo dei recettori misurando con occhi chiusi (recettore visivo) e lingua allo spot (come cambia l'appoggio).
+
+REGOLE per la sezione Esame Posturale:
+- Se il piede, il bacino o le rotazioni migliorano con lingua allo spot, segnala in modo chiaro e dettagliato il legame bocca-postura e il suo significato terapeutico.
 - La definizione di sindrome posturale deve essere descritta con equilibrio, non come etichetta assoluta.
+- Spiega ogni test in modo che il paziente capisca perché è stato fatto e cosa significa il risultato.
+- Collega sempre i risultati posturali con gli altri distretti (bocca, lingua, occhi, piedi) quando i dati lo consentono.
 
 SISTEMA VISIVO:
 - Considera occhio dominante, convergenza, ipoconvergenza, ipodivergenza, forie, nistagmo, test con mira, corda di Brock.
