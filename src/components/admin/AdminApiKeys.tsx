@@ -56,24 +56,25 @@ const AdminApiKeys = () => {
   const [newToolLimits, setNewToolLimits] = useState<Record<string, number>>({ diagnosis: 30, orthodontic: 30, mtc_sistemica: 30, mtc_organica: 30 });
   const [generatedKey, setGeneratedKey] = useState<string | null>(null);
   const [showKey, setShowKey] = useState(false);
-  const [usageCounts, setUsageCounts] = useState<Record<string, number>>({});
+  const [usageCounts, setUsageCounts] = useState<Record<string, Record<string, number>>>({});
+
+  const TOOL_KEYS = Object.keys(TOOL_LABELS);
 
   const fetchKeys = async () => {
     const { data } = await supabase.from("api_keys").select("*").order("created_at", { ascending: false });
     if (data) {
       setKeys(data as unknown as ApiKey[]);
-      // Fetch usage for each key
-      const counts: Record<string, number> = {};
+      // Fetch usage per tool for each key
+      const counts: Record<string, Record<string, number>> = {};
       for (const key of data) {
-        const { data: diagCount } = await supabase.rpc("get_api_key_monthly_usage", {
-          _api_key_id: key.id,
-          _tool_name: "diagnosis",
-        });
-        const { data: orthoCount } = await supabase.rpc("get_api_key_monthly_usage", {
-          _api_key_id: key.id,
-          _tool_name: "orthodontic",
-        });
-        counts[key.id] = (diagCount || 0) + (orthoCount || 0);
+        counts[key.id] = {};
+        for (const tool of TOOL_KEYS) {
+          const { data: count } = await supabase.rpc("get_api_key_monthly_usage", {
+            _api_key_id: key.id,
+            _tool_name: tool,
+          });
+          counts[key.id][tool] = count || 0;
+        }
       }
       setUsageCounts(counts);
     }
