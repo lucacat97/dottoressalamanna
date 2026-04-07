@@ -285,11 +285,25 @@ const AdminApiKeys = () => {
                   <div className="flex flex-wrap items-center gap-3 mt-2 text-xs text-muted-foreground font-body">
                     <span>Creata: {formatDate(apiKey.created_at)}</span>
                     {apiKey.last_used_at && <span>Ultimo uso: {formatDate(apiKey.last_used_at)}</span>}
-                    <span className="flex items-center gap-1">
-                      <BarChart3 size={11} />
-                      {usageCounts[apiKey.id] || 0} totali questo mese
-                    </span>
                   </div>
+                  {usageCounts[apiKey.id] && (
+                    <div className="flex flex-wrap items-center gap-3 mt-2">
+                      <BarChart3 size={12} className="text-muted-foreground" />
+                      {Object.entries(TOOL_LABELS).map(([toolKey, toolLabel]) => {
+                        const count = usageCounts[apiKey.id]?.[toolKey] || 0;
+                        const limit = (apiKey.tool_limits as Record<string, number> | null)?.[toolKey] ?? apiKey.monthly_limit;
+                        const isOver = count >= limit;
+                        return (
+                          <span key={toolKey} className={`font-body text-[11px] px-2 py-0.5 rounded-full border ${isOver ? "bg-destructive/10 border-destructive/30 text-destructive" : "bg-muted/30 border-border text-muted-foreground"}`}>
+                            {toolLabel}: <strong>{count}</strong>/{limit}
+                          </span>
+                        );
+                      })}
+                      <span className="font-body text-[11px] text-muted-foreground">
+                        (tot: {Object.values(usageCounts[apiKey.id] || {}).reduce((a, b) => a + b, 0)})
+                      </span>
+                    </div>
+                  )}
                   {/* Inline tools + limit editing */}
                   <div className="flex flex-wrap items-center gap-3 mt-3">
                     <span className="font-body text-xs text-muted-foreground">Strumenti:</span>
