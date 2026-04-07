@@ -56,24 +56,25 @@ const AdminApiKeys = () => {
   const [newToolLimits, setNewToolLimits] = useState<Record<string, number>>({ diagnosis: 30, orthodontic: 30, mtc_sistemica: 30, mtc_organica: 30 });
   const [generatedKey, setGeneratedKey] = useState<string | null>(null);
   const [showKey, setShowKey] = useState(false);
-  const [usageCounts, setUsageCounts] = useState<Record<string, number>>({});
+  const [usageCounts, setUsageCounts] = useState<Record<string, Record<string, number>>>({});
+
+  const TOOL_KEYS = Object.keys(TOOL_LABELS);
 
   const fetchKeys = async () => {
     const { data } = await supabase.from("api_keys").select("*").order("created_at", { ascending: false });
     if (data) {
       setKeys(data as unknown as ApiKey[]);
-      // Fetch usage for each key
-      const counts: Record<string, number> = {};
+      // Fetch usage per tool for each key
+      const counts: Record<string, Record<string, number>> = {};
       for (const key of data) {
-        const { data: diagCount } = await supabase.rpc("get_api_key_monthly_usage", {
-          _api_key_id: key.id,
-          _tool_name: "diagnosis",
-        });
-        const { data: orthoCount } = await supabase.rpc("get_api_key_monthly_usage", {
-          _api_key_id: key.id,
-          _tool_name: "orthodontic",
-        });
-        counts[key.id] = (diagCount || 0) + (orthoCount || 0);
+        counts[key.id] = {};
+        for (const tool of TOOL_KEYS) {
+          const { data: count } = await supabase.rpc("get_api_key_monthly_usage", {
+            _api_key_id: key.id,
+            _tool_name: tool,
+          });
+          counts[key.id][tool] = count || 0;
+        }
       }
       setUsageCounts(counts);
     }
@@ -284,11 +285,25 @@ const AdminApiKeys = () => {
                   <div className="flex flex-wrap items-center gap-3 mt-2 text-xs text-muted-foreground font-body">
                     <span>Creata: {formatDate(apiKey.created_at)}</span>
                     {apiKey.last_used_at && <span>Ultimo uso: {formatDate(apiKey.last_used_at)}</span>}
-                    <span className="flex items-center gap-1">
-                      <BarChart3 size={11} />
-                      {usageCounts[apiKey.id] || 0} totali questo mese
-                    </span>
                   </div>
+                  {usageCounts[apiKey.id] && (
+                    <div className="flex flex-wrap items-center gap-3 mt-2">
+                      <BarChart3 size={12} className="text-muted-foreground" />
+                      {Object.entries(TOOL_LABELS).map(([toolKey, toolLabel]) => {
+                        const count = usageCounts[apiKey.id]?.[toolKey] || 0;
+                        const limit = (apiKey.tool_limits as Record<string, number> | null)?.[toolKey] ?? apiKey.monthly_limit;
+                        const isOver = count >= limit;
+                        return (
+                          <span key={toolKey} className={`font-body text-[11px] px-2 py-0.5 rounded-full border ${isOver ? "bg-destructive/10 border-destructive/30 text-destructive" : "bg-muted/30 border-border text-muted-foreground"}`}>
+                            {toolLabel}: <strong>{count}</strong>/{limit}
+                          </span>
+                        );
+                      })}
+                      <span className="font-body text-[11px] text-muted-foreground">
+                        (tot: {Object.values(usageCounts[apiKey.id] || {}).reduce((a, b) => a + b, 0)})
+                      </span>
+                    </div>
+                  )}
                   {/* Inline tools + limit editing */}
                   <div className="flex flex-wrap items-center gap-3 mt-3">
                     <span className="font-body text-xs text-muted-foreground">Strumenti:</span>
