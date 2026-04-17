@@ -45,8 +45,8 @@ Sistemi integrati da considerare: occlusione, ATM, funzione linguale, frenulo li
 - Non trasformare il referto in un testo accademico o eccessivamente tecnico.
 - Non scrivere come un verbale ospedaliero.
 - Non omettere il collegamento tra dato clinico e significato terapeutico.
-- NON includere MAI disclaimer, avvisi legali o note sull'uso dell'intelligenza artificiale nel referto.
-- Vai DIRETTAMENTE al referto senza premesse, introduzioni o commenti. Produci SOLO il referto clinico formattato, nient'altro.
+- L'UNICO disclaimer ammesso è il blocco "Disclaimer" obbligatorio in cima al referto (testo esatto fornito sotto). Non aggiungere altri avvisi legali, note sull'uso dell'intelligenza artificiale o liberatorie.
+- Vai DIRETTAMENTE al referto (a partire dal titolo e dal disclaimer) senza premesse, introduzioni o commenti. Produci SOLO il referto clinico formattato, nient'altro.
 
 === REGOLE DI RAGIONAMENTO ===
 - Leggi attentamente tutti i dati, anche quelli apparentemente secondari.
