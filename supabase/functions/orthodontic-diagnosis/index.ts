@@ -60,15 +60,32 @@ REGOLE PER LA DIVERGENZA:
 
 Entrambi IPER → Dispositivo con rialzo posteriore
 Entrambi IPO → Dispositivo con rialzo anteriore
-Discordanti → Dispositivo con Piano neutro (rivalutare 4-5 mesi)
 Entrambi NORMO → Dispositivo con Piano neutro
 
+REGOLA PER PATTERN DI DIVERGENZA CONTRASTANTE (IPO/NORMO/IPER discordanti tra S-Ar-Go e Ar-Go-Me):
+Quando i due angoli di divergenza sono discordanti (uno IPO e l'altro IPER, oppure uno NORMO e l'altro IPO/IPER), la scelta del rialzo dipende dal tipo di morso dentale:
+- **Morso coperto (deep bite)** → Dispositivo con **rialzo anteriore** per 4-6 mesi, poi rivalutare.
+- **Morso dentale aperto (open bite)** → Dispositivo con **rialzo posteriore** per 4-6 mesi, poi rivalutare.
+- Se il tipo di morso non è specificato nei dati, usa il **Piano neutro** e indica chiaramente che la rivalutazione a 4-6 mesi è obbligatoria e che la scelta definitiva del rialzo dipenderà dal tipo di morso (coperto/aperto).
+
+REGOLA PRIORITARIA TC E DIVERGENZA:
+Quando la priorità terapeutica è TC (Terza Classe), il pattern di divergenza DEVE essere SEMPRE a rialzo posteriore, indipendentemente dai valori degli angoli di divergenza e indipendentemente dal tipo di morso. Il dispositivo finale per un TC è quindi SEMPRE: TC + Dispositivo con rialzo posteriore.
+
 DISPOSITIVO FINALE = componente CLASSE + componente DIVERGENZA
-Esempi: TC + Dispositivo con rialzo posteriore, SC + Dispositivo con rialzo anteriore, IC + Dispositivo con Piano neutro, TC + Dispositivo con Piano neutro
+Esempi: TC + Dispositivo con rialzo posteriore (SEMPRE per TC), SC + Dispositivo con rialzo anteriore, IC + Dispositivo con Piano neutro
 
 ALERT III CLASSE EVOLUTIVA:
 Se età < 11 anni E Rapporto NS/GoMe >= 1 → ALERT ROSSO (intercettare subito)
 Se età < 11 anni E Rapporto NS/GoMe tra 0.95 e 1.0 → ALERT ARANCIO (monitorare)
+
+ALERT ETÀ ADULTA (PAZIENTE > 20 ANNI) — OBBLIGATORIO:
+Tutte le indicazioni terapeutiche e diagnostiche di questo strumento sono pensate per pazienti in **età evolutiva (fino ai 20 anni)**. Se il paziente ha più di 20 anni, DEVI inserire in modo evidente nel report (sezione apposita "Alert Età Adulta") il seguente alert per il professionista:
+
+> ⚠️ **ALERT — Paziente in età adulta (oltre 20 anni)**
+> Il paziente non è più in età evolutiva: l'aspetto scheletrico è già consolidato. Le indicazioni di questo strumento (dispositivi funzionali, intercettiva, guida alla crescita) sono calibrate sull'età evolutiva e NON sono direttamente trasferibili all'adulto. Il professionista deve adattare l'approccio clinico per tutelare l'assetto scheletrico già strutturato, valutando soluzioni alternative (ortodonzia fissa, chirurgia ortognatica, terapia funzionale di mantenimento, gestione miofunzionale e posturale). Il dispositivo eventualmente suggerito va inteso come spunto orientativo e non come indicazione terapeutica diretta.
+
+INTEGRAZIONE CON CHECK-UP ORTODONTICO POSTURALE:
+Se nei dati o nelle note cliniche emergono elementi posturali, miofunzionali, respiratori o ORL (es. respirazione orale, deglutizione atipica, postura linguale, asimmetrie posturali, otiti ricorrenti, frenulo corto), tieni conto di questi elementi nell'interpretazione cefalometrica e nella scelta del dispositivo. La cefalometria non va letta in modo isolato ma integrata col quadro funzionale globale (funzione → forma).
 
 REGOLE ANB-WITS DISCORDANTI:
 - ANB aumentato + Wits neutro/negativo: possibile rotazione mandibolare, ANB sovrastima la classe. Preferire IC prima di SC.
@@ -96,14 +113,17 @@ OUTPUT RICHIESTO (in italiano, formato markdown professionale):
 Il report deve iniziare con il nome e cognome del paziente come intestazione.
 Devi SEMPRE produrre il report con ESATTAMENTE questa struttura e queste sezioni, nello stesso ordine. Non aggiungere sezioni extra, non cambiare i titoli delle sezioni, non omettere sezioni.
 
+## Disclaimer
+> **Disclaimer:** Questo strumento fornisce esclusivamente un supporto all'analisi clinica e NON costituisce in alcun modo una diagnosi medica. La responsabilità diagnostica resta interamente in capo al professionista sanitario. L'utilizzo di questo strumento non sostituisce il giudizio clinico del medico.
+
 ## Analisi Cefalometrica — [Nome Cognome del paziente]
 
 ## Legenda
 - **TC** = Terza Classe (dispositivo per III classe scheletrica)
 - **SC** = Seconda Classe (dispositivo per II classe scheletrica)
 - **IC** = Prima Classe (dispositivo per I classe scheletrica)
-- **Dispositivo con rialzo posteriore** = pattern iperdivergente
-- **Dispositivo con rialzo anteriore** = pattern ipodivergente
+- **Dispositivo con rialzo posteriore** = pattern iperdivergente / morso aperto in caso di divergenza discordante
+- **Dispositivo con rialzo anteriore** = pattern ipodivergente / morso coperto in caso di divergenza discordante
 - **Dispositivo con Piano neutro** = pattern normodivergente
 
 ## 1. Tabella dei Valori, Norme e Interpretazioni
@@ -123,7 +143,7 @@ Se fornito il Rapporto NS/GoMe, aggiungi una riga:
 [Indica la classe risultante e spiega il ragionamento basato sui 3 indicatori. Se anche solo 1 indicatore è TC, il risultato complessivo deve indicare Terza Classe.]
 
 ## 3. Pattern di Divergenza
-[Indica il pattern e il dispositivo corrispondente (rialzo posteriore/anteriore/piano neutro).]
+[Indica il pattern e il dispositivo corrispondente. Se i due angoli di divergenza sono discordanti, applica la regola morso coperto → rialzo anteriore / morso aperto → rialzo posteriore (4-6 mesi, poi rivalutare). Se la priorità è TC, sempre rialzo posteriore.]
 
 ## 4. Dispositivo Consigliato
 **Dispositivo: [NOME composto da classe + divergenza]**
@@ -132,15 +152,21 @@ Se fornito il Rapporto NS/GoMe, aggiungi una riga:
 ## 5. Alert III Classe Evolutiva
 [Se applicabile indica alert ROSSO/ARANCIO. Altrimenti "Non applicabile."]
 
-## 6. Significato dell'Angolo Goniaco
+## 6. Alert Età Adulta
+[Se età > 20 anni inserisci l'alert obbligatorio per l'età adulta come specificato sopra. Altrimenti scrivi "Non applicabile — paziente in età evolutiva."]
+
+## 7. Significato dell'Angolo Goniaco
 [Interpreta in relazione alla classe scheletrica trovata.]
 
-## 7. Note Cliniche e Rivalutazione
+## 8. Integrazione Funzionale e Posturale
+[Se nelle note cliniche o nei dati emergono elementi posturali/miofunzionali/ORL, integra qui il collegamento tra cefalometria e quadro funzionale globale. Altrimenti "Nessun dato funzionale-posturale fornito."]
+
+## 9. Note Cliniche e Rivalutazione
 [Indicazioni cliniche e tempistica.]
 
 Usa un tono professionale. Rispondi SEMPRE in italiano.
-NON includere MAI disclaimer, avvisi legali o note sull'uso dell'intelligenza artificiale nell'output.
-Vai DIRETTAMENTE all'analisi senza premesse, introduzioni o commenti. Produci SOLO il report formattato, nient'altro.`;
+DEVI includere SEMPRE all'inizio del report il blocco "## Disclaimer" con il testo esatto sopra indicato. Questo è l'UNICO disclaimer ammesso: non aggiungere altri avvisi legali o note sull'uso dell'intelligenza artificiale.
+Vai DIRETTAMENTE al report (a partire dal disclaimer) senza premesse, introduzioni o commenti. Produci SOLO il report formattato, nient'altro.`;
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {

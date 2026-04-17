@@ -158,8 +158,8 @@ Sistemi integrati da considerare: occlusione, ATM, funzione linguale, frenulo li
 - Non trasformare il referto in un testo accademico o eccessivamente tecnico.
 - Non scrivere come un verbale ospedaliero.
 - Non omettere il collegamento tra dato clinico e significato terapeutico.
-- NON includere MAI disclaimer, avvisi legali o note sull'uso dell'intelligenza artificiale nel referto.
-- Vai DIRETTAMENTE al referto senza premesse, introduzioni o commenti. Produci SOLO il referto clinico formattato, nient'altro.
+- L'UNICO disclaimer ammesso è il blocco "Disclaimer" obbligatorio in cima al referto (testo esatto fornito sotto). Non aggiungere altri avvisi legali, note sull'uso dell'intelligenza artificiale o liberatorie.
+- Vai DIRETTAMENTE al referto (a partire dal titolo e dal disclaimer) senza premesse, introduzioni o commenti. Produci SOLO il referto clinico formattato, nient'altro.
 
 === REGOLE DI RAGIONAMENTO ===
 - Leggi attentamente tutti i dati, anche quelli apparentemente secondari.
@@ -320,9 +320,20 @@ Terapia miofunzionale: rieducazione di lingua, labbra e muscolatura oro-facciale
 
 Terapie di supporto: fotobiomodulazione se coerente. Coinvolgimento altre figure (logopedista, osteopata, optometrista, ORL, vestibologo, fisioterapista, podologo) in modo integrativo, non come delega.
 
+=== ALERT ETÀ ADULTA (PAZIENTE > 20 ANNI) — OBBLIGATORIO ===
+Tutte le indicazioni terapeutiche e interpretative di questo strumento sono pensate per pazienti in **età evolutiva (fino ai 20 anni)**. Se dai dati clinici emerge che il paziente ha più di 20 anni, DEVI inserire nel referto, subito dopo l'introduzione, un riquadro evidenziato con questo testo:
+
+> ⚠️ **ALERT — Paziente in età adulta (oltre 20 anni)**
+> Il paziente non è più in età evolutiva: l'aspetto scheletrico è già consolidato. Le indicazioni terapeutiche di questo referto sono calibrate sull'età evolutiva e NON sono direttamente trasferibili all'adulto. Il professionista deve adattare l'approccio clinico per tutelare l'assetto scheletrico già strutturato, valutando soluzioni alternative (ortodonzia fissa, chirurgia ortognatica, terapia funzionale di mantenimento, gestione miofunzionale e posturale dedicata all'adulto).
+
+=== INTEGRAZIONE CON CEFALOMETRIA (BJORK-JARABAK) ===
+Se nei dati clinici sono presenti valori cefalometrici (Angolo Sellare N-S-Ar, ANB, Wits, S-Ar-Go, Ar-Go-Me, NS/GoMe), interpreta anche la classe scheletrica e il pattern di divergenza secondo il metodo Bjork-Jarabak e collega l'indicazione di un eventuale dispositivo funzionale (TC/SC/IC + rialzo posteriore/anteriore/Piano neutro) al quadro miofunzionale e posturale globale. Regole chiave: una sola misura di III classe forza la priorità TC; con priorità TC il pattern di divergenza è SEMPRE rialzo posteriore; con divergenza discordante la scelta del rialzo dipende dal morso (coperto → rialzo anteriore, aperto → rialzo posteriore, 4-6 mesi).
+
 === STRUTTURA DEL REFERTO (segui ESATTAMENTE questo ordine) ===
 
 # CHECK-UP ORTODONTICO POSTURALE
+
+> **Disclaimer:** Questo strumento fornisce esclusivamente un supporto all'analisi clinica e NON costituisce in alcun modo una diagnosi medica. La responsabilità diagnostica resta interamente in capo al professionista sanitario. L'utilizzo di questo strumento non sostituisce il giudizio clinico del medico.
 
 Paziente: [Nome e cognome se presente]
 Età: [Se disponibile]
@@ -330,6 +341,8 @@ Data visita: [Se disponibile]
 
 # Introduzione
 [Spiega che il check-up ortodontico posturale è una valutazione globale che osserva il paziente nella sua interezza, serve a comprendere le cause profonde degli squilibri, distinguendo ciò che è primario da ciò che è compenso.]
+
+[Se paziente > 20 anni, inserisci QUI il blocco "ALERT — Paziente in età adulta" come specificato sopra.]
 
 # Le cose che funzionano
 [Valorizza risorse biologiche, funzionali e adattative del paziente. Sottolinea che mostrano capacità di risposta e rappresentano base favorevole per la terapia.]
@@ -578,11 +591,16 @@ REGOLE PER LA DIVERGENZA:
 
 Entrambi IPER → Dispositivo con rialzo posteriore
 Entrambi IPO → Dispositivo con rialzo anteriore
-Discordanti → Dispositivo con Piano neutro (rivalutare 4-5 mesi)
 Entrambi NORMO → Dispositivo con Piano neutro
 
+REGOLA PER PATTERN DI DIVERGENZA CONTRASTANTE (IPO/NORMO/IPER discordanti tra S-Ar-Go e Ar-Go-Me):
+Quando i due angoli di divergenza sono discordanti, la scelta del rialzo dipende dal tipo di morso dentale:
+- **Morso coperto (deep bite)** → Dispositivo con **rialzo anteriore** per 4-6 mesi, poi rivalutare.
+- **Morso dentale aperto (open bite)** → Dispositivo con **rialzo posteriore** per 4-6 mesi, poi rivalutare.
+- Se il tipo di morso non è specificato nei dati o nelle note cliniche, usa il **Piano neutro** e indica chiaramente che la rivalutazione a 4-6 mesi è obbligatoria e che la scelta definitiva del rialzo dipenderà dal tipo di morso (coperto/aperto).
+
 REGOLA PRIORITARIA TC E DIVERGENZA:
-Quando la priorità terapeutica è TC (Terza Classe), il pattern di divergenza DEVE essere SEMPRE a rialzo posteriore, indipendentemente dai valori degli angoli di divergenza (S-Ar-Go e Ar-Go-Me). Questa regola ha la precedenza sulle regole generali di divergenza sopra indicate.
+Quando la priorità terapeutica è TC (Terza Classe), il pattern di divergenza DEVE essere SEMPRE a rialzo posteriore, indipendentemente dai valori degli angoli di divergenza e indipendentemente dal tipo di morso. Questa regola ha la precedenza su tutte le altre regole di divergenza.
 
 DISPOSITIVO FINALE = componente CLASSE + componente DIVERGENZA
 Esempi: TC + Dispositivo con rialzo posteriore (SEMPRE per TC), SC + Dispositivo con rialzo anteriore, IC + Dispositivo con Piano neutro
@@ -590,6 +608,15 @@ Esempi: TC + Dispositivo con rialzo posteriore (SEMPRE per TC), SC + Dispositivo
 ALERT III CLASSE EVOLUTIVA:
 Se età < 11 anni E Rapporto NS/GoMe >= 1 → ALERT ROSSO (intercettare subito)
 Se età < 11 anni E Rapporto NS/GoMe tra 0.95 e 1.0 → ALERT ARANCIO (monitorare)
+
+ALERT ETÀ ADULTA (PAZIENTE > 20 ANNI) — OBBLIGATORIO:
+Tutte le indicazioni terapeutiche e diagnostiche di questo strumento sono pensate per pazienti in **età evolutiva (fino ai 20 anni)**. Se il paziente ha più di 20 anni, DEVI inserire in modo evidente nel report (nella sezione "Alert Età Adulta") il seguente alert per il professionista:
+
+> ⚠️ **ALERT — Paziente in età adulta (oltre 20 anni)**
+> Il paziente non è più in età evolutiva: l'aspetto scheletrico è già consolidato. Le indicazioni di questo strumento (dispositivi funzionali, intercettiva, guida alla crescita) sono calibrate sull'età evolutiva e NON sono direttamente trasferibili all'adulto. Il professionista deve adattare l'approccio clinico per tutelare l'assetto scheletrico già strutturato, valutando soluzioni alternative (ortodonzia fissa, chirurgia ortognatica, terapia funzionale di mantenimento, gestione miofunzionale e posturale). Il dispositivo eventualmente suggerito va inteso come spunto orientativo e non come indicazione terapeutica diretta.
+
+INTEGRAZIONE CON CHECK-UP ORTODONTICO POSTURALE:
+Se nelle note cliniche emergono elementi posturali, miofunzionali, respiratori o ORL (es. respirazione orale, deglutizione atipica, postura linguale, asimmetrie posturali, otiti ricorrenti, frenulo corto), tieni conto di questi elementi nell'interpretazione cefalometrica e nella scelta del dispositivo. La cefalometria non va letta in modo isolato ma integrata col quadro funzionale globale (funzione → forma).
 
 REGOLE ANB-WITS DISCORDANTI:
 - ANB aumentato + Wits neutro/negativo: possibile rotazione mandibolare, ANB sovrastima la classe. Preferire IC prima di SC.
@@ -643,7 +670,7 @@ Se fornito il Rapporto NS/GoMe, aggiungi una riga:
 [Indica la classe risultante e spiega il ragionamento. Se anche solo 1 indicatore è TC, il risultato complessivo deve indicare Terza Classe.]
 
 ## 3. Pattern di Divergenza
-[Indica il pattern e il dispositivo corrispondente (rialzo posteriore/anteriore/piano neutro).]
+[Indica il pattern e il dispositivo corrispondente. Se i due angoli di divergenza sono discordanti, applica la regola morso coperto → rialzo anteriore / morso aperto → rialzo posteriore (4-6 mesi, poi rivalutare). Se la priorità è TC, sempre rialzo posteriore.]
 
 ## 4. Dispositivo Consigliato
 **Dispositivo: [NOME]**
@@ -652,13 +679,19 @@ Se fornito il Rapporto NS/GoMe, aggiungi una riga:
 ## 5. Alert III Classe Evolutiva
 [Se applicabile indica alert ROSSO/ARANCIO. Altrimenti "Non applicabile."]
 
-## 6. Significato dell'Angolo Goniaco
+## 6. Alert Età Adulta
+[Se età > 20 anni inserisci l'alert obbligatorio per l'età adulta come specificato sopra. Altrimenti scrivi "Non applicabile — paziente in età evolutiva."]
+
+## 7. Significato dell'Angolo Goniaco
 [Interpreta in relazione alla classe scheletrica trovata.]
 
-## 7. Note Cliniche e Rivalutazione
+## 8. Integrazione Funzionale e Posturale
+[Se nelle note cliniche emergono elementi posturali/miofunzionali/ORL, integra qui il collegamento tra cefalometria e quadro funzionale globale. Altrimenti "Nessun dato funzionale-posturale fornito."]
+
+## 9. Note Cliniche e Rivalutazione
 [Indicazioni cliniche e tempistica.]
 
-NON includere MAI disclaimer, avvisi legali o note sull'uso dell'intelligenza artificiale nell'output.
+NON includere MAI disclaimer, avvisi legali o note sull'uso dell'intelligenza artificiale nell'output (il disclaimer ufficiale viene aggiunto a monte dal sistema).
 NON includere header o footer dello studio (nome dottoressa, firma, data, indirizzo).
 Vai DIRETTAMENTE all'analisi. Produci SOLO il report formattato, nient'altro.`;
 
@@ -839,6 +872,13 @@ ${classe_dentale ? `- Classe dentale/funzionale confermata: ${classe_dentale}` :
     // ── Log usage ──
     await supabaseAdmin.from("api_usage_log").insert({ api_key_id: keyRecord.id, tool_name: tool });
     await supabaseAdmin.from("api_keys").update({ last_used_at: new Date().toISOString() }).eq("id", keyRecord.id);
+
+    // ── Disclaimer obbligatorio in intestazione ad OGNI referto ──
+    // Aggiunto a monte se il modello non lo ha già incluso (controllo case-insensitive su una keyphrase univoca).
+    const DISCLAIMER_BLOCK = `> **Disclaimer:** Questo strumento fornisce esclusivamente un supporto all'analisi clinica e NON costituisce in alcun modo una diagnosi medica. La responsabilità diagnostica resta interamente in capo al professionista sanitario. L'utilizzo di questo strumento non sostituisce il giudizio clinico del medico.\n\n`;
+    if (!/non\s+costituisce\s+in\s+alcun\s+modo\s+una\s+diagnosi\s+medica/i.test(markdown)) {
+      markdown = DISCLAIMER_BLOCK + markdown;
+    }
 
     // Build response based on format
     const htmlBody = mdToHtml(markdown);
