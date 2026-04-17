@@ -873,6 +873,13 @@ ${classe_dentale ? `- Classe dentale/funzionale confermata: ${classe_dentale}` :
     await supabaseAdmin.from("api_usage_log").insert({ api_key_id: keyRecord.id, tool_name: tool });
     await supabaseAdmin.from("api_keys").update({ last_used_at: new Date().toISOString() }).eq("id", keyRecord.id);
 
+    // ── Disclaimer obbligatorio in intestazione ad OGNI referto ──
+    // Aggiunto a monte se il modello non lo ha già incluso (controllo case-insensitive su una keyphrase univoca).
+    const DISCLAIMER_BLOCK = `> **Disclaimer:** Questo strumento fornisce esclusivamente un supporto all'analisi clinica e NON costituisce in alcun modo una diagnosi medica. La responsabilità diagnostica resta interamente in capo al professionista sanitario. L'utilizzo di questo strumento non sostituisce il giudizio clinico del medico.\n\n`;
+    if (!/non\s+costituisce\s+in\s+alcun\s+modo\s+una\s+diagnosi\s+medica/i.test(markdown)) {
+      markdown = DISCLAIMER_BLOCK + markdown;
+    }
+
     // Build response based on format
     const htmlBody = mdToHtml(markdown);
     const fullHtml = wrapInHtmlDocument(htmlBody);
