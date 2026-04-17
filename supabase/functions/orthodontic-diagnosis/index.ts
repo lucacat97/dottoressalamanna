@@ -113,14 +113,17 @@ OUTPUT RICHIESTO (in italiano, formato markdown professionale):
 Il report deve iniziare con il nome e cognome del paziente come intestazione.
 Devi SEMPRE produrre il report con ESATTAMENTE questa struttura e queste sezioni, nello stesso ordine. Non aggiungere sezioni extra, non cambiare i titoli delle sezioni, non omettere sezioni.
 
+## Disclaimer
+> **Disclaimer:** Questo strumento fornisce esclusivamente un supporto all'analisi clinica e NON costituisce in alcun modo una diagnosi medica. La responsabilità diagnostica resta interamente in capo al professionista sanitario. L'utilizzo di questo strumento non sostituisce il giudizio clinico del medico.
+
 ## Analisi Cefalometrica — [Nome Cognome del paziente]
 
 ## Legenda
 - **TC** = Terza Classe (dispositivo per III classe scheletrica)
 - **SC** = Seconda Classe (dispositivo per II classe scheletrica)
 - **IC** = Prima Classe (dispositivo per I classe scheletrica)
-- **Dispositivo con rialzo posteriore** = pattern iperdivergente
-- **Dispositivo con rialzo anteriore** = pattern ipodivergente
+- **Dispositivo con rialzo posteriore** = pattern iperdivergente / morso aperto in caso di divergenza discordante
+- **Dispositivo con rialzo anteriore** = pattern ipodivergente / morso coperto in caso di divergenza discordante
 - **Dispositivo con Piano neutro** = pattern normodivergente
 
 ## 1. Tabella dei Valori, Norme e Interpretazioni
@@ -140,7 +143,7 @@ Se fornito il Rapporto NS/GoMe, aggiungi una riga:
 [Indica la classe risultante e spiega il ragionamento basato sui 3 indicatori. Se anche solo 1 indicatore è TC, il risultato complessivo deve indicare Terza Classe.]
 
 ## 3. Pattern di Divergenza
-[Indica il pattern e il dispositivo corrispondente (rialzo posteriore/anteriore/piano neutro).]
+[Indica il pattern e il dispositivo corrispondente. Se i due angoli di divergenza sono discordanti, applica la regola morso coperto → rialzo anteriore / morso aperto → rialzo posteriore (4-6 mesi, poi rivalutare). Se la priorità è TC, sempre rialzo posteriore.]
 
 ## 4. Dispositivo Consigliato
 **Dispositivo: [NOME composto da classe + divergenza]**
@@ -149,15 +152,21 @@ Se fornito il Rapporto NS/GoMe, aggiungi una riga:
 ## 5. Alert III Classe Evolutiva
 [Se applicabile indica alert ROSSO/ARANCIO. Altrimenti "Non applicabile."]
 
-## 6. Significato dell'Angolo Goniaco
+## 6. Alert Età Adulta
+[Se età > 20 anni inserisci l'alert obbligatorio per l'età adulta come specificato sopra. Altrimenti scrivi "Non applicabile — paziente in età evolutiva."]
+
+## 7. Significato dell'Angolo Goniaco
 [Interpreta in relazione alla classe scheletrica trovata.]
 
-## 7. Note Cliniche e Rivalutazione
+## 8. Integrazione Funzionale e Posturale
+[Se nelle note cliniche o nei dati emergono elementi posturali/miofunzionali/ORL, integra qui il collegamento tra cefalometria e quadro funzionale globale. Altrimenti "Nessun dato funzionale-posturale fornito."]
+
+## 9. Note Cliniche e Rivalutazione
 [Indicazioni cliniche e tempistica.]
 
 Usa un tono professionale. Rispondi SEMPRE in italiano.
-NON includere MAI disclaimer, avvisi legali o note sull'uso dell'intelligenza artificiale nell'output.
-Vai DIRETTAMENTE all'analisi senza premesse, introduzioni o commenti. Produci SOLO il report formattato, nient'altro.`;
+DEVI includere SEMPRE all'inizio del report il blocco "## Disclaimer" con il testo esatto sopra indicato. Questo è l'UNICO disclaimer ammesso: non aggiungere altri avvisi legali o note sull'uso dell'intelligenza artificiale.
+Vai DIRETTAMENTE al report (a partire dal disclaimer) senza premesse, introduzioni o commenti. Produci SOLO il report formattato, nient'altro.`;
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
