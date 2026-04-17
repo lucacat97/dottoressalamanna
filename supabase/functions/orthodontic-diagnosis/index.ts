@@ -60,15 +60,32 @@ REGOLE PER LA DIVERGENZA:
 
 Entrambi IPER → Dispositivo con rialzo posteriore
 Entrambi IPO → Dispositivo con rialzo anteriore
-Discordanti → Dispositivo con Piano neutro (rivalutare 4-5 mesi)
 Entrambi NORMO → Dispositivo con Piano neutro
 
+REGOLA PER PATTERN DI DIVERGENZA CONTRASTANTE (IPO/NORMO/IPER discordanti tra S-Ar-Go e Ar-Go-Me):
+Quando i due angoli di divergenza sono discordanti (uno IPO e l'altro IPER, oppure uno NORMO e l'altro IPO/IPER), la scelta del rialzo dipende dal tipo di morso dentale:
+- **Morso coperto (deep bite)** → Dispositivo con **rialzo anteriore** per 4-6 mesi, poi rivalutare.
+- **Morso dentale aperto (open bite)** → Dispositivo con **rialzo posteriore** per 4-6 mesi, poi rivalutare.
+- Se il tipo di morso non è specificato nei dati, usa il **Piano neutro** e indica chiaramente che la rivalutazione a 4-6 mesi è obbligatoria e che la scelta definitiva del rialzo dipenderà dal tipo di morso (coperto/aperto).
+
+REGOLA PRIORITARIA TC E DIVERGENZA:
+Quando la priorità terapeutica è TC (Terza Classe), il pattern di divergenza DEVE essere SEMPRE a rialzo posteriore, indipendentemente dai valori degli angoli di divergenza e indipendentemente dal tipo di morso. Il dispositivo finale per un TC è quindi SEMPRE: TC + Dispositivo con rialzo posteriore.
+
 DISPOSITIVO FINALE = componente CLASSE + componente DIVERGENZA
-Esempi: TC + Dispositivo con rialzo posteriore, SC + Dispositivo con rialzo anteriore, IC + Dispositivo con Piano neutro, TC + Dispositivo con Piano neutro
+Esempi: TC + Dispositivo con rialzo posteriore (SEMPRE per TC), SC + Dispositivo con rialzo anteriore, IC + Dispositivo con Piano neutro
 
 ALERT III CLASSE EVOLUTIVA:
 Se età < 11 anni E Rapporto NS/GoMe >= 1 → ALERT ROSSO (intercettare subito)
 Se età < 11 anni E Rapporto NS/GoMe tra 0.95 e 1.0 → ALERT ARANCIO (monitorare)
+
+ALERT ETÀ ADULTA (PAZIENTE > 20 ANNI) — OBBLIGATORIO:
+Tutte le indicazioni terapeutiche e diagnostiche di questo strumento sono pensate per pazienti in **età evolutiva (fino ai 20 anni)**. Se il paziente ha più di 20 anni, DEVI inserire in modo evidente nel report (sezione apposita "Alert Età Adulta") il seguente alert per il professionista:
+
+> ⚠️ **ALERT — Paziente in età adulta (oltre 20 anni)**
+> Il paziente non è più in età evolutiva: l'aspetto scheletrico è già consolidato. Le indicazioni di questo strumento (dispositivi funzionali, intercettiva, guida alla crescita) sono calibrate sull'età evolutiva e NON sono direttamente trasferibili all'adulto. Il professionista deve adattare l'approccio clinico per tutelare l'assetto scheletrico già strutturato, valutando soluzioni alternative (ortodonzia fissa, chirurgia ortognatica, terapia funzionale di mantenimento, gestione miofunzionale e posturale). Il dispositivo eventualmente suggerito va inteso come spunto orientativo e non come indicazione terapeutica diretta.
+
+INTEGRAZIONE CON CHECK-UP ORTODONTICO POSTURALE:
+Se nei dati o nelle note cliniche emergono elementi posturali, miofunzionali, respiratori o ORL (es. respirazione orale, deglutizione atipica, postura linguale, asimmetrie posturali, otiti ricorrenti, frenulo corto), tieni conto di questi elementi nell'interpretazione cefalometrica e nella scelta del dispositivo. La cefalometria non va letta in modo isolato ma integrata col quadro funzionale globale (funzione → forma).
 
 REGOLE ANB-WITS DISCORDANTI:
 - ANB aumentato + Wits neutro/negativo: possibile rotazione mandibolare, ANB sovrastima la classe. Preferire IC prima di SC.
