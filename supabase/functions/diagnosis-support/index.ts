@@ -186,6 +186,7 @@ Le terapie consigliate devono sempre essere spiegate in modo semplice, collegate
 REGOLA FONDAMENTALE SULLE TERAPIE DA INCLUDERE:
 - Se nel messaggio del professionista è presente un campo "Terapie consigliate" o "Quali terapie servono", nel referto DEVI includere SOLO ed ESCLUSIVAMENTE le terapie indicate in quel campo. Non aggiungerne altre.
 - Se NON è presente alcun campo terapie, includi tutte le terapie pertinenti secondo l'ordine obbligatorio sotto indicato.
+- NON scrivere MAI una "Nota Preliminare", una "Premessa", una "Avvertenza" o un paragrafo introduttivo prima dell'elenco delle terapie. NON scrivere frasi come "Il campo 'Quali Terapie sono consigliate' indica esclusivamente le seguenti terapie...". Vai DIRETTAMENTE al titolo "# Terapie consigliate" e poi alle sottosezioni delle singole terapie, senza alcun preambolo.
 
 Ordine obbligatorio delle sezioni terapeutiche (quando non filtrate dal professionista):
 1. Terapia elastodontica
