@@ -67,7 +67,7 @@ function mdToHtml(md: string): string {
   let html = processedLines.join("\n");
 
   // Blockquotes
-  html = html.replace(/^>\s*(.+)$/gm, '<blockquote style="border-left:3px solid #2a6f6f;padding:8px 16px;margin:12px 0;background:#f0f7f7;color:#333;">$1</blockquote>');
+  html = html.replace(/^>\s*(.+)$/gm, '<blockquote style="border-left:4px solid #f0b400;padding:12px 16px;margin:14px 0;background:#fff8e1;color:#5b4708;border-radius:6px;">$1</blockquote>');
 
   // Headers
   html = html.replace(/^####\s+(.+)$/gm, '<h4 style="font-size:14px;color:#333;margin:16px 0 8px;">$1</h4>');
@@ -113,7 +113,7 @@ function wrapInHtmlDocument(bodyHtml: string): string {
   h2 { color: #2a6f6f; font-family: Georgia, serif; }
   th { background: #f0f7f7; }
   th, td { border: 1px solid #ddd; padding: 8px 12px; text-align: left; }
-  blockquote { border-left: 3px solid #2a6f6f; padding: 8px 16px; margin: 12px 0; background: #f0f7f7; color: #333; }
+  blockquote { border-left: 4px solid #f0b400; padding: 12px 16px; margin: 14px 0; background: #fff8e1; color: #5b4708; border-radius: 6px; }
   strong { color: #2a6f6f; }
   @media print { body { padding: 20px; } }
 </style>
@@ -245,7 +245,7 @@ ROMBERG BIPODALICO: Eseguito a occhi chiusi, braccia tese avanti, per 50 secondi
 
 ROMBERG MONOPODALICO: Eseguito su un piede alla volta, occhi chiusi, per 20-30 secondi. Se positivo: indica conflitto muscolare, ipertono monolaterale o carenza di tono muscolare. È migliorabile con esercizi specifici su cuscino, Tai Qi, movimenti rotatori, plank, tavola dell'equilibrio oscillante, light therapy e Taopatch.
 
-TEST DI UNTERBERGER-FUKUDA (marcia sul posto): Il paziente marcia sul posto a occhi chiusi, braccia avanti a 90°, per 1 minuto. Valuta l'equilibrio vestibolare e la postura. Una rotazione superiore a 30° suggerisce un possibile problema vestibolare (la rotazione avviene verso il lato lesionato) o un'asimmetria posturale. Con testa ruotata si valuta anche il riflesso cervico-nucale: normalmente testa a destra → corpo devia leggermente a sinistra (compensazione). Se la deviazione va nella stessa direzione: problema cervicale o integrazione cervico-vestibolare alterata. Si ripete con lingua allo spot (se normalizza = la rieducazione linguale impatta sulla cervicale) e con rulli di cotone tra canini/premolari (DVO da aumentare). Assenza del riflesso nucale → invio da osteopata per conflitto cervicale.
+TEST DI UNTERBERGER-FUKUDA (marcia sul posto): Obiettivo: valutare se esiste un'alterazione dell'equilibrio vestibolare (orecchio interno) o della postura. Procedura: paziente in piedi, occhi chiusi, braccia avanti a 90°, marcia sul posto per 1 minuto. L'operatore osserva l'eventuale rotazione/spostamento. INTERPRETAZIONE BASE: rotazione sul posto > 30° = possibile problema vestibolare (di solito verso il lato lesionato), oppure asimmetria posturale o problema di equilibrio. FUKUDA CON TESTA RUOTATA: quando il paziente esegue il test con la testa ruotata a destra o a sinistra, non si valuta più solo la funzione vestibolare pura ma anche l'effetto del riflesso cervico-nucale sulla postura. Comportamento normale: testa ruotata a destra → il corpo devia leggermente a sinistra (riflesso cervico-vestibolare di compensazione). Se invece la deviazione avviene nella STESSA direzione della rotazione della testa → possibile problema cervicale o integrazione cervico-vestibolare alterata. FUKUDA COME TEST DIAGNOSTICO ORIENTATIVO: il test si ripete con (1) lingua allo spot — se normalizza significa che la rieducazione linguale ha un impatto importante sulla cervicale; (2) rulli di cotone tra canini e premolari — la dimensione verticale (DVO) deve essere aumentata per creare spazio tra le prime vertebre cervicali; (3) se non normalizza con nessuna manovra, ci si affida agli altri test senza accanirsi sulla normalizzazione, e si riproverà nel corso della terapia scelta (protesica, ortodontica, bite). Spiega sempre nel referto cosa è stato osservato, in che senso il sistema sta rispondendo (vestibolare puro, cervico-nucale, miofunzionale, occlusale) e quale figura/percorso terapeutico è coerente con quel risultato.
 
 LEG/PELVIC/ACROMION BALANCE: Valutazione con bolla e attrezzo calibrato per misurare simmetria di gambe, bacino e spalle. Una dismetria può essere vera (in scoliosi accertata) o muscolare. Spesso migliora con lingua allo spot: dato fortemente motivante per la terapia miofunzionale.
 
@@ -299,6 +299,7 @@ Le terapie consigliate devono sempre essere spiegate in modo semplice, collegate
 REGOLA FONDAMENTALE SULLE TERAPIE DA INCLUDERE:
 - Se nel messaggio del professionista è presente un campo "Terapie consigliate" o "Quali terapie servono", nel referto DEVI includere SOLO ed ESCLUSIVAMENTE le terapie indicate in quel campo. Non aggiungerne altre.
 - Se NON è presente alcun campo terapie, includi tutte le terapie pertinenti secondo l'ordine obbligatorio sotto indicato.
+- NON scrivere MAI una "Nota Preliminare", una "Premessa", una "Avvertenza" o un paragrafo introduttivo prima dell'elenco delle terapie. NON scrivere frasi come "Il campo 'Quali Terapie sono consigliate' indica esclusivamente le seguenti terapie...". Vai DIRETTAMENTE al titolo "# Terapie consigliate" e poi alle sottosezioni delle singole terapie, senza alcun preambolo.
 
 Ordine obbligatorio delle sezioni terapeutiche (quando non filtrate dal professionista):
 1. Terapia elastodontica
@@ -338,6 +339,9 @@ Se nei dati clinici sono presenti valori cefalometrici (Angolo Sellare N-S-Ar, A
 Paziente: [Nome e cognome se presente]
 Età: [Se disponibile]
 Data visita: [Se disponibile]
+
+# Motivo della visita
+[Inserisci questa sezione SOLO se nei dati clinici è presente esplicitamente la domanda "motivo della visita", "sintomi" o equivalente con relativa risposta del paziente/genitore. In tal caso riporta in modo discorsivo e sintetico il motivo per cui il paziente si è presentato e i sintomi riferiti, così come dichiarati. Se il dato non è presente, OMETTI completamente questa sezione (non scrivere il titolo, non scrivere "non disponibile").]
 
 # Introduzione
 [Spiega che il check-up ortodontico posturale è una valutazione globale che osserva il paziente nella sua interezza, serve a comprendere le cause profonde degli squilibri, distinguendo ciò che è primario da ciò che è compenso.]
@@ -685,11 +689,8 @@ Se fornito il Rapporto NS/GoMe, aggiungi una riga:
 ## 7. Significato dell'Angolo Goniaco
 [Interpreta in relazione alla classe scheletrica trovata.]
 
-## 8. Integrazione Funzionale e Posturale
-[Se nelle note cliniche emergono elementi posturali/miofunzionali/ORL, integra qui il collegamento tra cefalometria e quadro funzionale globale. Altrimenti "Nessun dato funzionale-posturale fornito."]
-
-## 9. Note Cliniche e Rivalutazione
-[Indicazioni cliniche e tempistica.]
+## 8. Note Cliniche e Rivalutazione
+[Indicazioni cliniche e tempistica. Se nelle note cliniche emergono elementi posturali/miofunzionali/ORL, considerali implicitamente nell'interpretazione e nella scelta del dispositivo, SENZA creare una sezione dedicata e SENZA scrivere frasi generiche del tipo "la cefalometria va integrata con esame clinico" o "nessun dato funzionale-posturale fornito".]
 
 NON includere MAI disclaimer, avvisi legali o note sull'uso dell'intelligenza artificiale nell'output (il disclaimer ufficiale viene aggiunto a monte dal sistema).
 NON includere header o footer dello studio (nome dottoressa, firma, data, indirizzo).

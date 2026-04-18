@@ -53,7 +53,7 @@ export default function ReportRenderer({ markdown }: ReportRendererProps) {
             <li className="font-body text-xs text-foreground leading-relaxed">{children}</li>
           ),
           blockquote: ({ children }) => (
-            <blockquote className="border-l-3 border-primary/40 pl-3 my-3 bg-primary/5 rounded-r-md py-2 pr-2">
+            <blockquote className="border-l-4 border-yellow-500 pl-4 my-3 bg-yellow-50 dark:bg-yellow-950/30 text-yellow-900 dark:text-yellow-100 rounded-r-md py-3 pr-3">
               {children}
             </blockquote>
           ),

@@ -132,7 +132,7 @@ ROMBERG BIPODALICO: Eseguito a occhi chiusi, braccia tese avanti, per 50 secondi
 
 ROMBERG MONOPODALICO: Eseguito su un piede alla volta, occhi chiusi, per 20-30 secondi. Se positivo: indica conflitto muscolare, ipertono monolaterale o carenza di tono muscolare. È migliorabile con esercizi specifici su cuscino, Tai Qi, movimenti rotatori, plank, tavola dell'equilibrio oscillante, light therapy e Taopatch.
 
-TEST DI UNTERBERGER-FUKUDA (marcia sul posto): Il paziente marcia sul posto a occhi chiusi, braccia avanti a 90°, per 1 minuto. Valuta l'equilibrio vestibolare e la postura. Una rotazione superiore a 30° suggerisce un possibile problema vestibolare (la rotazione avviene verso il lato lesionato) o un'asimmetria posturale. Con testa ruotata si valuta anche il riflesso cervico-nucale: normalmente testa a destra → corpo devia leggermente a sinistra (compensazione). Se la deviazione va nella stessa direzione: problema cervicale o integrazione cervico-vestibolare alterata. Si ripete con lingua allo spot (se normalizza = la rieducazione linguale impatta sulla cervicale) e con rulli di cotone tra canini/premolari (DVO da aumentare). Assenza del riflesso nucale → invio da osteopata per conflitto cervicale.
+TEST DI UNTERBERGER-FUKUDA (marcia sul posto): Obiettivo: valutare se esiste un'alterazione dell'equilibrio vestibolare (orecchio interno) o della postura. Procedura: paziente in piedi, occhi chiusi, braccia avanti a 90°, marcia sul posto per 1 minuto. L'operatore osserva l'eventuale rotazione/spostamento. INTERPRETAZIONE BASE: rotazione sul posto > 30° = possibile problema vestibolare (di solito verso il lato lesionato), oppure asimmetria posturale o problema di equilibrio. FUKUDA CON TESTA RUOTATA: quando il paziente esegue il test con la testa ruotata a destra o a sinistra, non si valuta più solo la funzione vestibolare pura ma anche l'effetto del riflesso cervico-nucale sulla postura. Comportamento normale: testa ruotata a destra → il corpo devia leggermente a sinistra (riflesso cervico-vestibolare di compensazione). Se invece la deviazione avviene nella STESSA direzione della rotazione della testa → possibile problema cervicale o integrazione cervico-vestibolare alterata. FUKUDA COME TEST DIAGNOSTICO ORIENTATIVO: il test si ripete con (1) lingua allo spot — se normalizza significa che la rieducazione linguale ha un impatto importante sulla cervicale; (2) rulli di cotone tra canini e premolari — la dimensione verticale (DVO) deve essere aumentata per creare spazio tra le prime vertebre cervicali; (3) se non normalizza con nessuna manovra, ci si affida agli altri test senza accanirsi sulla normalizzazione, e si riproverà nel corso della terapia scelta (protesica, ortodontica, bite). Spiega sempre nel referto cosa è stato osservato, in che senso il sistema sta rispondendo (vestibolare puro, cervico-nucale, miofunzionale, occlusale) e quale figura/percorso terapeutico è coerente con quel risultato.
 
 LEG/PELVIC/ACROMION BALANCE: Valutazione con bolla e attrezzo calibrato per misurare simmetria di gambe, bacino e spalle. Una dismetria può essere vera (in scoliosi accertata) o muscolare. Spesso migliora con lingua allo spot: dato fortemente motivante per la terapia miofunzionale.
 
@@ -186,6 +186,7 @@ Le terapie consigliate devono sempre essere spiegate in modo semplice, collegate
 REGOLA FONDAMENTALE SULLE TERAPIE DA INCLUDERE:
 - Se nel messaggio del professionista è presente un campo "Terapie consigliate" o "Quali terapie servono", nel referto DEVI includere SOLO ed ESCLUSIVAMENTE le terapie indicate in quel campo. Non aggiungerne altre.
 - Se NON è presente alcun campo terapie, includi tutte le terapie pertinenti secondo l'ordine obbligatorio sotto indicato.
+- NON scrivere MAI una "Nota Preliminare", una "Premessa", una "Avvertenza" o un paragrafo introduttivo prima dell'elenco delle terapie. NON scrivere frasi come "Il campo 'Quali Terapie sono consigliate' indica esclusivamente le seguenti terapie...". Vai DIRETTAMENTE al titolo "# Terapie consigliate" e poi alle sottosezioni delle singole terapie, senza alcun preambolo.
 
 Ordine obbligatorio delle sezioni terapeutiche (quando non filtrate dal professionista):
 1. Terapia elastodontica
@@ -228,6 +229,9 @@ Se nei dati clinici sono presenti valori cefalometrici (Angolo Sellare N-S-Ar, A
 Paziente: [Nome e cognome se presente]
 Età: [Se disponibile]
 Data visita: [Se disponibile]
+
+# Motivo della visita
+[Inserisci questa sezione SOLO se nei dati clinici è presente esplicitamente la domanda "motivo della visita", "sintomi" o equivalente con relativa risposta del paziente/genitore. In tal caso riporta in modo discorsivo e sintetico il motivo per cui il paziente si è presentato e i sintomi riferiti, così come dichiarati. Se il dato non è presente, OMETTI completamente questa sezione (non scrivere il titolo, non scrivere "non disponibile").]
 
 # Introduzione
 [Spiega che il check-up ortodontico posturale è una valutazione globale che osserva il paziente nella sua interezza, serve a comprendere le cause profonde degli squilibri, distinguendo ciò che è primario da ciò che è compenso.]
