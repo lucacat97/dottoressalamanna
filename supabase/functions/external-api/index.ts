@@ -685,11 +685,8 @@ Se fornito il Rapporto NS/GoMe, aggiungi una riga:
 ## 7. Significato dell'Angolo Goniaco
 [Interpreta in relazione alla classe scheletrica trovata.]
 
-## 8. Integrazione Funzionale e Posturale
-[Se nelle note cliniche emergono elementi posturali/miofunzionali/ORL, integra qui il collegamento tra cefalometria e quadro funzionale globale. Altrimenti "Nessun dato funzionale-posturale fornito."]
-
-## 9. Note Cliniche e Rivalutazione
-[Indicazioni cliniche e tempistica.]
+## 8. Note Cliniche e Rivalutazione
+[Indicazioni cliniche e tempistica. Se nelle note cliniche emergono elementi posturali/miofunzionali/ORL, considerali implicitamente nell'interpretazione e nella scelta del dispositivo, SENZA creare una sezione dedicata e SENZA scrivere frasi generiche del tipo "la cefalometria va integrata con esame clinico" o "nessun dato funzionale-posturale fornito".]
 
 NON includere MAI disclaimer, avvisi legali o note sull'uso dell'intelligenza artificiale nell'output (il disclaimer ufficiale viene aggiunto a monte dal sistema).
 NON includere header o footer dello studio (nome dottoressa, firma, data, indirizzo).
