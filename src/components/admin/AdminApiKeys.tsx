@@ -306,15 +306,32 @@ const AdminApiKeys = () => {
                     {apiKey.last_used_at && <span>Ultimo uso: {formatDate(apiKey.last_used_at)}</span>}
                   </div>
                   {usageCounts[apiKey.id] && (
-                    <div className="flex flex-wrap items-center gap-3 mt-2">
+                    <div className="flex flex-wrap items-center gap-2 mt-2">
                       <BarChart3 size={12} className="text-muted-foreground" />
                       {Object.entries(TOOL_LABELS).map(([toolKey, toolLabel]) => {
                         const count = usageCounts[apiKey.id]?.[toolKey] || 0;
-                        const limit = (apiKey.tool_limits as Record<string, number> | null)?.[toolKey] ?? apiKey.monthly_limit;
+                        const toolLimits = apiKey.tool_limits as Record<string, number> | null;
+                        const hasSpecific = toolLimits?.[toolKey] !== undefined;
+                        const limit = toolLimits?.[toolKey] ?? apiKey.monthly_limit;
                         const isOver = count >= limit;
                         return (
-                          <span key={toolKey} className={`font-body text-[11px] px-2 py-0.5 rounded-full border ${isOver ? "bg-destructive/10 border-destructive/30 text-destructive" : "bg-muted/30 border-border text-muted-foreground"}`}>
-                            {toolLabel}: <strong>{count}</strong>/{limit}
+                          <span key={toolKey} className={`inline-flex items-center gap-1 font-body text-[11px] px-2 py-1 rounded-full border ${isOver ? "bg-destructive/10 border-destructive/30 text-destructive" : "bg-muted/30 border-border text-muted-foreground"}`}>
+                            {toolLabel}: <strong>{count}</strong>/
+                            <input
+                              type="number"
+                              defaultValue={limit}
+                              min={1}
+                              key={`${apiKey.id}-${toolKey}-${limit}`}
+                              onBlur={(e) => {
+                                const val = parseInt(e.target.value);
+                                if (val && val !== limit) {
+                                  handleUpdateToolLimit(apiKey.id, toolLimits, toolKey, val);
+                                }
+                              }}
+                              className="w-12 px-1 py-0 rounded border border-input bg-background font-body text-[11px] text-foreground text-center"
+                              title={hasSpecific ? "Limite specifico per questo strumento" : "Eredita dal limite globale"}
+                            />
+                            {!hasSpecific && <span className="text-[9px] opacity-60">(glob)</span>}
                           </span>
                         );
                       })}
@@ -323,7 +340,7 @@ const AdminApiKeys = () => {
                       </span>
                     </div>
                   )}
-                  {/* Inline tools + limit editing */}
+                  {/* Inline tools + global fallback limit editing */}
                   <div className="flex flex-wrap items-center gap-3 mt-3">
                     <span className="font-body text-xs text-muted-foreground">Strumenti:</span>
                     {Object.entries(TOOL_LABELS).map(([key, label]) => (
@@ -342,11 +359,12 @@ const AdminApiKeys = () => {
                         {label}
                       </label>
                     ))}
-                    <span className="font-body text-xs text-muted-foreground ml-2">Limite:</span>
+                    <span className="font-body text-xs text-muted-foreground ml-2" title="Usato solo per gli strumenti senza un limite specifico">Limite globale (fallback):</span>
                     <input
                       type="number"
                       defaultValue={apiKey.monthly_limit}
                       min={1}
+                      key={`${apiKey.id}-global-${apiKey.monthly_limit}`}
                       onBlur={(e) => {
                         const val = parseInt(e.target.value);
                         if (val && val !== apiKey.monthly_limit) handleUpdateLimit(apiKey.id, val);
