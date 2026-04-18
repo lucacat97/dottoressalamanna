@@ -146,7 +146,26 @@ const AdminApiKeys = () => {
     if (error) {
       toast({ title: "Errore", description: error.message, variant: "destructive" });
     } else {
-      toast({ title: "Limite aggiornato" });
+      toast({ title: "Limite globale aggiornato" });
+      fetchKeys();
+    }
+  };
+
+  const handleUpdateToolLimit = async (
+    id: string,
+    currentToolLimits: Record<string, number> | null,
+    tool: string,
+    newLimitVal: number
+  ) => {
+    const updated = { ...(currentToolLimits || {}), [tool]: newLimitVal };
+    const { error } = await supabase
+      .from("api_keys")
+      .update({ tool_limits: updated } as any)
+      .eq("id", id);
+    if (error) {
+      toast({ title: "Errore", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: `Limite ${TOOL_LABELS[tool]} aggiornato a ${newLimitVal}/mese` });
       fetchKeys();
     }
   };
