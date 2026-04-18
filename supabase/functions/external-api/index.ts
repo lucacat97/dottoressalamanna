@@ -67,7 +67,7 @@ function mdToHtml(md: string): string {
   let html = processedLines.join("\n");
 
   // Blockquotes
-  html = html.replace(/^>\s*(.+)$/gm, '<blockquote style="border-left:3px solid #2a6f6f;padding:8px 16px;margin:12px 0;background:#f0f7f7;color:#333;">$1</blockquote>');
+  html = html.replace(/^>\s*(.+)$/gm, '<blockquote style="border-left:4px solid #f0b400;padding:12px 16px;margin:14px 0;background:#fff8e1;color:#5b4708;border-radius:6px;">$1</blockquote>');
 
   // Headers
   html = html.replace(/^####\s+(.+)$/gm, '<h4 style="font-size:14px;color:#333;margin:16px 0 8px;">$1</h4>');
@@ -113,7 +113,7 @@ function wrapInHtmlDocument(bodyHtml: string): string {
   h2 { color: #2a6f6f; font-family: Georgia, serif; }
   th { background: #f0f7f7; }
   th, td { border: 1px solid #ddd; padding: 8px 12px; text-align: left; }
-  blockquote { border-left: 3px solid #2a6f6f; padding: 8px 16px; margin: 12px 0; background: #f0f7f7; color: #333; }
+  blockquote { border-left: 4px solid #f0b400; padding: 12px 16px; margin: 14px 0; background: #fff8e1; color: #5b4708; border-radius: 6px; }
   strong { color: #2a6f6f; }
   @media print { body { padding: 20px; } }
 </style>
