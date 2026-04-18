@@ -183,9 +183,37 @@ const AdminApiKeys = () => {
     }
   };
 
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text);
-    toast({ title: "Copiato negli appunti" });
+  const copyToClipboard = async (text: string) => {
+    try {
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(text);
+        toast({ title: "Copiato negli appunti" });
+        return;
+      }
+      throw new Error("Clipboard API non disponibile");
+    } catch {
+      // Fallback: textarea + execCommand (funziona anche in iframe non-secure)
+      try {
+        const ta = document.createElement("textarea");
+        ta.value = text;
+        ta.style.position = "fixed";
+        ta.style.left = "-9999px";
+        ta.setAttribute("readonly", "");
+        document.body.appendChild(ta);
+        ta.select();
+        ta.setSelectionRange(0, text.length);
+        const ok = document.execCommand("copy");
+        document.body.removeChild(ta);
+        if (ok) {
+          toast({ title: "Copiato negli appunti" });
+        } else {
+          throw new Error("execCommand fallito");
+        }
+      } catch {
+        // Ultimo fallback: prompt manuale
+        window.prompt("Copia la chiave manualmente (Ctrl/Cmd+C):", text);
+      }
+    }
   };
 
   const formatDate = (d: string) =>
