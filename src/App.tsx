@@ -8,7 +8,6 @@ import AuthPage from "./pages/AuthPage.tsx";
 import Dashboard from "./pages/Dashboard.tsx";
 import ResetPassword from "./pages/ResetPassword.tsx";
 import NotFound from "./pages/NotFound.tsx";
-import PasswordGate from "./components/PasswordGate";
 
 const queryClient = new QueryClient();
 
@@ -17,7 +16,6 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <PasswordGate>
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
@@ -28,7 +26,6 @@ const App = () => (
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
-      </PasswordGate>
     </TooltipProvider>
   </QueryClientProvider>
 );
