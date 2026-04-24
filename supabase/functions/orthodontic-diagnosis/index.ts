@@ -272,7 +272,7 @@ ${classe_dentale ? `- Classe dentale/funzionale: ${classe_dentale}` : ""}`;
       body: JSON.stringify({
         model: "openai/gpt-5-mini",
         messages: [
-          { role: "system", content: SYSTEM_PROMPT + feedbackSection },
+          { role: "system", content: SYSTEM_PROMPT + knowledgeSection + feedbackSection },
           { role: "user", content: userMessage },
         ],
         stream: true,
