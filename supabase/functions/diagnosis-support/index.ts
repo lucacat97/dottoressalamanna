@@ -527,6 +527,23 @@ serve(async (req) => {
       throw new Error("LOVABLE_API_KEY is not configured");
     }
 
+    const systemContent = SYSTEM_PROMPT + knowledgeSection + feedbackSection;
+    const userContent = `Analizza i seguenti dati clinici e genera il referto finale completo rispettando rigorosamente struttura, ordine, logica clinica, tono e stile descritti nelle istruzioni.${clinicalNotesSection}${terapieSection}\n\n---\n${documentText}\n---`;
+
+    // ── Diagnostic logging ──
+    const reqStart = Date.now();
+    console.log(JSON.stringify({
+      tag: "diagnosis-support:request",
+      userId,
+      systemChars: systemContent.length,
+      userChars: userContent.length,
+      documentChars: documentText.length,
+      knowledgeChars: knowledgeSection.length,
+      feedbackChars: feedbackSection.length,
+      hasClinicalNotes: !!clinicalNotesSection,
+      hasTerapie: !!terapieSection,
+    }));
+
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -536,15 +553,18 @@ serve(async (req) => {
       body: JSON.stringify({
         model: "openai/gpt-5-mini",
         messages: [
-          { role: "system", content: SYSTEM_PROMPT + knowledgeSection + feedbackSection },
-          {
-            role: "user",
-            content: `Analizza i seguenti dati clinici e genera il referto finale completo rispettando rigorosamente struttura, ordine, logica clinica, tono e stile descritti nelle istruzioni.${clinicalNotesSection}${terapieSection}\n\n---\n${documentText}\n---`,
-          },
+          { role: "system", content: systemContent },
+          { role: "user", content: userContent },
         ],
         stream: true,
       }),
     });
+
+    console.log(JSON.stringify({
+      tag: "diagnosis-support:ai-response-headers",
+      status: response.status,
+      elapsedMs: Date.now() - reqStart,
+    }));
 
     if (!response.ok) {
       if (response.status === 429) {
