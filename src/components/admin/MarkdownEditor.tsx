@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import rehypeRaw from "rehype-raw";
 import {
   Bold, Italic, Heading2, Heading3, List, ListOrdered,
   Link as LinkIcon, Quote, Eye, Pencil, Palette,
