@@ -285,7 +285,7 @@ serve(async (req) => {
       body: JSON.stringify({
         model: "openai/gpt-5-mini",
         messages: [
-          { role: "system", content: systemPrompt + feedbackSection },
+          { role: "system", content: systemPrompt + knowledgeSection + feedbackSection },
           { role: "user", content: userMessage },
         ],
         stream: true,
