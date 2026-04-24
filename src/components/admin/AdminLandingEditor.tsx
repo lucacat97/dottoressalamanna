@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Save, Upload, Trash2, X, Image as ImageIcon, Video, Link as LinkIcon, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
+import MarkdownEditor from "./MarkdownEditor";
 
 interface CourseMedia {
   id: string;
