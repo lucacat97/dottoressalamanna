@@ -7,6 +7,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import AnimatedSection from "@/components/AnimatedSection";
 import RegistrationModal from "@/components/RegistrationModal";
+import { MarkdownPreview } from "@/components/admin/MarkdownEditor";
 
 interface CourseEdition {
   id: string;
