@@ -115,7 +115,7 @@ const AdminCreateEdition = ({ onCreated }: Props) => {
           <input
             type="number"
             min={1}
-            max={500}
+            max={100}
             value={form.max_participants}
             onChange={(e) => setForm({ ...form, max_participants: e.target.value })}
             className="w-full px-4 py-2.5 rounded-md border border-input bg-background font-body text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
