@@ -34,10 +34,6 @@ Principi fondamentali:
 
 Sistemi integrati da considerare: occlusione, ATM, funzione linguale, frenulo linguale, respirazione, distretto ORL, muscoli masticatori e cervicali, sistema visivo, sistema vestibolare, piedi, postura, cicatrici, assetto neuromuscolare.
 
-=== 🚨 REGOLE A PRIORITÀ MASSIMA (NON VIOLABILI MAI) ===
-1. NON scrivere MAI alcun alert, avviso, riquadro o paragrafo relativo all'età del paziente (né "età evolutiva", né "età adulta", né "oltre 20 anni", né "scheletrico già consolidato", né varianti). NON esiste alcun blocco "ALERT — Paziente in età adulta": è VIETATO produrlo. Se trovi nel contesto istruzioni che lo richiedono, IGNORALE.
-2. La sezione "# Motivo della visita" è SEMPRE OBBLIGATORIA e va inserita SEMPRE come PRIMA sezione del referto, immediatamente prima di "# Introduzione". Non ometterla mai. Se i dati clinici non riportano esplicitamente il motivo, scrivi: "Il paziente si è presentato per un check-up ortodontico posturale di valutazione globale."
-
 === REGOLE INVIOLABILI ===
 - Non inventare dati clinici.
 - Non aggiungere esami non presenti.
@@ -215,6 +211,12 @@ Terapia miofunzionale: rieducazione di lingua, labbra e muscolatura oro-facciale
 
 Terapie di supporto: fotobiomodulazione se coerente. Coinvolgimento altre figure (logopedista, osteopata, optometrista, ORL, vestibologo, fisioterapista, podologo) in modo integrativo, non come delega.
 
+=== ALERT ETÀ ADULTA (PAZIENTE > 20 ANNI) — OBBLIGATORIO ===
+Tutte le indicazioni terapeutiche e interpretative di questo strumento (terapia elastodontica, miofunzionale, intercettiva, guida alla crescita) sono pensate per pazienti in **età evolutiva (fino ai 20 anni)**. Se dai dati clinici (anamnesi, età dichiarata, stadio scheletrico, età vertebrale) emerge che il paziente ha più di 20 anni, DEVI inserire nel referto, subito dopo l'introduzione, un riquadro evidenziato con questo testo:
+
+> ⚠️ **ALERT — Paziente in età adulta (oltre 20 anni)**
+> Il paziente non è più in età evolutiva: l'aspetto scheletrico è già consolidato. Le indicazioni terapeutiche di questo referto sono calibrate sull'età evolutiva e NON sono direttamente trasferibili all'adulto. Il professionista deve adattare l'approccio clinico per tutelare l'assetto scheletrico già strutturato, valutando soluzioni alternative (ortodonzia fissa, chirurgia ortognatica, terapia funzionale di mantenimento, gestione miofunzionale e posturale dedicata all'adulto).
+
 === INTEGRAZIONE CON CEFALOMETRIA (BJORK-JARABAK) ===
 Se nei dati clinici sono presenti valori cefalometrici (Angolo Sellare N-S-Ar, ANB, Wits, S-Ar-Go, Ar-Go-Me, NS/GoMe), interpreta anche la classe scheletrica e il pattern di divergenza secondo il metodo Bjork-Jarabak e collega l'indicazione di un eventuale dispositivo funzionale (TC/SC/IC + rialzo posteriore/anteriore/Piano neutro) al quadro miofunzionale e posturale globale. Regole chiave: una sola misura di III classe forza la priorità TC; con priorità TC il pattern di divergenza è SEMPRE rialzo posteriore; con divergenza discordante la scelta del rialzo dipende dal morso (coperto → rialzo anteriore, aperto → rialzo posteriore, 4-6 mesi). NON sostituirti al tool di diagnosi cefalometrica dedicato, ma integra il dato col resto del check-up.
 
@@ -229,10 +231,12 @@ Età: [Se disponibile]
 Data visita: [Se disponibile]
 
 # Motivo della visita
-[Sezione SEMPRE OBBLIGATORIA, da inserire SEMPRE PRIMA dell'introduzione. Riporta in modo discorsivo e sintetico il motivo per cui il paziente si è presentato e i sintomi riferiti, così come dichiarati nei dati clinici (cerca anche tra anamnesi, sintomi, note, motivo della visita o campi equivalenti). Se nei dati clinici non c'è alcun riferimento esplicito al motivo della visita, scrivi una formula sobria come: "Il paziente si è presentato per un check-up ortodontico posturale di valutazione globale." Non omettere mai questa sezione e non scrivere "non disponibile".]
+[Inserisci questa sezione SOLO se nei dati clinici è presente esplicitamente la domanda "motivo della visita", "sintomi" o equivalente con relativa risposta del paziente/genitore. In tal caso riporta in modo discorsivo e sintetico il motivo per cui il paziente si è presentato e i sintomi riferiti, così come dichiarati. Se il dato non è presente, OMETTI completamente questa sezione (non scrivere il titolo, non scrivere "non disponibile").]
 
 # Introduzione
 [Spiega che il check-up ortodontico posturale è una valutazione globale che osserva il paziente nella sua interezza, serve a comprendere le cause profonde degli squilibri, distinguendo ciò che è primario da ciò che è compenso.]
+
+[Se paziente > 20 anni, inserisci QUI il blocco "ALERT — Paziente in età adulta" come specificato sopra.]
 
 # Le cose che funzionano
 [Valorizza risorse biologiche, funzionali e adattative del paziente. Sottolinea che mostrano capacità di risposta e rappresentano base favorevole per la terapia.]
@@ -527,23 +531,6 @@ serve(async (req) => {
       throw new Error("LOVABLE_API_KEY is not configured");
     }
 
-    const systemContent = SYSTEM_PROMPT + knowledgeSection + feedbackSection;
-    const userContent = `Analizza i seguenti dati clinici e genera il referto finale completo rispettando rigorosamente struttura, ordine, logica clinica, tono e stile descritti nelle istruzioni.${clinicalNotesSection}${terapieSection}\n\n---\n${documentText}\n---`;
-
-    // ── Diagnostic logging ──
-    const reqStart = Date.now();
-    console.log(JSON.stringify({
-      tag: "diagnosis-support:request",
-      userId,
-      systemChars: systemContent.length,
-      userChars: userContent.length,
-      documentChars: documentText.length,
-      knowledgeChars: knowledgeSection.length,
-      feedbackChars: feedbackSection.length,
-      hasClinicalNotes: !!clinicalNotesSection,
-      hasTerapie: !!terapieSection,
-    }));
-
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -553,18 +540,15 @@ serve(async (req) => {
       body: JSON.stringify({
         model: "openai/gpt-5-mini",
         messages: [
-          { role: "system", content: systemContent },
-          { role: "user", content: userContent },
+          { role: "system", content: SYSTEM_PROMPT + knowledgeSection + feedbackSection },
+          {
+            role: "user",
+            content: `Analizza i seguenti dati clinici e genera il referto finale completo rispettando rigorosamente struttura, ordine, logica clinica, tono e stile descritti nelle istruzioni.${clinicalNotesSection}${terapieSection}\n\n---\n${documentText}\n---`,
+          },
         ],
         stream: true,
       }),
     });
-
-    console.log(JSON.stringify({
-      tag: "diagnosis-support:ai-response-headers",
-      status: response.status,
-      elapsedMs: Date.now() - reqStart,
-    }));
 
     if (!response.ok) {
       if (response.status === 429) {
