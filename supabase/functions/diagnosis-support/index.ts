@@ -511,6 +511,12 @@ serve(async (req) => {
       ? `\n\n=== RETRO-FEEDBACK DAL PROFESSIONISTA (CORREZIONI ACCUMULATE) ===\nQueste sono indicazioni fornite dal professionista dopo aver analizzato referti precedenti. DEVI tenerne conto SEMPRE nelle analisi future per evitare gli stessi errori:\n${feedbackRows.map((r: { feedback: string }, i: number) => `${i + 1}. ${r.feedback}`).join("\n")}\n=== FINE RETRO-FEEDBACK ===`
       : "";
 
+    // Fetch active knowledge base entries (global + diagnosis-specific)
+    const { data: knowledgeRows } = await serviceClient.rpc("get_active_ai_knowledge", { _scope: "diagnosis" });
+    const knowledgeSection = knowledgeRows && knowledgeRows.length > 0
+      ? `\n\n=== KNOWLEDGE BASE AGGIUNTIVA ===\nLe seguenti informazioni sono state fornite dall'amministratore come contesto aggiuntivo. Tienine conto durante l'analisi:\n${knowledgeRows.map((r: { title: string; content: string }, i: number) => `${i + 1}. [${r.title}]\n${r.content}`).join("\n\n")}\n=== FINE KNOWLEDGE BASE ===`
+      : "";
+
     // Build clinical notes section if provided
     const clinicalNotesSection = clinicalNotes && typeof clinicalNotes === "string" && clinicalNotes.trim().length > 0
       ? `\n\n--- CONSIDERAZIONI CLINICHE DEL PROFESSIONISTA (RETRO-FEEDBACK) ---\n${clinicalNotes.trim()}\n--- FINE CONSIDERAZIONI ---`
