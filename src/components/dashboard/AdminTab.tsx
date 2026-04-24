@@ -58,6 +58,7 @@ const AdminTab = ({ editions, materials, onFetchData, onDeleteEdition }: AdminTa
           { key: "access" as const, label: "Accessi", icon: KeyRound },
           { key: "apikeys" as const, label: "API Keys", icon: Key },
           { key: "feedback" as const, label: "Feedback IA", icon: MessageSquareText },
+          { key: "knowledge" as const, label: "Knowledge IA", icon: Brain },
         ]).map(({ key, label, icon: Icon }) => (
           <button
             key={key}
