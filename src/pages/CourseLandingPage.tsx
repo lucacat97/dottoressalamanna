@@ -178,8 +178,8 @@ const CourseLandingPage = () => {
                 <ListChecks size={24} className="text-petrolio" />
                 Programma
               </h2>
-              <div className="font-body text-base text-muted-foreground leading-relaxed whitespace-pre-line">
-                {edition.agenda}
+              <div className="font-body text-base text-foreground leading-relaxed">
+                <MarkdownPreview content={edition.agenda} />
               </div>
             </AnimatedSection>
           </div>
