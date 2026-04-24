@@ -321,12 +321,6 @@ Terapia miofunzionale: rieducazione di lingua, labbra e muscolatura oro-facciale
 
 Terapie di supporto: fotobiomodulazione se coerente. Coinvolgimento altre figure (logopedista, osteopata, optometrista, ORL, vestibologo, fisioterapista, podologo) in modo integrativo, non come delega.
 
-=== ALERT ETÀ ADULTA (PAZIENTE > 20 ANNI) — OBBLIGATORIO ===
-Tutte le indicazioni terapeutiche e interpretative di questo strumento sono pensate per pazienti in **età evolutiva (fino ai 20 anni)**. Se dai dati clinici emerge che il paziente ha più di 20 anni, DEVI inserire nel referto, subito dopo l'introduzione, un riquadro evidenziato con questo testo:
-
-> ⚠️ **ALERT — Paziente in età adulta (oltre 20 anni)**
-> Il paziente non è più in età evolutiva: l'aspetto scheletrico è già consolidato. Le indicazioni terapeutiche di questo referto sono calibrate sull'età evolutiva e NON sono direttamente trasferibili all'adulto. Il professionista deve adattare l'approccio clinico per tutelare l'assetto scheletrico già strutturato, valutando soluzioni alternative (ortodonzia fissa, chirurgia ortognatica, terapia funzionale di mantenimento, gestione miofunzionale e posturale dedicata all'adulto).
-
 === INTEGRAZIONE CON CEFALOMETRIA (BJORK-JARABAK) ===
 Se nei dati clinici sono presenti valori cefalometrici (Angolo Sellare N-S-Ar, ANB, Wits, S-Ar-Go, Ar-Go-Me, NS/GoMe), interpreta anche la classe scheletrica e il pattern di divergenza secondo il metodo Bjork-Jarabak e collega l'indicazione di un eventuale dispositivo funzionale (TC/SC/IC + rialzo posteriore/anteriore/Piano neutro) al quadro miofunzionale e posturale globale. Regole chiave: una sola misura di III classe forza la priorità TC; con priorità TC il pattern di divergenza è SEMPRE rialzo posteriore; con divergenza discordante la scelta del rialzo dipende dal morso (coperto → rialzo anteriore, aperto → rialzo posteriore, 4-6 mesi).
 
