@@ -160,7 +160,7 @@ const MarkdownEditor = ({ value, onChange, rows = 6, placeholder }: Props) => {
 
 export const MarkdownPreview = ({ content }: { content: string }) => (
   <div className="prose prose-sm max-w-none font-body text-foreground prose-headings:font-display prose-headings:text-petrolio prose-strong:text-foreground prose-a:text-petrolio prose-blockquote:border-l-petrolio prose-blockquote:text-muted-foreground">
-    <ReactMarkdown remarkPlugins={[remarkGfm]}>{content}</ReactMarkdown>
+    <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>{content}</ReactMarkdown>
   </div>
 );
 
