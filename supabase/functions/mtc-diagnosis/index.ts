@@ -203,8 +203,24 @@ serve(async (req) => {
 
     const toolName = `mtc_${subTool}`;
 
-    // Rate limiting
+    // ── Server-side license check ──
     const serviceClient = createClient(supabaseUrl, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
+    {
+      const { data: keyRecord } = await serviceClient
+        .from("api_keys")
+        .select("tools")
+        .eq("client_email", user.email)
+        .eq("is_active", true)
+        .maybeSingle();
+      if (!keyRecord || !Array.isArray(keyRecord.tools) || !keyRecord.tools.includes(toolName)) {
+        return new Response(
+          JSON.stringify({ error: "Accesso allo strumento non abilitato per il tuo account." }),
+          { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+    }
+
+    // Rate limiting
     const { data: usageCount } = await serviceClient.rpc("get_monthly_ai_usage", {
       _user_id: userId,
       _tool_name: toolName,

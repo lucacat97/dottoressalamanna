@@ -78,8 +78,8 @@ serve(async (req) => {
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (err) {
-    const message = err instanceof Error ? err.message : String(err);
-    return new Response(JSON.stringify({ error: message }), {
+    console.error("check-tool-access error:", err);
+    return new Response(JSON.stringify({ error: "Internal server error." }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
