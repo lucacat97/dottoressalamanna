@@ -37,7 +37,7 @@ interface AdminTabProps {
 }
 
 const AdminTab = ({ editions, materials, onFetchData, onDeleteEdition }: AdminTabProps) => {
-  const [adminTab, setAdminTab] = useState<"editions" | "registrations" | "materials" | "access" | "apikeys" | "feedback">("editions");
+  const [adminTab, setAdminTab] = useState<"editions" | "registrations" | "materials" | "access" | "apikeys" | "feedback" | "knowledge">("editions");
   const [editingLandingId, setEditingLandingId] = useState<string | null>(null);
 
   const formatDate = (dateStr: string) =>
