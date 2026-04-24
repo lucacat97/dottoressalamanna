@@ -14,6 +14,48 @@ export type Database = {
   }
   public: {
     Tables: {
+      ai_knowledge: {
+        Row: {
+          content: string
+          created_at: string
+          created_by: string | null
+          file_name: string | null
+          file_url: string | null
+          id: string
+          is_active: boolean
+          scope: string
+          source_type: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          created_by?: string | null
+          file_name?: string | null
+          file_url?: string | null
+          id?: string
+          is_active?: boolean
+          scope?: string
+          source_type?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          created_by?: string | null
+          file_name?: string | null
+          file_url?: string | null
+          id?: string
+          is_active?: boolean
+          scope?: string
+          source_type?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       ai_usage_log: {
         Row: {
           created_at: string
@@ -356,6 +398,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_active_ai_knowledge: {
+        Args: { _scope: string }
+        Returns: {
+          content: string
+          scope: string
+          title: string
+        }[]
+      }
       get_api_key_monthly_usage: {
         Args: { _api_key_id: string; _tool_name: string }
         Returns: number
