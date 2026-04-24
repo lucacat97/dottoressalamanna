@@ -144,8 +144,8 @@ const CourseLandingPage = () => {
           <div className="max-w-3xl mx-auto px-6">
             <AnimatedSection>
               <h2 className="font-display text-2xl md:text-3xl font-bold text-foreground mb-6">Il corso</h2>
-              <div className="font-body text-base text-muted-foreground leading-relaxed whitespace-pre-line">
-                {edition.long_description}
+              <div className="font-body text-base text-foreground leading-relaxed">
+                <MarkdownPreview content={edition.long_description} />
               </div>
             </AnimatedSection>
           </div>
