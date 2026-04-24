@@ -238,6 +238,12 @@ serve(async (req) => {
       ? `\n\n=== RETRO-FEEDBACK DAL PROFESSIONISTA (CORREZIONI ACCUMULATE) ===\nQueste sono indicazioni fornite dal professionista dopo aver analizzato referti precedenti. DEVI tenerne conto SEMPRE:\n${feedbackRows.map((r: { feedback: string }, i: number) => `${i + 1}. ${r.feedback}`).join("\n")}\n=== FINE RETRO-FEEDBACK ===`
       : "";
 
+    // Fetch active knowledge base entries (global + mtc)
+    const { data: knowledgeRows } = await serviceClient.rpc("get_active_ai_knowledge", { _scope: "mtc" });
+    const knowledgeSection = knowledgeRows && knowledgeRows.length > 0
+      ? `\n\n=== KNOWLEDGE BASE AGGIUNTIVA ===\n${knowledgeRows.map((r: { title: string; content: string }, i: number) => `${i + 1}. [${r.title}]\n${r.content}`).join("\n\n")}\n=== FINE KNOWLEDGE BASE ===`
+      : "";
+
     let systemPrompt: string;
     let userMessage: string;
 
@@ -279,7 +285,7 @@ serve(async (req) => {
       body: JSON.stringify({
         model: "openai/gpt-5-mini",
         messages: [
-          { role: "system", content: systemPrompt + feedbackSection },
+          { role: "system", content: systemPrompt + knowledgeSection + feedbackSection },
           { role: "user", content: userMessage },
         ],
         stream: true,

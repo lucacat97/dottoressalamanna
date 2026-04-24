@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { BookOpen, Users, Upload, KeyRound, Calendar, MapPin, Trash2, Shield, Key, MessageSquareText, Pencil } from "lucide-react";
+import { BookOpen, Users, Upload, KeyRound, Calendar, MapPin, Trash2, Shield, Key, MessageSquareText, Pencil, Brain } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import AdminCreateEdition from "@/components/admin/AdminCreateEdition";
 import AdminRegistrations from "@/components/admin/AdminRegistrations";
@@ -7,6 +7,7 @@ import AdminMaterials from "@/components/admin/AdminMaterials";
 import AdminAccessControl from "@/components/admin/AdminAccessControl";
 import AdminApiKeys from "@/components/admin/AdminApiKeys";
 import AdminFeedback from "@/components/admin/AdminFeedback";
+import AdminKnowledge from "@/components/admin/AdminKnowledge";
 import AdminLandingEditor from "@/components/admin/AdminLandingEditor";
 
 interface CourseEdition {
@@ -36,7 +37,7 @@ interface AdminTabProps {
 }
 
 const AdminTab = ({ editions, materials, onFetchData, onDeleteEdition }: AdminTabProps) => {
-  const [adminTab, setAdminTab] = useState<"editions" | "registrations" | "materials" | "access" | "apikeys" | "feedback">("editions");
+  const [adminTab, setAdminTab] = useState<"editions" | "registrations" | "materials" | "access" | "apikeys" | "feedback" | "knowledge">("editions");
   const [editingLandingId, setEditingLandingId] = useState<string | null>(null);
 
   const formatDate = (dateStr: string) =>
@@ -57,6 +58,7 @@ const AdminTab = ({ editions, materials, onFetchData, onDeleteEdition }: AdminTa
           { key: "access" as const, label: "Accessi", icon: KeyRound },
           { key: "apikeys" as const, label: "API Keys", icon: Key },
           { key: "feedback" as const, label: "Feedback IA", icon: MessageSquareText },
+          { key: "knowledge" as const, label: "Knowledge IA", icon: Brain },
         ]).map(({ key, label, icon: Icon }) => (
           <button
             key={key}
@@ -124,6 +126,7 @@ const AdminTab = ({ editions, materials, onFetchData, onDeleteEdition }: AdminTa
       {adminTab === "access" && <AdminAccessControl editions={editions} />}
       {adminTab === "apikeys" && <AdminApiKeys />}
       {adminTab === "feedback" && <AdminFeedback />}
+      {adminTab === "knowledge" && <AdminKnowledge />}
     </div>
   );
 };

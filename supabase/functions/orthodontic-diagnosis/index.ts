@@ -238,6 +238,12 @@ serve(async (req) => {
       ? `\n\n=== RETRO-FEEDBACK DAL PROFESSIONISTA (CORREZIONI ACCUMULATE) ===\nQueste sono indicazioni fornite dal professionista dopo aver analizzato referti precedenti. DEVI tenerne conto SEMPRE:\n${feedbackRows.map((r: { feedback: string }, i: number) => `${i + 1}. ${r.feedback}`).join("\n")}\n=== FINE RETRO-FEEDBACK ===`
       : "";
 
+    // Fetch active knowledge base entries (global + orthodontic)
+    const { data: knowledgeRows } = await serviceClient.rpc("get_active_ai_knowledge", { _scope: "orthodontic" });
+    const knowledgeSection = knowledgeRows && knowledgeRows.length > 0
+      ? `\n\n=== KNOWLEDGE BASE AGGIUNTIVA ===\n${knowledgeRows.map((r: { title: string; content: string }, i: number) => `${i + 1}. [${r.title}]\n${r.content}`).join("\n\n")}\n=== FINE KNOWLEDGE BASE ===`
+      : "";
+
     const patientName = nome && cognome ? `${nome} ${cognome}` : (nome || cognome || "Paziente");
     const userMessage = `Analizza i seguenti valori cefalometrici e fornisci la diagnosi ortodontica con scelta del dispositivo terapeutico:
 
@@ -266,7 +272,7 @@ ${classe_dentale ? `- Classe dentale/funzionale: ${classe_dentale}` : ""}`;
       body: JSON.stringify({
         model: "openai/gpt-5-mini",
         messages: [
-          { role: "system", content: SYSTEM_PROMPT + feedbackSection },
+          { role: "system", content: SYSTEM_PROMPT + knowledgeSection + feedbackSection },
           { role: "user", content: userMessage },
         ],
         stream: true,
