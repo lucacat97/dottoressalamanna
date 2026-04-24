@@ -161,8 +161,8 @@ const CourseLandingPage = () => {
                 <Target size={24} className="text-petrolio" />
                 Obiettivi formativi
               </h2>
-              <div className="font-body text-base text-muted-foreground leading-relaxed whitespace-pre-line">
-                {edition.objectives}
+              <div className="font-body text-base text-foreground leading-relaxed">
+                <MarkdownPreview content={edition.objectives} />
               </div>
             </AnimatedSection>
           </div>
