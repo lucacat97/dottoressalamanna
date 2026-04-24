@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Calendar, MapPin, Users, CheckCircle, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import AnimatedSection from "./AnimatedSection";
-import RegistrationModal from "./RegistrationModal";
 
 interface CourseEdition {
   id: string;
@@ -17,7 +17,6 @@ interface CourseEdition {
 
 const EditionsSection = () => {
   const [editions, setEditions] = useState<CourseEdition[]>([]);
-  const [selectedEdition, setSelectedEdition] = useState<CourseEdition | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -111,11 +110,13 @@ const EditionsSection = () => {
                         </div>
                       </div>
                       <Button
-                        onClick={() => setSelectedEdition(edition)}
+                        asChild
                         className="bg-primary hover:bg-accent text-primary-foreground font-body font-semibold group-hover:scale-105 transition-transform"
                       >
-                        Iscriviti Ora
-                        <ArrowRight size={16} className="ml-2" />
+                        <Link to={`/corso/${edition.id}`}>
+                          Scopri di più
+                          <ArrowRight size={16} className="ml-2" />
+                        </Link>
                       </Button>
                     </div>
                   </div>
@@ -137,7 +138,7 @@ const EditionsSection = () => {
             <div className="grid md:grid-cols-2 gap-4">
               {past.map((edition, i) => (
                 <AnimatedSection key={edition.id} delay={i * 0.1}>
-                  <div className="bg-muted/50 border border-border rounded-lg p-6 opacity-80">
+                  <Link to={`/corso/${edition.id}`} className="block bg-muted/50 border border-border rounded-lg p-6 opacity-80 hover:opacity-100 hover:border-petrolio/30 transition-all">
                     <h4 className="font-display text-lg font-semibold text-foreground mb-2">
                       {edition.title}
                     </h4>
@@ -156,20 +157,13 @@ const EditionsSection = () => {
                     <span className="inline-block mt-3 font-body text-xs uppercase tracking-wider text-gold font-semibold">
                       Completato
                     </span>
-                  </div>
+                  </Link>
                 </AnimatedSection>
               ))}
             </div>
           </div>
         )}
       </div>
-
-      {selectedEdition && (
-        <RegistrationModal
-          edition={selectedEdition}
-          onClose={() => setSelectedEdition(null)}
-        />
-      )}
     </section>
   );
 };
