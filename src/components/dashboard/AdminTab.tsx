@@ -126,6 +126,7 @@ const AdminTab = ({ editions, materials, onFetchData, onDeleteEdition }: AdminTa
       {adminTab === "access" && <AdminAccessControl editions={editions} />}
       {adminTab === "apikeys" && <AdminApiKeys />}
       {adminTab === "feedback" && <AdminFeedback />}
+      {adminTab === "knowledge" && <AdminKnowledge />}
     </div>
   );
 };
