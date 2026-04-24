@@ -137,34 +137,49 @@ export type Database = {
       }
       course_editions: {
         Row: {
+          agenda: string | null
+          cover_image_url: string | null
           created_at: string
           date: string
           description: string | null
           id: string
           location: string | null
+          long_description: string | null
           max_participants: number | null
+          objectives: string | null
+          price: string | null
           status: string
           title: string
           type: string
         }
         Insert: {
+          agenda?: string | null
+          cover_image_url?: string | null
           created_at?: string
           date: string
           description?: string | null
           id?: string
           location?: string | null
+          long_description?: string | null
           max_participants?: number | null
+          objectives?: string | null
+          price?: string | null
           status?: string
           title: string
           type?: string
         }
         Update: {
+          agenda?: string | null
+          cover_image_url?: string | null
           created_at?: string
           date?: string
           description?: string | null
           id?: string
           location?: string | null
+          long_description?: string | null
           max_participants?: number | null
+          objectives?: string | null
+          price?: string | null
           status?: string
           title?: string
           type?: string
@@ -199,6 +214,44 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "course_materials_edition_id_fkey"
+            columns: ["edition_id"]
+            isOneToOne: false
+            referencedRelation: "course_editions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      course_media: {
+        Row: {
+          caption: string | null
+          created_at: string
+          edition_id: string
+          id: string
+          media_type: string
+          sort_order: number
+          url: string
+        }
+        Insert: {
+          caption?: string | null
+          created_at?: string
+          edition_id: string
+          id?: string
+          media_type: string
+          sort_order?: number
+          url: string
+        }
+        Update: {
+          caption?: string | null
+          created_at?: string
+          edition_id?: string
+          id?: string
+          media_type?: string
+          sort_order?: number
+          url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "course_media_edition_id_fkey"
             columns: ["edition_id"]
             isOneToOne: false
             referencedRelation: "course_editions"
