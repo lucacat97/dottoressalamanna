@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Save, Upload, Trash2, X, Image as ImageIcon, Video, Link as LinkIcon, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
+import MarkdownEditor from "./MarkdownEditor";
 
 interface CourseMedia {
   id: string;
@@ -207,17 +208,32 @@ const AdminLandingEditor = ({ editionId, onClose }: Props) => {
 
       <div>
         <label className="font-body text-xs uppercase tracking-wider text-muted-foreground mb-1 block">Descrizione estesa</label>
-        <textarea rows={5} value={form.long_description} onChange={(e) => setForm({ ...form, long_description: e.target.value })} placeholder="Racconta il corso in dettaglio..." className={`${inputCls} resize-y`} />
+        <MarkdownEditor
+          value={form.long_description}
+          onChange={(v) => setForm({ ...form, long_description: v })}
+          rows={6}
+          placeholder="Racconta il corso in dettaglio... usa la toolbar per formattare e colorare."
+        />
       </div>
 
       <div>
         <label className="font-body text-xs uppercase tracking-wider text-muted-foreground mb-1 block">Obiettivi formativi</label>
-        <textarea rows={4} value={form.objectives} onChange={(e) => setForm({ ...form, objectives: e.target.value })} placeholder="Cosa imparerà il partecipante..." className={`${inputCls} resize-y`} />
+        <MarkdownEditor
+          value={form.objectives}
+          onChange={(v) => setForm({ ...form, objectives: v })}
+          rows={5}
+          placeholder="Cosa imparerà il partecipante..."
+        />
       </div>
 
       <div>
         <label className="font-body text-xs uppercase tracking-wider text-muted-foreground mb-1 block">Programma / Agenda</label>
-        <textarea rows={5} value={form.agenda} onChange={(e) => setForm({ ...form, agenda: e.target.value })} placeholder="Es.&#10;9:00 - Introduzione&#10;10:30 - ..." className={`${inputCls} resize-y`} />
+        <MarkdownEditor
+          value={form.agenda}
+          onChange={(v) => setForm({ ...form, agenda: v })}
+          rows={6}
+          placeholder="Es.&#10;**9:00** — Introduzione&#10;**10:30** — ..."
+        />
       </div>
 
       <div className="flex justify-end">

@@ -7,6 +7,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import AnimatedSection from "@/components/AnimatedSection";
 import RegistrationModal from "@/components/RegistrationModal";
+import { MarkdownPreview } from "@/components/admin/MarkdownEditor";
 
 interface CourseEdition {
   id: string;
@@ -143,8 +144,8 @@ const CourseLandingPage = () => {
           <div className="max-w-3xl mx-auto px-6">
             <AnimatedSection>
               <h2 className="font-display text-2xl md:text-3xl font-bold text-foreground mb-6">Il corso</h2>
-              <div className="font-body text-base text-muted-foreground leading-relaxed whitespace-pre-line">
-                {edition.long_description}
+              <div className="font-body text-base text-foreground leading-relaxed">
+                <MarkdownPreview content={edition.long_description} />
               </div>
             </AnimatedSection>
           </div>
@@ -160,8 +161,8 @@ const CourseLandingPage = () => {
                 <Target size={24} className="text-petrolio" />
                 Obiettivi formativi
               </h2>
-              <div className="font-body text-base text-muted-foreground leading-relaxed whitespace-pre-line">
-                {edition.objectives}
+              <div className="font-body text-base text-foreground leading-relaxed">
+                <MarkdownPreview content={edition.objectives} />
               </div>
             </AnimatedSection>
           </div>
@@ -177,8 +178,8 @@ const CourseLandingPage = () => {
                 <ListChecks size={24} className="text-petrolio" />
                 Programma
               </h2>
-              <div className="font-body text-base text-muted-foreground leading-relaxed whitespace-pre-line">
-                {edition.agenda}
+              <div className="font-body text-base text-foreground leading-relaxed">
+                <MarkdownPreview content={edition.agenda} />
               </div>
             </AnimatedSection>
           </div>
