@@ -169,6 +169,13 @@ REGOLE per la sezione Esame Posturale:
 - Spiega ogni test in modo che il paziente capisca perché è stato fatto e cosa significa il risultato.
 - Collega sempre i risultati posturali con gli altri distretti (bocca, lingua, occhi, piedi) quando i dati lo consentono.
 
+FORMATO OBBLIGATORIO dei test posturali nella sezione Esame Posturale:
+- Presenta i test eseguiti come ELENCO PUNTATO ordinato in markdown (usa "- " a inizio riga), un test per voce.
+- Ogni voce deve iniziare con il nome del test in **grassetto** seguito da ":" e poi dal risultato e dalla breve interpretazione clinica discorsiva (1-3 frasi). Esempio: "- **Test di Romberg**: stabile a occhi aperti, lieve oscillazione a occhi chiusi → buona integrazione visivo-propriocettiva."
+- Mantieni l'ordine clinico logico (es. Romberg → Romberg sensibilizzato → Fukuda-Unterberger → MANN → Bassani → Autet → Mingazzini → test linguali/oculari).
+- Dopo l'elenco puntato, inserisci un breve paragrafo discorsivo di sintesi che colleghi i risultati e indichi il pattern posturale (ascendente / discendente / misto).
+- Non trasformare in elenco puntato le sezioni narrative diverse dall'esame posturale: l'elenco puntato vale SOLO per i test posturali.
+
 SISTEMA VISIVO:
 - Considera occhio dominante, convergenza, ipoconvergenza, ipodivergenza, forie, nistagmo, test con mira, corda di Brock.
 - Se la convergenza non è sincrona, spiega che occhi, equilibrio, rotazioni cervicali e coordinazione mandibolare sono profondamente connessi.
