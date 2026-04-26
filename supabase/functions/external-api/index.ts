@@ -344,7 +344,7 @@ Età: [Se disponibile]
 Data visita: [Se disponibile]
 
 # Motivo della visita
-[Inserisci questa sezione SOLO se nei dati clinici è presente esplicitamente la domanda "motivo della visita", "sintomi" o equivalente con relativa risposta del paziente/genitore. In tal caso riporta in modo discorsivo e sintetico il motivo per cui il paziente si è presentato e i sintomi riferiti, così come dichiarati. Se il dato non è presente, OMETTI completamente questa sezione (non scrivere il titolo, non scrivere "non disponibile").]
+[Inserisci questa sezione SE è presente un blocco "MOTIVO DELLA VISITA" fornito esplicitamente dal professionista (passato via API), oppure se nei dati clinici è presente esplicitamente la domanda "motivo della visita", "sintomi" o equivalente con relativa risposta del paziente/genitore. Riporta in modo discorsivo e sintetico il motivo per cui il paziente si è presentato e i sintomi riferiti, così come dichiarati. Se il dato non è presente, OMETTI completamente questa sezione. Quando presente, questa sezione DEVE comparire subito dopo i dati anagrafici e PRIMA dell'Introduzione.]
 
 # Introduzione
 [Spiega che il check-up ortodontico posturale è una valutazione globale che osserva il paziente nella sua interezza, serve a comprendere le cause profonde degli squilibri, distinguendo ciò che è primario da ciò che è compenso.]
