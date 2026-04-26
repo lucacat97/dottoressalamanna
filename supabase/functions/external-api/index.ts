@@ -768,7 +768,7 @@ serve(async (req) => {
         JSON.stringify({
           error: "Campo 'tool' obbligatorio. Valori: 'diagnosis', 'orthodontic', 'mtc_sistemica', 'mtc_organica'.",
           usage: {
-            diagnosis: { tool: "diagnosis", documentText: "Testo del documento clinico..." },
+            diagnosis: { tool: "diagnosis", documentText: "Testo del documento clinico...", reasonForVisit: "(opzionale) Motivo della visita riferito dal paziente", clinicalNotes: "(opzionale) Considerazioni del professionista", terapie: "(opzionale) Terapie consigliate" },
             orthodontic: { tool: "orthodontic", age: 10, sex: "F", angolo_sellare: 125, anb: 3, wits: 1, angolo_articolare: 145, angolo_goniaco: 132 },
             mtc_sistemica: { tool: "mtc_sistemica", sex: "F", painPoints: [{ region: "Zona lombare", description: "Dolore lombare cronico" }] },
             mtc_organica: { tool: "mtc_organica", sex: "F", age: 45, symptoms: [{ category: "Fegato", name: "Irritabilità" }] },
