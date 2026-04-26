@@ -818,13 +818,16 @@ serve(async (req) => {
     let markdown: string;
 
     if (tool === "diagnosis") {
-      const { documentText, clinicalNotes, terapie } = body;
+      const { documentText, clinicalNotes, terapie, reasonForVisit } = body;
       if (!documentText || typeof documentText !== "string" || documentText.trim().length < 20) {
         return new Response(
           JSON.stringify({ error: "Campo 'documentText' obbligatorio (min 20 caratteri)." }),
           { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
+      const reasonSection = reasonForVisit && typeof reasonForVisit === "string" && reasonForVisit.trim().length > 0
+        ? `\n\n--- MOTIVO DELLA VISITA (fornito dal professionista) ---\n${reasonForVisit.trim()}\n--- FINE MOTIVO ---\nIncludi OBBLIGATORIAMENTE questo motivo della visita all'inizio del referto, nella sezione "# Motivo della visita", subito dopo i dati anagrafici e prima dell'Introduzione.`
+        : "";
       const notesSection = clinicalNotes && typeof clinicalNotes === "string" && clinicalNotes.trim().length > 0
         ? `\n\n--- CONSIDERAZIONI CLINICHE DEL PROFESSIONISTA ---\n${clinicalNotes.trim()}\n--- FINE CONSIDERAZIONI ---\nTieni conto di queste considerazioni nell'analisi.`
         : "";
@@ -833,7 +836,7 @@ serve(async (req) => {
         : "";
       markdown = await callAI(
         DIAGNOSIS_SYSTEM_PROMPT,
-        `Analizza il seguente documento clinico e genera un REFERTO CLINICO COMPLETO:\n\n---\n${documentText}${notesSection}${terapieSection}\n---`
+        `Analizza il seguente documento clinico e genera un REFERTO CLINICO COMPLETO:\n\n---\n${documentText}${reasonSection}${notesSection}${terapieSection}\n---`
       );
     } else if (tool === "orthodontic") {
       const { nome, cognome, age, sex, angolo_sellare, anb, wits, angolo_articolare, angolo_goniaco, ns_mm, gome_mm, rapporto_ns_gome, classe_dentale, clinicalNotes } = body;
