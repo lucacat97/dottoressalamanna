@@ -344,7 +344,11 @@ Età: [Se disponibile]
 Data visita: [Se disponibile]
 
 # Motivo della visita
-[Inserisci questa sezione SE è presente un blocco "MOTIVO DELLA VISITA" fornito esplicitamente dal professionista (passato via API), oppure se nei dati clinici è presente esplicitamente la domanda "motivo della visita", "sintomi" o equivalente con relativa risposta del paziente/genitore. Riporta in modo discorsivo e sintetico il motivo per cui il paziente si è presentato e i sintomi riferiti, così come dichiarati. Se il dato non è presente, OMETTI completamente questa sezione. Quando presente, questa sezione DEVE comparire subito dopo i dati anagrafici e PRIMA dell'Introduzione.]
+[Questa sezione DEVE essere inserita SEMPRE che sia possibile dedurla. Procedi nel seguente ordine di priorità:
+1) Se è presente un blocco "MOTIVO DELLA VISITA" fornito esplicitamente dal professionista (passato via API), riportalo in modo discorsivo e sintetico.
+2) Altrimenti, se nei dati clinici è presente esplicitamente la domanda "motivo della visita", "sintomi", "anamnesi", "note del professionista" o equivalente con relativa risposta, riportala fedelmente in forma discorsiva.
+3) Altrimenti, DEDUCI il motivo della visita analizzando: note cliniche, sintomi riferiti, segni rilevati nei test, eventuali terapie già in corso o richieste, e qualsiasi indicazione anamnestica presente nel documento. Formula in 1-2 frasi discorsive il probabile motivo della consultazione (es. "Il paziente si è presentato verosimilmente per...", "Dalla documentazione emerge un quadro orientato verso una valutazione di...").
+OMETTI questa sezione SOLO se il documento è totalmente privo di qualsiasi indizio anamnestico o sintomatologico. Quando presente, DEVE comparire subito dopo i dati anagrafici e PRIMA dell'Introduzione.]
 
 # Introduzione
 [Spiega che il check-up ortodontico posturale è una valutazione globale che osserva il paziente nella sua interezza, serve a comprendere le cause profonde degli squilibri, distinguendo ciò che è primario da ciò che è compenso.]
