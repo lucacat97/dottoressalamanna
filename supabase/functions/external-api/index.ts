@@ -324,6 +324,15 @@ Terapie di supporto: fotobiomodulazione se coerente. Coinvolgimento altre figure
 === INTEGRAZIONE CON CEFALOMETRIA (BJORK-JARABAK) ===
 Se nei dati clinici sono presenti valori cefalometrici (Angolo Sellare N-S-Ar, ANB, Wits, S-Ar-Go, Ar-Go-Me, NS/GoMe), interpreta anche la classe scheletrica e il pattern di divergenza secondo il metodo Bjork-Jarabak e collega l'indicazione di un eventuale dispositivo funzionale (TC/SC/IC + rialzo posteriore/anteriore/Piano neutro) al quadro miofunzionale e posturale globale. Regole chiave: una sola misura di III classe forza la priorità TC; con priorità TC il pattern di divergenza è SEMPRE rialzo posteriore; con divergenza discordante la scelta del rialzo dipende dal morso (coperto → rialzo anteriore, aperto → rialzo posteriore, 4-6 mesi).
 
+=== FORMATTAZIONE DEI TEST CLINICI (OBBLIGATORIO) ===
+Ogni volta che citi il NOME di un test, manovra clinica o segno eponimico (es. Romberg, Fukuda-Unterberger, Bassani, Autet, MANN, Glatzel, Mingazzini, "lingua allo spot", "farfalla", ecc.) DEVI scriverlo in **grassetto markdown** (es. **Test di Autet**, **Fukuda-Unterberger**, **Romberg monopodalico**). Vale sia in narrativa sia nelle sezioni di analisi.
+
+=== TEST DI AUTET (OBBLIGATORIO se presente nei dati) ===
+Se nei dati clinici è riportato il **Test di Autet** (rotazione interna/esterna dell'anca, eventuale normalizzazione con mano sulla spalla opposta e/o lingua allo spot), DEVI sempre includerlo nell'analisi posturale. Interpretazione: la presenza di restrizione intrarotazionale che normalizza con la mano sulla spalla opposta e con lingua allo spot conferma una componente alta (bocca/cervicale/occhi) prevalente e supporta la classificazione di sindrome posturale **discendente**: il problema origina dalla parte alta del corpo (testa, bocca, occhi, recettori cervicali) e si trasmette verso il basso generando asimmetrie di bacino e arto inferiore. Quando il piede o l'anca normalizzano con lingua allo spot, sottolinea che la funzione linguale conduce l'organizzazione posturale del paziente.
+
+=== TEST DI FUKUDA-UNTERBERGER (interpretazione corretta) ===
+Quando descrivi il **Test di Fukuda-Unterberger** segui questa logica: con la testa in posizione neutra una marcia stabile sul posto è normale; quando la testa è ruotata, il riflesso cervico-vestibolare induce una rotazione compensatoria del corpo nel verso OPPOSTO (testa ruotata a destra → corpo devia a sinistra). Una deviazione nella STESSA direzione della rotazione della testa, oppure una rotazione sul posto ripetuta e stabile sempre verso lo stesso lato, suggerisce un'alterata integrazione cervico-vestibolare o un pattern cervico-posturale consolidato; va sempre interpretata insieme agli altri test (vestibolari, cervicali, posturali, linguali). Eseguire il test con testa ruotata non valuta solo la funzione vestibolare pura ma anche l'effetto del riflesso cervico-nucale sulla postura.
+
 === STRUTTURA DEL REFERTO (segui ESATTAMENTE questo ordine) ===
 
 # CHECK-UP ORTODONTICO POSTURALE
