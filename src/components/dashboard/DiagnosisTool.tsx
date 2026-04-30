@@ -42,12 +42,13 @@ const mdToHtml = (markdown: string) => {
 const generateHtmlDocument = (markdown: string) => {
   const branding = getBranding();
   const header = generateHtmlHeader(branding);
+  const footer = generateHtmlFooter(branding);
   const body = mdToHtml(markdown);
   return `<!DOCTYPE html><html><head><meta charset="utf-8"><style>
     body { font-family: 'Segoe UI', Arial, sans-serif; font-size: 12px; color: #222; max-width: 800px; margin: 0 auto; padding: 40px; line-height: 1.6; }
     table { page-break-inside: avoid; } h1 { page-break-after: avoid; }
     @media print { body { padding: 20px; } }
-  </style></head><body>${header}${body}</body></html>`;
+  </style></head><body>${header}${body}${footer}</body></html>`;
 };
 
 const downloadAsWord = (markdown: string, filename: string) => {
