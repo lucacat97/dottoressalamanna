@@ -554,24 +554,42 @@ serve(async (req) => {
       throw new Error("LOVABLE_API_KEY is not configured");
     }
 
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "openai/gpt-5-nano",
-        messages: [
-          { role: "system", content: SYSTEM_PROMPT + knowledgeSection + feedbackSection },
-          {
-            role: "user",
-            content: `Analizza i seguenti dati clinici e genera il referto finale completo rispettando rigorosamente struttura, ordine, logica clinica, tono e stile descritti nelle istruzioni.${clinicalNotesSection}${terapieSection}\n\n---\n${documentText}\n---`,
-          },
-        ],
-        stream: true,
-      }),
+    const aiPayload = JSON.stringify({
+      model: "openai/gpt-5-nano",
+      messages: [
+        { role: "system", content: SYSTEM_PROMPT + knowledgeSection + feedbackSection },
+        {
+          role: "user",
+          content: `Analizza i seguenti dati clinici e genera il referto finale completo rispettando rigorosamente struttura, ordine, logica clinica, tono e stile descritti nelle istruzioni.${clinicalNotesSection}${terapieSection}\n\n---\n${documentText}\n---`,
+        },
+      ],
+      stream: true,
     });
+
+    let response: Response | null = null;
+    let lastStatus = 0;
+    for (let attempt = 0; attempt < 3; attempt++) {
+      response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${LOVABLE_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: aiPayload,
+      });
+      lastStatus = response.status;
+      // Retry only on transient upstream errors
+      if (response.ok || ![502, 503, 504].includes(response.status)) break;
+      console.warn(`AI gateway transient ${response.status}, retry ${attempt + 1}/3`);
+      try { await response.body?.cancel(); } catch (_) {}
+      await new Promise((r) => setTimeout(r, 800 * (attempt + 1)));
+    }
+    if (!response) {
+      return new Response(
+        JSON.stringify({ error: "Errore nel servizio AI. Riprova più tardi." }),
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
 
     if (!response.ok) {
       if (response.status === 429) {
