@@ -269,21 +269,36 @@ ${classe_dentale ? `- Classe dentale/funzionale: ${classe_dentale}` : ""}`;
       throw new Error("LOVABLE_API_KEY is not configured");
     }
 
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "openai/gpt-5-mini",
-        messages: [
-          { role: "system", content: SYSTEM_PROMPT + knowledgeSection + feedbackSection },
-          { role: "user", content: userMessage },
-        ],
-        stream: true,
-      }),
+    const aiPayload = JSON.stringify({
+      model: "openai/gpt-5-mini",
+      messages: [
+        { role: "system", content: SYSTEM_PROMPT + knowledgeSection + feedbackSection },
+        { role: "user", content: userMessage },
+      ],
+      stream: true,
     });
+
+    let response: Response | null = null;
+    for (let attempt = 0; attempt < 3; attempt++) {
+      response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${LOVABLE_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: aiPayload,
+      });
+      if (response.ok || ![502, 503, 504].includes(response.status)) break;
+      console.warn(`AI gateway transient ${response.status}, retry ${attempt + 1}/3`);
+      try { await response.body?.cancel(); } catch (_) {}
+      await new Promise((r) => setTimeout(r, 800 * (attempt + 1)));
+    }
+    if (!response) {
+      return new Response(
+        JSON.stringify({ error: "Errore nel servizio AI. Riprova più tardi." }),
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
 
     if (!response.ok) {
       if (response.status === 429) {
