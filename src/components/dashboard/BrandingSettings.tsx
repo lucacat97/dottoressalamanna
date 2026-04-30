@@ -3,11 +3,13 @@ import { Settings, Save } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/hooks/use-toast";
 
 export interface BrandingConfig {
   studioName: string;
   subtitle: string;
+  footerText: string;
 }
 
 const STORAGE_KEY = "report-branding";
@@ -15,12 +17,17 @@ const STORAGE_KEY = "report-branding";
 const DEFAULT_BRANDING: BrandingConfig = {
   studioName: "Studio Carella & Lamanna",
   subtitle: "Studio Dentistico Multidisciplinare — Occlusione e Postura",
+  footerText: "Studio Carella & Lamanna — Studio Dentistico Multidisciplinare — Occlusione e Postura",
 };
 
 export function getBranding(): BrandingConfig {
   try {
     const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) return JSON.parse(saved);
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      // Backward-compat: ensure footerText exists
+      return { footerText: "", ...parsed };
+    }
   } catch {}
   return DEFAULT_BRANDING;
 }
@@ -31,6 +38,16 @@ export function generateHtmlHeader(branding: BrandingConfig): string {
     <div style="text-align:center;margin-bottom:24px;border-bottom:2px solid #2a6f6f;padding-bottom:16px;">
       ${branding.studioName ? `<h2 style="margin:0;font-size:18px;color:#2a6f6f;font-family:Georgia,serif;">${branding.studioName.replace(/&/g, "&amp;")}</h2>` : ""}
       ${branding.subtitle ? `<p style="margin:4px 0 0;font-size:11px;color:#666;">${branding.subtitle}</p>` : ""}
+    </div>
+  `;
+}
+
+export function generateHtmlFooter(branding: BrandingConfig): string {
+  if (!branding.footerText) return "";
+  const safe = branding.footerText.replace(/&/g, "&amp;").replace(/\n/g, "<br>");
+  return `
+    <div style="text-align:center;margin-top:32px;padding-top:16px;border-top:1px solid #ddd;font-size:10px;color:#888;font-family:Georgia,serif;">
+      ${safe}
     </div>
   `;
 }
@@ -65,14 +82,14 @@ const BrandingSettings = () => {
     <div className="bg-card border border-border rounded-lg p-4 space-y-3">
       <h4 className="font-display text-sm font-semibold text-foreground flex items-center gap-2">
         <Settings size={14} className="text-petrolio" />
-        Intestazione Referti (Header / Footer)
+        Intestazione e Piè di Pagina Referti
       </h4>
       <p className="font-body text-xs text-muted-foreground">
-        Personalizza l'intestazione che appare nei referti scaricati. Lascia vuoto per non mostrare intestazione.
+        Personalizza header e footer dei referti scaricati. Lascia vuoto per non mostrarli.
       </p>
       <div className="space-y-2">
         <div className="space-y-1">
-          <Label className="font-body text-xs">Nome Studio</Label>
+          <Label className="font-body text-xs">Nome Studio (header)</Label>
           <Input
             value={config.studioName}
             onChange={(e) => setConfig(prev => ({ ...prev, studioName: e.target.value }))}
@@ -81,12 +98,21 @@ const BrandingSettings = () => {
           />
         </div>
         <div className="space-y-1">
-          <Label className="font-body text-xs">Sottotitolo</Label>
+          <Label className="font-body text-xs">Sottotitolo (header)</Label>
           <Input
             value={config.subtitle}
             onChange={(e) => setConfig(prev => ({ ...prev, subtitle: e.target.value }))}
             placeholder="es. Studio Dentistico — Ortodonzia"
             className="font-body text-sm"
+          />
+        </div>
+        <div className="space-y-1">
+          <Label className="font-body text-xs">Piè di pagina (footer)</Label>
+          <Textarea
+            value={config.footerText}
+            onChange={(e) => setConfig(prev => ({ ...prev, footerText: e.target.value }))}
+            placeholder="es. Studio Carella & Lamanna — Via Roma 1, Milano — info@studio.it"
+            className="font-body text-sm min-h-[60px]"
           />
         </div>
       </div>
