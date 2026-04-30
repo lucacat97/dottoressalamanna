@@ -421,7 +421,7 @@ const MilaMethodTool = () => {
     setDiagnosisResult("");
     setOrthoResult("");
 
-    const tasks: Promise<void>[] = [];
+    const tasks: Promise<unknown>[] = [];
     if (clinicalReady) {
       const txt = clinicalMode === "pdf" ? clinicalText : clinicalManual;
       tasks.push(
