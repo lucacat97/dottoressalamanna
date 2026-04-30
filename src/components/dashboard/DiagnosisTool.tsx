@@ -5,7 +5,7 @@ import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import * as pdfjsLib from "pdfjs-dist";
 import pdfjsWorker from "pdfjs-dist/build/pdf.worker.min.mjs?url";
-import { getBranding, generateHtmlHeader } from "./BrandingSettings";
+import { getBranding, generateHtmlHeader, generateHtmlFooter } from "./BrandingSettings";
 import RetroFeedback from "./RetroFeedback";
 const MONTHLY_LIMIT = 30;
 pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorker;
