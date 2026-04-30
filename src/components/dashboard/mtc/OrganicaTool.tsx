@@ -5,7 +5,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { getBranding, generateHtmlHeader } from "../BrandingSettings";
+import { getBranding, generateHtmlHeader, generateHtmlFooter } from "../BrandingSettings";
 import ReportRenderer from "./ReportRenderer";
 import { SYMPTOM_CATEGORIES, type Symptom } from "./symptomCategories";
 import RetroFeedback from "../RetroFeedback";
