@@ -7,7 +7,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { getBranding, generateHtmlHeader } from "../BrandingSettings";
+import { getBranding, generateHtmlHeader, generateHtmlFooter } from "../BrandingSettings";
 import BodyModel3D from "./BodyModel3D";
 import ReportRenderer from "./ReportRenderer";
 import { BODY_REGIONS, type BodyRegion, regionKey, meridianLabels } from "./bodyRegions";
