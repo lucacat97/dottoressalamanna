@@ -58,7 +58,7 @@ Il tuo compito è produrre un INTERPRETAZIONE CLINICA completo con DOPPIA INTERP
 
 [Analisi dal punto di vista della medicina convenzionale e della neurobiomodulazione:
 - Strutture anatomiche coinvolte (muscoli, nervi, fasce, articolazioni)
-- Possibili diagnosi differenziali occidentali
+- Possibili interpretazioni differenziali occidentali
 - Meccanismi neurofisiologici del dolore in quella zona
 - Dermatomi e miotomi coinvolti
 - Connessioni fasciali e catene miofunzionali
@@ -115,7 +115,7 @@ Il tuo compito è identificare il PATTERN DI DISARMONIA secondo la MTC e produrr
 - Fattori patogeni interni/esterni identificati
 - Teoria dei 5 elementi applicata al caso]
 
-## 3. Diagnosi Differenziale MTC
+## 3. Interpretazione Differenziale MTC
 
 [Tabella comparativa dei pattern possibili con probabilità]
 | **Pattern** | **Probabilità** | **Sintomi a Supporto** | **Sintomi Mancanti** |
@@ -134,7 +134,7 @@ Il tuo compito è identificare il PATTERN DI DISARMONIA secondo la MTC e produrr
 ## 5. Interpretazione secondo la Medicina Occidentale e Neurobiomodulazione
 
 [Analisi dal punto di vista della medicina convenzionale:
-- Possibili diagnosi differenziali occidentali correlate ai sintomi
+- Possibili interpretazioni differenziali occidentali correlate ai sintomi
 - Sistemi fisiologici coinvolti
 - Meccanismi fisiopatologici
 - Asse HPA (ipotalamo-ipofisi-surrene) se pertinente

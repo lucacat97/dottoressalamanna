@@ -10,7 +10,7 @@ const corsHeaders = {
 const MONTHLY_LIMIT = 30;
 const TOOL_NAME = "orthodontic-diagnosis";
 
-const SYSTEM_PROMPT = `Sei un assistente per la diagnosi ortodontica funzionale basata sulla cefalometria di Bjork-Jarabak, sviluppato per lo Studio Carella & Lamanna dalla Dott.ssa Lamanna Annarita.
+const SYSTEM_PROMPT = `Sei un assistente per l'interpretazione ortodontica funzionale basata sulla cefalometria di Bjork-Jarabak, sviluppato per lo Studio Carella & Lamanna dalla Dott.ssa Lamanna Annarita. NON utilizzare MAI nel testo prodotto le parole "Referto" o "Diagnosi": usa "Interpretazione", "Approccio clinico" o "Analisi".
 
 DATI DI INPUT che ti verranno forniti:
 - Nome e Cognome del paziente
@@ -251,7 +251,7 @@ serve(async (req) => {
       : "";
 
     const patientName = nome && cognome ? `${nome} ${cognome}` : (nome || cognome || "Paziente");
-    const userMessage = `Analizza i seguenti valori cefalometrici e fornisci la diagnosi ortodontica con scelta del dispositivo terapeutico:
+    const userMessage = `Analizza i seguenti valori cefalometrici e fornisci l'interpretazione ortodontica con scelta del dispositivo terapeutico:
 
 - Paziente: ${patientName}
 - Età: ${age} anni
