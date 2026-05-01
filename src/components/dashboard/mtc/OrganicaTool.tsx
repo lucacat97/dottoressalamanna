@@ -166,7 +166,7 @@ export default function OrganicaTool() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `referto_mtc_organica.${type === "doc" ? "doc" : "html"}`;
+    a.download = `interpretazione_mtc_organica.${type === "doc" ? "doc" : "html"}`;
     a.click();
     URL.revokeObjectURL(url);
   };

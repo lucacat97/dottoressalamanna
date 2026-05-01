@@ -56,7 +56,7 @@ const downloadAsWord = (markdown: string, filename: string) => {
   const html = generateHtmlDocument(markdown);
   const blob = new Blob(
     [`<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
-    <head><meta charset="utf-8"><title>Diagnosi Ortodontica</title>
+    <head><meta charset="utf-8"><title>Interpretazione Cefalometrica</title>
     <!--[if gte mso 9]><xml><w:WordDocument><w:View>Print</w:View></w:WordDocument></xml><![endif]-->
     </head><body>${html.match(/<body>([\s\S]*)<\/body>/)?.[1] || ""}</body></html>`],
     { type: "application/msword" }
@@ -356,8 +356,8 @@ const OrthodonticTool = () => {
           <div className="flex items-center gap-2 p-4 bg-primary/5 border border-primary/20 rounded-lg">
             <Brain size={18} className="text-petrolio" />
             <div>
-              <h4 className="font-display text-base font-semibold text-foreground">Diagnosi pronta</h4>
-              <p className="font-body text-xs text-muted-foreground">Scarica il report nel formato desiderato.</p>
+              <h4 className="font-display text-base font-semibold text-foreground">Interpretazione pronta</h4>
+              <p className="font-body text-xs text-muted-foreground">Scarica il documento nel formato desiderato.</p>
             </div>
           </div>
           <div className="flex flex-wrap gap-2">

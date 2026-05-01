@@ -131,7 +131,7 @@ const RetroFeedback = ({ toolName }: RetroFeedbackProps) => {
           <Textarea
             value={feedback}
             onChange={(e) => setFeedback(e.target.value)}
-            placeholder="Aggiungi una nota o un'osservazione su questo referto..."
+            placeholder="Aggiungi una nota o un'osservazione su questa interpretazione..."
             className="min-h-[90px] resize-none font-body text-sm"
           />
           <div className="flex items-center justify-between">

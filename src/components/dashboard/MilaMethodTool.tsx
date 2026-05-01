@@ -705,7 +705,7 @@ const MilaMethodTool = () => {
         <div className="flex flex-col sm:flex-row gap-2">
           <Button onClick={handleGenerate} disabled={!canGenerate} className="flex-1 font-body gap-2">
             <Sparkles size={16} />
-            Genera Referti — Metodo MILA
+            Genera Interpretazioni — Metodo MILA
           </Button>
           {(clinicalFile || clinicalManual || cefFile || orthoForm.nome) && (
             <Button variant="ghost" onClick={handleResetAll} className="font-body gap-2">
@@ -718,7 +718,7 @@ const MilaMethodTool = () => {
 
       {!canGenerate && !isGenerating && (
         <p className="font-body text-xs text-muted-foreground text-center">
-          Compila almeno una delle due sezioni per generare i referti.
+          Compila almeno una delle due sezioni per generare le interpretazioni.
         </p>
       )}
 
@@ -726,7 +726,7 @@ const MilaMethodTool = () => {
       {isGenerating && (
         <div className="flex flex-col items-center justify-center gap-4 py-12 bg-card border border-border rounded-lg">
           <Loader2 size={32} className="animate-spin text-petrolio" />
-          <p className="font-body text-sm text-muted-foreground">Generazione referti in corso...</p>
+          <p className="font-body text-sm text-muted-foreground">Generazione interpretazioni in corso...</p>
           <p className="font-body text-xs text-muted-foreground">Potrebbe richiedere fino a 30 secondi</p>
         </div>
       )}
