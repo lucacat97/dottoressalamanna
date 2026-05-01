@@ -15,7 +15,7 @@ Il paziente ha indicato uno o più punti dolorosi sul corpo. Ti verranno forniti
 - Sesso del paziente (M/F)
 - Lista dei punti dolorosi con la loro localizzazione anatomica precisa
 
-Il tuo compito è produrre un REFERTO CLINICO completo con DOPPIA INTERPRETAZIONE.
+Il tuo compito è produrre un INTERPRETAZIONE CLINICA completo con DOPPIA INTERPRETAZIONE.
 
 === FORMATO OUTPUT OBBLIGATORIO ===
 
@@ -94,7 +94,7 @@ Il professionista ha selezionato una serie di sintomi presentati dal paziente. T
 - Età del paziente
 - Lista dei sintomi selezionati organizzati per categoria
 
-Il tuo compito è identificare il PATTERN DI DISARMONIA secondo la MTC e produrre un referto con DOPPIA INTERPRETAZIONE.
+Il tuo compito è identificare il PATTERN DI DISARMONIA secondo la MTC e produrre un'interpretazione con DOPPIA INTERPRETAZIONE.
 
 === FORMATO OUTPUT OBBLIGATORIO ===
 

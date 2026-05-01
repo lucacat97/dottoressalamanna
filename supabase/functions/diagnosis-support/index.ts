@@ -211,7 +211,7 @@ Quando la priorità terapeutica è TC (Terza Classe), il pattern di divergenza D
 REGOLE OBBLIGATORIE per la terapia elastodontica (da includere SEMPRE, per TUTTI i pazienti, senza eccezioni):
 - Modalità di utilizzo: SEMPRE "2 ore durante il giorno e tutta la notte". Questa indicazione è fissa e identica per ogni paziente.
 - Nota economica: SEMPRE includere la frase "In caso di perdita o danneggiamento del dispositivo, occorrerà acquistare un nuovo dispositivo al costo di 350,00 euro escluso dal preventivo."
-- NON usare MAI la parola "tipico" o "tipica" in nessun contesto della terapia elastodontica né in tutto il referto.
+- NON usare MAI la parola "tipico" o "tipica" in nessun contesto della terapia elastodontica né in tutto l'interpretazione.
 - NON usare MAI espressioni come "affiancare, se è utile" per la terapia elastodontica.
 - Il referto viene letto dal paziente finale: scrivi sempre rivolgendoti al paziente o al genitore in modo diretto e chiaro.
 
@@ -220,7 +220,7 @@ Terapia miofunzionale: rieducazione di lingua, labbra e muscolatura oro-facciale
 Terapie di supporto: fotobiomodulazione se coerente. Coinvolgimento altre figure (logopedista, osteopata, optometrista, ORL, vestibologo, fisioterapista, podologo) in modo integrativo, non come delega.
 
 === ALERT ETÀ ADULTA (PAZIENTE > 20 ANNI) — OBBLIGATORIO ===
-Tutte le indicazioni terapeutiche e interpretative di questo strumento (terapia elastodontica, miofunzionale, intercettiva, guida alla crescita) sono pensate per pazienti in **età evolutiva (fino ai 20 anni)**. Se dai dati clinici (anamnesi, età dichiarata, stadio scheletrico, età vertebrale) emerge che il paziente ha più di 20 anni, DEVI inserire nel referto, subito dopo l'introduzione, un riquadro evidenziato con questo testo:
+Tutte le indicazioni terapeutiche e interpretative di questo strumento (terapia elastodontica, miofunzionale, intercettiva, guida alla crescita) sono pensate per pazienti in **età evolutiva (fino ai 20 anni)**. Se dai dati clinici (anamnesi, età dichiarata, stadio scheletrico, età vertebrale) emerge che il paziente ha più di 20 anni, DEVI inserire nell'interpretazione, subito dopo l'introduzione, un riquadro evidenziato con questo testo:
 
 > ⚠️ **ALERT — Paziente in età adulta (oltre 20 anni)**
 > Il paziente non è più in età evolutiva: l'aspetto scheletrico è già consolidato. Le indicazioni terapeutiche di questo referto sono calibrate sull'età evolutiva e NON sono direttamente trasferibili all'adulto. Il professionista deve adattare l'approccio clinico per tutelare l'assetto scheletrico già strutturato, valutando soluzioni alternative (ortodonzia fissa, chirurgia ortognatica, terapia funzionale di mantenimento, gestione miofunzionale e posturale dedicata all'adulto).
@@ -309,7 +309,7 @@ Odontoiatra — Ortodontista — Agopuntrice — Nanotectherapist
 Studio Carella & Lamanna — Studio Dentistico Multidisciplinare, Occlusione e Postura
 
 === ESEMPIO DI RIFERIMENTO (GOLD STANDARD) ===
-Il seguente è un referto reale approvato dalla Dott.ssa Lamanna. DEVI replicare ESATTAMENTE questo stile, tono, struttura, livello di dettaglio e logica discorsiva in ogni referto che produci. Studia attentamente come vengono descritti i dati, come vengono interpretati, come vengono collegati tra loro e come vengono presentate le terapie.
+Il seguente è un'interpretazione reale approvato dalla Dott.ssa Lamanna. DEVI replicare ESATTAMENTE questo stile, tono, struttura, livello di dettaglio e logica discorsiva in ogni interpretazione che produci. Studia attentamente come vengono descritti i dati, come vengono interpretati, come vengono collegati tra loro e come vengono presentate le terapie.
 
 --- INIZIO ESEMPIO ---
 
@@ -435,10 +435,10 @@ Con costanza, collaborazione e i giusti strumenti, possiamo accompagnare la cres
 
 --- FINE ESEMPIO ---
 
-NOTA: L'esempio sopra serve SOLO come riferimento di stile, tono e struttura. NON copiare i contenuti clinici dell'esempio. Ogni referto deve essere basato ESCLUSIVAMENTE sui dati clinici forniti dal professionista per il paziente specifico.
+NOTA: L'esempio sopra serve SOLO come riferimento di stile, tono e struttura. NON copiare i contenuti clinici dell'esempio. Ogni interpretazione deve essere basato ESCLUSIVAMENTE sui dati clinici forniti dal professionista per il paziente specifico.
 
 === CONTROLLO QUALITÀ FINALE ===
-Prima di produrre il referto, verifica:
+Prima di produrre l'interpretazione, verifica:
 - Hai mantenuto la struttura fissa richiesta?
 - Hai evitato di inventare dati?
 - Hai collegato tra loro bocca, lingua, postura, occhi, respirazione e sistema neuromuscolare quando i dati lo permettono?
@@ -447,7 +447,7 @@ Prima di produrre il referto, verifica:
 - Hai evitato toni allarmistici?
 - Hai valorizzato le risorse del sistema prima delle criticità?
 - Hai spiegato perché le terapie sono consigliate in questo caso specifico?
-- Hai mantenuto un tono coerente con un referto professionale ma umano?
+- Hai mantenuto un tono coerente con un'interpretazione professionale ma umano?
 
 === METODOLOGIA DI RIFERIMENTO ===
 ${JSON.stringify(metodologia, null, 0)}
@@ -547,7 +547,7 @@ serve(async (req) => {
       : "";
 
     const terapieSection = terapie && typeof terapie === "string" && terapie.trim().length > 0
-      ? `\n\n--- TERAPIE CONSIGLIATE DAL PROFESSIONISTA ---\nIncludi nel referto SOLO le seguenti terapie: ${terapie.trim()}\nNon aggiungere altre terapie non elencate qui.\n--- FINE TERAPIE ---`
+      ? `\n\n--- TERAPIE CONSIGLIATE DAL PROFESSIONISTA ---\nIncludi nell'interpretazione SOLO le seguenti terapie: ${terapie.trim()}\nNon aggiungere altre terapie non elencate qui.\n--- FINE TERAPIE ---`
       : "";
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
@@ -561,7 +561,7 @@ serve(async (req) => {
         { role: "system", content: SYSTEM_PROMPT + knowledgeSection + feedbackSection },
         {
           role: "user",
-          content: `Analizza i seguenti dati clinici e genera il referto finale completo rispettando rigorosamente struttura, ordine, logica clinica, tono e stile descritti nelle istruzioni.${clinicalNotesSection}${terapieSection}\n\n---\n${documentText}\n---`,
+          content: `Analizza i seguenti dati clinici e genera l'interpretazione finale completo rispettando rigorosamente struttura, ordine, logica clinica, tono e stile descritti nelle istruzioni.${clinicalNotesSection}${terapieSection}\n\n---\n${documentText}\n---`,
         },
       ],
       stream: true,
