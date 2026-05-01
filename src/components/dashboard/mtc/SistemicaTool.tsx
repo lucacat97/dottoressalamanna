@@ -170,7 +170,7 @@ export default function SistemicaTool() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `referto_mtc_sistemica.${type === "doc" ? "doc" : "html"}`;
+    a.download = `interpretazione_mtc_sistemica.${type === "doc" ? "doc" : "html"}`;
     a.click();
     URL.revokeObjectURL(url);
   };
@@ -285,7 +285,7 @@ export default function SistemicaTool() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Sparkles size={16} className="text-primary" />
-              <h3 className="font-display text-sm font-bold text-foreground">Referto MTC Generato</h3>
+              <h3 className="font-display text-sm font-bold text-foreground">Interpretazione MTC Generata</h3>
             </div>
             <div className="flex gap-2">
               <Button variant="outline" size="sm" onClick={() => downloadDoc("doc")}>

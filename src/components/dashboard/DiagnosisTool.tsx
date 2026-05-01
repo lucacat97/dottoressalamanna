@@ -55,7 +55,7 @@ const downloadAsWord = (markdown: string, filename: string) => {
   const html = generateHtmlDocument(markdown);
   const blob = new Blob(
     [`<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
-    <head><meta charset="utf-8"><title>Referto Clinico</title>
+    <head><meta charset="utf-8"><title>Interpretazione Clinica</title>
     <!--[if gte mso 9]><xml><w:WordDocument><w:View>Print</w:View></w:WordDocument></xml><![endif]-->
     </head><body>${html.match(/<body>([\s\S]*)<\/body>/)?.[1] || ""}</body></html>`],
     { type: "application/msword" }
@@ -222,8 +222,8 @@ const DiagnosisTool = () => {
   };
 
   const getFilenameBase = () => {
-    const name = file?.name?.replace(/\.pdf$/i, "") || "referto";
-    return `Referto_${name}`;
+    const name = file?.name?.replace(/\.pdf$/i, "") || "interpretazione";
+    return `Interpretazione_${name}`;
   };
 
   if (!accepted) {
@@ -266,7 +266,7 @@ const DiagnosisTool = () => {
               <Upload size={32} className="text-muted-foreground" />
               <div className="text-center">
                 <p className="font-body text-sm font-medium text-foreground">Carica documento clinico</p>
-                <p className="font-body text-xs text-muted-foreground mt-1">PDF fino a 10MB — referti, test, anamnesi</p>
+                <p className="font-body text-xs text-muted-foreground mt-1">PDF fino a 10MB — documenti clinici, test, anamnesi</p>
               </div>
             </label>
           ) : (
@@ -287,14 +287,14 @@ const DiagnosisTool = () => {
       {file && !result && !isAnalyzing && (
         <Button onClick={handleAnalyze} className="w-full font-body gap-2">
           <Brain size={16} />
-          Genera Referto Clinico
+          Genera Interpretazione Clinica
         </Button>
       )}
 
       {isAnalyzing && (
         <div className="flex flex-col items-center justify-center gap-4 py-12">
           <Loader2 size={32} className="animate-spin text-petrolio" />
-          <p className="font-body text-sm text-muted-foreground">Generazione referto in corso...</p>
+          <p className="font-body text-sm text-muted-foreground">Generazione interpretazione in corso...</p>
           <p className="font-body text-xs text-muted-foreground">Potrebbe richiedere fino a 30 secondi</p>
         </div>
       )}
@@ -304,8 +304,8 @@ const DiagnosisTool = () => {
           <div className="flex items-center gap-2 p-4 bg-primary/5 border border-primary/20 rounded-lg">
             <Brain size={18} className="text-petrolio" />
             <div>
-              <h4 className="font-display text-base font-semibold text-foreground">Referto pronto</h4>
-              <p className="font-body text-xs text-muted-foreground">Scarica il referto nel formato desiderato.</p>
+              <h4 className="font-display text-base font-semibold text-foreground">Interpretazione pronta</h4>
+              <p className="font-body text-xs text-muted-foreground">Scarica il documento nel formato desiderato.</p>
             </div>
           </div>
           <div className="flex flex-wrap gap-2">
