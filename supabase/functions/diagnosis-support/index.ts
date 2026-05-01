@@ -213,7 +213,7 @@ REGOLE OBBLIGATORIE per la terapia elastodontica (da includere SEMPRE, per TUTTI
 - Nota economica: SEMPRE includere la frase "In caso di perdita o danneggiamento del dispositivo, occorrerà acquistare un nuovo dispositivo al costo di 350,00 euro escluso dal preventivo."
 - NON usare MAI la parola "tipico" o "tipica" in nessun contesto della terapia elastodontica né in tutto l'interpretazione.
 - NON usare MAI espressioni come "affiancare, se è utile" per la terapia elastodontica.
-- Il referto viene letto dal paziente finale: scrivi sempre rivolgendoti al paziente o al genitore in modo diretto e chiaro.
+- Il documento viene letto dal paziente finale: scrivi sempre rivolgendoti al paziente o al genitore in modo diretto e chiaro.
 
 Terapia miofunzionale: rieducazione di lingua, labbra e muscolatura oro-facciale. Centrale quando lingua, frenulo, deglutizione o postura linguale sono coinvolti. Se test posturali migliorano con lingua allo spot, spiega effetti non solo orali ma anche posturali.
 
@@ -223,7 +223,7 @@ Terapie di supporto: fotobiomodulazione se coerente. Coinvolgimento altre figure
 Tutte le indicazioni terapeutiche e interpretative di questo strumento (terapia elastodontica, miofunzionale, intercettiva, guida alla crescita) sono pensate per pazienti in **età evolutiva (fino ai 20 anni)**. Se dai dati clinici (anamnesi, età dichiarata, stadio scheletrico, età vertebrale) emerge che il paziente ha più di 20 anni, DEVI inserire nell'interpretazione, subito dopo l'introduzione, un riquadro evidenziato con questo testo:
 
 > ⚠️ **ALERT — Paziente in età adulta (oltre 20 anni)**
-> Il paziente non è più in età evolutiva: l'aspetto scheletrico è già consolidato. Le indicazioni terapeutiche di questo referto sono calibrate sull'età evolutiva e NON sono direttamente trasferibili all'adulto. Il professionista deve adattare l'approccio clinico per tutelare l'assetto scheletrico già strutturato, valutando soluzioni alternative (ortodonzia fissa, chirurgia ortognatica, terapia funzionale di mantenimento, gestione miofunzionale e posturale dedicata all'adulto).
+> Il paziente non è più in età evolutiva: l'aspetto scheletrico è già consolidato. Le indicazioni terapeutiche di questa interpretazione sono calibrate sull'età evolutiva e NON sono direttamente trasferibili all'adulto. Il professionista deve adattare l'approccio clinico per tutelare l'assetto scheletrico già strutturato, valutando soluzioni alternative (ortodonzia fissa, chirurgia ortognatica, terapia funzionale di mantenimento, gestione miofunzionale e posturale dedicata all'adulto).
 
 === INTEGRAZIONE CON CEFALOMETRIA (BJORK-JARABAK) ===
 Se nei dati clinici sono presenti valori cefalometrici (Angolo Sellare N-S-Ar, ANB, Wits, S-Ar-Go, Ar-Go-Me, NS/GoMe), interpreta anche la classe scheletrica e il pattern di divergenza secondo il metodo Bjork-Jarabak e collega l'indicazione di un eventuale dispositivo funzionale (TC/SC/IC + rialzo posteriore/anteriore/Piano neutro) al quadro miofunzionale e posturale globale. Regole chiave: una sola misura di III classe forza la priorità TC; con priorità TC il pattern di divergenza è SEMPRE rialzo posteriore; con divergenza discordante la scelta del rialzo dipende dal morso (coperto → rialzo anteriore, aperto → rialzo posteriore, 4-6 mesi). NON sostituirti al tool di diagnosi cefalometrica dedicato, ma integra il dato col resto del check-up.
