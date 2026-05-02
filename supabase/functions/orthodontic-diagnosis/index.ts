@@ -119,8 +119,8 @@ OUTPUT RICHIESTO (in italiano, formato markdown professionale):
 Il report deve iniziare con il nome e cognome del paziente come intestazione.
 Devi SEMPRE produrre il report con ESATTAMENTE questa struttura e queste sezioni, nello stesso ordine. Non aggiungere sezioni extra, non cambiare i titoli delle sezioni, non omettere sezioni.
 
-## Disclaimer
-> **Disclaimer:** Questo strumento fornisce esclusivamente un supporto all'analisi clinica e NON costituisce in alcun modo una diagnosi medica. La responsabilità diagnostica resta interamente in capo al professionista sanitario. L'utilizzo di questo strumento non sostituisce il giudizio clinico del medico.
+## Avviso
+> **Avviso:** Questo strumento fornisce esclusivamente un supporto allo studio del caso e NON costituisce in alcun modo una valutazione medica. Ogni valutazione e responsabilità resta interamente in capo al professionista sanitario.
 
 ## Analisi Cefalometrica — [Nome Cognome del paziente]
 
@@ -168,7 +168,7 @@ Se fornito il Rapporto NS/GoMe, aggiungi una riga:
 [Indicazioni cliniche e tempistica. Se nelle note cliniche emergono elementi posturali/miofunzionali/ORL, considerali implicitamente nell'interpretazione e nella scelta del dispositivo, SENZA creare una sezione dedicata e SENZA scrivere frasi generiche del tipo "la cefalometria va integrata con esame clinico" o "nessun dato funzionale-posturale fornito".]
 
 Usa un tono professionale. Rispondi SEMPRE in italiano.
-DEVI includere SEMPRE all'inizio del report il blocco "## Disclaimer" con il testo esatto sopra indicato. Questo è l'UNICO disclaimer ammesso: non aggiungere altri avvisi legali o note sull'uso dell'intelligenza artificiale.
+DEVI includere SEMPRE all'inizio del documento il blocco "## Avviso" con il testo esatto sopra indicato. Questo è l'UNICO avviso ammesso: non aggiungere altri avvisi legali o note sull'uso dell'intelligenza artificiale. RICORDA: nessuna delle parole "referto", "diagnosi", "clinico/a/i/he" può comparire nel testo prodotto.
 Vai DIRETTAMENTE al report (a partire dal disclaimer) senza premesse, introduzioni o commenti. Produci SOLO il report formattato, nient'altro.`;
 
 serve(async (req) => {
