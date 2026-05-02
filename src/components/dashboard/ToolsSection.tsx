@@ -237,8 +237,17 @@ const ToolsSection = () => {
                       <div>{card}</div>
                     </TooltipTrigger>
                     <TooltipContent side="top" className="flex items-center gap-2 max-w-xs">
-                      <Lock size={14} className="text-muted-foreground shrink-0" />
-                      <span>Non sei abilitato a questo strumento. Contatta l'amministratore per richiedere l'accesso.</span>
+                      {tool.comingSoon ? (
+                        <>
+                          <Construction size={14} className="text-amber-600 shrink-0" />
+                          <span>Strumento in sviluppo. Sarà disponibile a breve.</span>
+                        </>
+                      ) : (
+                        <>
+                          <Lock size={14} className="text-muted-foreground shrink-0" />
+                          <span>Non sei abilitato a questo strumento. Contatta l'amministratore per richiedere l'accesso.</span>
+                        </>
+                      )}
                     </TooltipContent>
                   </Tooltip>
                 );
