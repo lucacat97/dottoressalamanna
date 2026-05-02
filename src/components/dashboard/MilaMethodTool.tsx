@@ -14,6 +14,7 @@ import pdfjsWorker from "pdfjs-dist/build/pdf.worker.min.mjs?url";
 import { getBranding, generateHtmlHeader, generateHtmlFooter } from "./BrandingSettings";
 import RetroFeedback from "./RetroFeedback";
 import { useToolLimits } from "@/hooks/useToolLimits";
+import { GenerationProgress } from "./GenerationProgress";
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorker;
 
