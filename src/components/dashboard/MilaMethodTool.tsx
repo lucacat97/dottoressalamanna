@@ -14,6 +14,7 @@ import pdfjsWorker from "pdfjs-dist/build/pdf.worker.min.mjs?url";
 import { getBranding, generateHtmlHeader, generateHtmlFooter } from "./BrandingSettings";
 import RetroFeedback from "./RetroFeedback";
 import { useToolLimits } from "@/hooks/useToolLimits";
+import { GenerationProgress } from "./GenerationProgress";
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorker;
 
@@ -729,13 +730,7 @@ const MilaMethodTool = () => {
       )}
 
       {/* Generating state */}
-      {isGenerating && (
-        <div className="flex flex-col items-center justify-center gap-4 py-12 bg-card border border-border rounded-lg">
-          <Loader2 size={32} className="animate-spin text-petrolio" />
-          <p className="font-body text-sm text-muted-foreground">Generazione interpretazioni in corso...</p>
-          <p className="font-body text-xs text-muted-foreground">Potrebbe richiedere fino a 30 secondi</p>
-        </div>
-      )}
+      {isGenerating && <GenerationProgress />}
 
       {/* Results */}
       {!isGenerating && (diagnosisResult || orthoResult) && (
