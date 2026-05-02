@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Brain, Sparkles, ArrowLeft, Leaf, Lock } from "lucide-react";
+import { Brain, Sparkles, ArrowLeft, Leaf, Lock, ClipboardCheck, Wind, Construction } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
@@ -17,6 +17,8 @@ interface ToolCard {
   accentColor: string;
   /** API key tool keys that grant access to this card */
   apiToolKeys: string[];
+  /** Mark as work-in-progress: card is shown but not clickable */
+  comingSoon?: boolean;
 }
 
 const tools: ToolCard[] = [
@@ -39,6 +41,28 @@ const tools: ToolCard[] = [
     gradient: "from-emerald-500/80 via-teal-500/60 to-cyan-500/40",
     accentColor: "text-emerald-600",
     apiToolKeys: ["mtc_sistemica", "mtc_organica"],
+  },
+  {
+    id: "tests",
+    title: "Supporto ai Test Ortodontico-Posturali",
+    subtitle: "Work in progress",
+    description: "Strumento in sviluppo per il supporto interpretativo dei test ortodontico-posturali. Sarà disponibile a breve.",
+    icon: ClipboardCheck,
+    gradient: "from-amber-500/80 via-orange-500/60 to-yellow-500/40",
+    accentColor: "text-amber-600",
+    apiToolKeys: [],
+    comingSoon: true,
+  },
+  {
+    id: "breathing",
+    title: "Respirazione e Sonno",
+    subtitle: "Work in progress",
+    description: "Strumento in sviluppo dedicato all'analisi della respirazione e dei disturbi del sonno. Sarà disponibile a breve.",
+    icon: Wind,
+    gradient: "from-sky-500/80 via-blue-500/60 to-indigo-500/40",
+    accentColor: "text-sky-600",
+    apiToolKeys: [],
+    comingSoon: true,
   },
 ];
 
@@ -86,6 +110,7 @@ const ToolsSection = () => {
   }, []);
 
   const isToolAllowed = (tool: ToolCard): boolean => {
+    if (tool.comingSoon) return false;
     if (isAdmin) return true;
     if (!allowedTools) return true; // still loading
     return tool.apiToolKeys.some((k) => allowedTools.includes(k));
@@ -161,8 +186,12 @@ const ToolsSection = () => {
                     <div className="w-12 h-12 rounded-xl flex items-center justify-center border bg-gradient-to-br from-primary/10 to-primary/5 border-primary/10 transition-transform group-hover:scale-110 relative">
                       <tool.icon size={24} className={tool.accentColor} />
                       {!allowed && (
-                        <div className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-destructive/90 flex items-center justify-center">
-                          <Lock size={10} className="text-destructive-foreground" />
+                        <div className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-amber-500/90 flex items-center justify-center">
+                          {tool.comingSoon ? (
+                            <Construction size={10} className="text-white" />
+                          ) : (
+                            <Lock size={10} className="text-destructive-foreground" />
+                          )}
                         </div>
                       )}
                     </div>
@@ -185,6 +214,11 @@ const ToolsSection = () => {
                           Apri strumento
                           <ArrowLeft size={12} className="rotate-180" />
                         </>
+                      ) : tool.comingSoon ? (
+                        <>
+                          <Construction size={11} />
+                          Prossimamente disponibile
+                        </>
                       ) : (
                         <>
                           <Lock size={11} />
@@ -203,8 +237,17 @@ const ToolsSection = () => {
                       <div>{card}</div>
                     </TooltipTrigger>
                     <TooltipContent side="top" className="flex items-center gap-2 max-w-xs">
-                      <Lock size={14} className="text-muted-foreground shrink-0" />
-                      <span>Non sei abilitato a questo strumento. Contatta l'amministratore per richiedere l'accesso.</span>
+                      {tool.comingSoon ? (
+                        <>
+                          <Construction size={14} className="text-amber-600 shrink-0" />
+                          <span>Strumento in sviluppo. Sarà disponibile a breve.</span>
+                        </>
+                      ) : (
+                        <>
+                          <Lock size={14} className="text-muted-foreground shrink-0" />
+                          <span>Non sei abilitato a questo strumento. Contatta l'amministratore per richiedere l'accesso.</span>
+                        </>
+                      )}
                     </TooltipContent>
                   </Tooltip>
                 );
