@@ -7,8 +7,9 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-const MONTHLY_LIMIT = 30;
+const DEFAULT_MONTHLY_LIMIT = 30;
 const TOOL_NAME = "orthodontic-diagnosis";
+const API_TOOL_KEY = "orthodontic";
 
 const SYSTEM_PROMPT = `Sei un assistente per l'interpretazione ortodontica funzionale basata sulla cefalometria di Bjork-Jarabak, sviluppato per lo Studio Carella & Lamanna dalla Dott.ssa Lamanna Annarita. NON utilizzare MAI nel testo prodotto le parole "Referto" o "Diagnosi": usa "Interpretazione", "Approccio clinico" o "Analisi".
 
