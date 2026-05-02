@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Brain, Sparkles, ArrowLeft, Leaf, Lock } from "lucide-react";
+import { Brain, Sparkles, ArrowLeft, Leaf, Lock, ClipboardCheck, Wind, Construction } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
@@ -17,6 +17,8 @@ interface ToolCard {
   accentColor: string;
   /** API key tool keys that grant access to this card */
   apiToolKeys: string[];
+  /** Mark as work-in-progress: card is shown but not clickable */
+  comingSoon?: boolean;
 }
 
 const tools: ToolCard[] = [
@@ -39,6 +41,28 @@ const tools: ToolCard[] = [
     gradient: "from-emerald-500/80 via-teal-500/60 to-cyan-500/40",
     accentColor: "text-emerald-600",
     apiToolKeys: ["mtc_sistemica", "mtc_organica"],
+  },
+  {
+    id: "tests",
+    title: "Supporto ai Test Ortodontico-Posturali",
+    subtitle: "Work in progress",
+    description: "Strumento in sviluppo per il supporto interpretativo dei test ortodontico-posturali. Sarà disponibile a breve.",
+    icon: ClipboardCheck,
+    gradient: "from-amber-500/80 via-orange-500/60 to-yellow-500/40",
+    accentColor: "text-amber-600",
+    apiToolKeys: [],
+    comingSoon: true,
+  },
+  {
+    id: "breathing",
+    title: "Respirazione e Sonno",
+    subtitle: "Work in progress",
+    description: "Strumento in sviluppo dedicato all'analisi della respirazione e dei disturbi del sonno. Sarà disponibile a breve.",
+    icon: Wind,
+    gradient: "from-sky-500/80 via-blue-500/60 to-indigo-500/40",
+    accentColor: "text-sky-600",
+    apiToolKeys: [],
+    comingSoon: true,
   },
 ];
 
@@ -86,6 +110,7 @@ const ToolsSection = () => {
   }, []);
 
   const isToolAllowed = (tool: ToolCard): boolean => {
+    if (tool.comingSoon) return false;
     if (isAdmin) return true;
     if (!allowedTools) return true; // still loading
     return tool.apiToolKeys.some((k) => allowedTools.includes(k));
