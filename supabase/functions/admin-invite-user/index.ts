@@ -87,11 +87,10 @@ Deno.serve(async (req) => {
           .join("");
 
         const toolLimits: Record<string, number> = license.toolLimits || {};
-        const monthlyLimit = Math.max(
-          1,
-          ...Object.values(toolLimits).map((v) => Number(v) || 30),
-          30,
-        );
+        const limitValues = Object.values(toolLimits).map((v) => Number(v)).filter((n) => Number.isFinite(n) && n > 0);
+        // Use the highest per-tool limit as the overall monthly_limit fallback
+        // (per-tool limits in tool_limits take precedence at runtime).
+        const monthlyLimit = limitValues.length > 0 ? Math.max(...limitValues) : 30;
 
         await admin.from("api_keys").insert({
           key_hash: keyHash,
