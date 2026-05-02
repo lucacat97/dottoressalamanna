@@ -440,8 +440,15 @@ const MilaMethodTool = () => {
     const tasks: Promise<unknown>[] = [];
     if (clinicalReady) {
       const txt = clinicalMode === "pdf" ? clinicalText : clinicalManual;
+      // Costruisce la mappa PII unendo i nomi della cefalometria (se presenti)
+      // ed eventuali nomi estratti dal PDF posturale (intestazione "Paziente: ...").
+      const extracted = extractCefValues(txt);
+      const piiMap = buildPiiMap({
+        nome: orthoForm.nome || extracted.nome,
+        cognome: orthoForm.cognome || extracted.cognome,
+      });
       tasks.push(
-        callDiagnosis(session.access_token, txt)
+        callDiagnosis(session.access_token, txt, piiMap)
           .then(r => setDiagnosisResult(r))
           .catch(e => toast({ title: "Errore elaborazione posturale", description: String(e.message || e), variant: "destructive" }))
       );
