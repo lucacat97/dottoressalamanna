@@ -85,7 +85,7 @@ const RetroFeedback = ({ toolName }: RetroFeedbackProps) => {
       <div className="flex items-start gap-2 p-2.5 bg-muted/40 border border-border/60 rounded-md">
         <Info size={12} className="text-muted-foreground mt-0.5 shrink-0" />
         <p className="font-body text-[11px] text-muted-foreground leading-relaxed">
-          Sezione informativa: raccoglie osservazioni e annotazioni cliniche sui referti.
+          Sezione informativa: raccoglie osservazioni e annotazioni sui documenti generati.
           I contributi vengono archiviati e potranno essere valutati manualmente per
           migliorare il servizio.
         </p>

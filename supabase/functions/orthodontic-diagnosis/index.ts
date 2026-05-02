@@ -7,10 +7,16 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-const MONTHLY_LIMIT = 30;
+const DEFAULT_MONTHLY_LIMIT = 30;
 const TOOL_NAME = "orthodontic-diagnosis";
+const API_TOOL_KEY = "orthodontic";
 
-const SYSTEM_PROMPT = `Sei un assistente per l'interpretazione ortodontica funzionale basata sulla cefalometria di Bjork-Jarabak, sviluppato per lo Studio Carella & Lamanna dalla Dott.ssa Lamanna Annarita. NON utilizzare MAI nel testo prodotto le parole "Referto" o "Diagnosi": usa "Interpretazione", "Approccio clinico" o "Analisi".
+const SYSTEM_PROMPT = `Sei un assistente per l'interpretazione cefalometrica funzionale (Bjork-Jarabak), sviluppato per lo Studio Carella & Lamanna dalla Dott.ssa Lamanna Annarita.
+
+REGOLE LINGUISTICHE TASSATIVE — DA RISPETTARE SEMPRE:
+- NON usare MAI le parole: "Referto", "referti", "Diagnosi", "diagnosi", "diagnostico", "diagnostica", "clinico", "clinica", "cliniche", "clinici" o qualunque loro variazione/derivato.
+- Sostituiscile sempre con: "Studio del caso", "Approccio", "Analisi", "Valutazione", "Lettura del caso", "Considerazioni", "Inquadramento" o formule equivalenti NON cliniche/diagnostiche.
+- Anche nei titoli, intestazioni e disclaimer: NESSUNA delle parole vietate sopra.
 
 DATI DI INPUT che ti verranno forniti:
 - Nome e Cognome del paziente
@@ -113,8 +119,8 @@ OUTPUT RICHIESTO (in italiano, formato markdown professionale):
 Il report deve iniziare con il nome e cognome del paziente come intestazione.
 Devi SEMPRE produrre il report con ESATTAMENTE questa struttura e queste sezioni, nello stesso ordine. Non aggiungere sezioni extra, non cambiare i titoli delle sezioni, non omettere sezioni.
 
-## Disclaimer
-> **Disclaimer:** Questo strumento fornisce esclusivamente un supporto all'analisi clinica e NON costituisce in alcun modo una diagnosi medica. La responsabilità diagnostica resta interamente in capo al professionista sanitario. L'utilizzo di questo strumento non sostituisce il giudizio clinico del medico.
+## Avviso
+> **Avviso:** Questo strumento fornisce esclusivamente un supporto allo studio del caso e NON costituisce in alcun modo una valutazione medica. Ogni valutazione e responsabilità resta interamente in capo al professionista sanitario.
 
 ## Analisi Cefalometrica — [Nome Cognome del paziente]
 
@@ -162,7 +168,7 @@ Se fornito il Rapporto NS/GoMe, aggiungi una riga:
 [Indicazioni cliniche e tempistica. Se nelle note cliniche emergono elementi posturali/miofunzionali/ORL, considerali implicitamente nell'interpretazione e nella scelta del dispositivo, SENZA creare una sezione dedicata e SENZA scrivere frasi generiche del tipo "la cefalometria va integrata con esame clinico" o "nessun dato funzionale-posturale fornito".]
 
 Usa un tono professionale. Rispondi SEMPRE in italiano.
-DEVI includere SEMPRE all'inizio del report il blocco "## Disclaimer" con il testo esatto sopra indicato. Questo è l'UNICO disclaimer ammesso: non aggiungere altri avvisi legali o note sull'uso dell'intelligenza artificiale.
+DEVI includere SEMPRE all'inizio del documento il blocco "## Avviso" con il testo esatto sopra indicato. Questo è l'UNICO avviso ammesso: non aggiungere altri avvisi legali o note sull'uso dell'intelligenza artificiale. RICORDA: nessuna delle parole "referto", "diagnosi", "clinico/a/i/he" può comparire nel testo prodotto.
 Vai DIRETTAMENTE al report (a partire dal disclaimer) senza premesse, introduzioni o commenti. Produci SOLO il report formattato, nient'altro.`;
 
 serve(async (req) => {
@@ -195,6 +201,7 @@ serve(async (req) => {
 
     // ── Server-side license check (admin bypass) ──
     const serviceClient = createClient(supabaseUrl, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
+    let monthlyLimit = DEFAULT_MONTHLY_LIMIT;
     {
       const { data: isAdmin } = await serviceClient.rpc("has_role", {
         _user_id: userId,
@@ -203,15 +210,19 @@ serve(async (req) => {
       if (!isAdmin) {
         const { data: keyRecord } = await serviceClient
           .from("api_keys")
-          .select("tools")
+          .select("tools, tool_limits")
           .eq("client_email", user.email)
           .eq("is_active", true)
           .maybeSingle();
-        if (!keyRecord || !Array.isArray(keyRecord.tools) || !keyRecord.tools.includes("orthodontic")) {
+        if (!keyRecord || !Array.isArray(keyRecord.tools) || !keyRecord.tools.includes(API_TOOL_KEY)) {
           return new Response(
             JSON.stringify({ error: "Accesso allo strumento non abilitato per il tuo account." }),
             { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
           );
+        }
+        const limFromKey = (keyRecord.tool_limits as Record<string, number> | null)?.[API_TOOL_KEY];
+        if (typeof limFromKey === "number" && limFromKey > 0) {
+          monthlyLimit = limFromKey;
         }
       }
     }
@@ -221,9 +232,9 @@ serve(async (req) => {
       _user_id: userId,
       _tool_name: TOOL_NAME,
     });
-    if (usageCount !== null && usageCount >= MONTHLY_LIMIT) {
+    if (usageCount !== null && usageCount >= monthlyLimit) {
       return new Response(
-        JSON.stringify({ error: `Limite mensile raggiunto (${MONTHLY_LIMIT} analisi/mese). Riprova il prossimo mese.` }),
+        JSON.stringify({ error: `Limite mensile raggiunto (${monthlyLimit} analisi/mese). Riprova il prossimo mese.` }),
         { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }

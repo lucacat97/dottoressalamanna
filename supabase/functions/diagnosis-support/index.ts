@@ -9,12 +9,18 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-const MONTHLY_LIMIT = 30;
+const DEFAULT_MONTHLY_LIMIT = 30;
 const TOOL_NAME = "diagnosis-support";
+const API_TOOL_KEY = "diagnosis";
 
-const SYSTEM_PROMPT = `Sei un odontoiatra esperto in ortodonzia funzionale, postura, terapia miofunzionale e integrazione neuro-posturale. Lavori come assistente clinico della Dott.ssa Lamanna Annarita presso lo Studio Carella & Lamanna (Occlusione e Postura).
+const SYSTEM_PROMPT = `Sei un odontoiatra esperto in ortodonzia funzionale, postura, terapia miofunzionale e integrazione neuro-posturale. Lavori come assistente della Dott.ssa Lamanna Annarita presso lo Studio Carella & Lamanna (Occlusione e Postura).
 
-Il tuo obiettivo è trasformare dati clinici grezzi provenienti da check-up ortodontico posturale in un'interpretazione clinica completa, chiara, professionale, rigorosa e comprensibile per il paziente, mantenendo una struttura fissa, uno stile discorsivo e una logica clinica integrata. NON utilizzare MAI nel testo prodotto le parole "Referto" o "Diagnosi": usa invece "Interpretazione", "Approccio clinico", "Analisi" o formulazioni equivalenti.
+Il tuo obiettivo è trasformare i dati del check-up ortodontico posturale in uno studio del caso completo, chiaro, professionale, rigoroso e comprensibile per il paziente, mantenendo una struttura fissa, uno stile discorsivo e una logica integrata.
+
+REGOLE LINGUISTICHE TASSATIVE — DA RISPETTARE SEMPRE:
+- NON usare MAI le parole: "Referto", "referti", "Diagnosi", "diagnosi", "diagnostico", "diagnostica", "clinico", "clinica", "cliniche", "clinici", "interpretazione clinica", "valutazione clinica" o qualunque variazione/derivato.
+- Sostituiscile sempre con: "Studio del caso", "Approccio", "Analisi", "Valutazione professionale", "Lettura del caso", "Considerazioni", "Osservazioni", "Quadro funzionale", "Inquadramento" e formule equivalenti NON cliniche/diagnostiche.
+- Anche nei titoli, sottotitoli, intestazioni e nelle citazioni del documento prodotto: NESSUNA delle parole vietate sopra.
 
 === PRIORITÀ DI CONOSCENZA ===
 - Usa come riferimento principale i contenuti dei corsi forniti nella sezione MATERIALE DIDATTICO.
@@ -240,9 +246,9 @@ Quando descrivi il **Test di Fukuda-Unterberger** segui questa logica: con la te
 
 === STRUTTURA DEL DOCUMENTO (segui ESATTAMENTE questo ordine) ===
 
-# CHECK-UP ORTODONTICO POSTURALE — INTERPRETAZIONE CLINICA
+# CHECK-UP ORTODONTICO POSTURALE — STUDIO DEL CASO
 
-> **Disclaimer:** Questo strumento fornisce esclusivamente un supporto all'analisi clinica e NON costituisce in alcun modo una diagnosi medica. La responsabilità diagnostica resta interamente in capo al professionista sanitario. L'utilizzo di questo strumento non sostituisce il giudizio clinico del medico.
+> **Avviso:** Questo strumento fornisce esclusivamente un supporto allo studio del caso e NON costituisce in alcun modo una valutazione medica. Ogni valutazione e responsabilità resta interamente in capo al professionista sanitario. L'utilizzo di questo strumento non sostituisce il giudizio del professionista.
 
 Paziente: [Nome e cognome se presente]
 Età: [Se disponibile]
@@ -487,6 +493,7 @@ serve(async (req) => {
 
     // ── Server-side license check (admin bypass) ──
     const serviceClient = createClient(supabaseUrl, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
+    let monthlyLimit = DEFAULT_MONTHLY_LIMIT;
     {
       const { data: isAdmin } = await serviceClient.rpc("has_role", {
         _user_id: userId,
@@ -495,15 +502,19 @@ serve(async (req) => {
       if (!isAdmin) {
         const { data: keyRecord } = await serviceClient
           .from("api_keys")
-          .select("tools")
+          .select("tools, tool_limits")
           .eq("client_email", user.email)
           .eq("is_active", true)
           .maybeSingle();
-        if (!keyRecord || !Array.isArray(keyRecord.tools) || !keyRecord.tools.includes("diagnosis")) {
+        if (!keyRecord || !Array.isArray(keyRecord.tools) || !keyRecord.tools.includes(API_TOOL_KEY)) {
           return new Response(
             JSON.stringify({ error: "Accesso allo strumento non abilitato per il tuo account." }),
             { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
           );
+        }
+        const limFromKey = (keyRecord.tool_limits as Record<string, number> | null)?.[API_TOOL_KEY];
+        if (typeof limFromKey === "number" && limFromKey > 0) {
+          monthlyLimit = limFromKey;
         }
       }
     }
@@ -513,9 +524,9 @@ serve(async (req) => {
       _user_id: userId,
       _tool_name: TOOL_NAME,
     });
-    if (usageCount !== null && usageCount >= MONTHLY_LIMIT) {
+    if (usageCount !== null && usageCount >= monthlyLimit) {
       return new Response(
-        JSON.stringify({ error: `Limite mensile raggiunto (${MONTHLY_LIMIT} analisi/mese). Riprova il prossimo mese.` }),
+        JSON.stringify({ error: `Limite mensile raggiunto (${monthlyLimit} analisi/mese). Riprova il prossimo mese.` }),
         { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }

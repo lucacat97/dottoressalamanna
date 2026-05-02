@@ -13,14 +13,16 @@ import * as pdfjsLib from "pdfjs-dist";
 import pdfjsWorker from "pdfjs-dist/build/pdf.worker.min.mjs?url";
 import { getBranding, generateHtmlHeader, generateHtmlFooter } from "./BrandingSettings";
 import RetroFeedback from "./RetroFeedback";
+import { useToolLimits } from "@/hooks/useToolLimits";
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorker;
 
-const MONTHLY_LIMIT = 30;
 const DIAGNOSIS_TOOL = "diagnosis-support";
 const ORTHO_TOOL = "orthodontic-diagnosis";
+const DIAGNOSIS_KEY = "diagnosis";
+const ORTHO_KEY = "orthodontic";
 
-const DISCLAIMER = `⚠️ Disclaimer: Questo strumento fornisce esclusivamente un supporto all'analisi clinica e cefalometrica e NON costituisce in alcun modo una diagnosi medica. La responsabilità diagnostica e terapeutica resta interamente in capo al professionista sanitario.`;
+const DISCLAIMER = `⚠️ Avviso: Questo strumento fornisce esclusivamente un supporto allo studio del caso e NON costituisce in alcun modo una valutazione medica. Ogni valutazione e responsabilità resta interamente in capo al professionista sanitario.`;
 
 // ---------- Markdown -> HTML (shared) ----------
 const mdToHtml = (markdown: string) => {
@@ -220,6 +222,10 @@ const MilaMethodTool = () => {
   const [diagUsage, setDiagUsage] = useState<number | null>(null);
   const [orthoUsage, setOrthoUsage] = useState<number | null>(null);
 
+  const { limits } = useToolLimits([DIAGNOSIS_KEY, ORTHO_KEY]);
+  const diagLimit = limits[DIAGNOSIS_KEY] ?? 30;
+  const orthoLimit = limits[ORTHO_KEY] ?? 30;
+
   useEffect(() => {
     const fetchUsage = async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -403,12 +409,12 @@ const MilaMethodTool = () => {
     if (!canGenerate) return;
 
     // Limit checks (only for sections actually being run)
-    if (clinicalReady && diagUsage !== null && diagUsage >= MONTHLY_LIMIT) {
-      toast({ title: "Limite mensile interpretazione clinica", description: `Hai raggiunto ${MONTHLY_LIMIT} analisi.`, variant: "destructive" });
+    if (clinicalReady && diagUsage !== null && diagUsage >= diagLimit) {
+      toast({ title: "Limite mensile raggiunto", description: `Hai raggiunto ${diagLimit} elaborazioni questo mese.`, variant: "destructive" });
       return;
     }
-    if (orthoReady && orthoUsage !== null && orthoUsage >= MONTHLY_LIMIT) {
-      toast({ title: "Limite mensile cefalometria", description: `Hai raggiunto ${MONTHLY_LIMIT} analisi.`, variant: "destructive" });
+    if (orthoReady && orthoUsage !== null && orthoUsage >= orthoLimit) {
+      toast({ title: "Limite mensile cefalometria", description: `Hai raggiunto ${orthoLimit} elaborazioni questo mese.`, variant: "destructive" });
       return;
     }
 
@@ -428,7 +434,7 @@ const MilaMethodTool = () => {
       tasks.push(
         callDiagnosis(session.access_token, txt)
           .then(r => setDiagnosisResult(r))
-          .catch(e => toast({ title: "Errore interpretazione clinica", description: String(e.message || e), variant: "destructive" }))
+          .catch(e => toast({ title: "Errore elaborazione posturale", description: String(e.message || e), variant: "destructive" }))
       );
     }
     if (orthoReady) {
@@ -480,7 +486,7 @@ const MilaMethodTool = () => {
       <div className="flex items-start gap-2 p-3 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-md">
         <AlertTriangle size={14} className="text-amber-600 dark:text-amber-400 mt-0.5 shrink-0" />
         <p className="font-body text-xs text-amber-700 dark:text-amber-300 leading-relaxed">
-          Compila almeno una delle due sezioni. Puoi caricare un PDF o inserire i dati manualmente. Verranno generati referti separati.
+          Compila almeno una delle due sezioni. Puoi caricare un PDF o inserire i dati manualmente. Verranno generati due documenti separati.
         </p>
       </div>
 
@@ -488,17 +494,17 @@ const MilaMethodTool = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         {diagUsage !== null && (
           <div className="flex items-center justify-between p-3 bg-muted/50 rounded-md">
-            <span className="font-body text-xs text-muted-foreground">Interpretazione clinica — questo mese</span>
-            <span className={`font-body text-sm font-semibold ${diagUsage >= MONTHLY_LIMIT ? "text-destructive" : "text-petrolio"}`}>
-              {diagUsage}/{MONTHLY_LIMIT}
+            <span className="font-body text-xs text-muted-foreground">Studio del caso — questo mese</span>
+            <span className={`font-body text-sm font-semibold ${diagUsage >= diagLimit ? "text-destructive" : "text-petrolio"}`}>
+              {diagUsage}/{diagLimit}
             </span>
           </div>
         )}
         {orthoUsage !== null && (
           <div className="flex items-center justify-between p-3 bg-muted/50 rounded-md">
             <span className="font-body text-xs text-muted-foreground">Cefalometria — questo mese</span>
-            <span className={`font-body text-sm font-semibold ${orthoUsage >= MONTHLY_LIMIT ? "text-destructive" : "text-petrolio"}`}>
-              {orthoUsage}/{MONTHLY_LIMIT}
+            <span className={`font-body text-sm font-semibold ${orthoUsage >= orthoLimit ? "text-destructive" : "text-petrolio"}`}>
+              {orthoUsage}/{orthoLimit}
             </span>
           </div>
         )}
@@ -511,7 +517,7 @@ const MilaMethodTool = () => {
         <div className="bg-card border border-border rounded-lg p-5 space-y-4">
           <div className="flex items-center gap-2">
             <ClipboardList size={18} className="text-petrolio" />
-            <h3 className="font-display text-base font-semibold text-foreground">Cartella clinica / posturale</h3>
+            <h3 className="font-display text-base font-semibold text-foreground">Cartella check-up posturale</h3>
           </div>
 
           <div className="flex gap-2">
@@ -539,7 +545,7 @@ const MilaMethodTool = () => {
               {!clinicalFile ? (
                 <label htmlFor="clinical-pdf" className="flex flex-col items-center justify-center gap-2 p-6 border-2 border-dashed border-border rounded-lg cursor-pointer hover:border-primary/50 hover:bg-muted/30 transition-colors">
                   <Upload size={24} className="text-muted-foreground" />
-                  <p className="font-body text-xs font-medium text-foreground">Carica cartella clinica</p>
+                  <p className="font-body text-xs font-medium text-foreground">Carica cartella check-up</p>
                   <p className="font-body text-[11px] text-muted-foreground">PDF fino a 10MB</p>
                 </label>
               ) : (
@@ -556,7 +562,7 @@ const MilaMethodTool = () => {
             </>
           ) : (
             <Textarea
-              placeholder="Incolla qui le note cliniche, anamnesi, esame posturale, test eseguiti, ATM, occlusione..."
+              placeholder="Incolla qui le note del check-up, anamnesi, esame posturale, test eseguiti, ATM, occlusione..."
               value={clinicalManual}
               onChange={(e) => setClinicalManual(e.target.value)}
               className="font-body text-base min-h-[200px]"
@@ -739,16 +745,16 @@ const MilaMethodTool = () => {
               <div className="flex items-center gap-2">
                 <Brain size={18} className="text-petrolio" />
                 <div>
-                  <h4 className="font-display text-base font-semibold text-foreground">Interpretazione Clinico-Posturale (Metodo MILA) pronta</h4>
+                  <h4 className="font-display text-base font-semibold text-foreground">Studio del caso posturale (Metodo MILA) pronto</h4>
                   <p className="font-body text-xs text-muted-foreground">Scarica nel formato desiderato.</p>
                 </div>
               </div>
               <div className="flex flex-wrap gap-2">
-                <Button variant="default" onClick={() => downloadAsWord(diagnosisResult, `Interpretazione_MILA_Clinica_${clinicalFile?.name?.replace(/\.pdf$/i, "") || "paziente"}`, "Interpretazione secondo Metodo MILA — Clinico-Posturale")} className="font-body gap-2">
+                <Button variant="default" onClick={() => downloadAsWord(diagnosisResult, `Studio_MILA_Posturale_${clinicalFile?.name?.replace(/\.pdf$/i, "") || "paziente"}`, "Studio del caso secondo Metodo MILA — Posturale")} className="font-body gap-2">
                   <FileDown size={14} />
                   Word (editabile)
                 </Button>
-                <Button variant="outline" onClick={() => downloadAsPdf(diagnosisResult, "Interpretazione secondo Metodo MILA — Clinico-Posturale")} className="font-body gap-2">
+                <Button variant="outline" onClick={() => downloadAsPdf(diagnosisResult, "Studio del caso secondo Metodo MILA — Posturale")} className="font-body gap-2">
                   <Download size={14} />
                   Stampa / PDF
                 </Button>

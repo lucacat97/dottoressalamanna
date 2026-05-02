@@ -7,7 +7,7 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-const MONTHLY_LIMIT = 30;
+const DEFAULT_MONTHLY_LIMIT = 30;
 
 const MTC_SISTEMICA_PROMPT = `Sei un assistente specializzato in Medicina Tradizionale Cinese (MTC) e Neurobiomodulazione, sviluppato per lo Studio Carella & Lamanna dalla Dott.ssa Lamanna Annarita, agopuntrice certificata.
 
@@ -205,10 +205,11 @@ serve(async (req) => {
 
     // ── Server-side license check ──
     const serviceClient = createClient(supabaseUrl, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
+    let monthlyLimit = DEFAULT_MONTHLY_LIMIT;
     {
       const { data: keyRecord } = await serviceClient
         .from("api_keys")
-        .select("tools")
+        .select("tools, tool_limits")
         .eq("client_email", user.email)
         .eq("is_active", true)
         .maybeSingle();
@@ -218,6 +219,10 @@ serve(async (req) => {
           { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
+      const limFromKey = (keyRecord.tool_limits as Record<string, number> | null)?.[toolName];
+      if (typeof limFromKey === "number" && limFromKey > 0) {
+        monthlyLimit = limFromKey;
+      }
     }
 
     // Rate limiting
@@ -225,9 +230,9 @@ serve(async (req) => {
       _user_id: userId,
       _tool_name: toolName,
     });
-    if (usageCount !== null && usageCount >= MONTHLY_LIMIT) {
+    if (usageCount !== null && usageCount >= monthlyLimit) {
       return new Response(
-        JSON.stringify({ error: `Limite mensile raggiunto (${MONTHLY_LIMIT} analisi/mese).` }),
+        JSON.stringify({ error: `Limite mensile raggiunto (${monthlyLimit} analisi/mese).` }),
         { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
