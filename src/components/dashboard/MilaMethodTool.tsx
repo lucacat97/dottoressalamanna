@@ -409,12 +409,12 @@ const MilaMethodTool = () => {
     if (!canGenerate) return;
 
     // Limit checks (only for sections actually being run)
-    if (clinicalReady && diagUsage !== null && diagUsage >= MONTHLY_LIMIT) {
-      toast({ title: "Limite mensile interpretazione clinica", description: `Hai raggiunto ${MONTHLY_LIMIT} analisi.`, variant: "destructive" });
+    if (clinicalReady && diagUsage !== null && diagUsage >= diagLimit) {
+      toast({ title: "Limite mensile raggiunto", description: `Hai raggiunto ${diagLimit} elaborazioni questo mese.`, variant: "destructive" });
       return;
     }
-    if (orthoReady && orthoUsage !== null && orthoUsage >= MONTHLY_LIMIT) {
-      toast({ title: "Limite mensile cefalometria", description: `Hai raggiunto ${MONTHLY_LIMIT} analisi.`, variant: "destructive" });
+    if (orthoReady && orthoUsage !== null && orthoUsage >= orthoLimit) {
+      toast({ title: "Limite mensile cefalometria", description: `Hai raggiunto ${orthoLimit} elaborazioni questo mese.`, variant: "destructive" });
       return;
     }
 
@@ -434,7 +434,7 @@ const MilaMethodTool = () => {
       tasks.push(
         callDiagnosis(session.access_token, txt)
           .then(r => setDiagnosisResult(r))
-          .catch(e => toast({ title: "Errore interpretazione clinica", description: String(e.message || e), variant: "destructive" }))
+          .catch(e => toast({ title: "Errore elaborazione posturale", description: String(e.message || e), variant: "destructive" }))
       );
     }
     if (orthoReady) {
@@ -486,7 +486,7 @@ const MilaMethodTool = () => {
       <div className="flex items-start gap-2 p-3 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-md">
         <AlertTriangle size={14} className="text-amber-600 dark:text-amber-400 mt-0.5 shrink-0" />
         <p className="font-body text-xs text-amber-700 dark:text-amber-300 leading-relaxed">
-          Compila almeno una delle due sezioni. Puoi caricare un PDF o inserire i dati manualmente. Verranno generati referti separati.
+          Compila almeno una delle due sezioni. Puoi caricare un PDF o inserire i dati manualmente. Verranno generati due documenti separati.
         </p>
       </div>
 
@@ -494,17 +494,17 @@ const MilaMethodTool = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         {diagUsage !== null && (
           <div className="flex items-center justify-between p-3 bg-muted/50 rounded-md">
-            <span className="font-body text-xs text-muted-foreground">Interpretazione clinica — questo mese</span>
-            <span className={`font-body text-sm font-semibold ${diagUsage >= MONTHLY_LIMIT ? "text-destructive" : "text-petrolio"}`}>
-              {diagUsage}/{MONTHLY_LIMIT}
+            <span className="font-body text-xs text-muted-foreground">Studio del caso — questo mese</span>
+            <span className={`font-body text-sm font-semibold ${diagUsage >= diagLimit ? "text-destructive" : "text-petrolio"}`}>
+              {diagUsage}/{diagLimit}
             </span>
           </div>
         )}
         {orthoUsage !== null && (
           <div className="flex items-center justify-between p-3 bg-muted/50 rounded-md">
             <span className="font-body text-xs text-muted-foreground">Cefalometria — questo mese</span>
-            <span className={`font-body text-sm font-semibold ${orthoUsage >= MONTHLY_LIMIT ? "text-destructive" : "text-petrolio"}`}>
-              {orthoUsage}/{MONTHLY_LIMIT}
+            <span className={`font-body text-sm font-semibold ${orthoUsage >= orthoLimit ? "text-destructive" : "text-petrolio"}`}>
+              {orthoUsage}/{orthoLimit}
             </span>
           </div>
         )}
