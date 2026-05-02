@@ -9,7 +9,8 @@ const AuthPage = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [fullName, setFullName] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [loading, setLoading] = useState(false);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [resetEmail, setResetEmail] = useState("");
@@ -31,7 +32,11 @@ const AuthPage = () => {
           email,
           password,
           options: {
-            data: { full_name: fullName },
+            data: {
+              first_name: firstName,
+              last_name: lastName,
+              full_name: `${firstName} ${lastName}`.trim(),
+            },
             emailRedirectTo: window.location.origin,
           },
         });
@@ -154,18 +159,35 @@ const AuthPage = () => {
 
           <form onSubmit={handleSubmit} className="space-y-5">
             {!isLogin && (
-              <div>
-                <label className="font-body text-xs uppercase tracking-wider text-muted-foreground mb-2 block">
-                  Nome Completo
-                </label>
-                <input
-                  type="text"
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  className="w-full px-4 py-3 rounded-md border border-input bg-background font-body text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-                  placeholder="Il tuo nome"
-                  required
-                />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="font-body text-xs uppercase tracking-wider text-muted-foreground mb-2 block">
+                    Nome
+                  </label>
+                  <input
+                    type="text"
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
+                    className="w-full px-4 py-3 rounded-md border border-input bg-background font-body text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                    style={{ fontSize: "16px" }}
+                    placeholder="Mario"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="font-body text-xs uppercase tracking-wider text-muted-foreground mb-2 block">
+                    Cognome
+                  </label>
+                  <input
+                    type="text"
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
+                    className="w-full px-4 py-3 rounded-md border border-input bg-background font-body text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                    style={{ fontSize: "16px" }}
+                    placeholder="Rossi"
+                    required
+                  />
+                </div>
               </div>
             )}
             <div>
