@@ -54,7 +54,7 @@ const AuthPage = () => {
 
   const handleGoogleSignIn = async () => {
     const { error } = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: window.location.origin,
+      redirect_uri: `${window.location.origin}/area-riservata`,
     });
     if (error) {
       toast({ title: "Errore", description: "Impossibile accedere con Google.", variant: "destructive" });
