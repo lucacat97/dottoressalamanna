@@ -13,14 +13,16 @@ import * as pdfjsLib from "pdfjs-dist";
 import pdfjsWorker from "pdfjs-dist/build/pdf.worker.min.mjs?url";
 import { getBranding, generateHtmlHeader, generateHtmlFooter } from "./BrandingSettings";
 import RetroFeedback from "./RetroFeedback";
+import { useToolLimits } from "@/hooks/useToolLimits";
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorker;
 
-const MONTHLY_LIMIT = 30;
 const DIAGNOSIS_TOOL = "diagnosis-support";
 const ORTHO_TOOL = "orthodontic-diagnosis";
+const DIAGNOSIS_KEY = "diagnosis";
+const ORTHO_KEY = "orthodontic";
 
-const DISCLAIMER = `⚠️ Disclaimer: Questo strumento fornisce esclusivamente un supporto all'analisi clinica e cefalometrica e NON costituisce in alcun modo una diagnosi medica. La responsabilità diagnostica e terapeutica resta interamente in capo al professionista sanitario.`;
+const DISCLAIMER = `⚠️ Avviso: Questo strumento fornisce esclusivamente un supporto allo studio del caso e NON costituisce in alcun modo una valutazione medica. Ogni valutazione e responsabilità resta interamente in capo al professionista sanitario.`;
 
 // ---------- Markdown -> HTML (shared) ----------
 const mdToHtml = (markdown: string) => {
@@ -219,6 +221,10 @@ const MilaMethodTool = () => {
   // Usage
   const [diagUsage, setDiagUsage] = useState<number | null>(null);
   const [orthoUsage, setOrthoUsage] = useState<number | null>(null);
+
+  const { limits } = useToolLimits([DIAGNOSIS_KEY, ORTHO_KEY]);
+  const diagLimit = limits[DIAGNOSIS_KEY] ?? 30;
+  const orthoLimit = limits[ORTHO_KEY] ?? 30;
 
   useEffect(() => {
     const fetchUsage = async () => {
