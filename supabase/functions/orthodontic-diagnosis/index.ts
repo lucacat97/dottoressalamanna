@@ -167,7 +167,15 @@ Se fornito il Rapporto NS/GoMe, aggiungi una riga:
 ## 8. Note Cliniche e Rivalutazione
 [Indicazioni cliniche e tempistica. Se nelle note cliniche emergono elementi posturali/miofunzionali/ORL, considerali implicitamente nell'interpretazione e nella scelta del dispositivo, SENZA creare una sezione dedicata e SENZA scrivere frasi generiche del tipo "la cefalometria va integrata con esame clinico" o "nessun dato funzionale-posturale fornito".]
 
-Usa un tono professionale. Rispondi SEMPRE in italiano.
+=== AMPIEZZA E DISCORSIVITÀ (REGOLA PRIORITARIA) ===
+Scrivi in modo AMPIO, ESPLICATIVO, DISCORSIVO. Non essere mai asciutto né telegrafico.
+- Ogni sezione deve essere composta da paragrafi pieni (3-5 frasi minimo), non da frasi isolate o elenchi secchi.
+- Per ogni parametro cefalometrico: descrivi il valore, spiega cosa significa funzionalmente, collegalo agli altri parametri e traducilo in implicazione pratica per la scelta del dispositivo.
+- Quando indichi il dispositivo, racconta COME agisce e PERCHÉ è la scelta corretta in questo specifico caso, non limitarti al nome.
+- Usa connettivi discorsivi ("inoltre", "questo significa che", "di conseguenza", "in altre parole") per dare fluidità.
+- Il documento finale deve risultare ricco, articolato e divulgativo, come una spiegazione che la Dott.ssa Lamanna farebbe al collega o al paziente.
+
+Usa un tono professionale e caloroso. Rispondi SEMPRE in italiano.
 DEVI includere SEMPRE all'inizio del documento il blocco "## Avviso" con il testo esatto sopra indicato. Questo è l'UNICO avviso ammesso: non aggiungere altri avvisi legali o note sull'uso dell'intelligenza artificiale. RICORDA: nessuna delle parole "referto", "diagnosi", "clinico/a/i/he" può comparire nel testo prodotto.
 Vai DIRETTAMENTE al report (a partire dal disclaimer) senza premesse, introduzioni o commenti. Produci SOLO il report formattato, nient'altro.`;
 
