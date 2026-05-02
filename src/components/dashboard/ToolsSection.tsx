@@ -186,8 +186,12 @@ const ToolsSection = () => {
                     <div className="w-12 h-12 rounded-xl flex items-center justify-center border bg-gradient-to-br from-primary/10 to-primary/5 border-primary/10 transition-transform group-hover:scale-110 relative">
                       <tool.icon size={24} className={tool.accentColor} />
                       {!allowed && (
-                        <div className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-destructive/90 flex items-center justify-center">
-                          <Lock size={10} className="text-destructive-foreground" />
+                        <div className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-amber-500/90 flex items-center justify-center">
+                          {tool.comingSoon ? (
+                            <Construction size={10} className="text-white" />
+                          ) : (
+                            <Lock size={10} className="text-destructive-foreground" />
+                          )}
                         </div>
                       )}
                     </div>
@@ -209,6 +213,11 @@ const ToolsSection = () => {
                         <>
                           Apri strumento
                           <ArrowLeft size={12} className="rotate-180" />
+                        </>
+                      ) : tool.comingSoon ? (
+                        <>
+                          <Construction size={11} />
+                          Prossimamente disponibile
                         </>
                       ) : (
                         <>
