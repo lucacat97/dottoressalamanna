@@ -196,6 +196,7 @@ serve(async (req) => {
 
     // ── Server-side license check (admin bypass) ──
     const serviceClient = createClient(supabaseUrl, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
+    let monthlyLimit = DEFAULT_MONTHLY_LIMIT;
     {
       const { data: isAdmin } = await serviceClient.rpc("has_role", {
         _user_id: userId,
@@ -204,15 +205,19 @@ serve(async (req) => {
       if (!isAdmin) {
         const { data: keyRecord } = await serviceClient
           .from("api_keys")
-          .select("tools")
+          .select("tools, tool_limits")
           .eq("client_email", user.email)
           .eq("is_active", true)
           .maybeSingle();
-        if (!keyRecord || !Array.isArray(keyRecord.tools) || !keyRecord.tools.includes("orthodontic")) {
+        if (!keyRecord || !Array.isArray(keyRecord.tools) || !keyRecord.tools.includes(API_TOOL_KEY)) {
           return new Response(
             JSON.stringify({ error: "Accesso allo strumento non abilitato per il tuo account." }),
             { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
           );
+        }
+        const limFromKey = (keyRecord.tool_limits as Record<string, number> | null)?.[API_TOOL_KEY];
+        if (typeof limFromKey === "number" && limFromKey > 0) {
+          monthlyLimit = limFromKey;
         }
       }
     }
@@ -222,9 +227,9 @@ serve(async (req) => {
       _user_id: userId,
       _tool_name: TOOL_NAME,
     });
-    if (usageCount !== null && usageCount >= MONTHLY_LIMIT) {
+    if (usageCount !== null && usageCount >= monthlyLimit) {
       return new Response(
-        JSON.stringify({ error: `Limite mensile raggiunto (${MONTHLY_LIMIT} analisi/mese). Riprova il prossimo mese.` }),
+        JSON.stringify({ error: `Limite mensile raggiunto (${monthlyLimit} analisi/mese). Riprova il prossimo mese.` }),
         { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
