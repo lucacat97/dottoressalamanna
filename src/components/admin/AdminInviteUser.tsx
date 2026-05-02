@@ -19,7 +19,7 @@ const AdminInviteUser = () => {
         body: {
           email: email.trim(),
           fullName: fullName.trim() || undefined,
-          redirectTo: `${window.location.origin}/area-riservata`,
+          redirectTo: `${window.location.origin}/reset-password`,
         },
       });
       if (error || (data as any)?.error) {
