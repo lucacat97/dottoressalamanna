@@ -24,9 +24,9 @@ interface ToolCard {
 const tools: ToolCard[] = [
   {
     id: "mila",
-    title: "Interpretazione secondo Metodo MILA",
-    subtitle: "Cartella clinica + Cefalometria",
-    description: "Carica i PDF della cartella clinico-posturale e del tracciato cefalometrico (oppure inserisci i dati a mano) e ottieni due referti separati secondo il Metodo MILA.",
+    title: "Studio del caso secondo Metodo MILA",
+    subtitle: "Cartella check-up + Cefalometria",
+    description: "Carica i PDF del check-up posturale e del tracciato cefalometrico (oppure inserisci i dati a mano) e ottieni due elaborazioni separate secondo il Metodo MILA.",
     icon: Brain,
     gradient: "from-petrolio via-petrolio-dark to-petrolio",
     accentColor: "text-gold",
@@ -159,7 +159,7 @@ const ToolsSection = () => {
         </div>
         <h2 className="font-display text-2xl font-bold text-foreground">Strumenti Professionali</h2>
         <p className="font-body text-sm text-muted-foreground max-w-lg">
-          Strumenti intelligenti per supportare il tuo lavoro clinico quotidiano.
+          Strumenti intelligenti per supportare il tuo lavoro quotidiano.
         </p>
         <BrandingSettings />
       </div>
