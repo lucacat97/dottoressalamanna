@@ -22,18 +22,31 @@ interface InviteEmailProps {
 export const InviteEmail = ({ confirmationUrl }: InviteEmailProps) => (
   <Html lang="it" dir="ltr">
     <Head />
-    <Preview>Sei stato/a invitato/a all'Area Riservata</Preview>
+    <Preview>Il tuo accesso all'Area Riservata della Dott.ssa Annarita Lamanna</Preview>
     <Body style={main}>
       <Container style={container}>
-        <Heading style={h1}>Hai ricevuto un invito</Heading>
+        <Heading style={h1}>Benvenuto/a nell'Area Riservata</Heading>
         <Text style={text}>
-          Sei stato/a invitato/a a unirti all'Area Riservata della Dott.ssa Annarita Lamanna. Clicca sul pulsante qui sotto per accettare l'invito e creare il tuo account.
+          Gentile collega,
+        </Text>
+        <Text style={text}>
+          la Dott.ssa Annarita Lamanna ha attivato per te un account personale all'Area Riservata, dove troverai gli strumenti clinici e i materiali dei corsi a cui hai partecipato.
+        </Text>
+        <Text style={text}>
+          Per completare l'attivazione e impostare la tua password, utilizza il pulsante qui sotto:
         </Text>
         <Button style={button} href={confirmationUrl}>
-          Accetta l'invito
+          Imposta la mia password
         </Button>
+        <Text style={text}>
+          Una volta impostata la password, potrai accedere in qualsiasi momento usando la tua email e la password scelta.
+        </Text>
+        <Text style={signature}>
+          A presto,<br />
+          Dott.ssa Annarita Lamanna
+        </Text>
         <Text style={footer}>
-          Se non aspettavi questo invito, puoi ignorare questa email.
+          Se non riconosci questo invito, puoi semplicemente ignorare questa email: nessun account verrà attivato senza la tua conferma.
         </Text>
       </Container>
     </Body>
@@ -55,7 +68,7 @@ const text = {
   fontSize: '15px',
   color: 'hsl(180, 12%, 28%)',
   lineHeight: '1.6',
-  margin: '0 0 20px',
+  margin: '0 0 16px',
 }
 const button = {
   backgroundColor: 'hsl(178, 55%, 18%)',
@@ -66,6 +79,13 @@ const button = {
   padding: '14px 28px',
   textDecoration: 'none',
   display: 'inline-block',
-  margin: '8px 0 24px',
+  margin: '12px 0 24px',
+}
+const signature = {
+  fontSize: '15px',
+  color: 'hsl(180, 12%, 28%)',
+  lineHeight: '1.6',
+  margin: '24px 0 0',
+  fontStyle: 'italic' as const,
 }
 const footer = { fontSize: '12px', color: 'hsl(180, 12%, 50%)', margin: '32px 0 0', lineHeight: '1.5' }
