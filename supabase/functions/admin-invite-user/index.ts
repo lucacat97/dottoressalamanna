@@ -63,8 +63,11 @@ Deno.serve(async (req) => {
     });
 
     if (error) {
-      return new Response(JSON.stringify({ error: error.message }), {
-        status: 400,
+      const msg = /already.*registered|email.*exists|already been registered/i.test(error.message)
+        ? "Questa email è già registrata o è stata già invitata."
+        : error.message;
+      return new Response(JSON.stringify({ error: msg }), {
+        status: 200,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
