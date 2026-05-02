@@ -517,7 +517,7 @@ const MilaMethodTool = () => {
         <div className="bg-card border border-border rounded-lg p-5 space-y-4">
           <div className="flex items-center gap-2">
             <ClipboardList size={18} className="text-petrolio" />
-            <h3 className="font-display text-base font-semibold text-foreground">Cartella clinica / posturale</h3>
+            <h3 className="font-display text-base font-semibold text-foreground">Cartella check-up posturale</h3>
           </div>
 
           <div className="flex gap-2">
@@ -545,7 +545,7 @@ const MilaMethodTool = () => {
               {!clinicalFile ? (
                 <label htmlFor="clinical-pdf" className="flex flex-col items-center justify-center gap-2 p-6 border-2 border-dashed border-border rounded-lg cursor-pointer hover:border-primary/50 hover:bg-muted/30 transition-colors">
                   <Upload size={24} className="text-muted-foreground" />
-                  <p className="font-body text-xs font-medium text-foreground">Carica cartella clinica</p>
+                  <p className="font-body text-xs font-medium text-foreground">Carica cartella check-up</p>
                   <p className="font-body text-[11px] text-muted-foreground">PDF fino a 10MB</p>
                 </label>
               ) : (
@@ -562,7 +562,7 @@ const MilaMethodTool = () => {
             </>
           ) : (
             <Textarea
-              placeholder="Incolla qui le note cliniche, anamnesi, esame posturale, test eseguiti, ATM, occlusione..."
+              placeholder="Incolla qui le note del check-up, anamnesi, esame posturale, test eseguiti, ATM, occlusione..."
               value={clinicalManual}
               onChange={(e) => setClinicalManual(e.target.value)}
               className="font-body text-base min-h-[200px]"
@@ -745,16 +745,16 @@ const MilaMethodTool = () => {
               <div className="flex items-center gap-2">
                 <Brain size={18} className="text-petrolio" />
                 <div>
-                  <h4 className="font-display text-base font-semibold text-foreground">Interpretazione Clinico-Posturale (Metodo MILA) pronta</h4>
+                  <h4 className="font-display text-base font-semibold text-foreground">Studio del caso posturale (Metodo MILA) pronto</h4>
                   <p className="font-body text-xs text-muted-foreground">Scarica nel formato desiderato.</p>
                 </div>
               </div>
               <div className="flex flex-wrap gap-2">
-                <Button variant="default" onClick={() => downloadAsWord(diagnosisResult, `Interpretazione_MILA_Clinica_${clinicalFile?.name?.replace(/\.pdf$/i, "") || "paziente"}`, "Interpretazione secondo Metodo MILA — Clinico-Posturale")} className="font-body gap-2">
+                <Button variant="default" onClick={() => downloadAsWord(diagnosisResult, `Studio_MILA_Posturale_${clinicalFile?.name?.replace(/\.pdf$/i, "") || "paziente"}`, "Studio del caso secondo Metodo MILA — Posturale")} className="font-body gap-2">
                   <FileDown size={14} />
                   Word (editabile)
                 </Button>
-                <Button variant="outline" onClick={() => downloadAsPdf(diagnosisResult, "Interpretazione secondo Metodo MILA — Clinico-Posturale")} className="font-body gap-2">
+                <Button variant="outline" onClick={() => downloadAsPdf(diagnosisResult, "Studio del caso secondo Metodo MILA — Posturale")} className="font-body gap-2">
                   <Download size={14} />
                   Stampa / PDF
                 </Button>
