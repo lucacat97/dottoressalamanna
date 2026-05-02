@@ -15,6 +15,7 @@ import { getBranding, generateHtmlHeader, generateHtmlFooter } from "./BrandingS
 import RetroFeedback from "./RetroFeedback";
 import { useToolLimits } from "@/hooks/useToolLimits";
 import { GenerationProgress } from "./GenerationProgress";
+import { buildPiiMap, pseudonymizeText, depseudonymizeText, PII_PLACEHOLDERS } from "@/lib/pseudonymize";
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorker;
 
@@ -332,31 +333,37 @@ const MilaMethodTool = () => {
   const canGenerate = clinicalReady || orthoReady;
 
   // ---------- Generation ----------
-  const callDiagnosis = async (token: string, documentText: string) => {
+  const callDiagnosis = async (token: string, documentText: string, piiMap: ReturnType<typeof buildPiiMap>) => {
+    // Pseudonimizza il testo clinico prima di inviarlo all'AI
+    const safeText = pseudonymizeText(documentText, piiMap);
     const resp = await fetch(
       `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/diagnosis-support`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ documentText: documentText.slice(0, 15000) }),
+        body: JSON.stringify({ documentText: safeText.slice(0, 15000) }),
       }
     );
     if (!resp.ok || !resp.body) {
       const err = await resp.json().catch(() => ({ error: "Errore sconosciuto" }));
       throw new Error(err.error || "Errore interpretazione clinica");
     }
-    return await readSseStream(resp.body);
+    const raw = await readSseStream(resp.body);
+    // Ripristina i nomi reali nel referto
+    return depseudonymizeText(raw, piiMap);
   };
 
   const callOrtho = async (token: string, f: OrthoForm) => {
+    // Sostituisce nome/cognome con placeholder neutri prima di inviarli
+    const piiMap = buildPiiMap({ nome: f.nome, cognome: f.cognome });
     const resp = await fetch(
       `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/orthodontic-diagnosis`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({
-          nome: f.nome,
-          cognome: f.cognome,
+          nome: PII_PLACEHOLDERS.NAME,
+          cognome: PII_PLACEHOLDERS.SURNAME,
           age: parseFloat(f.age),
           sex: f.sex,
           angolo_sellare: parseFloat(f.angolo_sellare),
@@ -373,7 +380,8 @@ const MilaMethodTool = () => {
       const err = await resp.json().catch(() => ({ error: "Errore sconosciuto" }));
       throw new Error(err.error || "Errore interpretazione cefalometrica");
     }
-    return await readSseStream(resp.body);
+    const raw = await readSseStream(resp.body);
+    return depseudonymizeText(raw, piiMap);
   };
 
   const readSseStream = async (body: ReadableStream<Uint8Array>): Promise<string> => {
@@ -432,8 +440,15 @@ const MilaMethodTool = () => {
     const tasks: Promise<unknown>[] = [];
     if (clinicalReady) {
       const txt = clinicalMode === "pdf" ? clinicalText : clinicalManual;
+      // Costruisce la mappa PII unendo i nomi della cefalometria (se presenti)
+      // ed eventuali nomi estratti dal PDF posturale (intestazione "Paziente: ...").
+      const extracted = extractCefValues(txt);
+      const piiMap = buildPiiMap({
+        nome: orthoForm.nome || extracted.nome,
+        cognome: orthoForm.cognome || extracted.cognome,
+      });
       tasks.push(
-        callDiagnosis(session.access_token, txt)
+        callDiagnosis(session.access_token, txt, piiMap)
           .then(r => setDiagnosisResult(r))
           .catch(e => toast({ title: "Errore elaborazione posturale", description: String(e.message || e), variant: "destructive" }))
       );

@@ -7,6 +7,7 @@ import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { getBranding, generateHtmlHeader, generateHtmlFooter } from "./BrandingSettings";
 import RetroFeedback from "./RetroFeedback";
+import { buildPiiMap, depseudonymizeText, PII_PLACEHOLDERS } from "@/lib/pseudonymize";
 
 const MONTHLY_LIMIT = 30;
 const TOOL_NAME = "orthodontic-diagnosis";
@@ -144,6 +145,9 @@ const OrthodonticTool = () => {
       return;
     }
 
+    // Pseudonimizza nome/cognome prima dell'invio (GDPR)
+    const piiMap = buildPiiMap({ nome: form.nome, cognome: form.cognome });
+
     try {
       const resp = await fetch(
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/orthodontic-diagnosis`,
@@ -154,8 +158,8 @@ const OrthodonticTool = () => {
             Authorization: `Bearer ${session.access_token}`,
           },
           body: JSON.stringify({
-            nome: form.nome,
-            cognome: form.cognome,
+            nome: PII_PLACEHOLDERS.NAME,
+            cognome: PII_PLACEHOLDERS.SURNAME,
             age: parseFloat(form.age),
             sex: form.sex,
             angolo_sellare: parseFloat(form.angolo_sellare),
@@ -203,7 +207,8 @@ const OrthodonticTool = () => {
           }
         }
       }
-      setResult(assistantText);
+      // De-pseudonimizza il testo finale (lato client) prima di mostrarlo
+      setResult(depseudonymizeText(assistantText, piiMap));
     } catch (e) {
       console.error(e);
       toast({ title: "Errore", description: "Si è verificato un errore durante l'analisi.", variant: "destructive" });
