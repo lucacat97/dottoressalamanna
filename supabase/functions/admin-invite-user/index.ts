@@ -49,7 +49,7 @@ Deno.serve(async (req) => {
       });
     }
 
-    const { email, fullName, redirectTo } = await req.json();
+    const { email, fullName, redirectTo, license } = await req.json();
     if (!email || typeof email !== "string") {
       return new Response(JSON.stringify({ error: "Email richiesta" }), {
         status: 400,
@@ -70,6 +70,49 @@ Deno.serve(async (req) => {
         status: 200,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
+    }
+
+    // Optionally pre-assign a license (api_keys row) for this email
+    if (license && Array.isArray(license.tools) && license.tools.length > 0) {
+      try {
+        // Generate a random API key + sha-256 hash
+        const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        const arr = new Uint8Array(40);
+        crypto.getRandomValues(arr);
+        let plainKey = "sk_live_";
+        for (const b of arr) plainKey += chars[b % chars.length];
+        const hashBuf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(plainKey));
+        const keyHash = Array.from(new Uint8Array(hashBuf))
+          .map((b) => b.toString(16).padStart(2, "0"))
+          .join("");
+
+        const toolLimits: Record<string, number> = license.toolLimits || {};
+        const monthlyLimit = Math.max(
+          1,
+          ...Object.values(toolLimits).map((v) => Number(v) || 30),
+          30,
+        );
+
+        await admin.from("api_keys").insert({
+          key_hash: keyHash,
+          client_name: fullName || email.trim(),
+          client_email: email.trim().toLowerCase(),
+          tools: license.tools,
+          monthly_limit: monthlyLimit,
+          tool_limits: toolLimits,
+        });
+      } catch (licenseErr) {
+        console.error("License creation failed:", licenseErr);
+        // Invite already sent — surface a soft warning
+        return new Response(
+          JSON.stringify({
+            success: true,
+            user: data.user,
+            warning: "Invito inviato ma creazione licenza fallita. Crea la licenza manualmente in API Keys.",
+          }),
+          { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+        );
+      }
     }
 
     return new Response(JSON.stringify({ success: true, user: data.user }), {
