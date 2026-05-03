@@ -13,3 +13,5 @@ project_id = "pjgpducvkdrtigorpzrm"
     verify_jwt = false
   [functions.handle-email-suppression]
     verify_jwt = false
+  [functions.request-consultation]
+    verify_jwt = false
