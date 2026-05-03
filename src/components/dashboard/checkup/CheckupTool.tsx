@@ -191,7 +191,7 @@ export default function CheckupTool() {
           </div>
         </div>
 
-        <div className="bg-card border border-border rounded-lg p-5 grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="bg-card border border-border rounded-lg p-5 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <div>
             <label className="font-body text-xs uppercase tracking-wider text-muted-foreground block mb-1.5">Nome paziente *</label>
             <Input value={first} onChange={(e) => { setFirst(e.target.value); markDirty(); }} />
@@ -199,6 +199,10 @@ export default function CheckupTool() {
           <div>
             <label className="font-body text-xs uppercase tracking-wider text-muted-foreground block mb-1.5">Cognome paziente *</label>
             <Input value={last} onChange={(e) => { setLast(e.target.value); markDirty(); }} />
+          </div>
+          <div>
+            <label className="font-body text-xs uppercase tracking-wider text-muted-foreground block mb-1.5">Data di nascita</label>
+            <Input type="date" value={data._birth_date || ""} onChange={(e) => updateField("_birth_date", e.target.value || undefined)} />
           </div>
           <div>
             <label className="font-body text-xs uppercase tracking-wider text-muted-foreground block mb-1.5">Data esecuzione *</label>
