@@ -145,6 +145,42 @@ export type Database = {
           },
         ]
       }
+      consultation_requests: {
+        Row: {
+          attachments: Json
+          created_at: string
+          id: string
+          notes: string | null
+          status: string
+          updated_at: string
+          user_email: string
+          user_full_name: string | null
+          user_id: string
+        }
+        Insert: {
+          attachments?: Json
+          created_at?: string
+          id?: string
+          notes?: string | null
+          status?: string
+          updated_at?: string
+          user_email: string
+          user_full_name?: string | null
+          user_id: string
+        }
+        Update: {
+          attachments?: Json
+          created_at?: string
+          id?: string
+          notes?: string | null
+          status?: string
+          updated_at?: string
+          user_email?: string
+          user_full_name?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       course_access_overrides: {
         Row: {
           created_at: string
@@ -429,6 +465,39 @@ export type Database = {
           id?: string
           token?: string
           used_at?: string | null
+        }
+        Relationships: []
+      }
+      posturographic_checkups: {
+        Row: {
+          created_at: string
+          data: Json
+          exam_date: string
+          id: string
+          patient_first_name: string
+          patient_last_name: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          data?: Json
+          exam_date?: string
+          id?: string
+          patient_first_name: string
+          patient_last_name: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          data?: Json
+          exam_date?: string
+          id?: string
+          patient_first_name?: string
+          patient_last_name?: string
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
