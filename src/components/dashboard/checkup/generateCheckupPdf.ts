@@ -21,6 +21,7 @@ const formatDate = (iso: string) => {
 export function generateCheckupPdf(p: Payload) {
   const branding = getBranding();
   const notes: Record<string, string> = (p.data?._notes as any) || {};
+  const birthDate: string | undefined = p.data?._birth_date;
   const consentDate = p.data?._gdpr_consent_date ? new Date(p.data._gdpr_consent_date).toLocaleString("it-IT") : null;
 
   const sectionsHtml = CHECKUP_SECTIONS.map((s) => {
@@ -71,6 +72,7 @@ export function generateCheckupPdf(p: Payload) {
 <h2 class="title">Visita Check-up Ortodontico Posturale del ${formatDate(p.date)}</h2>
 <div class="patient">
   <span><strong>Paziente:</strong> ${escape(p.last)} ${escape(p.first)}</span>
+  ${birthDate ? `<span><strong>Data di nascita:</strong> ${formatDate(birthDate)}</span>` : ""}
   <span><strong>Data esame:</strong> ${formatDate(p.date)}</span>
 </div>
 ${sectionsHtml || `<p style="color:#888;font-style:italic;">Nessun dato compilato.</p>`}
