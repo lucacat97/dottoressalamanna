@@ -46,7 +46,7 @@ const Navbar = () => {
             className="bg-primary hover:bg-accent text-primary-foreground font-body"
             onClick={() => navigate("/login")}
           >
-            Area Riservata
+            Consulenza per Professionisti
           </Button>
         </div>
 
@@ -78,7 +78,7 @@ const Navbar = () => {
             className="w-full bg-primary hover:bg-accent text-primary-foreground font-body"
             onClick={() => { setIsOpen(false); navigate("/login"); }}
           >
-            Area Riservata
+            Consulenza per Professionisti
           </Button>
         </div>
       )}
