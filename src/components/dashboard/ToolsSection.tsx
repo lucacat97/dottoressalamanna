@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
-import { Brain, Sparkles, ArrowLeft, Leaf, Lock, ClipboardCheck, Wind, Construction } from "lucide-react";
+import { Brain, Sparkles, ArrowLeft, Leaf, Lock, ClipboardCheck, Wind, Construction, Mail, Stethoscope } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import MilaMethodTool from "./MilaMethodTool";
 import BrandingSettings from "./BrandingSettings";
 import MTCHub from "./mtc/MTCHub";
+import SingleConsultationTool from "./SingleConsultationTool";
+import CheckupTool from "./checkup/CheckupTool";
 
 interface ToolCard {
   id: string;
@@ -33,6 +35,26 @@ const tools: ToolCard[] = [
     apiToolKeys: ["diagnosis", "orthodontic"],
   },
   {
+    id: "consulenza",
+    title: "Consulenza Singola",
+    subtitle: "Studio del caso + richiesta diretta",
+    description: "Studia il caso secondo Metodo MILA e richiedi una consulenza diretta alla Dott.ssa Lamanna con allegati e note.",
+    icon: Mail,
+    gradient: "from-petrolio via-petrolio-light to-gold/60",
+    accentColor: "text-petrolio",
+    apiToolKeys: ["diagnosis", "orthodontic"],
+  },
+  {
+    id: "checkup",
+    title: "Il Check-up Ortodontico Posturale",
+    subtitle: "Questionario clinico strutturato",
+    description: "Compila e archivia i questionari del check-up ortodontico-posturale per ogni paziente. Sezioni guidate, salvataggio sicuro.",
+    icon: Stethoscope,
+    gradient: "from-rose-500/80 via-pink-500/60 to-orange-400/40",
+    accentColor: "text-rose-600",
+    apiToolKeys: ["diagnosis", "orthodontic"],
+  },
+  {
     id: "mtc",
     title: "Medicina Tradizionale Cinese",
     subtitle: "MTC — Sistemica & Organica",
@@ -41,17 +63,6 @@ const tools: ToolCard[] = [
     gradient: "from-emerald-500/80 via-teal-500/60 to-cyan-500/40",
     accentColor: "text-emerald-600",
     apiToolKeys: ["mtc_sistemica", "mtc_organica"],
-  },
-  {
-    id: "tests",
-    title: "Supporto ai Test Ortodontico-Posturali",
-    subtitle: "Work in progress",
-    description: "Strumento in sviluppo per il supporto interpretativo dei test ortodontico-posturali. Sarà disponibile a breve.",
-    icon: ClipboardCheck,
-    gradient: "from-amber-500/80 via-orange-500/60 to-yellow-500/40",
-    accentColor: "text-amber-600",
-    apiToolKeys: [],
-    comingSoon: true,
   },
   {
     id: "breathing",
@@ -145,6 +156,8 @@ const ToolsSection = () => {
         )}
 
         {activeTool === "mila" && <MilaMethodTool />}
+        {activeTool === "consulenza" && <SingleConsultationTool />}
+        {activeTool === "checkup" && <CheckupTool />}
         {activeTool === "mtc" && <MTCHub />}
       </div>
     );
