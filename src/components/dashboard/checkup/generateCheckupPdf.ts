@@ -72,6 +72,7 @@ export function generateCheckupPdf(p: Payload) {
 <h2 class="title">Visita Check-up Ortodontico Posturale del ${formatDate(p.date)}</h2>
 <div class="patient">
   <span><strong>Paziente:</strong> ${escape(p.last)} ${escape(p.first)}</span>
+  ${birthDate ? `<span><strong>Data di nascita:</strong> ${formatDate(birthDate)}</span>` : ""}
   <span><strong>Data esame:</strong> ${formatDate(p.date)}</span>
 </div>
 ${sectionsHtml || `<p style="color:#888;font-style:italic;">Nessun dato compilato.</p>`}
