@@ -21,6 +21,7 @@ const formatDate = (iso: string) => {
 export function generateCheckupPdf(p: Payload) {
   const branding = getBranding();
   const notes: Record<string, string> = (p.data?._notes as any) || {};
+  const birthDate: string | undefined = p.data?._birth_date;
   const consentDate = p.data?._gdpr_consent_date ? new Date(p.data._gdpr_consent_date).toLocaleString("it-IT") : null;
 
   const sectionsHtml = CHECKUP_SECTIONS.map((s) => {
