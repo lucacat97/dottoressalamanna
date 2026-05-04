@@ -5,12 +5,12 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { getBranding, generateHtmlHeader, generateHtmlFooter } from "../BrandingSettings";
+import { getBranding, generateHtmlHeader } from "../BrandingSettings";
 import ReportRenderer from "./ReportRenderer";
 import { SYMPTOM_CATEGORIES, type Symptom } from "./symptomCategories";
 import RetroFeedback from "../RetroFeedback";
 
-const DISCLAIMER = `⚠️ Avviso: Questo strumento fornisce esclusivamente un supporto allo studio del caso basato sui principi della Medicina Tradizionale Cinese e NON costituisce in alcun modo una valutazione medica. Ogni valutazione e responsabilità resta interamente in capo al professionista sanitario.`;
+const DISCLAIMER = `⚠️ Disclaimer: Questo strumento fornisce esclusivamente un supporto all'analisi clinica basata sui principi della Medicina Tradizionale Cinese e NON costituisce in alcun modo una diagnosi medica. La responsabilità diagnostica e terapeutica resta interamente in capo al professionista sanitario.`;
 
 const mdToHtml = (markdown: string) => {
   let html = markdown
@@ -42,13 +42,12 @@ const mdToHtml = (markdown: string) => {
 const generateDoc = (markdown: string) => {
   const branding = getBranding();
   const header = generateHtmlHeader(branding);
-  const footer = generateHtmlFooter(branding);
   const body = mdToHtml(markdown);
   const disclaimer = `<div style="margin-top:32px;padding:16px;background:#fff3cd;border:1px solid #ffc107;border-radius:8px;font-size:11px;color:#856404;">${DISCLAIMER}</div>`;
   return `<!DOCTYPE html><html><head><meta charset="utf-8"><style>
     body { font-family: 'Segoe UI', Arial, sans-serif; font-size: 12px; color: #222; max-width: 800px; margin: 0 auto; padding: 40px; line-height: 1.6; }
     table { page-break-inside: avoid; } h1 { page-break-after: avoid; }
-  </style></head><body>${header}${body}${disclaimer}${footer}</body></html>`;
+  </style></head><body>${header}${body}${disclaimer}</body></html>`;
 };
 
 export default function OrganicaTool() {
@@ -166,7 +165,7 @@ export default function OrganicaTool() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `interpretazione_mtc_organica.${type === "doc" ? "doc" : "html"}`;
+    a.download = `referto_mtc_organica.${type === "doc" ? "doc" : "html"}`;
     a.click();
     URL.revokeObjectURL(url);
   };

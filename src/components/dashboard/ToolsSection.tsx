@@ -1,13 +1,12 @@
 import { useState, useEffect } from "react";
-import { Brain, Sparkles, ArrowLeft, Leaf, Lock, ClipboardCheck, Wind, Construction, Mail, Stethoscope } from "lucide-react";
+import { Brain, Sparkles, ArrowLeft, Ruler, Leaf, Lock } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
-import MilaMethodTool from "./MilaMethodTool";
+import DiagnosisTool from "./DiagnosisTool";
+import OrthodonticTool from "./OrthodonticTool";
 import BrandingSettings from "./BrandingSettings";
 import MTCHub from "./mtc/MTCHub";
-import SingleConsultationTool from "./SingleConsultationTool";
-import CheckupTool from "./checkup/CheckupTool";
 
 interface ToolCard {
   id: string;
@@ -19,40 +18,28 @@ interface ToolCard {
   accentColor: string;
   /** API key tool keys that grant access to this card */
   apiToolKeys: string[];
-  /** Mark as work-in-progress: card is shown but not clickable */
-  comingSoon?: boolean;
 }
 
 const tools: ToolCard[] = [
   {
-    id: "mila",
-    title: "Studio del caso secondo Metodo MILA",
-    subtitle: "Cartella check-up + Cefalometria",
-    description: "Carica i PDF del check-up posturale e del tracciato cefalometrico (oppure inserisci i dati a mano) e ottieni due elaborazioni separate secondo il Metodo MILA.",
+    id: "diagnosis",
+    title: "Supporto alla Diagnosi Clinica",
+    subtitle: "Referto AI da documento clinico",
+    description: "Carica un PDF clinico e genera un referto strutturato con analisi posturale, ipotesi diagnostiche e piano terapeutico.",
     icon: Brain,
     gradient: "from-petrolio via-petrolio-dark to-petrolio",
     accentColor: "text-gold",
-    apiToolKeys: ["diagnosis", "orthodontic"],
+    apiToolKeys: ["diagnosis"],
   },
   {
-    id: "consulenza",
-    title: "Consulenza Singola",
-    subtitle: "Studio del caso + richiesta diretta",
-    description: "Studia il caso secondo Metodo MILA e richiedi una consulenza diretta alla Dott.ssa Lamanna con allegati e note.",
-    icon: Mail,
-    gradient: "from-petrolio via-petrolio-light to-gold/60",
+    id: "orthodontic",
+    title: "Diagnosi Ortodontica",
+    subtitle: "Cefalometria Bjork-Jarabak",
+    description: "Inserisci i valori cefalometrici e ottieni classe scheletrica, divergenza e dispositivo terapeutico consigliato.",
+    icon: Ruler,
+    gradient: "from-petrolio via-petrolio-dark to-petrolio",
     accentColor: "text-petrolio",
-    apiToolKeys: ["diagnosis", "orthodontic"],
-  },
-  {
-    id: "checkup",
-    title: "Il Check-up Ortodontico Posturale",
-    subtitle: "Questionario clinico strutturato",
-    description: "Compila e archivia i questionari del check-up ortodontico-posturale per ogni paziente. Sezioni guidate, salvataggio sicuro.",
-    icon: Stethoscope,
-    gradient: "from-rose-500/80 via-pink-500/60 to-orange-400/40",
-    accentColor: "text-rose-600",
-    apiToolKeys: ["diagnosis", "orthodontic"],
+    apiToolKeys: ["orthodontic"],
   },
   {
     id: "mtc",
@@ -63,17 +50,6 @@ const tools: ToolCard[] = [
     gradient: "from-emerald-500/80 via-teal-500/60 to-cyan-500/40",
     accentColor: "text-emerald-600",
     apiToolKeys: ["mtc_sistemica", "mtc_organica"],
-  },
-  {
-    id: "breathing",
-    title: "Respirazione e Sonno",
-    subtitle: "Work in progress",
-    description: "Strumento in sviluppo dedicato all'analisi della respirazione e dei disturbi del sonno. Sarà disponibile a breve.",
-    icon: Wind,
-    gradient: "from-sky-500/80 via-blue-500/60 to-indigo-500/40",
-    accentColor: "text-sky-600",
-    apiToolKeys: [],
-    comingSoon: true,
   },
 ];
 
@@ -121,7 +97,6 @@ const ToolsSection = () => {
   }, []);
 
   const isToolAllowed = (tool: ToolCard): boolean => {
-    if (tool.comingSoon) return false;
     if (isAdmin) return true;
     if (!allowedTools) return true; // still loading
     return tool.apiToolKeys.some((k) => allowedTools.includes(k));
@@ -155,9 +130,8 @@ const ToolsSection = () => {
           </div>
         )}
 
-        {activeTool === "mila" && <MilaMethodTool />}
-        {activeTool === "consulenza" && <SingleConsultationTool />}
-        {activeTool === "checkup" && <CheckupTool />}
+        {activeTool === "diagnosis" && <DiagnosisTool />}
+        {activeTool === "orthodontic" && <OrthodonticTool />}
         {activeTool === "mtc" && <MTCHub />}
       </div>
     );
@@ -172,7 +146,7 @@ const ToolsSection = () => {
         </div>
         <h2 className="font-display text-2xl font-bold text-foreground">Strumenti Professionali</h2>
         <p className="font-body text-sm text-muted-foreground max-w-lg">
-          Strumenti intelligenti per supportare il tuo lavoro quotidiano.
+          Strumenti intelligenti per supportare il tuo lavoro clinico quotidiano.
         </p>
         <BrandingSettings />
       </div>
@@ -199,12 +173,8 @@ const ToolsSection = () => {
                     <div className="w-12 h-12 rounded-xl flex items-center justify-center border bg-gradient-to-br from-primary/10 to-primary/5 border-primary/10 transition-transform group-hover:scale-110 relative">
                       <tool.icon size={24} className={tool.accentColor} />
                       {!allowed && (
-                        <div className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-amber-500/90 flex items-center justify-center">
-                          {tool.comingSoon ? (
-                            <Construction size={10} className="text-white" />
-                          ) : (
-                            <Lock size={10} className="text-destructive-foreground" />
-                          )}
+                        <div className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-destructive/90 flex items-center justify-center">
+                          <Lock size={10} className="text-destructive-foreground" />
                         </div>
                       )}
                     </div>
@@ -227,11 +197,6 @@ const ToolsSection = () => {
                           Apri strumento
                           <ArrowLeft size={12} className="rotate-180" />
                         </>
-                      ) : tool.comingSoon ? (
-                        <>
-                          <Construction size={11} />
-                          Prossimamente disponibile
-                        </>
                       ) : (
                         <>
                           <Lock size={11} />
@@ -250,17 +215,8 @@ const ToolsSection = () => {
                       <div>{card}</div>
                     </TooltipTrigger>
                     <TooltipContent side="top" className="flex items-center gap-2 max-w-xs">
-                      {tool.comingSoon ? (
-                        <>
-                          <Construction size={14} className="text-amber-600 shrink-0" />
-                          <span>Strumento in sviluppo. Sarà disponibile a breve.</span>
-                        </>
-                      ) : (
-                        <>
-                          <Lock size={14} className="text-muted-foreground shrink-0" />
-                          <span>Non sei abilitato a questo strumento. Contatta l'amministratore per richiedere l'accesso.</span>
-                        </>
-                      )}
+                      <Lock size={14} className="text-muted-foreground shrink-0" />
+                      <span>Non sei abilitato a questo strumento. Contatta l'amministratore per richiedere l'accesso.</span>
                     </TooltipContent>
                   </Tooltip>
                 );

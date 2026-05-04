@@ -7,7 +7,7 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-const DEFAULT_MONTHLY_LIMIT = 30;
+const MONTHLY_LIMIT = 30;
 
 const MTC_SISTEMICA_PROMPT = `Sei un assistente specializzato in Medicina Tradizionale Cinese (MTC) e Neurobiomodulazione, sviluppato per lo Studio Carella & Lamanna dalla Dott.ssa Lamanna Annarita, agopuntrice certificata.
 
@@ -15,7 +15,7 @@ Il paziente ha indicato uno o più punti dolorosi sul corpo. Ti verranno forniti
 - Sesso del paziente (M/F)
 - Lista dei punti dolorosi con la loro localizzazione anatomica precisa
 
-Il tuo compito è produrre un INTERPRETAZIONE CLINICA completo con DOPPIA INTERPRETAZIONE.
+Il tuo compito è produrre un REFERTO CLINICO completo con DOPPIA INTERPRETAZIONE.
 
 === FORMATO OUTPUT OBBLIGATORIO ===
 
@@ -58,7 +58,7 @@ Il tuo compito è produrre un INTERPRETAZIONE CLINICA completo con DOPPIA INTERP
 
 [Analisi dal punto di vista della medicina convenzionale e della neurobiomodulazione:
 - Strutture anatomiche coinvolte (muscoli, nervi, fasce, articolazioni)
-- Possibili interpretazioni differenziali occidentali
+- Possibili diagnosi differenziali occidentali
 - Meccanismi neurofisiologici del dolore in quella zona
 - Dermatomi e miotomi coinvolti
 - Connessioni fasciali e catene miofunzionali
@@ -94,7 +94,7 @@ Il professionista ha selezionato una serie di sintomi presentati dal paziente. T
 - Età del paziente
 - Lista dei sintomi selezionati organizzati per categoria
 
-Il tuo compito è identificare il PATTERN DI DISARMONIA secondo la MTC e produrre un'interpretazione con DOPPIA INTERPRETAZIONE.
+Il tuo compito è identificare il PATTERN DI DISARMONIA secondo la MTC e produrre un referto con DOPPIA INTERPRETAZIONE.
 
 === FORMATO OUTPUT OBBLIGATORIO ===
 
@@ -115,7 +115,7 @@ Il tuo compito è identificare il PATTERN DI DISARMONIA secondo la MTC e produrr
 - Fattori patogeni interni/esterni identificati
 - Teoria dei 5 elementi applicata al caso]
 
-## 3. Interpretazione Differenziale MTC
+## 3. Diagnosi Differenziale MTC
 
 [Tabella comparativa dei pattern possibili con probabilità]
 | **Pattern** | **Probabilità** | **Sintomi a Supporto** | **Sintomi Mancanti** |
@@ -134,7 +134,7 @@ Il tuo compito è identificare il PATTERN DI DISARMONIA secondo la MTC e produrr
 ## 5. Interpretazione secondo la Medicina Occidentale e Neurobiomodulazione
 
 [Analisi dal punto di vista della medicina convenzionale:
-- Possibili interpretazioni differenziali occidentali correlate ai sintomi
+- Possibili diagnosi differenziali occidentali correlate ai sintomi
 - Sistemi fisiologici coinvolti
 - Meccanismi fisiopatologici
 - Asse HPA (ipotalamo-ipofisi-surrene) se pertinente
@@ -205,11 +205,10 @@ serve(async (req) => {
 
     // ── Server-side license check ──
     const serviceClient = createClient(supabaseUrl, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
-    let monthlyLimit = DEFAULT_MONTHLY_LIMIT;
     {
       const { data: keyRecord } = await serviceClient
         .from("api_keys")
-        .select("tools, tool_limits")
+        .select("tools")
         .eq("client_email", user.email)
         .eq("is_active", true)
         .maybeSingle();
@@ -219,10 +218,6 @@ serve(async (req) => {
           { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
-      const limFromKey = (keyRecord.tool_limits as Record<string, number> | null)?.[toolName];
-      if (typeof limFromKey === "number" && limFromKey > 0) {
-        monthlyLimit = limFromKey;
-      }
     }
 
     // Rate limiting
@@ -230,9 +225,9 @@ serve(async (req) => {
       _user_id: userId,
       _tool_name: toolName,
     });
-    if (usageCount !== null && usageCount >= monthlyLimit) {
+    if (usageCount !== null && usageCount >= MONTHLY_LIMIT) {
       return new Response(
-        JSON.stringify({ error: `Limite mensile raggiunto (${monthlyLimit} analisi/mese).` }),
+        JSON.stringify({ error: `Limite mensile raggiunto (${MONTHLY_LIMIT} analisi/mese).` }),
         { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }

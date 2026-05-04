@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { BookOpen, Users, Upload, KeyRound, Calendar, MapPin, Trash2, Shield, Key, MessageSquareText, Pencil, Brain, UserPlus } from "lucide-react";
+import { BookOpen, Users, Upload, KeyRound, Calendar, MapPin, Trash2, Shield, Key, MessageSquareText, Pencil, Brain } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import AdminCreateEdition from "@/components/admin/AdminCreateEdition";
 import AdminRegistrations from "@/components/admin/AdminRegistrations";
@@ -9,7 +9,6 @@ import AdminApiKeys from "@/components/admin/AdminApiKeys";
 import AdminFeedback from "@/components/admin/AdminFeedback";
 import AdminKnowledge from "@/components/admin/AdminKnowledge";
 import AdminLandingEditor from "@/components/admin/AdminLandingEditor";
-import AdminInviteUser from "@/components/admin/AdminInviteUser";
 
 interface CourseEdition {
   id: string;
@@ -38,7 +37,7 @@ interface AdminTabProps {
 }
 
 const AdminTab = ({ editions, materials, onFetchData, onDeleteEdition }: AdminTabProps) => {
-  const [adminTab, setAdminTab] = useState<"editions" | "registrations" | "materials" | "access" | "invite" | "apikeys" | "feedback" | "knowledge">("editions");
+  const [adminTab, setAdminTab] = useState<"editions" | "registrations" | "materials" | "access" | "apikeys" | "feedback" | "knowledge">("editions");
   const [editingLandingId, setEditingLandingId] = useState<string | null>(null);
 
   const formatDate = (dateStr: string) =>
@@ -57,7 +56,6 @@ const AdminTab = ({ editions, materials, onFetchData, onDeleteEdition }: AdminTa
           { key: "registrations" as const, label: "Iscrizioni", icon: Users },
           { key: "materials" as const, label: "Materiali", icon: Upload },
           { key: "access" as const, label: "Accessi", icon: KeyRound },
-          { key: "invite" as const, label: "Invita Utente", icon: UserPlus },
           { key: "apikeys" as const, label: "API Keys", icon: Key },
           { key: "feedback" as const, label: "Feedback IA", icon: MessageSquareText },
           { key: "knowledge" as const, label: "Knowledge IA", icon: Brain },
@@ -126,7 +124,6 @@ const AdminTab = ({ editions, materials, onFetchData, onDeleteEdition }: AdminTa
       {adminTab === "registrations" && <AdminRegistrations editions={editions} />}
       {adminTab === "materials" && <AdminMaterials editions={editions} materials={materials} onUpdated={onFetchData} />}
       {adminTab === "access" && <AdminAccessControl editions={editions} />}
-      {adminTab === "invite" && <AdminInviteUser />}
       {adminTab === "apikeys" && <AdminApiKeys />}
       {adminTab === "feedback" && <AdminFeedback />}
       {adminTab === "knowledge" && <AdminKnowledge />}

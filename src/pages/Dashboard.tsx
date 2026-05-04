@@ -48,19 +48,13 @@ const Dashboard = () => {
       (_event, session) => {
         setUser(session?.user ?? null);
         setLoading(false);
+        if (!session) navigate("/login");
       }
     );
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
       setLoading(false);
-      // Delay redirect to allow OAuth URL hash to be processed by Supabase
-      if (!session) {
-        setTimeout(() => {
-          supabase.auth.getSession().then(({ data: { session: s2 } }) => {
-            if (!s2) navigate("/login");
-          });
-        }, 800);
-      }
+      if (!session) navigate("/login");
     });
     return () => subscription.unsubscribe();
   }, [navigate]);

@@ -324,16 +324,6 @@ Terapie di supporto: fotobiomodulazione se coerente. Coinvolgimento altre figure
 === INTEGRAZIONE CON CEFALOMETRIA (BJORK-JARABAK) ===
 Se nei dati clinici sono presenti valori cefalometrici (Angolo Sellare N-S-Ar, ANB, Wits, S-Ar-Go, Ar-Go-Me, NS/GoMe), interpreta anche la classe scheletrica e il pattern di divergenza secondo il metodo Bjork-Jarabak e collega l'indicazione di un eventuale dispositivo funzionale (TC/SC/IC + rialzo posteriore/anteriore/Piano neutro) al quadro miofunzionale e posturale globale. Regole chiave: una sola misura di III classe forza la priorità TC; con priorità TC il pattern di divergenza è SEMPRE rialzo posteriore; con divergenza discordante la scelta del rialzo dipende dal morso (coperto → rialzo anteriore, aperto → rialzo posteriore, 4-6 mesi).
 
-=== FORMATTAZIONE DEI TEST CLINICI E DELLE TERAPIE (OBBLIGATORIO) ===
-Ogni volta che citi il NOME di un test, manovra clinica o segno eponimico (es. Romberg, Fukuda-Unterberger, Bassani, Autet, MANN, Glatzel, Mingazzini, "lingua allo spot", "farfalla", ecc.) DEVI scriverlo in **grassetto markdown** (es. **Test di Autet**, **Fukuda-Unterberger**, **Romberg monopodalico**). Vale sia in narrativa sia nelle sezioni di analisi.
-Allo stesso modo, ogni volta che citi il NOME di una terapia di supporto, dispositivo, presidio o protocollo terapeutico (es. Fotobiomodulazione, Cuscino Giusto Tono, Bite, Espansore palatale, Logopedia miofunzionale, Osteopatia, Plantari propriocettivi, Elastodontico, ecc.) DEVI scriverlo in **grassetto markdown** (es. **Fotobiomodulazione**, **Cuscino Giusto Tono**). Vale anche nella sezione "Eventuale terapia di supporto" e ovunque venga menzionato un presidio terapeutico.
-
-=== TEST DI AUTET (OBBLIGATORIO se presente nei dati) ===
-Se nei dati clinici è riportato il **Test di Autet** (rotazione interna/esterna dell'anca, eventuale normalizzazione con mano sulla spalla opposta e/o lingua allo spot), DEVI sempre includerlo nell'analisi posturale. Interpretazione: la presenza di restrizione intrarotazionale che normalizza con la mano sulla spalla opposta e con lingua allo spot conferma una componente alta (bocca/cervicale/occhi) prevalente e supporta la classificazione di sindrome posturale **discendente**: il problema origina dalla parte alta del corpo (testa, bocca, occhi, recettori cervicali) e si trasmette verso il basso generando asimmetrie di bacino e arto inferiore. Quando il piede o l'anca normalizzano con lingua allo spot, sottolinea che la funzione linguale conduce l'organizzazione posturale del paziente.
-
-=== TEST DI FUKUDA-UNTERBERGER (interpretazione corretta) ===
-Quando descrivi il **Test di Fukuda-Unterberger** segui questa logica: con la testa in posizione neutra una marcia stabile sul posto è normale; quando la testa è ruotata, il riflesso cervico-vestibolare induce una rotazione compensatoria del corpo nel verso OPPOSTO (testa ruotata a destra → corpo devia a sinistra). Una deviazione nella STESSA direzione della rotazione della testa, oppure una rotazione sul posto ripetuta e stabile sempre verso lo stesso lato, suggerisce un'alterata integrazione cervico-vestibolare o un pattern cervico-posturale consolidato; va sempre interpretata insieme agli altri test (vestibolari, cervicali, posturali, linguali). Eseguire il test con testa ruotata non valuta solo la funzione vestibolare pura ma anche l'effetto del riflesso cervico-nucale sulla postura.
-
 === STRUTTURA DEL REFERTO (segui ESATTAMENTE questo ordine) ===
 
 # CHECK-UP ORTODONTICO POSTURALE
@@ -345,11 +335,7 @@ Età: [Se disponibile]
 Data visita: [Se disponibile]
 
 # Motivo della visita
-[Questa sezione DEVE essere inserita SEMPRE che sia possibile dedurla. Procedi nel seguente ordine di priorità:
-1) Se è presente un blocco "MOTIVO DELLA VISITA" fornito esplicitamente dal professionista (passato via API), riportalo in modo discorsivo e sintetico.
-2) Altrimenti, se nei dati clinici è presente esplicitamente la domanda "motivo della visita", "sintomi", "anamnesi", "note del professionista" o equivalente con relativa risposta, riportala fedelmente in forma discorsiva.
-3) Altrimenti, DEDUCI il motivo della visita analizzando: note cliniche, sintomi riferiti, segni rilevati nei test, eventuali terapie già in corso o richieste, e qualsiasi indicazione anamnestica presente nel documento. Formula in 1-2 frasi discorsive il probabile motivo della consultazione (es. "Il paziente si è presentato verosimilmente per...", "Dalla documentazione emerge un quadro orientato verso una valutazione di...").
-OMETTI questa sezione SOLO se il documento è totalmente privo di qualsiasi indizio anamnestico o sintomatologico. Quando presente, DEVE comparire subito dopo i dati anagrafici e PRIMA dell'Introduzione.]
+[Inserisci questa sezione SOLO se nei dati clinici è presente esplicitamente la domanda "motivo della visita", "sintomi" o equivalente con relativa risposta del paziente/genitore. In tal caso riporta in modo discorsivo e sintetico il motivo per cui il paziente si è presentato e i sintomi riferiti, così come dichiarati. Se il dato non è presente, OMETTI completamente questa sezione (non scrivere il titolo, non scrivere "non disponibile").]
 
 # Introduzione
 [Spiega che il check-up ortodontico posturale è una valutazione globale che osserva il paziente nella sua interezza, serve a comprendere le cause profonde degli squilibri, distinguendo ciò che è primario da ciò che è compenso.]
@@ -773,7 +759,7 @@ serve(async (req) => {
         JSON.stringify({
           error: "Campo 'tool' obbligatorio. Valori: 'diagnosis', 'orthodontic', 'mtc_sistemica', 'mtc_organica'.",
           usage: {
-            diagnosis: { tool: "diagnosis", documentText: "Testo del documento clinico...", reasonForVisit: "(opzionale) Motivo della visita riferito dal paziente", clinicalNotes: "(opzionale) Considerazioni del professionista", terapie: "(opzionale) Terapie consigliate" },
+            diagnosis: { tool: "diagnosis", documentText: "Testo del documento clinico..." },
             orthodontic: { tool: "orthodontic", age: 10, sex: "F", angolo_sellare: 125, anb: 3, wits: 1, angolo_articolare: 145, angolo_goniaco: 132 },
             mtc_sistemica: { tool: "mtc_sistemica", sex: "F", painPoints: [{ region: "Zona lombare", description: "Dolore lombare cronico" }] },
             mtc_organica: { tool: "mtc_organica", sex: "F", age: 45, symptoms: [{ category: "Fegato", name: "Irritabilità" }] },
@@ -823,16 +809,13 @@ serve(async (req) => {
     let markdown: string;
 
     if (tool === "diagnosis") {
-      const { documentText, clinicalNotes, terapie, reasonForVisit } = body;
+      const { documentText, clinicalNotes, terapie } = body;
       if (!documentText || typeof documentText !== "string" || documentText.trim().length < 20) {
         return new Response(
           JSON.stringify({ error: "Campo 'documentText' obbligatorio (min 20 caratteri)." }),
           { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
-      const reasonSection = reasonForVisit && typeof reasonForVisit === "string" && reasonForVisit.trim().length > 0
-        ? `\n\n--- MOTIVO DELLA VISITA (fornito dal professionista) ---\n${reasonForVisit.trim()}\n--- FINE MOTIVO ---\nIncludi OBBLIGATORIAMENTE questo motivo della visita all'inizio del referto, nella sezione "# Motivo della visita", subito dopo i dati anagrafici e prima dell'Introduzione.`
-        : "";
       const notesSection = clinicalNotes && typeof clinicalNotes === "string" && clinicalNotes.trim().length > 0
         ? `\n\n--- CONSIDERAZIONI CLINICHE DEL PROFESSIONISTA ---\n${clinicalNotes.trim()}\n--- FINE CONSIDERAZIONI ---\nTieni conto di queste considerazioni nell'analisi.`
         : "";
@@ -841,7 +824,7 @@ serve(async (req) => {
         : "";
       markdown = await callAI(
         DIAGNOSIS_SYSTEM_PROMPT,
-        `Analizza il seguente documento clinico e genera un REFERTO CLINICO COMPLETO:\n\n---\n${documentText}${reasonSection}${notesSection}${terapieSection}\n---`
+        `Analizza il seguente documento clinico e genera un REFERTO CLINICO COMPLETO:\n\n---\n${documentText}${notesSection}${terapieSection}\n---`
       );
     } else if (tool === "orthodontic") {
       const { nome, cognome, age, sex, angolo_sellare, anb, wits, angolo_articolare, angolo_goniaco, ns_mm, gome_mm, rapporto_ns_gome, classe_dentale, clinicalNotes } = body;

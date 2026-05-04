@@ -5,9 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { getBranding, generateHtmlHeader, generateHtmlFooter } from "./BrandingSettings";
+import { getBranding, generateHtmlHeader } from "./BrandingSettings";
 import RetroFeedback from "./RetroFeedback";
-import { buildPiiMap, depseudonymizeText, PII_PLACEHOLDERS } from "@/lib/pseudonymize";
 
 const MONTHLY_LIMIT = 30;
 const TOOL_NAME = "orthodontic-diagnosis";
@@ -44,20 +43,19 @@ const mdToHtml = (markdown: string) => {
 const generateHtmlDocument = (markdown: string) => {
   const branding = getBranding();
   const header = generateHtmlHeader(branding);
-  const footer = generateHtmlFooter(branding);
   const body = mdToHtml(markdown);
   return `<!DOCTYPE html><html><head><meta charset="utf-8"><style>
     body { font-family: 'Segoe UI', Arial, sans-serif; font-size: 12px; color: #222; max-width: 800px; margin: 0 auto; padding: 40px; line-height: 1.6; }
     table { page-break-inside: avoid; } h1 { page-break-after: avoid; }
     @media print { body { padding: 20px; } }
-  </style></head><body>${header}${body}${footer}</body></html>`;
+  </style></head><body>${header}${body}</body></html>`;
 };
 
 const downloadAsWord = (markdown: string, filename: string) => {
   const html = generateHtmlDocument(markdown);
   const blob = new Blob(
     [`<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
-    <head><meta charset="utf-8"><title>Interpretazione Cefalometrica</title>
+    <head><meta charset="utf-8"><title>Diagnosi Ortodontica</title>
     <!--[if gte mso 9]><xml><w:WordDocument><w:View>Print</w:View></w:WordDocument></xml><![endif]-->
     </head><body>${html.match(/<body>([\s\S]*)<\/body>/)?.[1] || ""}</body></html>`],
     { type: "application/msword" }
@@ -145,9 +143,6 @@ const OrthodonticTool = () => {
       return;
     }
 
-    // Pseudonimizza nome/cognome prima dell'invio (GDPR)
-    const piiMap = buildPiiMap({ nome: form.nome, cognome: form.cognome });
-
     try {
       const resp = await fetch(
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/orthodontic-diagnosis`,
@@ -158,8 +153,8 @@ const OrthodonticTool = () => {
             Authorization: `Bearer ${session.access_token}`,
           },
           body: JSON.stringify({
-            nome: PII_PLACEHOLDERS.NAME,
-            cognome: PII_PLACEHOLDERS.SURNAME,
+            nome: form.nome,
+            cognome: form.cognome,
             age: parseFloat(form.age),
             sex: form.sex,
             angolo_sellare: parseFloat(form.angolo_sellare),
@@ -207,8 +202,7 @@ const OrthodonticTool = () => {
           }
         }
       }
-      // De-pseudonimizza il testo finale (lato client) prima di mostrarlo
-      setResult(depseudonymizeText(assistantText, piiMap));
+      setResult(assistantText);
     } catch (e) {
       console.error(e);
       toast({ title: "Errore", description: "Si è verificato un errore durante l'analisi.", variant: "destructive" });
@@ -361,8 +355,8 @@ const OrthodonticTool = () => {
           <div className="flex items-center gap-2 p-4 bg-primary/5 border border-primary/20 rounded-lg">
             <Brain size={18} className="text-petrolio" />
             <div>
-              <h4 className="font-display text-base font-semibold text-foreground">Interpretazione pronta</h4>
-              <p className="font-body text-xs text-muted-foreground">Scarica il documento nel formato desiderato.</p>
+              <h4 className="font-display text-base font-semibold text-foreground">Diagnosi pronta</h4>
+              <p className="font-body text-xs text-muted-foreground">Scarica il report nel formato desiderato.</p>
             </div>
           </div>
           <div className="flex flex-wrap gap-2">

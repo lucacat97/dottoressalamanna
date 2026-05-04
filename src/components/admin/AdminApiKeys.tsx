@@ -22,8 +22,6 @@ const TOOL_LABELS: Record<string, string> = {
   orthodontic: "Diagnosi Ortodontica",
   mtc_sistemica: "MTC Sistemica",
   mtc_organica: "MTC Organica",
-  tests: "Test Ortodontico-Posturali",
-  breathing: "Respirazione e Sonno",
 };
 
 // Generate a random API key
@@ -53,9 +51,9 @@ const AdminApiKeys = () => {
   const [creating, setCreating] = useState(false);
   const [newClientName, setNewClientName] = useState("");
   const [newClientEmail, setNewClientEmail] = useState("");
-  const [newTools, setNewTools] = useState<string[]>(["diagnosis", "orthodontic", "mtc_sistemica", "mtc_organica", "tests", "breathing"]);
+  const [newTools, setNewTools] = useState<string[]>(["diagnosis", "orthodontic", "mtc_sistemica", "mtc_organica"]);
   const [newLimit, setNewLimit] = useState(30);
-  const [newToolLimits, setNewToolLimits] = useState<Record<string, number>>({ diagnosis: 30, orthodontic: 30, mtc_sistemica: 30, mtc_organica: 30, tests: 30, breathing: 30 });
+  const [newToolLimits, setNewToolLimits] = useState<Record<string, number>>({ diagnosis: 30, orthodontic: 30, mtc_sistemica: 30, mtc_organica: 30 });
   const [generatedKey, setGeneratedKey] = useState<string | null>(null);
   const [showKey, setShowKey] = useState(false);
   const [usageCounts, setUsageCounts] = useState<Record<string, Record<string, number>>>({});

@@ -3,8 +3,6 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import HomeChooser from "./pages/HomeChooser.tsx";
-import PatientLanding from "./pages/PatientLanding.tsx";
 import Index from "./pages/Index.tsx";
 import AuthPage from "./pages/AuthPage.tsx";
 import Dashboard from "./pages/Dashboard.tsx";
@@ -21,13 +19,12 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<HomeChooser />} />
-          <Route path="/pazienti" element={<PatientLanding />} />
-          <Route path="/professionisti" element={<Index />} />
+          <Route path="/" element={<Index />} />
           <Route path="/login" element={<AuthPage />} />
           <Route path="/area-riservata" element={<Dashboard />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/corso/:id" element={<CourseLandingPage />} />
+          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

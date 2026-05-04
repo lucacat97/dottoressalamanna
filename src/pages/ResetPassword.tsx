@@ -9,19 +9,14 @@ const ResetPassword = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [isRecovery, setIsRecovery] = useState(false);
-  const [isInvite, setIsInvite] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
 
   useEffect(() => {
-    // Check if we arrived via a recovery or invite link
+    // Check if we arrived via a recovery link
     const hash = window.location.hash;
     if (hash.includes("type=recovery")) {
       setIsRecovery(true);
-    }
-    if (hash.includes("type=invite")) {
-      setIsRecovery(true);
-      setIsInvite(true);
     }
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
@@ -77,12 +72,10 @@ const ResetPassword = () => {
 
         <div className="bg-card rounded-lg p-8 shadow-elevated border border-border">
           <h1 className="font-display text-2xl font-bold text-foreground mb-2 text-center">
-            {isInvite ? "Imposta la tua Password" : "Nuova Password"}
+            Nuova Password
           </h1>
           <p className="font-body text-sm text-muted-foreground text-center mb-8">
-            {isInvite
-              ? "Benvenuto/a! Crea la password per accedere all'Area Riservata."
-              : "Inserisci la tua nuova password"}
+            Inserisci la tua nuova password
           </p>
 
           <form onSubmit={handleReset} className="space-y-5">

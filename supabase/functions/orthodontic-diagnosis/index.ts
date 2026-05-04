@@ -7,16 +7,10 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-const DEFAULT_MONTHLY_LIMIT = 30;
+const MONTHLY_LIMIT = 30;
 const TOOL_NAME = "orthodontic-diagnosis";
-const API_TOOL_KEY = "orthodontic";
 
-const SYSTEM_PROMPT = `Sei un assistente per l'interpretazione cefalometrica funzionale (Bjork-Jarabak), sviluppato per lo Studio Carella & Lamanna dalla Dott.ssa Lamanna Annarita.
-
-REGOLE LINGUISTICHE TASSATIVE — DA RISPETTARE SEMPRE:
-- NON usare MAI le parole: "Referto", "referti", "Diagnosi", "diagnosi", "diagnostico", "diagnostica", "clinico", "clinica", "cliniche", "clinici" o qualunque loro variazione/derivato.
-- Sostituiscile sempre con: "Studio del caso", "Approccio", "Analisi", "Valutazione", "Lettura del caso", "Considerazioni", "Inquadramento" o formule equivalenti NON cliniche/diagnostiche.
-- Anche nei titoli, intestazioni e disclaimer: NESSUNA delle parole vietate sopra.
+const SYSTEM_PROMPT = `Sei un assistente per la diagnosi ortodontica funzionale basata sulla cefalometria di Bjork-Jarabak, sviluppato per lo Studio Carella & Lamanna dalla Dott.ssa Lamanna Annarita.
 
 DATI DI INPUT che ti verranno forniti:
 - Nome e Cognome del paziente
@@ -119,8 +113,8 @@ OUTPUT RICHIESTO (in italiano, formato markdown professionale):
 Il report deve iniziare con il nome e cognome del paziente come intestazione.
 Devi SEMPRE produrre il report con ESATTAMENTE questa struttura e queste sezioni, nello stesso ordine. Non aggiungere sezioni extra, non cambiare i titoli delle sezioni, non omettere sezioni.
 
-## Avviso
-> **Avviso:** Questo strumento fornisce esclusivamente un supporto allo studio del caso e NON costituisce in alcun modo una valutazione medica. Ogni valutazione e responsabilità resta interamente in capo al professionista sanitario.
+## Disclaimer
+> **Disclaimer:** Questo strumento fornisce esclusivamente un supporto all'analisi clinica e NON costituisce in alcun modo una diagnosi medica. La responsabilità diagnostica resta interamente in capo al professionista sanitario. L'utilizzo di questo strumento non sostituisce il giudizio clinico del medico.
 
 ## Analisi Cefalometrica — [Nome Cognome del paziente]
 
@@ -167,16 +161,8 @@ Se fornito il Rapporto NS/GoMe, aggiungi una riga:
 ## 8. Note Cliniche e Rivalutazione
 [Indicazioni cliniche e tempistica. Se nelle note cliniche emergono elementi posturali/miofunzionali/ORL, considerali implicitamente nell'interpretazione e nella scelta del dispositivo, SENZA creare una sezione dedicata e SENZA scrivere frasi generiche del tipo "la cefalometria va integrata con esame clinico" o "nessun dato funzionale-posturale fornito".]
 
-=== AMPIEZZA E DISCORSIVITÀ (REGOLA PRIORITARIA) ===
-Scrivi in modo AMPIO, ESPLICATIVO, DISCORSIVO. Non essere mai asciutto né telegrafico.
-- Ogni sezione deve essere composta da paragrafi pieni (3-5 frasi minimo), non da frasi isolate o elenchi secchi.
-- Per ogni parametro cefalometrico: descrivi il valore, spiega cosa significa funzionalmente, collegalo agli altri parametri e traducilo in implicazione pratica per la scelta del dispositivo.
-- Quando indichi il dispositivo, racconta COME agisce e PERCHÉ è la scelta corretta in questo specifico caso, non limitarti al nome.
-- Usa connettivi discorsivi ("inoltre", "questo significa che", "di conseguenza", "in altre parole") per dare fluidità.
-- Il documento finale deve risultare ricco, articolato e divulgativo, come una spiegazione che la Dott.ssa Lamanna farebbe al collega o al paziente.
-
-Usa un tono professionale e caloroso. Rispondi SEMPRE in italiano.
-DEVI includere SEMPRE all'inizio del documento il blocco "## Avviso" con il testo esatto sopra indicato. Questo è l'UNICO avviso ammesso: non aggiungere altri avvisi legali o note sull'uso dell'intelligenza artificiale. RICORDA: nessuna delle parole "referto", "diagnosi", "clinico/a/i/he" può comparire nel testo prodotto.
+Usa un tono professionale. Rispondi SEMPRE in italiano.
+DEVI includere SEMPRE all'inizio del report il blocco "## Disclaimer" con il testo esatto sopra indicato. Questo è l'UNICO disclaimer ammesso: non aggiungere altri avvisi legali o note sull'uso dell'intelligenza artificiale.
 Vai DIRETTAMENTE al report (a partire dal disclaimer) senza premesse, introduzioni o commenti. Produci SOLO il report formattato, nient'altro.`;
 
 serve(async (req) => {
@@ -207,31 +193,20 @@ serve(async (req) => {
     }
     const userId = user.id;
 
-    // ── Server-side license check (admin bypass) ──
+    // ── Server-side license check ──
     const serviceClient = createClient(supabaseUrl, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
-    let monthlyLimit = DEFAULT_MONTHLY_LIMIT;
     {
-      const { data: isAdmin } = await serviceClient.rpc("has_role", {
-        _user_id: userId,
-        _role: "admin",
-      });
-      if (!isAdmin) {
-        const { data: keyRecord } = await serviceClient
-          .from("api_keys")
-          .select("tools, tool_limits")
-          .eq("client_email", user.email)
-          .eq("is_active", true)
-          .maybeSingle();
-        if (!keyRecord || !Array.isArray(keyRecord.tools) || !keyRecord.tools.includes(API_TOOL_KEY)) {
-          return new Response(
-            JSON.stringify({ error: "Accesso allo strumento non abilitato per il tuo account." }),
-            { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-          );
-        }
-        const limFromKey = (keyRecord.tool_limits as Record<string, number> | null)?.[API_TOOL_KEY];
-        if (typeof limFromKey === "number" && limFromKey > 0) {
-          monthlyLimit = limFromKey;
-        }
+      const { data: keyRecord } = await serviceClient
+        .from("api_keys")
+        .select("tools")
+        .eq("client_email", user.email)
+        .eq("is_active", true)
+        .maybeSingle();
+      if (!keyRecord || !Array.isArray(keyRecord.tools) || !keyRecord.tools.includes("orthodontic")) {
+        return new Response(
+          JSON.stringify({ error: "Accesso allo strumento non abilitato per il tuo account." }),
+          { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
       }
     }
 
@@ -240,9 +215,9 @@ serve(async (req) => {
       _user_id: userId,
       _tool_name: TOOL_NAME,
     });
-    if (usageCount !== null && usageCount >= monthlyLimit) {
+    if (usageCount !== null && usageCount >= MONTHLY_LIMIT) {
       return new Response(
-        JSON.stringify({ error: `Limite mensile raggiunto (${monthlyLimit} analisi/mese). Riprova il prossimo mese.` }),
+        JSON.stringify({ error: `Limite mensile raggiunto (${MONTHLY_LIMIT} analisi/mese). Riprova il prossimo mese.` }),
         { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
@@ -270,7 +245,7 @@ serve(async (req) => {
       : "";
 
     const patientName = nome && cognome ? `${nome} ${cognome}` : (nome || cognome || "Paziente");
-    const userMessage = `Analizza i seguenti valori cefalometrici e fornisci l'interpretazione ortodontica con scelta del dispositivo terapeutico:
+    const userMessage = `Analizza i seguenti valori cefalometrici e fornisci la diagnosi ortodontica con scelta del dispositivo terapeutico:
 
 - Paziente: ${patientName}
 - Età: ${age} anni
@@ -288,36 +263,21 @@ ${classe_dentale ? `- Classe dentale/funzionale: ${classe_dentale}` : ""}`;
       throw new Error("LOVABLE_API_KEY is not configured");
     }
 
-    const aiPayload = JSON.stringify({
-      model: "openai/gpt-5-mini",
-      messages: [
-        { role: "system", content: SYSTEM_PROMPT + knowledgeSection + feedbackSection },
-        { role: "user", content: userMessage },
-      ],
-      stream: true,
+    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${LOVABLE_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "openai/gpt-5-mini",
+        messages: [
+          { role: "system", content: SYSTEM_PROMPT + knowledgeSection + feedbackSection },
+          { role: "user", content: userMessage },
+        ],
+        stream: true,
+      }),
     });
-
-    let response: Response | null = null;
-    for (let attempt = 0; attempt < 3; attempt++) {
-      response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${LOVABLE_API_KEY}`,
-          "Content-Type": "application/json",
-        },
-        body: aiPayload,
-      });
-      if (response.ok || ![502, 503, 504].includes(response.status)) break;
-      console.warn(`AI gateway transient ${response.status}, retry ${attempt + 1}/3`);
-      try { await response.body?.cancel(); } catch (_) {}
-      await new Promise((r) => setTimeout(r, 800 * (attempt + 1)));
-    }
-    if (!response) {
-      return new Response(
-        JSON.stringify({ error: "Errore nel servizio AI. Riprova più tardi." }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
 
     if (!response.ok) {
       if (response.status === 429) {

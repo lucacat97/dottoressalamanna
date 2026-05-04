@@ -20,7 +20,7 @@ const subSections: SubSectionCard[] = [
     id: "sistemica",
     title: "Sistemica",
     subtitle: "Mappa 3D del corpo & Agopunti",
-    description: "Segna i punti dolorosi su un modello 3D interattivo e ottieni agopunti consigliati con interpretazione integrata MTC + medicina occidentale.",
+    description: "Segna i punti dolorosi su un modello 3D interattivo e ottieni agopunti consigliati con diagnosi integrata MTC + medicina occidentale.",
     icon: Activity,
     gradient: "from-emerald-500/80 via-teal-500/60 to-cyan-500/40",
   },
