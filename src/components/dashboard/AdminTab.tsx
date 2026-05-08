@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { BookOpen, Users, Upload, KeyRound, Calendar, MapPin, Trash2, Shield, Key, MessageSquareText, Pencil, Brain } from "lucide-react";
+import { BookOpen, Users, Upload, KeyRound, Calendar, MapPin, Trash2, Shield, Key, MessageSquareText, Pencil, Brain, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import AdminCreateEdition from "@/components/admin/AdminCreateEdition";
 import AdminRegistrations from "@/components/admin/AdminRegistrations";
@@ -9,6 +9,7 @@ import AdminApiKeys from "@/components/admin/AdminApiKeys";
 import AdminFeedback from "@/components/admin/AdminFeedback";
 import AdminKnowledge from "@/components/admin/AdminKnowledge";
 import AdminLandingEditor from "@/components/admin/AdminLandingEditor";
+import AdminInvitations from "@/components/admin/AdminInvitations";
 
 interface CourseEdition {
   id: string;
@@ -37,7 +38,7 @@ interface AdminTabProps {
 }
 
 const AdminTab = ({ editions, materials, onFetchData, onDeleteEdition }: AdminTabProps) => {
-  const [adminTab, setAdminTab] = useState<"editions" | "registrations" | "materials" | "access" | "apikeys" | "feedback" | "knowledge">("editions");
+  const [adminTab, setAdminTab] = useState<"editions" | "registrations" | "materials" | "access" | "apikeys" | "invitations" | "feedback" | "knowledge">("editions");
   const [editingLandingId, setEditingLandingId] = useState<string | null>(null);
 
   const formatDate = (dateStr: string) =>
@@ -57,6 +58,7 @@ const AdminTab = ({ editions, materials, onFetchData, onDeleteEdition }: AdminTa
           { key: "materials" as const, label: "Materiali", icon: Upload },
           { key: "access" as const, label: "Accessi", icon: KeyRound },
           { key: "apikeys" as const, label: "API Keys", icon: Key },
+          { key: "invitations" as const, label: "Inviti", icon: Mail },
           { key: "feedback" as const, label: "Feedback IA", icon: MessageSquareText },
           { key: "knowledge" as const, label: "Knowledge IA", icon: Brain },
         ]).map(({ key, label, icon: Icon }) => (
@@ -125,6 +127,7 @@ const AdminTab = ({ editions, materials, onFetchData, onDeleteEdition }: AdminTa
       {adminTab === "materials" && <AdminMaterials editions={editions} materials={materials} onUpdated={onFetchData} />}
       {adminTab === "access" && <AdminAccessControl editions={editions} />}
       {adminTab === "apikeys" && <AdminApiKeys />}
+      {adminTab === "invitations" && <AdminInvitations />}
       {adminTab === "feedback" && <AdminFeedback />}
       {adminTab === "knowledge" && <AdminKnowledge />}
     </div>

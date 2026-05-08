@@ -564,6 +564,62 @@ export type Database = {
         }
         Relationships: []
       }
+      invitations: {
+        Row: {
+          accepted_at: string | null
+          api_key_id: string | null
+          created_at: string
+          email: string
+          expires_at: string
+          id: string
+          invited_by: string | null
+          monthly_limit: number
+          note: string | null
+          status: string
+          token: string
+          tool_limits: Json
+          tools: string[]
+        }
+        Insert: {
+          accepted_at?: string | null
+          api_key_id?: string | null
+          created_at?: string
+          email: string
+          expires_at?: string
+          id?: string
+          invited_by?: string | null
+          monthly_limit?: number
+          note?: string | null
+          status?: string
+          token: string
+          tool_limits?: Json
+          tools?: string[]
+        }
+        Update: {
+          accepted_at?: string | null
+          api_key_id?: string | null
+          created_at?: string
+          email?: string
+          expires_at?: string
+          id?: string
+          invited_by?: string | null
+          monthly_limit?: number
+          note?: string | null
+          status?: string
+          token?: string
+          tool_limits?: Json
+          tools?: string[]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invitations_api_key_id_fkey"
+            columns: ["api_key_id"]
+            isOneToOne: false
+            referencedRelation: "api_keys"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       posturographic_checkups: {
         Row: {
           created_at: string
