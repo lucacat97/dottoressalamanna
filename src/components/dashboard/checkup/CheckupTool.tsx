@@ -14,6 +14,7 @@ import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { SECTIONS, MODULE_NAME } from "./form-schema";
 import QuestionRenderer from "./QuestionRenderer";
+import SectionHeader from "./SectionHeader";
 import {
   buildQAMarkdown, printQA, downloadQAJson, MILA_IMPORT_KEY,
   type CheckupRecord,
