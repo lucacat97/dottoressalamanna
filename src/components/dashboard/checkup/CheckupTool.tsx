@@ -14,6 +14,7 @@ import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { SECTIONS, MODULE_NAME } from "./form-schema";
 import QuestionRenderer from "./QuestionRenderer";
+import SectionHeader from "./SectionHeader";
 import {
   buildQAMarkdown, printQA, downloadQAJson, MILA_IMPORT_KEY,
   type CheckupRecord,
@@ -415,9 +416,7 @@ export default function CheckupTool({ onSendToMila }: Props) {
         <main className="border border-border rounded-lg bg-card p-4 min-h-[60vh]">
           {currentSection ? (
             <>
-              <h3 className="font-display text-lg font-bold text-foreground mb-3 pb-2 border-b border-border">
-                {currentSection.label}
-              </h3>
+              <SectionHeader sectionId={currentSection.id} label={currentSection.label} />
               <div className="space-y-1">
                 {currentSection.questions.map((q) => (
                   <QuestionRenderer
