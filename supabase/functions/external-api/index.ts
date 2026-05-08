@@ -806,10 +806,10 @@ serve(async (req) => {
     const profEmail = typeof professional_email === "string" ? professional_email.trim().toLowerCase() : "";
     const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(profEmail);
 
-    if (!profFirst || !profLast || !emailValid) {
+    if (!emailValid) {
       return new Response(
         JSON.stringify({
-          error: "Campi obbligatori del professionista mancanti o non validi: 'professional_first_name', 'professional_last_name', 'professional_email'. La consulenza viene inviata via email a questo indirizzo.",
+          error: "Campo obbligatorio mancante o non valido: 'professional_email'. La consulenza viene inviata via email a questo indirizzo.",
         }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
