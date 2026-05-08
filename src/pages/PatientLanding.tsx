@@ -92,14 +92,6 @@ const PatientLanding = () => {
 
   return (
     <>
-      <Helmet>
-        <title>Metodo Olistico La Manna · Spazio Pazienti</title>
-        <meta
-          name="description"
-          content="Un approccio olistico che integra postura, occlusione, respirazione e benessere generale. Fai il test gratuito di 5 domande."
-        />
-        <link rel="canonical" href="https://dottoressalamanna.com/pazienti" />
-      </Helmet>
 
       <div className="min-h-screen bg-[hsl(var(--cream))]">
         {/* HEADER */}

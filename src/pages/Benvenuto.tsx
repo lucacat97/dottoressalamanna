@@ -1,18 +1,13 @@
+import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Stethoscope, HeartPulse } from "lucide-react";
-import { Helmet } from "react-helmet-async";
 
 const Benvenuto = () => {
+  useEffect(() => {
+    document.title = "Benvenuto · Dott.ssa Annarita La Manna";
+  }, []);
   return (
     <>
-      <Helmet>
-        <title>Benvenuto · Dott.ssa Annarita La Manna</title>
-        <meta
-          name="description"
-          content="Scegli il tuo percorso: area dedicata ai professionisti o spazio informativo per i pazienti del Metodo Olistico La Manna."
-        />
-        <link rel="canonical" href="https://dottoressalamanna.com/benvenuto" />
-      </Helmet>
 
       <main className="min-h-screen flex flex-col md:flex-row">
         {/* PAZIENTI */}
