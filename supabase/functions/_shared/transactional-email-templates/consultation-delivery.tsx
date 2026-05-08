@@ -55,7 +55,7 @@ const ConsultationDeliveryEmail = ({
                 Scarica la consulenza completa (Word)
               </Button>
               <Text style={smallNote}>
-                Il link è valido per 30 giorni. Apra il file con Microsoft Word, Pages o Google Docs.
+                Per motivi di sicurezza, il link è personale, valido <strong>5 giorni</strong> e consente al massimo <strong>5 download</strong>. Apra il file con Microsoft Word, Pages o Google Docs.
               </Text>
             </Section>
           ) : (
