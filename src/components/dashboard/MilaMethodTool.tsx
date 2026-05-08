@@ -219,6 +219,38 @@ const MilaMethodTool = () => {
   const [diagUsage, setDiagUsage] = useState<number | null>(null);
   const [orthoUsage, setOrthoUsage] = useState<number | null>(null);
 
+  // ---------- Check Up import ----------
+  const [importedCheckup, setImportedCheckup] = useState<{ patient: string; examDate: string } | null>(null);
+  useEffect(() => {
+    try {
+      const raw = sessionStorage.getItem("mila:imported-checkup");
+      if (!raw) return;
+      const data = JSON.parse(raw);
+      if (!data?.qaMarkdown) return;
+      setClinicalMode("manual");
+      setClinicalManual((prev) => {
+        const header = `=== CHECK UP ORTODONTICO POSTURALE ===\n`;
+        // Avoid double-import
+        if (prev.includes(header)) return prev;
+        return `${header}${data.qaMarkdown}\n\n${prev}`.trim();
+      });
+      if (data.patientFirstName || data.patientLastName) {
+        setOrthoForm((p) => ({
+          ...p,
+          nome: p.nome || data.patientFirstName || "",
+          cognome: p.cognome || data.patientLastName || "",
+          sex: p.sex || (data.patientSex === "M" ? "M" : data.patientSex === "F" ? "F" : p.sex),
+        }));
+      }
+      setImportedCheckup({
+        patient: `${data.patientFirstName ?? ""} ${data.patientLastName ?? ""}`.trim() || "Paziente",
+        examDate: data.examDate ?? "",
+      });
+      sessionStorage.removeItem("mila:imported-checkup");
+      toast({ title: "Check Up importato", description: "I dati sono stati caricati come cartella clinica manuale." });
+    } catch {/* noop */}
+  }, []);
+
   useEffect(() => {
     const fetchUsage = async () => {
       const { data: { user } } = await supabase.auth.getUser();
