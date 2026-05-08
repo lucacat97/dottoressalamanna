@@ -713,6 +713,17 @@ NON includere header o footer dello studio (nome dottoressa, firma, data, indiri
 Vai DIRETTAMENTE all'analisi. Produci SOLO il report formattato, nient'altro.`;
 
 // ── Helper: call AI (non-streaming) ──
+const ANTI_HALLUCINATION_BLOCK = `
+
+=== REGOLA PRIORITARIA — DATI INSUFFICIENTI ===
+Se i dati forniti sono scarsi, parziali o non consentono un'interpretazione clinica fondata:
+- NON inventare elementi clinici, sintomi, valori, test, anamnesi, considerazioni o ipotesi che non siano direttamente sostenute dai dati ricevuti.
+- NON formulare ipotesi speculative o "possibili scenari" che vadano oltre quanto strettamente deducibile dai dati.
+- Limita la consulenza a ciò che è effettivamente leggibile nei dati disponibili.
+- Quando un'area è priva di informazioni, ometti l'interpretazione di quell'area senza riempirla con contenuti generici, formule di stile o ipotesi non supportate.
+- Se i dati complessivi sono troppo scarsi per produrre una consulenza significativa, restituisci una consulenza breve, sobria e onesta che dichiara — con tono professionale e non difensivo — che le informazioni disponibili non consentono di andare oltre alcune osservazioni essenziali, ed elenca SOLO ciò che effettivamente emerge dai dati ricevuti.
+- Meglio una consulenza breve e fedele ai dati che una consulenza lunga ma costruita su supposizioni.`;
+
 async function callAI(systemPrompt: string, userMessage: string): Promise<string> {
   const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
   if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
@@ -726,7 +737,7 @@ async function callAI(systemPrompt: string, userMessage: string): Promise<string
     body: JSON.stringify({
       model: "openai/gpt-5-mini",
       messages: [
-        { role: "system", content: systemPrompt },
+        { role: "system", content: systemPrompt + ANTI_HALLUCINATION_BLOCK },
         { role: "user", content: userMessage },
       ],
       stream: false,
