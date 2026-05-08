@@ -836,6 +836,24 @@ serve(async (req) => {
       );
     }
 
+    // ── Verifica: l'email deve coincidere con quella associata alla chiave API (se registrata) ──
+    const keyClientEmail = typeof keyRecord.client_email === "string"
+      ? keyRecord.client_email.trim().toLowerCase()
+      : "";
+    if (keyClientEmail && keyClientEmail !== profEmail) {
+      console.warn("[external-api] email mismatch", {
+        api_key_id: keyRecord.id,
+        provided: profEmail,
+        expected_fingerprint: keyClientEmail.slice(0, 3) + "***",
+      });
+      return new Response(
+        JSON.stringify({
+          error: "L'indirizzo email fornito ('professional_email') non coincide con l'email registrata sulla chiave di licenza. Per motivi di sicurezza la consulenza può essere inviata SOLO all'email associata alla chiave.",
+        }),
+        { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     if (!tool || !["diagnosis", "orthodontic", "mtc_sistemica", "mtc_organica"].includes(tool)) {
       return new Response(
         JSON.stringify({
