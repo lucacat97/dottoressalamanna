@@ -765,18 +765,34 @@ serve(async (req) => {
 
   try {
     const body = await req.json();
-    const { tool, format } = body;
+    const { tool, format, professional_first_name, professional_last_name, professional_email } = body;
     const outputFormat = (format || "html").toLowerCase();
+
+    // ── Validate professional identity (required: name, surname, email) ──
+    const profFirst = typeof professional_first_name === "string" ? professional_first_name.trim() : "";
+    const profLast = typeof professional_last_name === "string" ? professional_last_name.trim() : "";
+    const profEmail = typeof professional_email === "string" ? professional_email.trim().toLowerCase() : "";
+    const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(profEmail);
+
+    if (!profFirst || !profLast || !emailValid) {
+      return new Response(
+        JSON.stringify({
+          error: "Campi obbligatori del professionista mancanti o non validi: 'professional_first_name', 'professional_last_name', 'professional_email'. La consulenza viene inviata via email a questo indirizzo.",
+        }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
 
     if (!tool || !["diagnosis", "orthodontic", "mtc_sistemica", "mtc_organica"].includes(tool)) {
       return new Response(
         JSON.stringify({
           error: "Campo 'tool' obbligatorio. Valori: 'diagnosis', 'orthodontic', 'mtc_sistemica', 'mtc_organica'.",
+          required_professional_fields: ["professional_first_name", "professional_last_name", "professional_email"],
           usage: {
-            diagnosis: { tool: "diagnosis", documentText: "Testo del documento clinico...", reasonForVisit: "(opzionale) Motivo della visita riferito dal paziente", clinicalNotes: "(opzionale) Considerazioni del professionista", terapie: "(opzionale) Terapie consigliate" },
-            orthodontic: { tool: "orthodontic", age: 10, sex: "F", angolo_sellare: 125, anb: 3, wits: 1, angolo_articolare: 145, angolo_goniaco: 132 },
-            mtc_sistemica: { tool: "mtc_sistemica", sex: "F", painPoints: [{ region: "Zona lombare", description: "Dolore lombare cronico" }] },
-            mtc_organica: { tool: "mtc_organica", sex: "F", age: 45, symptoms: [{ category: "Fegato", name: "Irritabilità" }] },
+            diagnosis: { tool: "diagnosis", professional_first_name: "Mario", professional_last_name: "Rossi", professional_email: "mario.rossi@example.com", documentText: "Testo del documento clinico...", reasonForVisit: "(opzionale) Motivo della visita riferito dal paziente", clinicalNotes: "(opzionale) Considerazioni del professionista", terapie: "(opzionale) Terapie consigliate" },
+            orthodontic: { tool: "orthodontic", professional_first_name: "Mario", professional_last_name: "Rossi", professional_email: "mario.rossi@example.com", age: 10, sex: "F", angolo_sellare: 125, anb: 3, wits: 1, angolo_articolare: 145, angolo_goniaco: 132 },
+            mtc_sistemica: { tool: "mtc_sistemica", professional_first_name: "Mario", professional_last_name: "Rossi", professional_email: "mario.rossi@example.com", sex: "F", painPoints: [{ region: "Zona lombare", description: "Dolore lombare cronico" }] },
+            mtc_organica: { tool: "mtc_organica", professional_first_name: "Mario", professional_last_name: "Rossi", professional_email: "mario.rossi@example.com", sex: "F", age: 45, symptoms: [{ category: "Fegato", name: "Irritabilità" }] },
           },
         }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
