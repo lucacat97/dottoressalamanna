@@ -22,6 +22,16 @@ interface ToolCard {
 
 const tools: ToolCard[] = [
   {
+    id: "checkup",
+    title: "Check Up Ortodontico Posturale",
+    subtitle: "Questionario clinico-posturale",
+    description: "Compila il check up del paziente sezione per sezione, salva in automatico le bozze, esporta in PDF Q/R o invia direttamente al Metodo MILA per la consulenza.",
+    icon: ClipboardList,
+    gradient: "from-amber-500/80 via-orange-500/60 to-rose-500/40",
+    accentColor: "text-amber-600",
+    apiToolKeys: ["diagnosis", "orthodontic"],
+  },
+  {
     id: "mila",
     title: "Interpretazione secondo Metodo MILA",
     subtitle: "Cartella clinica + Cefalometria",
