@@ -250,7 +250,7 @@ Data visita: [Se disponibile]
 # Introduzione
 [Spiega che il check-up ortodontico posturale è una valutazione globale che osserva il paziente nella sua interezza, serve a comprendere le cause profonde degli squilibri, distinguendo ciò che è primario da ciò che è compenso.]
 
-[Se paziente > 20 anni, inserisci QUI il blocco "ALERT — Paziente in età adulta" come specificato sopra.]
+[NON inserire QUI alcun alert sull'età adulta: è gestito solo nella consulenza cefalometrica.]
 
 # Le cose che funzionano
 [Valorizza risorse biologiche, funzionali e adattative del paziente. Sottolinea che mostrano capacità di risposta e rappresentano base favorevole per la terapia.]
