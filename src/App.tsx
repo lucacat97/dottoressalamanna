@@ -10,6 +10,8 @@ import ResetPassword from "./pages/ResetPassword.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import CourseLandingPage from "./pages/CourseLandingPage.tsx";
 import Unsubscribe from "./pages/Unsubscribe.tsx";
+import Benvenuto from "./pages/Benvenuto.tsx";
+import PatientLanding from "./pages/PatientLanding.tsx";
 
 const queryClient = new QueryClient();
 
@@ -26,6 +28,7 @@ const App = () => (
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/corso/:id" element={<CourseLandingPage />} />
           <Route path="/unsubscribe" element={<Unsubscribe />} />
+          <Route path="/benvenuto" element={<Benvenuto />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
