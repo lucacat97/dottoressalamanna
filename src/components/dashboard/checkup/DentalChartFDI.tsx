@@ -1,4 +1,3 @@
-import { Checkbox } from "@/components/ui/checkbox";
 import { FDI_UPPER, FDI_LOWER } from "./form-schema";
 
 interface Props {
