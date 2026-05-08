@@ -1,10 +1,9 @@
 import { useState, useEffect } from "react";
-import { Brain, Sparkles, ArrowLeft, Ruler, Leaf, Lock } from "lucide-react";
+import { Brain, Sparkles, ArrowLeft, Leaf, Lock } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
-import DiagnosisTool from "./DiagnosisTool";
-import OrthodonticTool from "./OrthodonticTool";
+import MilaMethodTool from "./MilaMethodTool";
 import BrandingSettings from "./BrandingSettings";
 import MTCHub from "./mtc/MTCHub";
 
@@ -22,24 +21,14 @@ interface ToolCard {
 
 const tools: ToolCard[] = [
   {
-    id: "diagnosis",
-    title: "Supporto alla Diagnosi Clinica",
-    subtitle: "Referto AI da documento clinico",
-    description: "Carica un PDF clinico e genera un referto strutturato con analisi posturale, ipotesi diagnostiche e piano terapeutico.",
+    id: "mila",
+    title: "Interpretazione secondo Metodo MILA",
+    subtitle: "Cartella clinica + Cefalometria",
+    description: "Carica i PDF della cartella clinico-posturale e del tracciato cefalometrico (oppure inserisci i dati a mano) e ottieni due referti separati secondo il Metodo MILA.",
     icon: Brain,
     gradient: "from-petrolio via-petrolio-dark to-petrolio",
     accentColor: "text-gold",
-    apiToolKeys: ["diagnosis"],
-  },
-  {
-    id: "orthodontic",
-    title: "Diagnosi Ortodontica",
-    subtitle: "Cefalometria Bjork-Jarabak",
-    description: "Inserisci i valori cefalometrici e ottieni classe scheletrica, divergenza e dispositivo terapeutico consigliato.",
-    icon: Ruler,
-    gradient: "from-petrolio via-petrolio-dark to-petrolio",
-    accentColor: "text-petrolio",
-    apiToolKeys: ["orthodontic"],
+    apiToolKeys: ["diagnosis", "orthodontic"],
   },
   {
     id: "mtc",
@@ -130,8 +119,7 @@ const ToolsSection = () => {
           </div>
         )}
 
-        {activeTool === "diagnosis" && <DiagnosisTool />}
-        {activeTool === "orthodontic" && <OrthodonticTool />}
+        {activeTool === "mila" && <MilaMethodTool />}
         {activeTool === "mtc" && <MTCHub />}
       </div>
     );
