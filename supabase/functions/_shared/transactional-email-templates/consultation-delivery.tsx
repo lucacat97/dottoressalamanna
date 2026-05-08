@@ -23,7 +23,7 @@ const ConsultationDeliveryEmail = ({
 }: ConsultationDeliveryProps) => {
   const greeting = professionalFirstName || professionalLastName
     ? `Gentile Dott./Dott.ssa ${[professionalFirstName, professionalLastName].filter(Boolean).join(' ')}`
-    : 'Gentile collega'
+    : 'Gentile Dottore/Dottoressa'
   const title = consultationType || 'Consulenza sul caso'
 
   return (
