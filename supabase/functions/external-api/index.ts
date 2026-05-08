@@ -728,29 +728,50 @@ async function callAI(systemPrompt: string, userMessage: string): Promise<string
   const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
   if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
-  const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${LOVABLE_API_KEY}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      model: "openai/gpt-5-mini",
-      messages: [
-        { role: "system", content: systemPrompt + ANTI_HALLUCINATION_BLOCK },
-        { role: "user", content: userMessage },
-      ],
-      stream: false,
-    }),
-  });
+  const maxAttempts = 3;
+  let lastError: Error | null = null;
 
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(`AI gateway error ${response.status}: ${errorText}`);
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${LOVABLE_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "openai/gpt-5-mini",
+          messages: [
+            { role: "system", content: systemPrompt + ANTI_HALLUCINATION_BLOCK },
+            { role: "user", content: userMessage },
+          ],
+          stream: false,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        const isRetryable = response.status === 502 || response.status === 503 || response.status === 504 || response.status === 429;
+        const snippet = errorText.slice(0, 300);
+        if (isRetryable && attempt < maxAttempts) {
+          console.warn(`[external-api] AI gateway ${response.status} (tentativo ${attempt}/${maxAttempts}), retry...`);
+          await new Promise(r => setTimeout(r, 1500 * attempt));
+          lastError = new Error(`AI gateway ${response.status}: ${snippet}`);
+          continue;
+        }
+        throw new Error(`AI gateway ${response.status}: ${snippet}`);
+      }
+
+      const data = await response.json();
+      return data.choices?.[0]?.message?.content || "";
+    } catch (err) {
+      lastError = err as Error;
+      if (attempt >= maxAttempts) throw err;
+      console.warn(`[external-api] errore chiamata AI (tentativo ${attempt}/${maxAttempts}): ${(err as Error).message}, retry...`);
+      await new Promise(r => setTimeout(r, 1500 * attempt));
+    }
   }
-
-  const data = await response.json();
-  return data.choices?.[0]?.message?.content || "";
+  throw lastError || new Error("AI gateway: errore sconosciuto");
 }
 
 serve(async (req) => {
@@ -1071,10 +1092,15 @@ ${classe_dentale ? `- Classe dentale/funzionale confermata: ${classe_dentale}` :
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (e) {
-    console.error("external-api error:", e);
+    const msg = (e as Error)?.message || String(e);
+    console.error("external-api error:", msg);
+    const isAiGateway = /AI gateway/i.test(msg);
+    const userError = isAiGateway
+      ? "Il servizio AI è temporaneamente non disponibile (errore upstream). Riprova tra qualche secondo."
+      : "Si è verificato un errore interno. Riprova più tardi.";
     return new Response(
-      JSON.stringify({ error: "Si è verificato un errore interno. Riprova più tardi." }),
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      JSON.stringify({ error: userError, detail: msg.slice(0, 300) }),
+      { status: isAiGateway ? 503 : 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
 });
