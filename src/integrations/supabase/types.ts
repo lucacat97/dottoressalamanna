@@ -145,6 +145,51 @@ export type Database = {
           },
         ]
       }
+      consultation_downloads: {
+        Row: {
+          api_key_id: string | null
+          consultation_type: string | null
+          created_at: string
+          download_count: number
+          expires_at: string
+          file_name: string
+          file_path: string
+          id: string
+          last_downloaded_at: string | null
+          max_downloads: number
+          recipient_email: string
+          token: string
+        }
+        Insert: {
+          api_key_id?: string | null
+          consultation_type?: string | null
+          created_at?: string
+          download_count?: number
+          expires_at: string
+          file_name: string
+          file_path: string
+          id?: string
+          last_downloaded_at?: string | null
+          max_downloads?: number
+          recipient_email: string
+          token: string
+        }
+        Update: {
+          api_key_id?: string | null
+          consultation_type?: string | null
+          created_at?: string
+          download_count?: number
+          expires_at?: string
+          file_name?: string
+          file_path?: string
+          id?: string
+          last_downloaded_at?: string | null
+          max_downloads?: number
+          recipient_email?: string
+          token?: string
+        }
+        Relationships: []
+      }
       consultation_requests: {
         Row: {
           attachments: Json
