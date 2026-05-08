@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
-import { Brain, Sparkles, ArrowLeft, Leaf, Lock } from "lucide-react";
+import { Brain, Sparkles, ArrowLeft, Leaf, Lock, ClipboardList } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import MilaMethodTool from "./MilaMethodTool";
 import BrandingSettings from "./BrandingSettings";
 import MTCHub from "./mtc/MTCHub";
+import CheckupTool from "./checkup/CheckupTool";
 
 interface ToolCard {
   id: string;
