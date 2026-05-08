@@ -56,12 +56,15 @@ serve(async (req) => {
 
     // Look up API key by email using service role (bypasses RLS)
     const adminClient = createClient(supabaseUrl, serviceRoleKey);
-    const { data: keyRecord } = await adminClient
+    // Use limit(1) instead of maybeSingle to gracefully handle accidental duplicates
+    const { data: keyRecords } = await adminClient
       .from("api_keys")
       .select("tools, is_active, tool_limits")
       .eq("client_email", email)
       .eq("is_active", true)
-      .maybeSingle();
+      .order("created_at", { ascending: false })
+      .limit(1);
+    const keyRecord = keyRecords?.[0];
 
     if (!keyRecord) {
       return new Response(JSON.stringify({ tools: [], hasKey: false }), {
