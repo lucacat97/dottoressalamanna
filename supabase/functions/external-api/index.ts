@@ -713,6 +713,17 @@ NON includere header o footer dello studio (nome dottoressa, firma, data, indiri
 Vai DIRETTAMENTE all'analisi. Produci SOLO il report formattato, nient'altro.`;
 
 // ── Helper: call AI (non-streaming) ──
+const ANTI_HALLUCINATION_BLOCK = `
+
+=== REGOLA PRIORITARIA — DATI INSUFFICIENTI ===
+Se i dati forniti sono scarsi, parziali o non consentono un'interpretazione clinica fondata:
+- NON inventare elementi clinici, sintomi, valori, test, anamnesi, considerazioni o ipotesi che non siano direttamente sostenute dai dati ricevuti.
+- NON formulare ipotesi speculative o "possibili scenari" che vadano oltre quanto strettamente deducibile dai dati.
+- Limita la consulenza a ciò che è effettivamente leggibile nei dati disponibili.
+- Quando un'area è priva di informazioni, ometti l'interpretazione di quell'area senza riempirla con contenuti generici, formule di stile o ipotesi non supportate.
+- Se i dati complessivi sono troppo scarsi per produrre una consulenza significativa, restituisci una consulenza breve, sobria e onesta che dichiara — con tono professionale e non difensivo — che le informazioni disponibili non consentono di andare oltre alcune osservazioni essenziali, ed elenca SOLO ciò che effettivamente emerge dai dati ricevuti.
+- Meglio una consulenza breve e fedele ai dati che una consulenza lunga ma costruita su supposizioni.`;
+
 async function callAI(systemPrompt: string, userMessage: string): Promise<string> {
   const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
   if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
@@ -726,7 +737,7 @@ async function callAI(systemPrompt: string, userMessage: string): Promise<string
     body: JSON.stringify({
       model: "openai/gpt-5-mini",
       messages: [
-        { role: "system", content: systemPrompt },
+        { role: "system", content: systemPrompt + ANTI_HALLUCINATION_BLOCK },
         { role: "user", content: userMessage },
       ],
       stream: false,
@@ -953,6 +964,74 @@ ${classe_dentale ? `- Classe dentale/funzionale confermata: ${classe_dentale}` :
       mtc_organica: "Consulenza MTC Organica",
     };
     const consultationType = consultationTypeMap[tool] || "Consulenza sul caso";
+
+    // ── Estrai introduzione dal markdown (sezione "Introduzione" o primi paragrafi dopo il disclaimer) ──
+    function extractIntroduction(md: string): string {
+      // Rimuovi disclaimer (blockquote iniziale)
+      const noDisclaimer = md.replace(/^>\s*\*\*Disclaimer:.*?(?=\n\n|\n#|$)/s, "").trim();
+      // Cerca sezione Introduzione
+      const introMatch = noDisclaimer.match(/##?\s*Introduzione[^\n]*\n([\s\S]*?)(?=\n##?\s|\n#\s|$)/i);
+      if (introMatch && introMatch[1].trim().length > 40) {
+        return introMatch[1].trim();
+      }
+      // Fallback: primi 2-3 paragrafi non-heading
+      const paragraphs = noDisclaimer.split(/\n\s*\n/)
+        .map(p => p.trim())
+        .filter(p => p && !p.startsWith("#") && !p.startsWith(">"))
+        .slice(0, 2);
+      return paragraphs.join("\n\n") || "La consulenza completa è disponibile nel documento allegato.";
+    }
+    const introMarkdown = extractIntroduction(markdown);
+    const introHtml = mdToHtml(introMarkdown);
+
+    // ── Genera documento Word (HTML-as-Word) ──
+    const wordHtml = `<!DOCTYPE html>
+<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">
+<head><meta charset="utf-8"><title>${consultationType}</title>
+<!--[if gte mso 9]><xml><w:WordDocument><w:View>Print</w:View><w:Zoom>100</w:Zoom></w:WordDocument></xml><![endif]-->
+<style>
+  @page { size: A4; margin: 2cm; }
+  body { font-family: 'Calibri', Arial, sans-serif; font-size: 11pt; color: #222; line-height: 1.5; }
+  h1 { color: #2a6f6f; font-family: Georgia, serif; font-size: 18pt; }
+  h2 { color: #2a6f6f; font-family: Georgia, serif; font-size: 14pt; }
+  h3 { color: #333; font-size: 12pt; }
+  table { border-collapse: collapse; width: 100%; margin: 12px 0; }
+  th, td { border: 1px solid #ccc; padding: 8px 12px; text-align: left; }
+  th { background: #f0f7f7; }
+  blockquote { border-left: 4px solid #f0b400; padding: 10px 14px; margin: 12px 0; background: #fff8e1; }
+  strong { color: #2a6f6f; }
+</style></head><body>${htmlBody}</body></html>`;
+
+    // ── Upload del documento Word su storage e generazione signed URL ──
+    let downloadUrl = "";
+    try {
+      const safeType = consultationType.replace(/[^\w\-]+/g, "_");
+      const fileName = `consulenza_${safeType}_${new Date().toISOString().slice(0,10)}_${crypto.randomUUID().slice(0,8)}.doc`;
+      const filePath = `${keyRecord.id}/${fileName}`;
+      const { error: uploadError } = await supabaseAdmin.storage
+        .from("consultation-attachments")
+        .upload(filePath, new Blob([wordHtml], { type: "application/msword" }), {
+          contentType: "application/msword",
+          upsert: false,
+        });
+      if (uploadError) {
+        console.error("[external-api] storage upload error:", uploadError);
+      } else {
+        // 30 giorni di validità
+        const { data: signed, error: signedError } = await supabaseAdmin.storage
+          .from("consultation-attachments")
+          .createSignedUrl(filePath, 60 * 60 * 24 * 30);
+        if (signedError) {
+          console.error("[external-api] signed url error:", signedError);
+        } else {
+          downloadUrl = signed?.signedUrl || "";
+        }
+      }
+    } catch (storageErr) {
+      console.error("[external-api] storage exception:", storageErr);
+    }
+
+    // ── Invio email al professionista (corpo: solo introduzione + link al documento Word) ──
     let emailDelivery: { sent: boolean; error?: string } = { sent: false };
     try {
       const sendResp = await supabaseAdmin.functions.invoke("send-transactional-email", {
@@ -964,7 +1043,8 @@ ${classe_dentale ? `- Classe dentale/funzionale confermata: ${classe_dentale}` :
             professionalFirstName: profFirst,
             professionalLastName: profLast,
             consultationType,
-            consultationHtml: htmlBody,
+            introHtml,
+            downloadUrl,
           },
         },
       });
@@ -990,6 +1070,7 @@ ${classe_dentale ? `- Classe dentale/funzionale confermata: ${classe_dentale}` :
       consultation_type: consultationType,
       professional: { first_name: profFirst, last_name: profLast, email: profEmail },
       email_delivery: emailDelivery,
+      download_url: downloadUrl,
       ...result,
     }), {
       status: 200,
