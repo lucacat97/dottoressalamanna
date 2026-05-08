@@ -620,6 +620,39 @@ export type Database = {
           },
         ]
       }
+      patient_screenings: {
+        Row: {
+          answers: Json
+          created_at: string
+          email: string
+          first_name: string
+          id: string
+          last_name: string
+          score: number
+          source: string | null
+        }
+        Insert: {
+          answers?: Json
+          created_at?: string
+          email: string
+          first_name: string
+          id?: string
+          last_name: string
+          score?: number
+          source?: string | null
+        }
+        Update: {
+          answers?: Json
+          created_at?: string
+          email?: string
+          first_name?: string
+          id?: string
+          last_name?: string
+          score?: number
+          source?: string | null
+        }
+        Relationships: []
+      }
       posturographic_checkups: {
         Row: {
           created_at: string
