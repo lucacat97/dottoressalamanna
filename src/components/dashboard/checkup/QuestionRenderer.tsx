@@ -1,10 +1,14 @@
+import { useState } from "react";
+import { Info, ChevronDown } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
+import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip";
 import type { Question } from "./form-schema";
 import { HAS_NOTES } from "./form-schema";
+import { getQuestionInfo } from "./explanations";
 import DentalChartFDI from "./DentalChartFDI";
 import BodyMap from "./BodyMap";
 
