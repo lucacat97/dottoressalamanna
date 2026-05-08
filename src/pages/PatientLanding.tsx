@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { Helmet } from "react-helmet-async";
 import { z } from "zod";
 import { motion } from "framer-motion";
 import { Sparkles, Leaf, Activity, Brain, Moon, Soup, Heart, ArrowRight, CheckCircle2 } from "lucide-react";
@@ -41,6 +40,7 @@ const PatientLanding = () => {
   const [done, setDone] = useState<{ score: number } | null>(null);
 
   useEffect(() => {
+    document.title = "Metodo Olistico La Manna · Spazio Pazienti";
     const init: Record<string, null> = {};
     QUESTIONS.forEach((q) => (init[q.id] = null));
     setAnswers(init);
