@@ -958,7 +958,7 @@ ${classe_dentale ? `- Classe dentale/funzionale confermata: ${classe_dentale}` :
 
     // ── Send the consulenza by email to the professional via send-transactional-email ──
     const consultationTypeMap: Record<string, string> = {
-      diagnosis: "Consulenza Clinica sul Caso",
+      diagnosis: "Consulenza sul caso",
       orthodontic: "Consulenza Cefalometrica",
       mtc_sistemica: "Consulenza MTC Sistemica",
       mtc_organica: "Consulenza MTC Organica",
