@@ -148,10 +148,48 @@ export default function QuestionRenderer({ question, value, note, onValueChange,
 
   const hasNotes = HAS_NOTES(question.type);
   const isFullWidth = question.type === "textarea" || question.type === "dental_chart_fdi" || question.type === "body_map";
+  const info = getQuestionInfo(question.id, question.type);
+  const [showDetails, setShowDetails] = useState(false);
 
   return (
     <div className="border-b border-border py-3 first:pt-1">
-      <Label className="block text-sm font-medium text-foreground mb-2">{question.label}</Label>
+      <div className="flex items-start gap-2 mb-2">
+        <Label className="block text-sm font-medium text-foreground flex-1">{question.label}</Label>
+        <TooltipProvider delayDuration={150}>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                type="button"
+                className="text-muted-foreground hover:text-primary transition-colors mt-0.5"
+                aria-label="Spiegazione"
+              >
+                <Info size={14} />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent side="left" className="max-w-xs text-xs">
+              {info.hint}
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+        {info.details && (
+          <button
+            type="button"
+            onClick={() => setShowDetails((v) => !v)}
+            className="text-[11px] text-muted-foreground hover:text-primary flex items-center gap-1 mt-0.5"
+          >
+            Dettagli
+            <ChevronDown size={11} className={`transition-transform ${showDetails ? "rotate-180" : ""}`} />
+          </button>
+        )}
+      </div>
+      {(showDetails && info.details) && (
+        <div className="mb-3 px-3 py-2 rounded bg-muted/50 border border-border text-xs text-muted-foreground whitespace-pre-line">
+          {info.details}
+        </div>
+      )}
+      {!showDetails && info.hint && (
+        <p className="text-[11px] text-muted-foreground mb-2 italic">{info.hint}</p>
+      )}
       {isFullWidth ? (
         renderInput()
       ) : (
