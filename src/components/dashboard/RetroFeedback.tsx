@@ -58,7 +58,7 @@ const RetroFeedback = ({ toolName }: RetroFeedbackProps) => {
         <h4 className="font-display text-sm font-semibold text-foreground">Retro-feedback</h4>
       </div>
       <p className="font-body text-[11px] text-muted-foreground">
-        Hai notato imprecisioni o aspetti da migliorare nel referto? Segnalali qui: l'IA ne terrà conto nelle analisi future.
+        Hai notato imprecisioni o aspetti da migliorare nella consulenza? Segnalali qui: l'IA ne terrà conto nelle analisi future.
       </p>
       <Textarea
         value={feedback}

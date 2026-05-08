@@ -335,7 +335,7 @@ const MilaMethodTool = () => {
     );
     if (!resp.ok || !resp.body) {
       const err = await resp.json().catch(() => ({ error: "Errore sconosciuto" }));
-      throw new Error(err.error || "Errore diagnosi clinica");
+      throw new Error(err.error || "Errore consulenza clinica");
     }
     return await readSseStream(resp.body);
   };
@@ -363,7 +363,7 @@ const MilaMethodTool = () => {
     );
     if (!resp.ok || !resp.body) {
       const err = await resp.json().catch(() => ({ error: "Errore sconosciuto" }));
-      throw new Error(err.error || "Errore diagnosi ortodontica");
+      throw new Error(err.error || "Errore consulenza ortodontica");
     }
     return await readSseStream(resp.body);
   };
@@ -403,7 +403,7 @@ const MilaMethodTool = () => {
 
     // Limit checks (only for sections actually being run)
     if (clinicalReady && diagUsage !== null && diagUsage >= MONTHLY_LIMIT) {
-      toast({ title: "Limite mensile diagnosi clinica", description: `Hai raggiunto ${MONTHLY_LIMIT} analisi.`, variant: "destructive" });
+      toast({ title: "Limite mensile consulenza clinica", description: `Hai raggiunto ${MONTHLY_LIMIT} analisi.`, variant: "destructive" });
       return;
     }
     if (orthoReady && orthoUsage !== null && orthoUsage >= MONTHLY_LIMIT) {
@@ -427,7 +427,7 @@ const MilaMethodTool = () => {
       tasks.push(
         callDiagnosis(session.access_token, txt)
           .then(r => setDiagnosisResult(r))
-          .catch(e => toast({ title: "Errore diagnosi clinica", description: String(e.message || e), variant: "destructive" }))
+          .catch(e => toast({ title: "Errore consulenza clinica", description: String(e.message || e), variant: "destructive" }))
       );
     }
     if (orthoReady) {
@@ -479,7 +479,7 @@ const MilaMethodTool = () => {
       <div className="flex items-start gap-2 p-3 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-md">
         <AlertTriangle size={14} className="text-amber-600 dark:text-amber-400 mt-0.5 shrink-0" />
         <p className="font-body text-xs text-amber-700 dark:text-amber-300 leading-relaxed">
-          Compila almeno una delle due sezioni. Puoi caricare un PDF o inserire i dati manualmente. Verranno generati referti separati.
+          Compila almeno una delle due sezioni. Puoi caricare un PDF o inserire i dati manualmente. Verranno generati consulenze separati.
         </p>
       </div>
 
@@ -704,7 +704,7 @@ const MilaMethodTool = () => {
         <div className="flex flex-col sm:flex-row gap-2">
           <Button onClick={handleGenerate} disabled={!canGenerate} className="flex-1 font-body gap-2">
             <Sparkles size={16} />
-            Genera Referti — Metodo MILA
+            Genera Consulenze — Metodo MILA
           </Button>
           {(clinicalFile || clinicalManual || cefFile || orthoForm.nome) && (
             <Button variant="ghost" onClick={handleResetAll} className="font-body gap-2">
@@ -717,7 +717,7 @@ const MilaMethodTool = () => {
 
       {!canGenerate && !isGenerating && (
         <p className="font-body text-xs text-muted-foreground text-center">
-          Compila almeno una delle due sezioni per generare i referti.
+          Compila almeno una delle due sezioni per generare i consulenze.
         </p>
       )}
 
@@ -725,7 +725,7 @@ const MilaMethodTool = () => {
       {isGenerating && (
         <div className="flex flex-col items-center justify-center gap-4 py-12 bg-card border border-border rounded-lg">
           <Loader2 size={32} className="animate-spin text-petrolio" />
-          <p className="font-body text-sm text-muted-foreground">Generazione referti in corso...</p>
+          <p className="font-body text-sm text-muted-foreground">Generazione consulenze in corso...</p>
           <p className="font-body text-xs text-muted-foreground">Potrebbe richiedere fino a 30 secondi</p>
         </div>
       )}
@@ -738,16 +738,16 @@ const MilaMethodTool = () => {
               <div className="flex items-center gap-2">
                 <Brain size={18} className="text-petrolio" />
                 <div>
-                  <h4 className="font-display text-base font-semibold text-foreground">Referto Clinico-Posturale pronto</h4>
+                  <h4 className="font-display text-base font-semibold text-foreground">Consulenza Clinico-Posturale pronto</h4>
                   <p className="font-body text-xs text-muted-foreground">Scarica nel formato desiderato.</p>
                 </div>
               </div>
               <div className="flex flex-wrap gap-2">
-                <Button variant="default" onClick={() => downloadAsWord(diagnosisResult, `Referto_Clinico_${clinicalFile?.name?.replace(/\.pdf$/i, "") || "paziente"}`, "Referto Clinico")} className="font-body gap-2">
+                <Button variant="default" onClick={() => downloadAsWord(diagnosisResult, `Consulenza_Clinico_${clinicalFile?.name?.replace(/\.pdf$/i, "") || "paziente"}`, "Consulenza Clinica")} className="font-body gap-2">
                   <FileDown size={14} />
                   Word (editabile)
                 </Button>
-                <Button variant="outline" onClick={() => downloadAsPdf(diagnosisResult, "Referto Clinico")} className="font-body gap-2">
+                <Button variant="outline" onClick={() => downloadAsPdf(diagnosisResult, "Consulenza Clinica")} className="font-body gap-2">
                   <Download size={14} />
                   Stampa / PDF
                 </Button>
@@ -761,16 +761,16 @@ const MilaMethodTool = () => {
               <div className="flex items-center gap-2">
                 <Ruler size={18} className="text-petrolio" />
                 <div>
-                  <h4 className="font-display text-base font-semibold text-foreground">Diagnosi Cefalometrica pronta</h4>
+                  <h4 className="font-display text-base font-semibold text-foreground">Consulenza Cefalometrica pronta</h4>
                   <p className="font-body text-xs text-muted-foreground">Scarica nel formato desiderato.</p>
                 </div>
               </div>
               <div className="flex flex-wrap gap-2">
-                <Button variant="default" onClick={() => downloadAsWord(orthoResult, `Cefalometria_${orthoForm.cognome}_${orthoForm.nome}`, "Diagnosi Cefalometrica")} className="font-body gap-2">
+                <Button variant="default" onClick={() => downloadAsWord(orthoResult, `Cefalometria_${orthoForm.cognome}_${orthoForm.nome}`, "Consulenza Cefalometrica")} className="font-body gap-2">
                   <FileDown size={14} />
                   Word (editabile)
                 </Button>
-                <Button variant="outline" onClick={() => downloadAsPdf(orthoResult, "Diagnosi Cefalometrica")} className="font-body gap-2">
+                <Button variant="outline" onClick={() => downloadAsPdf(orthoResult, "Consulenza Cefalometrica")} className="font-body gap-2">
                   <Download size={14} />
                   Stampa / PDF
                 </Button>

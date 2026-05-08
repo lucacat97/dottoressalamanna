@@ -15,7 +15,7 @@ Il paziente ha indicato uno o più punti dolorosi sul corpo. Ti verranno forniti
 - Sesso del paziente (M/F)
 - Lista dei punti dolorosi con la loro localizzazione anatomica precisa
 
-Il tuo compito è produrre un REFERTO CLINICO completo con DOPPIA INTERPRETAZIONE.
+Il tuo compito è produrre un CONSULENZA CLINICO completo con DOPPIA INTERPRETAZIONE.
 
 === FORMATO OUTPUT OBBLIGATORIO ===
 
@@ -94,7 +94,7 @@ Il professionista ha selezionato una serie di sintomi presentati dal paziente. T
 - Età del paziente
 - Lista dei sintomi selezionati organizzati per categoria
 
-Il tuo compito è identificare il PATTERN DI DISARMONIA secondo la MTC e produrre un referto con DOPPIA INTERPRETAZIONE.
+Il tuo compito è identificare il PATTERN DI DISARMONIA secondo la MTC e produrre una consulenza con DOPPIA INTERPRETAZIONE.
 
 === FORMATO OUTPUT OBBLIGATORIO ===
 
@@ -235,7 +235,7 @@ serve(async (req) => {
     // Fetch accumulated retro-feedback
     const { data: feedbackRows } = await serviceClient.rpc("get_tool_feedback", { _tool_name: toolName });
     const feedbackSection = feedbackRows && feedbackRows.length > 0
-      ? `\n\n=== RETRO-FEEDBACK DAL PROFESSIONISTA (CORREZIONI ACCUMULATE) ===\nQueste sono indicazioni fornite dal professionista dopo aver analizzato referti precedenti. DEVI tenerne conto SEMPRE:\n${feedbackRows.map((r: { feedback: string }, i: number) => `${i + 1}. ${r.feedback}`).join("\n")}\n=== FINE RETRO-FEEDBACK ===`
+      ? `\n\n=== RETRO-FEEDBACK DAL PROFESSIONISTA (CORREZIONI ACCUMULATE) ===\nQueste sono indicazioni fornite dal professionista dopo aver analizzato consulenze precedenti. DEVI tenerne conto SEMPRE:\n${feedbackRows.map((r: { feedback: string }, i: number) => `${i + 1}. ${r.feedback}`).join("\n")}\n=== FINE RETRO-FEEDBACK ===`
       : "";
 
     // Fetch active knowledge base entries (global + mtc)

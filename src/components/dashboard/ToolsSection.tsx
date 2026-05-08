@@ -24,7 +24,7 @@ const tools: ToolCard[] = [
     id: "mila",
     title: "Interpretazione secondo Metodo MILA",
     subtitle: "Cartella clinica + Cefalometria",
-    description: "Carica i PDF della cartella clinico-posturale e del tracciato cefalometrico (oppure inserisci i dati a mano) e ottieni due referti separati secondo il Metodo MILA.",
+    description: "Carica i PDF della cartella clinico-posturale e del tracciato cefalometrico (oppure inserisci i dati a mano) e ottieni due consulenze separati secondo il Metodo MILA.",
     icon: Brain,
     gradient: "from-petrolio via-petrolio-dark to-petrolio",
     accentColor: "text-gold",

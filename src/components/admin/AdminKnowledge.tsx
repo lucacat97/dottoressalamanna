@@ -21,8 +21,8 @@ interface KnowledgeEntry {
 
 const SCOPE_OPTIONS = [
   { value: "global", label: "Globale (tutti gli strumenti)" },
-  { value: "diagnosis", label: "Supporto Diagnosi Clinica" },
-  { value: "orthodontic", label: "Diagnosi Ortodontica" },
+  { value: "diagnosis", label: "Supporto Consulenza Clinica" },
+  { value: "orthodontic", label: "Consulenza Ortodontica" },
   { value: "mtc", label: "MTC" },
 ];
 
