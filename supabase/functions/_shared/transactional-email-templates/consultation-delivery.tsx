@@ -1,6 +1,6 @@
 import * as React from 'npm:react@18.3.1'
 import {
-  Body, Container, Head, Heading, Html, Preview, Section, Text,
+  Body, Button, Container, Head, Heading, Html, Preview, Section, Text,
 } from 'npm:@react-email/components@0.0.22'
 import type { TemplateEntry } from './registry.ts'
 
@@ -9,15 +9,17 @@ const SITE_NAME = 'Studio Carella & Lamanna'
 interface ConsultationDeliveryProps {
   professionalFirstName?: string
   professionalLastName?: string
-  consultationType?: string // e.g. "Consulenza Clinica", "Consulenza Cefalometrica"
-  consultationHtml?: string // pre-rendered HTML body of the consulenza
+  consultationType?: string
+  introHtml?: string
+  downloadUrl?: string
 }
 
 const ConsultationDeliveryEmail = ({
   professionalFirstName,
   professionalLastName,
   consultationType,
-  consultationHtml,
+  introHtml,
+  downloadUrl,
 }: ConsultationDeliveryProps) => {
   const greeting = professionalFirstName || professionalLastName
     ? `Gentile Dott./Dott.ssa ${[professionalFirstName, professionalLastName].filter(Boolean).join(' ')}`
@@ -33,25 +35,39 @@ const ConsultationDeliveryEmail = ({
           <Heading style={h1}>{title}</Heading>
           <Text style={text}>{greeting},</Text>
           <Text style={text}>
-            in allegato a questa email trova la <strong>{title}</strong> elaborata secondo il
-            Metodo MILA. Si tratta di un&apos;interpretazione di supporto al ragionamento clinico
-            e <strong>non costituisce in alcun modo una diagnosi medica</strong>: la
-            responsabilità diagnostica e terapeutica resta interamente in capo al professionista
-            sanitario.
+            di seguito trova una breve <strong>introduzione</strong> alla {title.toLowerCase()} elaborata
+            secondo il Metodo MILA. La consulenza completa è disponibile nel
+            <strong> documento Word allegato</strong> scaricabile dal pulsante in fondo alla mail.
           </Text>
 
-          {consultationHtml ? (
+          {introHtml ? (
             <Section style={consultationBox}>
               <div
                 // eslint-disable-next-line react/no-danger
-                dangerouslySetInnerHTML={{ __html: consultationHtml }}
+                dangerouslySetInnerHTML={{ __html: introHtml }}
               />
             </Section>
           ) : null}
 
-          <Text style={text}>
-            La consulenza è pensata come strumento di confronto e approfondimento. Per qualunque
-            chiarimento o per discutere il caso, può rispondere direttamente a questa email.
+          {downloadUrl ? (
+            <Section style={{ textAlign: 'center', margin: '28px 0' }}>
+              <Button href={downloadUrl} style={button}>
+                Scarica la consulenza completa (Word)
+              </Button>
+              <Text style={smallNote}>
+                Il link è valido per 30 giorni. Apra il file con Microsoft Word, Pages o Google Docs.
+              </Text>
+            </Section>
+          ) : (
+            <Text style={text}>
+              <em>Non è stato possibile generare il link di download. Risponda a questa email per ricevere il documento.</em>
+            </Text>
+          )}
+
+          <Text style={disclaimerText}>
+            La consulenza è uno strumento di supporto al ragionamento clinico e
+            <strong> non costituisce in alcun modo una diagnosi medica</strong>: la responsabilità
+            diagnostica e terapeutica resta interamente in capo al professionista sanitario.
           </Text>
           <Text style={footer}>Cordiali saluti,<br />{SITE_NAME}</Text>
         </Container>
@@ -71,7 +87,8 @@ export const template = {
     professionalFirstName: 'Mario',
     professionalLastName: 'Rossi',
     consultationType: 'Consulenza Clinica',
-    consultationHtml: '<p>Anteprima della consulenza generata dal Metodo MILA.</p>',
+    introHtml: '<p>Il quadro clinico raccolto evidenzia alcuni elementi orientativi che vengono approfonditi nel documento allegato.</p>',
+    downloadUrl: 'https://example.com/download',
   },
 } satisfies TemplateEntry
 
@@ -84,12 +101,27 @@ const h1 = {
 const text = { fontSize: '14px', color: '#222222', lineHeight: '1.6', margin: '0 0 16px' }
 const consultationBox = {
   margin: '20px 0',
-  padding: '20px 22px',
+  padding: '18px 20px',
   backgroundColor: '#f7faf9',
   border: '1px solid #d9e6e4',
   borderRadius: '8px',
-  fontSize: '13px',
+  fontSize: '14px',
   color: '#222222',
-  lineHeight: '1.55',
+  lineHeight: '1.6',
+}
+const button = {
+  backgroundColor: '#2a6f6f',
+  color: '#ffffff',
+  padding: '12px 24px',
+  borderRadius: '6px',
+  textDecoration: 'none',
+  fontSize: '14px',
+  fontWeight: 'bold',
+  display: 'inline-block',
+}
+const smallNote = { fontSize: '12px', color: '#666666', margin: '10px 0 0' }
+const disclaimerText = {
+  fontSize: '12px', color: '#5b4708', backgroundColor: '#fff8e1',
+  padding: '10px 14px', borderRadius: '6px', margin: '20px 0 0', lineHeight: '1.5',
 }
 const footer = { fontSize: '12px', color: '#666666', margin: '24px 0 0' }
