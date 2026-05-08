@@ -19,7 +19,7 @@ interface ApiKey {
 
 const TOOL_LABELS: Record<string, string> = {
   diagnosis: "Supporto Diagnosi",
-  orthodontic: "Diagnosi Ortodontica",
+  orthodontic: "Consulenza Ortodontica",
   mtc_sistemica: "MTC Sistemica",
   mtc_organica: "MTC Organica",
 };

@@ -10,7 +10,7 @@ const corsHeaders = {
 const MONTHLY_LIMIT = 30;
 const TOOL_NAME = "orthodontic-diagnosis";
 
-const SYSTEM_PROMPT = `Sei un assistente per la diagnosi ortodontica funzionale basata sulla cefalometria di Bjork-Jarabak, sviluppato per lo Studio Carella & Lamanna dalla Dott.ssa Lamanna Annarita.
+const SYSTEM_PROMPT = `Sei un assistente per la consulenza ortodontica funzionale basata sulla cefalometria di Bjork-Jarabak, sviluppato per lo Studio Carella & Lamanna dalla Dott.ssa Lamanna Annarita.
 
 DATI DI INPUT che ti verranno forniti:
 - Nome e Cognome del paziente
@@ -235,7 +235,7 @@ serve(async (req) => {
     // Fetch accumulated retro-feedback
     const { data: feedbackRows } = await serviceClient.rpc("get_tool_feedback", { _tool_name: TOOL_NAME });
     const feedbackSection = feedbackRows && feedbackRows.length > 0
-      ? `\n\n=== RETRO-FEEDBACK DAL PROFESSIONISTA (CORREZIONI ACCUMULATE) ===\nQueste sono indicazioni fornite dal professionista dopo aver analizzato referti precedenti. DEVI tenerne conto SEMPRE:\n${feedbackRows.map((r: { feedback: string }, i: number) => `${i + 1}. ${r.feedback}`).join("\n")}\n=== FINE RETRO-FEEDBACK ===`
+      ? `\n\n=== RETRO-FEEDBACK DAL PROFESSIONISTA (CORREZIONI ACCUMULATE) ===\nQueste sono indicazioni fornite dal professionista dopo aver analizzato consulenze precedenti. DEVI tenerne conto SEMPRE:\n${feedbackRows.map((r: { feedback: string }, i: number) => `${i + 1}. ${r.feedback}`).join("\n")}\n=== FINE RETRO-FEEDBACK ===`
       : "";
 
     // Fetch active knowledge base entries (global + orthodontic)
@@ -245,7 +245,7 @@ serve(async (req) => {
       : "";
 
     const patientName = nome && cognome ? `${nome} ${cognome}` : (nome || cognome || "Paziente");
-    const userMessage = `Analizza i seguenti valori cefalometrici e fornisci la diagnosi ortodontica con scelta del dispositivo terapeutico:
+    const userMessage = `Analizza i seguenti valori cefalometrici e fornisci la consulenza ortodontica con scelta del dispositivo terapeutico:
 
 - Paziente: ${patientName}
 - Età: ${age} anni

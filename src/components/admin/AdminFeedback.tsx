@@ -14,7 +14,7 @@ interface FeedbackEntry {
 }
 
 const TOOL_LABELS: Record<string, string> = {
-  "diagnosis-support": "Diagnosi Clinica",
+  "diagnosis-support": "Consulenza Clinica",
   "orthodontic-diagnosis": "Cefalometria",
   "mtc_sistemica": "MTC Sistemica",
   "mtc_organica": "MTC Organica",
@@ -91,7 +91,7 @@ const AdminFeedback = () => {
       </div>
 
       <p className="font-body text-xs text-muted-foreground">
-        I feedback attivi vengono iniettati nel prompt di sistema dell'IA per migliorare progressivamente i referti. Disattiva o elimina quelli non più rilevanti.
+        I feedback attivi vengono iniettati nel prompt di sistema dell'IA per migliorare progressivamente i consulenze. Disattiva o elimina quelli non più rilevanti.
       </p>
 
       {tools.length > 0 && (

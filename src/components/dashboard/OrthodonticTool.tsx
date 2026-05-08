@@ -55,7 +55,7 @@ const downloadAsWord = (markdown: string, filename: string) => {
   const html = generateHtmlDocument(markdown);
   const blob = new Blob(
     [`<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
-    <head><meta charset="utf-8"><title>Diagnosi Ortodontica</title>
+    <head><meta charset="utf-8"><title>Consulenza Ortodontica</title>
     <!--[if gte mso 9]><xml><w:WordDocument><w:View>Print</w:View></w:WordDocument></xml><![endif]-->
     </head><body>${html.match(/<body>([\s\S]*)<\/body>/)?.[1] || ""}</body></html>`],
     { type: "application/msword" }
@@ -244,7 +244,7 @@ const OrthodonticTool = () => {
       <div className="flex items-start gap-2 p-3 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-md">
         <AlertTriangle size={14} className="text-amber-600 dark:text-amber-400 mt-0.5 shrink-0" />
         <p className="font-body text-xs text-amber-700 dark:text-amber-300 leading-relaxed">
-          Solo supporto clinico — la diagnosi è responsabilità del professionista.
+          Solo supporto clinico — l'interpretazione è responsabilità del professionista.
         </p>
       </div>
 

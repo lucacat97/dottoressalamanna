@@ -14,7 +14,7 @@ const liveCourses = [
     icon: Activity,
     title: "Terapia Miofunzionale",
     description:
-      "Protocolli di terapia miofunzionale per la rieducazione delle funzioni orali. Dalla diagnosi al piano di trattamento individualizzato per correggere abitudini viziate e disfunzioni neuromuscolari.",
+      "Protocolli di terapia miofunzionale per la rieducazione delle funzioni orali. Dall'interpretazione al piano di trattamento individualizzato per correggere abitudini viziate e disfunzioni neuromuscolari.",
     tag: "Pratico",
   },
 ];
