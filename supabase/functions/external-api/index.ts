@@ -924,12 +924,53 @@ ${classe_dentale ? `- Classe dentale/funzionale confermata: ${classe_dentale}` :
     const htmlBody = mdToHtml(markdown);
     const fullHtml = wrapInHtmlDocument(htmlBody);
 
+    // ── Send the consulenza by email to the professional via send-transactional-email ──
+    const consultationTypeMap: Record<string, string> = {
+      diagnosis: "Consulenza Clinica sul Caso",
+      orthodontic: "Consulenza Cefalometrica",
+      mtc_sistemica: "Consulenza MTC Sistemica",
+      mtc_organica: "Consulenza MTC Organica",
+    };
+    const consultationType = consultationTypeMap[tool] || "Consulenza sul caso";
+    let emailDelivery: { sent: boolean; error?: string } = { sent: false };
+    try {
+      const sendResp = await supabaseAdmin.functions.invoke("send-transactional-email", {
+        body: {
+          templateName: "consultation-delivery",
+          recipientEmail: profEmail,
+          idempotencyKey: `consultation-${tool}-${keyRecord.id}-${crypto.randomUUID()}`,
+          templateData: {
+            professionalFirstName: profFirst,
+            professionalLastName: profLast,
+            consultationType,
+            consultationHtml: htmlBody,
+          },
+        },
+      });
+      if (sendResp.error) {
+        console.error("[external-api] email send error:", sendResp.error);
+        emailDelivery = { sent: false, error: String(sendResp.error.message || sendResp.error) };
+      } else {
+        emailDelivery = { sent: true };
+      }
+    } catch (mailErr) {
+      console.error("[external-api] email send exception:", mailErr);
+      emailDelivery = { sent: false, error: String((mailErr as Error)?.message || mailErr) };
+    }
+
     const result: Record<string, string> = {};
     if (outputFormat === "markdown" || outputFormat === "both") result.markdown = markdown;
     if (outputFormat === "html" || outputFormat === "both") result.html = fullHtml;
     if (!result.markdown && !result.html) result.html = fullHtml;
 
-    return new Response(JSON.stringify({ success: true, tool, ...result }), {
+    return new Response(JSON.stringify({
+      success: true,
+      tool,
+      consultation_type: consultationType,
+      professional: { first_name: profFirst, last_name: profLast, email: profEmail },
+      email_delivery: emailDelivery,
+      ...result,
+    }), {
       status: 200,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
