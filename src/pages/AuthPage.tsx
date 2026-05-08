@@ -32,13 +32,10 @@ const AuthPage = () => {
     if (!inviteToken) return;
     (async () => {
       try {
-        const { data, error } = await supabase.functions.invoke("accept-invitation", {
-          body: { _check: true, token: inviteToken },
-          method: "GET" as any,
-        });
-        // Fallback to direct GET via fetch (functions.invoke posts by default)
         const url = `https://pjgpducvkdrtigorpzrm.supabase.co/functions/v1/accept-invitation?token=${encodeURIComponent(inviteToken)}`;
-        const res = await fetch(url, { headers: { apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY } });
+        const res = await fetch(url, {
+          headers: { apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string },
+        });
         const j = await res.json();
         if (j.valid) {
           setInviteEmail(j.email);
@@ -53,9 +50,7 @@ const AuthPage = () => {
           );
           setInviteState("invalid");
         }
-        // unused var to silence TS
-        void data; void error;
-      } catch (e: any) {
+      } catch {
         setInviteError("Impossibile validare l'invito.");
         setInviteState("invalid");
       }
