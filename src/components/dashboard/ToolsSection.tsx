@@ -132,6 +132,7 @@ const ToolsSection = () => {
 
         {activeTool === "mila" && <MilaMethodTool />}
         {activeTool === "mtc" && <MTCHub />}
+        {activeTool === "checkup" && <CheckupTool onSendToMila={() => setActiveTool("mila")} />}
       </div>
     );
   }
