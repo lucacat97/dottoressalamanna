@@ -1092,10 +1092,15 @@ ${classe_dentale ? `- Classe dentale/funzionale confermata: ${classe_dentale}` :
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (e) {
-    console.error("external-api error:", e);
+    const msg = (e as Error)?.message || String(e);
+    console.error("external-api error:", msg);
+    const isAiGateway = /AI gateway/i.test(msg);
+    const userError = isAiGateway
+      ? "Il servizio AI è temporaneamente non disponibile (errore upstream). Riprova tra qualche secondo."
+      : "Si è verificato un errore interno. Riprova più tardi.";
     return new Response(
-      JSON.stringify({ error: "Si è verificato un errore interno. Riprova più tardi." }),
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      JSON.stringify({ error: userError, detail: msg.slice(0, 300) }),
+      { status: isAiGateway ? 503 : 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
 });
