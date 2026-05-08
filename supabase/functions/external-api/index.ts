@@ -1059,11 +1059,6 @@ ${classe_dentale ? `- Classe dentale/funzionale confermata: ${classe_dentale}` :
       emailDelivery = { sent: false, error: String((mailErr as Error)?.message || mailErr) };
     }
 
-    const result: Record<string, string> = {};
-    if (outputFormat === "markdown" || outputFormat === "both") result.markdown = markdown;
-    if (outputFormat === "html" || outputFormat === "both") result.html = fullHtml;
-    if (!result.markdown && !result.html) result.html = fullHtml;
-
     return new Response(JSON.stringify({
       success: true,
       tool,
@@ -1071,7 +1066,6 @@ ${classe_dentale ? `- Classe dentale/funzionale confermata: ${classe_dentale}` :
       professional: { first_name: profFirst, last_name: profLast, email: profEmail },
       email_delivery: emailDelivery,
       download_url: downloadUrl,
-      ...result,
     }), {
       status: 200,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
