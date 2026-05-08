@@ -23,6 +23,14 @@ async function hashKey(key: string): Promise<string> {
   return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, "0")).join("");
 }
 
+function normalizeApiKey(value: string): string {
+  return value
+    .trim()
+    .replace(/^Bearer\s+/i, "")
+    .replace(/^["']|["']$/g, "")
+    .trim();
+}
+
 // ── Markdown → HTML converter (matches site PDF styling) ──
 function mdToHtml(md: string): string {
   // First, process tables block by block
@@ -740,7 +748,12 @@ serve(async (req) => {
   }
 
   // ── Auth: validate X-Api-Key against database ──
-  const apiKey = req.headers.get("x-api-key");
+  const rawApiKey =
+    req.headers.get("x-api-key") ||
+    req.headers.get("apikey") ||
+    req.headers.get("authorization") ||
+    "";
+  const apiKey = normalizeApiKey(rawApiKey);
   if (!apiKey) {
     return new Response(JSON.stringify({ error: "Unauthorized. Provide a valid X-Api-Key header." }), {
       status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -758,6 +771,14 @@ serve(async (req) => {
     .maybeSingle();
 
   if (keyError || !keyRecord) {
+    console.warn("[external-api] invalid api key", {
+      fingerprint: keyHash.slice(0, 12),
+      length: apiKey.length,
+      hasXApiKey: Boolean(req.headers.get("x-api-key")),
+      hasApiKeyHeader: Boolean(req.headers.get("apikey")),
+      hasAuthorization: Boolean(req.headers.get("authorization")),
+      dbError: keyError?.message,
+    });
     return new Response(JSON.stringify({ error: "Unauthorized. Invalid or revoked API key." }), {
       status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
