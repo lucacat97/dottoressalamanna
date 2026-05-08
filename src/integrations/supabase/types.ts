@@ -145,6 +145,57 @@ export type Database = {
           },
         ]
       }
+      checkup_questionnaires: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          current_section: string | null
+          exam_date: string
+          form_data: Json
+          id: string
+          notes_data: Json
+          patient_birth_date: string | null
+          patient_first_name: string
+          patient_last_name: string
+          patient_sex: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          current_section?: string | null
+          exam_date?: string
+          form_data?: Json
+          id?: string
+          notes_data?: Json
+          patient_birth_date?: string | null
+          patient_first_name?: string
+          patient_last_name?: string
+          patient_sex?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          current_section?: string | null
+          exam_date?: string
+          form_data?: Json
+          id?: string
+          notes_data?: Json
+          patient_birth_date?: string | null
+          patient_first_name?: string
+          patient_last_name?: string
+          patient_sex?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       consultation_downloads: {
         Row: {
           api_key_id: string | null

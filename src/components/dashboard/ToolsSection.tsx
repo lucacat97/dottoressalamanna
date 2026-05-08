@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
-import { Brain, Sparkles, ArrowLeft, Leaf, Lock } from "lucide-react";
+import { Brain, Sparkles, ArrowLeft, Leaf, Lock, ClipboardList } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import MilaMethodTool from "./MilaMethodTool";
 import BrandingSettings from "./BrandingSettings";
 import MTCHub from "./mtc/MTCHub";
+import CheckupTool from "./checkup/CheckupTool";
 
 interface ToolCard {
   id: string;
@@ -20,6 +21,16 @@ interface ToolCard {
 }
 
 const tools: ToolCard[] = [
+  {
+    id: "checkup",
+    title: "Check Up Ortodontico Posturale",
+    subtitle: "Questionario clinico-posturale",
+    description: "Compila il check up del paziente sezione per sezione, salva in automatico le bozze, esporta in PDF Q/R o invia direttamente al Metodo MILA per la consulenza.",
+    icon: ClipboardList,
+    gradient: "from-amber-500/80 via-orange-500/60 to-rose-500/40",
+    accentColor: "text-amber-600",
+    apiToolKeys: ["diagnosis", "orthodontic"],
+  },
   {
     id: "mila",
     title: "Interpretazione secondo Metodo MILA",
@@ -121,6 +132,7 @@ const ToolsSection = () => {
 
         {activeTool === "mila" && <MilaMethodTool />}
         {activeTool === "mtc" && <MTCHub />}
+        {activeTool === "checkup" && <CheckupTool onSendToMila={() => setActiveTool("mila")} />}
       </div>
     );
   }
