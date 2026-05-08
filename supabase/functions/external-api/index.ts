@@ -836,6 +836,24 @@ serve(async (req) => {
       );
     }
 
+    // ── Verifica: l'email deve coincidere con quella associata alla chiave API (se registrata) ──
+    const keyClientEmail = typeof keyRecord.client_email === "string"
+      ? keyRecord.client_email.trim().toLowerCase()
+      : "";
+    if (keyClientEmail && keyClientEmail !== profEmail) {
+      console.warn("[external-api] email mismatch", {
+        api_key_id: keyRecord.id,
+        provided: profEmail,
+        expected_fingerprint: keyClientEmail.slice(0, 3) + "***",
+      });
+      return new Response(
+        JSON.stringify({
+          error: "L'indirizzo email fornito ('professional_email') non coincide con l'email registrata sulla chiave di licenza. Per motivi di sicurezza la consulenza può essere inviata SOLO all'email associata alla chiave.",
+        }),
+        { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     if (!tool || !["diagnosis", "orthodontic", "mtc_sistemica", "mtc_organica"].includes(tool)) {
       return new Response(
         JSON.stringify({
@@ -1023,7 +1041,7 @@ ${classe_dentale ? `- Classe dentale/funzionale confermata: ${classe_dentale}` :
   strong { color: #2a6f6f; }
 </style></head><body>${htmlBody}</body></html>`;
 
-    // ── Upload del documento Word su storage e generazione signed URL ──
+    // ── Upload del documento Word su storage privato + token monouso ──
     let downloadUrl = "";
     try {
       const safeType = consultationType.replace(/[^\w\-]+/g, "_");
@@ -1038,14 +1056,30 @@ ${classe_dentale ? `- Classe dentale/funzionale confermata: ${classe_dentale}` :
       if (uploadError) {
         console.error("[external-api] storage upload error:", uploadError);
       } else {
-        // 30 giorni di validità
-        const { data: signed, error: signedError } = await supabaseAdmin.storage
-          .from("consultation-attachments")
-          .createSignedUrl(filePath, 60 * 60 * 24 * 30);
-        if (signedError) {
-          console.error("[external-api] signed url error:", signedError);
+        // Genera token sicuro (~256 bit) e registra l'autorizzazione di download
+        const tokenBytes = new Uint8Array(32);
+        crypto.getRandomValues(tokenBytes);
+        const token = Array.from(tokenBytes).map(b => b.toString(16).padStart(2, "0")).join("");
+        const expiresAt = new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString(); // 5 giorni
+
+        const { error: tokenError } = await supabaseAdmin
+          .from("consultation_downloads")
+          .insert({
+            token,
+            file_path: filePath,
+            file_name: fileName,
+            recipient_email: profEmail,
+            api_key_id: keyRecord.id,
+            consultation_type: consultationType,
+            max_downloads: 5,
+            expires_at: expiresAt,
+          });
+
+        if (tokenError) {
+          console.error("[external-api] token insert error:", tokenError);
         } else {
-          downloadUrl = signed?.signedUrl || "";
+          const supaUrl = Deno.env.get("SUPABASE_URL")!.replace(/\/$/, "");
+          downloadUrl = `${supaUrl}/functions/v1/download-consultation?token=${token}`;
         }
       }
     } catch (storageErr) {
