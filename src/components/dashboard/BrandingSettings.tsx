@@ -68,7 +68,7 @@ const BrandingSettings = () => {
         Intestazione Consulenze (Header / Footer)
       </h4>
       <p className="font-body text-xs text-muted-foreground">
-        Personalizza l'intestazione che appare nei referti scaricati. Lascia vuoto per non mostrare intestazione.
+        Personalizza l'intestazione che appare nelle consulenze scaricate. Lascia vuoto per non mostrare intestazione.
       </p>
       <div className="space-y-2">
         <div className="space-y-1">
