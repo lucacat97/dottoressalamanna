@@ -13,8 +13,8 @@ export interface BrandingConfig {
 const STORAGE_KEY = "report-branding";
 
 const DEFAULT_BRANDING: BrandingConfig = {
-  studioName: "Studio Carella & Lamanna",
-  subtitle: "Studio Dentistico Multidisciplinare — Occlusione e Postura",
+  studioName: "",
+  subtitle: "",
 };
 
 export function getBranding(): BrandingConfig {
