@@ -109,7 +109,7 @@ Deno.serve(async (req) => {
 
     // 3) Invia email
     const origin = req.headers.get("origin") || "https://dottoressalamanna.com";
-    const inviteUrl = `${origin}/auth?invite=${token}`;
+    const inviteUrl = `${origin}/login?invite=${token}`;
     const toolsLabel = tools.map(t => TOOL_LABELS[t] || t).join(", ");
 
     // Inoltra il JWT dell'utente (admin) per superare verify_jwt della funzione email
