@@ -45,7 +45,7 @@ const BrandingSettings = () => {
 
   const handleSave = () => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
-    toast({ title: "Intestazione salvata", description: "I prossimi referti useranno questa intestazione." });
+    toast({ title: "Intestazione salvata", description: "Le prossime consulenze useranno questa intestazione." });
     setOpen(false);
   };
 
@@ -56,7 +56,7 @@ const BrandingSettings = () => {
         className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-muted/60 border border-border text-muted-foreground hover:text-foreground hover:border-primary/30 transition-all font-body text-xs"
       >
         <Settings size={12} />
-        Intestazione referti
+        Intestazione consulenze
       </button>
     );
   }
@@ -65,7 +65,7 @@ const BrandingSettings = () => {
     <div className="bg-card border border-border rounded-lg p-4 space-y-3">
       <h4 className="font-display text-sm font-semibold text-foreground flex items-center gap-2">
         <Settings size={14} className="text-petrolio" />
-        Intestazione Referti (Header / Footer)
+        Intestazione Consulenze (Header / Footer)
       </h4>
       <p className="font-body text-xs text-muted-foreground">
         Personalizza l'intestazione che appare nei referti scaricati. Lascia vuoto per non mostrare intestazione.
