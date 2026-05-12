@@ -3,12 +3,10 @@ import { Upload, Brain, AlertTriangle, FileText, Loader2, RotateCcw, Download, F
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import * as pdfjsLib from "pdfjs-dist";
-import pdfjsWorker from "pdfjs-dist/build/pdf.worker.min.mjs?url";
+import { extractPdfTextWithFallback } from "@/lib/pdf-extract";
 import { getBranding, generateHtmlHeader } from "./BrandingSettings";
 import RetroFeedback from "./RetroFeedback";
 const MONTHLY_LIMIT = 30;
-pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorker;
 
 const DISCLAIMER = `⚠️ Disclaimer: Questo strumento fornisce esclusivamente un supporto all'analisi clinica e NON costituisce in alcun modo una diagnosi medica. La responsabilità diagnostica resta interamente in capo al professionista sanitario. L'utilizzo di questo strumento non sostituisce il giudizio clinico del medico.`;
 
