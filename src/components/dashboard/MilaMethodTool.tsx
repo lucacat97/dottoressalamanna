@@ -273,8 +273,9 @@ const MilaMethodTool = () => {
       }
       setClinicalText(text);
       toast({ title: "Cartella caricata", description: `Estratti ${text.length} caratteri.` });
-    } catch {
-      toast({ title: "Errore lettura PDF", description: "Impossibile leggere il contenuto.", variant: "destructive" });
+    } catch (err: any) {
+      console.error("PDF extraction failed:", err);
+      toast({ title: "Errore lettura PDF", description: err?.message ?? "Impossibile leggere il contenuto, neanche con OCR.", variant: "destructive" });
       setClinicalFile(null);
     }
   };
@@ -314,8 +315,9 @@ const MilaMethodTool = () => {
       } else {
         toast({ title: "Cefalometria caricata", description: `Estratti ${found} campi. Verificali prima di generare.` });
       }
-    } catch {
-      toast({ title: "Errore lettura PDF", description: "Impossibile leggere il contenuto.", variant: "destructive" });
+    } catch (err: any) {
+      console.error("PDF extraction failed:", err);
+      toast({ title: "Errore lettura PDF", description: err?.message ?? "Impossibile leggere il contenuto, neanche con OCR.", variant: "destructive" });
       setCefFile(null);
     }
   };
