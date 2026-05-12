@@ -1089,8 +1089,16 @@ ${classe_dentale ? `- Classe dentale/funzionale confermata: ${classe_dentale}` :
     // ── Invio email al professionista (corpo: solo introduzione + link al documento Word) ──
     let emailDelivery: { sent: boolean; error?: string } = { sent: false };
     try {
-      const sendResp = await supabaseAdmin.functions.invoke("send-transactional-email", {
-        body: {
+      const supaUrl2 = Deno.env.get("SUPABASE_URL")!.replace(/\/$/, "");
+      const anonJwt = Deno.env.get("SUPABASE_ANON_KEY")!;
+      const sendRespRaw = await fetch(`${supaUrl2}/functions/v1/send-transactional-email`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${anonJwt}`,
+          "apikey": anonJwt,
+        },
+        body: JSON.stringify({
           templateName: "consultation-delivery",
           recipientEmail: profEmail,
           idempotencyKey: `consultation-${tool}-${keyRecord.id}-${crypto.randomUUID()}`,
@@ -1101,12 +1109,14 @@ ${classe_dentale ? `- Classe dentale/funzionale confermata: ${classe_dentale}` :
             introHtml,
             downloadUrl,
           },
-        },
+        }),
       });
-      if (sendResp.error) {
-        console.error("[external-api] email send error:", sendResp.error);
-        emailDelivery = { sent: false, error: String(sendResp.error.message || sendResp.error) };
+      if (!sendRespRaw.ok) {
+        const errText = await sendRespRaw.text().catch(() => "");
+        console.error("[external-api] email send error:", sendRespRaw.status, errText);
+        emailDelivery = { sent: false, error: `HTTP ${sendRespRaw.status}: ${errText.slice(0, 200)}` };
       } else {
+        await sendRespRaw.text().catch(() => "");
         emailDelivery = { sent: true };
       }
     } catch (mailErr) {
