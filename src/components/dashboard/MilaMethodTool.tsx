@@ -87,19 +87,8 @@ const downloadAsPdf = (markdown: string, title: string) => {
   printWindow.onload = () => { setTimeout(() => printWindow.print(), 500); };
 };
 
-// ---------- PDF text extraction ----------
-const extractTextFromPDF = async (pdfFile: File): Promise<string> => {
-  const arrayBuffer = await pdfFile.arrayBuffer();
-  const pdf = await pdfjsLib.getDocument({ data: new Uint8Array(arrayBuffer) }).promise;
-  let fullText = "";
-  for (let i = 1; i <= pdf.numPages; i++) {
-    const page = await pdf.getPage(i);
-    const content = await page.getTextContent();
-    const pageText = content.items.map((item: any) => item.str).join(" ");
-    fullText += pageText + "\n\n";
-  }
-  return fullText;
-};
+// ---------- PDF text extraction (with OCR fallback) ----------
+const extractTextFromPDF = (pdfFile: File): Promise<string> => extractPdfTextWithFallback(pdfFile);
 
 // ---------- Cephalometric parsing ----------
 interface CefValues {
