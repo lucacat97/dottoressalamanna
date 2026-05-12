@@ -75,7 +75,7 @@ export default function AdminInvitations() {
   };
 
   const copyLink = async (token: string) => {
-    const url = `${window.location.origin}/auth?invite=${token}`;
+    const url = `${window.location.origin}/login?invite=${token}`;
     try { await navigator.clipboard.writeText(url); toast({ title: "Link copiato" }); }
     catch { window.prompt("Copia il link:", url); }
   };
