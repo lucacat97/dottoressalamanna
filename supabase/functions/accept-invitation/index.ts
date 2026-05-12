@@ -69,17 +69,16 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Crea utente (richiede verifica email)
-    const origin = req.headers.get("origin") || "https://dottoressalamanna.com";
+    // L'utente ha già dimostrato di possedere l'email cliccando il link dell'invito
+    // → confermiamo l'email automaticamente, niente doppia verifica.
     const { data: created, error: createErr } = await admin.auth.admin.createUser({
       email: inv.email,
       password,
-      email_confirm: false,
+      email_confirm: true,
       user_metadata: { full_name: fullName || null, invited: true },
     });
 
     if (createErr) {
-      // Se utente già esiste, restituiamo un messaggio chiaro
       const msg = createErr.message?.toLowerCase().includes("already")
         ? "Esiste già un account con questa email — accedi normalmente."
         : createErr.message;
@@ -87,14 +86,6 @@ Deno.serve(async (req) => {
         status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
-
-    // Invia email di verifica (signup confirmation)
-    await admin.auth.admin.generateLink({
-      type: "signup",
-      email: inv.email,
-      password,
-      options: { redirectTo: `${origin}/area-riservata` },
-    }).catch((e) => console.error("generateLink error", e));
 
     await admin.from("invitations").update({
       status: "accepted",
@@ -105,7 +96,7 @@ Deno.serve(async (req) => {
       success: true,
       email: inv.email,
       userId: created.user?.id,
-      message: "Account creato. Controlla la tua email per confermare l'indirizzo.",
+      message: "Account creato. Ora puoi accedere con la tua email e password.",
     }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
   } catch (err) {
     console.error("accept-invitation error", err);
