@@ -113,30 +113,18 @@ const DiagnosisTool = () => {
     setFile(selected);
     setResult("");
     try {
-      const text = await extractTextFromPDF(selected);
+      const text = await extractPdfTextWithFallback(selected);
       if (text.trim().length < 20) {
-        toast({ title: "Testo insufficiente", description: "Il PDF non contiene abbastanza testo leggibile.", variant: "destructive" });
+        toast({ title: "Testo insufficiente", description: "Il PDF non contiene abbastanza testo leggibile, neanche dopo OCR.", variant: "destructive" });
         setFile(null);
         return;
       }
       setExtractedText(text);
-    } catch {
-      toast({ title: "Errore lettura PDF", description: "Impossibile leggere il contenuto del PDF.", variant: "destructive" });
+    } catch (err: any) {
+      console.error("PDF extraction failed:", err);
+      toast({ title: "Errore lettura PDF", description: err?.message ?? "Impossibile leggere il contenuto del PDF.", variant: "destructive" });
       setFile(null);
     }
-  };
-
-  const extractTextFromPDF = async (pdfFile: File): Promise<string> => {
-    const arrayBuffer = await pdfFile.arrayBuffer();
-    const pdf = await pdfjsLib.getDocument({ data: new Uint8Array(arrayBuffer) }).promise;
-    let fullText = "";
-    for (let i = 1; i <= pdf.numPages; i++) {
-      const page = await pdf.getPage(i);
-      const content = await page.getTextContent();
-      const pageText = content.items.map((item: any) => item.str).join(" ");
-      fullText += pageText + "\n\n";
-    }
-    return fullText;
   };
 
   const handleAnalyze = async () => {
