@@ -112,12 +112,14 @@ Deno.serve(async (req) => {
     const inviteUrl = `${origin}/auth?invite=${token}`;
     const toolsLabel = tools.map(t => TOOL_LABELS[t] || t).join(", ");
 
+    // Inoltra il JWT dell'utente (admin) per superare verify_jwt della funzione email
     const { error: mailErr } = await admin.functions.invoke("send-transactional-email", {
       body: {
         templateName: "invitation",
         recipientEmail: email,
         templateData: { inviteUrl, recipientEmail: email, toolsLabel },
       },
+      headers: { Authorization: authHeader },
     });
     if (mailErr) {
       console.error("send-transactional-email error", mailErr);
