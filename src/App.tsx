@@ -23,6 +23,7 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
+          <Route path="/auth" element={<AuthPage />} />
           <Route path="/login" element={<AuthPage />} />
           <Route path="/area-riservata" element={<Dashboard />} />
           <Route path="/reset-password" element={<ResetPassword />} />
