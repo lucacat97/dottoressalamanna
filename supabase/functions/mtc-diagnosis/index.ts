@@ -316,6 +316,10 @@ serve(async (req) => {
     }
 
     await serviceClient.from("ai_usage_log").insert({ user_id: userId, tool_name: toolName });
+    if (apiKeyId) {
+      await serviceClient.from("api_usage_log").insert({ api_key_id: apiKeyId, tool_name: toolName });
+      await serviceClient.from("api_keys").update({ last_used_at: new Date().toISOString() }).eq("id", apiKeyId);
+    }
 
     return new Response(response.body, {
       headers: { ...corsHeaders, "Content-Type": "text/event-stream" },
