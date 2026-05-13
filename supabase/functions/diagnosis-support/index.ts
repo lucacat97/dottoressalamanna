@@ -483,10 +483,11 @@ serve(async (req) => {
 
     // ── Server-side license check ──
     const serviceClient = createClient(supabaseUrl, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
+    let apiKeyId: string | null = null;
     {
       const { data: keyRecord } = await serviceClient
         .from("api_keys")
-        .select("tools")
+        .select("id, tools")
         .eq("client_email", user.email)
         .eq("is_active", true)
         .maybeSingle();
@@ -496,6 +497,7 @@ serve(async (req) => {
           { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
+      apiKeyId = keyRecord.id;
     }
 
     // ── Server-side rate limiting ──
@@ -587,6 +589,10 @@ serve(async (req) => {
 
     // ── Log usage server-side ──
     await serviceClient.from("ai_usage_log").insert({ user_id: userId, tool_name: TOOL_NAME });
+    if (apiKeyId) {
+      await serviceClient.from("api_usage_log").insert({ api_key_id: apiKeyId, tool_name: "diagnosis" });
+      await serviceClient.from("api_keys").update({ last_used_at: new Date().toISOString() }).eq("id", apiKeyId);
+    }
 
     return new Response(response.body, {
       headers: { ...corsHeaders, "Content-Type": "text/event-stream" },
