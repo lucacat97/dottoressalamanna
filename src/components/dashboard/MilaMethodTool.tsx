@@ -337,7 +337,7 @@ const MilaMethodTool = () => {
     ? clinicalText.trim().length >= 20
     : clinicalManual.trim().length >= 20;
 
-  const orthoReady = orthoForm.nome && orthoForm.cognome && orthoForm.age &&
+  const orthoReady = orthoForm.age &&
     orthoForm.angolo_sellare && orthoForm.anb && orthoForm.wits &&
     orthoForm.angolo_articolare && orthoForm.angolo_goniaco;
 
