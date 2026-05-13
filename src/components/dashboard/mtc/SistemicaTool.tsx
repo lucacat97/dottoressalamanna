@@ -279,6 +279,14 @@ export default function SistemicaTool() {
         </Button>
       </div>
 
+      {loading && (
+        <ConsultationProgress
+          label="Analisi MTC sistemica in corso…"
+          hint="Tempo medio: circa 1–2 minuti"
+        />
+      )}
+
+
       {/* Results - download only */}
       {resultMarkdown && (
         <div className="bg-card border border-border rounded-xl p-5 space-y-4">
