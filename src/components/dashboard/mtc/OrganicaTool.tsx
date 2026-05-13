@@ -321,6 +321,13 @@ export default function OrganicaTool() {
         </Button>
       </div>
 
+      {loading && (
+        <ConsultationProgress
+          label="Analisi MTC in corso…"
+          hint="Tempo medio: circa 1–2 minuti"
+        />
+      )}
+
       {/* Results */}
       {resultMarkdown && (
         <div className="bg-card border border-border rounded-xl p-5 space-y-4">
