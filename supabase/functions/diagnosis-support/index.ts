@@ -261,7 +261,7 @@ Data visita: [Se disponibile]
 # Analisi dettagliata dei risultati
 
 ## Anamnesi e sintomi
-[Se presenti dati anamnestici]
+[Se presenti dati anamnestici, RIELABORALI INTEGRALMENTE in forma narrativa professionale, come se fosse l'ortodontista stesso a redigere la consulenza dopo la visita. ASSOLUTAMENTE VIETATO produrre un elenco telegrafico di voci concatenate del tipo "Tipo di parto spontaneo. Sonno continuo. Sport: no. Traumi fisici: sì. Otiti: no." — questo stile è inaccettabile. Devi invece costruire paragrafi discorsivi che intrecciano i dati anamnestici, ne danno una lettura clinica ragionata, evidenziano collegamenti con il quadro funzionale (respirazione, deglutizione, postura, crescita) e contestualizzano ciò che è significativo. Non riportare meccanicamente la coppia domanda-risposta del questionario: trasformala in osservazione clinica fluida. Ometti i dati irrilevanti invece di elencarli come "non presenti".]
 
 ## Esame orale e occlusale
 [Se presenti dati orali/occlusali]
