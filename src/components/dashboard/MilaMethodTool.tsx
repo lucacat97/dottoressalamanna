@@ -12,6 +12,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { extractPdfTextWithFallback } from "@/lib/pdf-extract";
 import { getBranding, generateHtmlHeader } from "./BrandingSettings";
 import RetroFeedback from "./RetroFeedback";
+import ConsultationProgress from "./ConsultationProgress";
 
 const MONTHLY_LIMIT = 30;
 const DIAGNOSIS_TOOL = "diagnosis-support";
@@ -743,11 +744,10 @@ const MilaMethodTool = () => {
 
       {/* Generating state */}
       {isGenerating && (
-        <div className="flex flex-col items-center justify-center gap-4 py-12 bg-card border border-border rounded-lg">
-          <Loader2 size={32} className="animate-spin text-petrolio" />
-          <p className="font-body text-sm text-muted-foreground">Generazione consulenze in corso...</p>
-          <p className="font-body text-xs text-muted-foreground">Potrebbe richiedere fino a 30 secondi</p>
-        </div>
+        <ConsultationProgress
+          label="Generazione consulenze in corso…"
+          hint="Tempo medio: circa 1–2 minuti"
+        />
       )}
 
       {/* Results */}

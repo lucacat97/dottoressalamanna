@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { extractPdfTextWithFallback } from "@/lib/pdf-extract";
 import { getBranding, generateHtmlHeader } from "./BrandingSettings";
 import RetroFeedback from "./RetroFeedback";
+import ConsultationProgress from "./ConsultationProgress";
 const MONTHLY_LIMIT = 30;
 
 const DISCLAIMER = `⚠️ Disclaimer: Questo strumento fornisce esclusivamente un supporto all'analisi clinica e NON costituisce in alcun modo una diagnosi medica. La responsabilità diagnostica resta interamente in capo al professionista sanitario. L'utilizzo di questo strumento non sostituisce il giudizio clinico del medico.`;
@@ -277,11 +278,10 @@ const DiagnosisTool = () => {
       )}
 
       {isAnalyzing && (
-        <div className="flex flex-col items-center justify-center gap-4 py-12">
-          <Loader2 size={32} className="animate-spin text-petrolio" />
-          <p className="font-body text-sm text-muted-foreground">Generazione consulenza in corso...</p>
-          <p className="font-body text-xs text-muted-foreground">Potrebbe richiedere fino a 30 secondi</p>
-        </div>
+        <ConsultationProgress
+          label="Generazione consulenza in corso…"
+          hint="Tempo medio: circa 1–2 minuti"
+        />
       )}
 
       {result && !isAnalyzing && (

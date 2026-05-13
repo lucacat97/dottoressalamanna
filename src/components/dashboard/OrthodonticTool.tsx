@@ -7,6 +7,7 @@ import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { getBranding, generateHtmlHeader } from "./BrandingSettings";
 import RetroFeedback from "./RetroFeedback";
+import ConsultationProgress from "./ConsultationProgress";
 
 const MONTHLY_LIMIT = 30;
 const TOOL_NAME = "orthodontic-diagnosis";
@@ -343,11 +344,10 @@ const OrthodonticTool = () => {
       )}
 
       {isAnalyzing && (
-        <div className="flex flex-col items-center justify-center gap-4 py-12">
-          <Loader2 size={32} className="animate-spin text-petrolio" />
-          <p className="font-body text-sm text-muted-foreground">Analisi cefalometrica in corso...</p>
-          <p className="font-body text-xs text-muted-foreground">Potrebbe richiedere fino a 30 secondi</p>
-        </div>
+        <ConsultationProgress
+          label="Analisi cefalometrica in corso…"
+          hint="Tempo medio: circa 1–2 minuti"
+        />
       )}
 
       {result && !isAnalyzing && (
