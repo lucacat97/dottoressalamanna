@@ -9,12 +9,12 @@ interface ConsultationProgressProps {
 
 /**
  * Tooth-shaped progress indicator for AI consultation generation.
- * Asymptotic curve: never reaches 100% until the parent unmounts it
- * (i.e. when the consultation is actually ready). Slows down over time
- * so the user perceives steady progress even past 2 minutes.
+ * Slow at the start, faster in the middle, then asymptotically slow
+ * again near the top so it never reaches 100% until the parent unmounts.
  *
- * Curve: pct(t) = (1 - exp(-t / τ)) * 99
- *   τ = 45s  →  ~73% at 60s, ~93% at 120s, ~98% at 180s
+ * Sigmoid-like curve centered around ~70s:
+ *   pct(t) = 99 / (1 + exp(-(t - 70) / 18))
+ *   →  ~2% at 0s, ~8% at 30s, ~35% at 60s, ~75% at 80s, ~93% at 110s, ~98% at 140s
  */
 export default function ConsultationProgress({
   label = "Generazione consulenza in corso…",
@@ -27,7 +27,7 @@ export default function ConsultationProgress({
     const start = Date.now();
     const id = window.setInterval(() => {
       const t = (Date.now() - start) / 1000;
-      const value = (1 - Math.exp(-t / 45)) * 99;
+      const value = 99 / (1 + Math.exp(-(t - 70) / 18));
       setPct(Math.max(2, value));
       setElapsed(t);
     }, 200);
