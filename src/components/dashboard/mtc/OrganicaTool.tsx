@@ -9,6 +9,7 @@ import { getBranding, generateHtmlHeader } from "../BrandingSettings";
 import ReportRenderer from "./ReportRenderer";
 import { SYMPTOM_CATEGORIES, type Symptom } from "./symptomCategories";
 import RetroFeedback from "../RetroFeedback";
+import ConsultationProgress from "../ConsultationProgress";
 
 const DISCLAIMER = `⚠️ Disclaimer: Questo strumento fornisce esclusivamente un supporto all'analisi clinica basata sui principi della Medicina Tradizionale Cinese e NON costituisce in alcun modo una diagnosi medica. La responsabilità diagnostica e terapeutica resta interamente in capo al professionista sanitario.`;
 
