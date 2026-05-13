@@ -124,7 +124,7 @@ const OrthodonticTool = () => {
   };
 
   const isFormValid = () => {
-    return form.nome && form.cognome && form.age && form.angolo_sellare && form.anb && form.wits && form.angolo_articolare && form.angolo_goniaco;
+    return form.age && form.angolo_sellare && form.anb && form.wits && form.angolo_articolare && form.angolo_goniaco;
   };
 
   const handleAnalyze = async () => {
