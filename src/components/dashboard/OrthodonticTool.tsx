@@ -7,6 +7,7 @@ import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { getBranding, generateHtmlHeader } from "./BrandingSettings";
 import RetroFeedback from "./RetroFeedback";
+import ConsultationProgress from "./ConsultationProgress";
 
 const MONTHLY_LIMIT = 30;
 const TOOL_NAME = "orthodontic-diagnosis";
