@@ -642,12 +642,12 @@ const MilaMethodTool = () => {
             <div className="space-y-4 pt-2">
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <Label className="font-body text-xs">Nome *</Label>
-                  <Input type="text" placeholder="Mario" value={orthoForm.nome} onChange={(e) => updateOrthoField("nome", e.target.value)} className="font-body" />
+                  <Label className="font-body text-xs">Nome</Label>
+                  <Input type="text" placeholder="Mario (opzionale)" value={orthoForm.nome} onChange={(e) => updateOrthoField("nome", e.target.value)} className="font-body" />
                 </div>
                 <div className="space-y-1">
-                  <Label className="font-body text-xs">Cognome *</Label>
-                  <Input type="text" placeholder="Rossi" value={orthoForm.cognome} onChange={(e) => updateOrthoField("cognome", e.target.value)} className="font-body" />
+                  <Label className="font-body text-xs">Cognome</Label>
+                  <Input type="text" placeholder="Rossi (opzionale)" value={orthoForm.cognome} onChange={(e) => updateOrthoField("cognome", e.target.value)} className="font-body" />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-3">
