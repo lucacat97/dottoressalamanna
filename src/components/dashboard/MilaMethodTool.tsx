@@ -12,6 +12,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { extractPdfTextWithFallback } from "@/lib/pdf-extract";
 import { getBranding, generateHtmlHeader } from "./BrandingSettings";
 import RetroFeedback from "./RetroFeedback";
+import ConsultationProgress from "./ConsultationProgress";
 
 const MONTHLY_LIMIT = 30;
 const DIAGNOSIS_TOOL = "diagnosis-support";
