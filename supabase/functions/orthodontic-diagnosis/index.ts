@@ -197,12 +197,14 @@ serve(async (req) => {
     const serviceClient = createClient(supabaseUrl, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
     let apiKeyId: string | null = null;
     {
-      const { data: keyRecord } = await serviceClient
+      const { data: keyRecords } = await serviceClient
         .from("api_keys")
         .select("id, tools")
         .eq("client_email", user.email)
         .eq("is_active", true)
-        .maybeSingle();
+        .order("created_at", { ascending: false })
+        .limit(1);
+      const keyRecord = keyRecords?.[0];
       if (!keyRecord || !Array.isArray(keyRecord.tools) || !keyRecord.tools.includes("orthodontic")) {
         return new Response(
           JSON.stringify({ error: "Accesso allo strumento non abilitato per il tuo account." }),
