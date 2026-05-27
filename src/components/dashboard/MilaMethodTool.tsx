@@ -708,7 +708,7 @@ const MilaMethodTool = () => {
               <div className="space-y-1">
                 <Label className="font-body text-[11px] text-foreground">Classe dentale (opzionale)</Label>
                 <div className="flex gap-1.5">
-                  {["II classe", "III classe", ""].map(val => (
+                  {["II classe", "III classe", "Open Bite", ""].map(val => (
                     <button key={val || "none"} onClick={() => updateOrthoField("classe_dentale", val)} className={`px-3 py-1.5 rounded-md font-body text-[11px] border transition-colors ${orthoForm.classe_dentale === val ? "bg-primary text-primary-foreground border-primary" : "bg-background border-border text-muted-foreground hover:border-primary/50"}`}>
                       {val || "Non spec."}
                     </button>
