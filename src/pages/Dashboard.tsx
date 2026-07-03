@@ -128,6 +128,7 @@ const Dashboard = () => {
 
   const tabs: { key: MainTab; label: string; icon: typeof BookOpen; adminOnly?: boolean }[] = [
     { key: "strumenti", label: "Strumenti", icon: Wrench },
+    { key: "libreria", label: "Libreria", icon: Library },
     { key: "corsi", label: "Corsi", icon: BookOpen },
     ...(isAdmin ? [{ key: "admin" as MainTab, label: "Admin", icon: Shield, adminOnly: true }] : []),
   ];
