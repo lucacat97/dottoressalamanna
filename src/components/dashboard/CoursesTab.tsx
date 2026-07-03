@@ -1,7 +1,7 @@
-import { Calendar, MapPin, FileText, Download, Monitor, Brain, Image, FileSpreadsheet, File, Lock } from "lucide-react";
+import { Calendar, MapPin, FileText, Download, Monitor, Brain, Image, FileSpreadsheet, File, Lock, CheckCircle2, Clock } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 
 interface CourseEdition {
   id: string;
@@ -46,9 +46,7 @@ const getFileColor = (fileName: string) => {
   return "text-muted-foreground bg-muted/50";
 };
 
-const getFileExt = (fileName: string) => {
-  return fileName.split(".").pop()?.toUpperCase() || "FILE";
-};
+const getFileExt = (fileName: string) => fileName.split(".").pop()?.toUpperCase() || "FILE";
 
 const formatSize = (bytes: number | null) => {
   if (!bytes) return "";
@@ -72,31 +70,116 @@ const MaterialThumbnail = ({ material, onDownload }: { material: CourseMaterial;
   };
 
   return (
-    <div
-      className="group relative flex flex-col items-center p-3 rounded-lg border border-border bg-card hover:shadow-md hover:border-primary/30 transition-all cursor-pointer"
+    <button
+      type="button"
       onClick={() => onDownload(material)}
       onMouseEnter={handlePreview}
+      className="group flex items-center gap-3 p-3 rounded-lg border border-border bg-card hover:border-primary/40 hover:shadow-sm transition-all text-left w-full"
     >
-      <div className={`w-full aspect-square rounded-md flex items-center justify-center mb-2 overflow-hidden ${isImage && previewUrl ? "" : colorClass}`}>
+      <div className={`w-11 h-11 shrink-0 rounded-md flex items-center justify-center overflow-hidden ${isImage && previewUrl ? "" : colorClass}`}>
         {isImage && previewUrl ? (
-          <img src={previewUrl} alt={material.file_name} className="w-full h-full object-cover rounded-md" />
+          <img src={previewUrl} alt="" className="w-full h-full object-cover" />
         ) : (
-          <div className="flex flex-col items-center gap-1">
-            <Icon size={28} />
-            <span className="text-[10px] font-bold opacity-70">{getFileExt(material.file_name)}</span>
-          </div>
+          <Icon size={20} />
         )}
       </div>
-      <p className="font-body text-xs text-foreground text-center truncate w-full" title={material.file_name}>
-        {material.file_name}
-      </p>
-      {material.file_size && (
-        <p className="font-body text-[10px] text-muted-foreground">{formatSize(material.file_size)}</p>
-      )}
-      <div className="absolute inset-0 rounded-lg bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-        <Download size={20} className="text-primary" />
+      <div className="min-w-0 flex-1">
+        <p className="font-body text-sm text-foreground truncate" title={material.file_name}>
+          {material.file_name}
+        </p>
+        <p className="font-body text-[11px] text-muted-foreground">
+          {getFileExt(material.file_name)}{material.file_size ? ` · ${formatSize(material.file_size)}` : ""}
+        </p>
       </div>
-    </div>
+      <Download size={16} className="text-muted-foreground group-hover:text-primary shrink-0 transition-colors" />
+    </button>
+  );
+};
+
+const EditionCard = ({
+  edition,
+  materials,
+  hasAccess,
+  accessLoading,
+  isPast,
+  onDownload,
+}: {
+  edition: CourseEdition;
+  materials: CourseMaterial[];
+  hasAccess: boolean;
+  accessLoading: boolean;
+  isPast: boolean;
+  onDownload: (m: CourseMaterial) => void;
+}) => {
+  const dateObj = new Date(edition.date);
+  const day = dateObj.getDate();
+  const month = dateObj.toLocaleDateString("it-IT", { month: "short" }).toUpperCase().replace(".", "");
+  const year = dateObj.getFullYear();
+
+  return (
+    <article className="bg-card border border-border rounded-xl overflow-hidden hover:shadow-md hover:border-primary/20 transition-all">
+      <div className="flex items-stretch">
+        {/* Date badge */}
+        <div className={`shrink-0 w-20 sm:w-24 flex flex-col items-center justify-center py-4 border-r border-border ${isPast ? "bg-muted/40" : "bg-gradient-to-br from-petrolio/10 to-gold/10"}`}>
+          <span className={`font-body text-[10px] uppercase tracking-widest font-semibold ${isPast ? "text-muted-foreground" : "text-gold"}`}>{month}</span>
+          <span className="font-display text-3xl font-bold text-foreground leading-none my-0.5">{day}</span>
+          <span className="font-body text-xs text-muted-foreground">{year}</span>
+        </div>
+
+        <div className="flex-1 p-5 min-w-0">
+          <div className="flex flex-wrap items-start justify-between gap-3 mb-2">
+            <div className="min-w-0">
+              <h3 className="font-display text-base sm:text-lg font-semibold text-foreground leading-tight">{edition.title}</h3>
+              {edition.location && (
+                <p className="flex items-center gap-1.5 mt-1 font-body text-xs text-muted-foreground">
+                  <MapPin size={12} />
+                  {edition.location}
+                </p>
+              )}
+            </div>
+            <span className={`inline-flex items-center gap-1 font-body text-[11px] font-semibold px-2.5 py-1 rounded-full whitespace-nowrap ${
+              isPast ? "bg-primary/10 text-petrolio" : "bg-gold/15 text-gold"
+            }`}>
+              {isPast ? <><CheckCircle2 size={11} /> Completato</> : <><Clock size={11} /> In programma</>}
+            </span>
+          </div>
+
+          {edition.description && (
+            <p className="font-body text-sm text-muted-foreground line-clamp-2 mb-3">{edition.description}</p>
+          )}
+
+          {/* Materials block */}
+          {accessLoading ? (
+            <p className="font-body text-xs text-muted-foreground italic mt-3">Verifica accesso…</p>
+          ) : hasAccess ? (
+            materials.length > 0 ? (
+              <div className="mt-3">
+                <div className="flex items-center gap-2 mb-2">
+                  <FileText size={12} className="text-muted-foreground" />
+                  <span className="font-body text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">
+                    Materiali · {materials.length}
+                  </span>
+                </div>
+                <div className="grid sm:grid-cols-2 gap-2">
+                  {materials.map((m) => (
+                    <MaterialThumbnail key={m.id} material={m} onDownload={onDownload} />
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <p className="font-body text-xs text-muted-foreground italic mt-3">
+                Nessun materiale caricato per questa edizione.
+              </p>
+            )
+          ) : (
+            <div className="mt-3 flex items-center gap-2 px-3 py-2 rounded-md bg-muted/50 border border-border">
+              <Lock size={13} className="text-muted-foreground shrink-0" />
+              <p className="font-body text-xs text-muted-foreground">Accesso riservato agli iscritti</p>
+            </div>
+          )}
+        </div>
+      </div>
+    </article>
   );
 };
 
@@ -111,7 +194,6 @@ const CoursesTab = ({ editions, materials, onDownload }: CoursesTabProps) => {
         setAccessLoading(false);
         return;
       }
-
       const results: Record<string, boolean> = {};
       await Promise.all(
         editions.map(async (edition) => {
@@ -128,14 +210,69 @@ const CoursesTab = ({ editions, materials, onDownload }: CoursesTabProps) => {
     checkAccess();
   }, [editions]);
 
-  const getMaterialsForEdition = (editionId: string) =>
-    materials.filter((m) => m.edition_id === editionId);
+  const now = useMemo(() => Date.now(), []);
 
-  const formatDate = (dateStr: string) =>
-    new Date(dateStr).toLocaleDateString("it-IT", { day: "numeric", month: "long", year: "numeric" });
+  const renderList = (type: "live" | "webinar") => {
+    const typeEditions = editions.filter((e) => (e.type || "live") === type);
+    const upcoming = typeEditions
+      .filter((e) => new Date(e.date).getTime() >= now && e.status !== "completed")
+      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    const past = typeEditions
+      .filter((e) => !upcoming.includes(e))
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+    if (typeEditions.length === 0) {
+      return (
+        <div className="bg-muted/30 border border-dashed border-border rounded-xl p-10 text-center">
+          <p className="font-body text-muted-foreground">
+            Nessun {type === "live" ? "corso live" : "webinar"} disponibile al momento.
+          </p>
+        </div>
+      );
+    }
+
+    const Section = ({ title, count, items, isPast }: { title: string; count: number; items: CourseEdition[]; isPast: boolean }) =>
+      items.length > 0 ? (
+        <section className="space-y-3">
+          <div className="flex items-center gap-3">
+            <h3 className="font-body text-xs uppercase tracking-[0.15em] font-semibold text-muted-foreground">{title}</h3>
+            <span className="font-body text-xs text-muted-foreground">·</span>
+            <span className="font-body text-xs text-muted-foreground">{count}</span>
+            <div className="flex-1 h-px bg-border" />
+          </div>
+          <div className="grid gap-3">
+            {items.map((edition) => (
+              <EditionCard
+                key={edition.id}
+                edition={edition}
+                materials={materials.filter((m) => m.edition_id === edition.id)}
+                hasAccess={accessMap[edition.id] ?? false}
+                accessLoading={accessLoading}
+                isPast={isPast}
+                onDownload={onDownload}
+              />
+            ))}
+          </div>
+        </section>
+      ) : null;
+
+    return (
+      <div className="space-y-8">
+        <Section title="Prossime edizioni" count={upcoming.length} items={upcoming} isPast={false} />
+        <Section title="Edizioni passate" count={past.length} items={past} isPast={true} />
+      </div>
+    );
+  };
 
   return (
-    <div>
+    <div className="space-y-6">
+      <div className="space-y-1">
+        <h2 className="font-display text-2xl font-bold text-foreground">I tuoi corsi</h2>
+        <p className="font-body text-sm text-muted-foreground">
+          Consulta le edizioni a cui sei iscritto e scarica i materiali didattici associati.
+        </p>
+      </div>
+
       <Tabs defaultValue="live" className="w-full">
         <TabsList className="mb-6 bg-muted/80 p-1 rounded-lg">
           <TabsTrigger value="live" className="flex items-center gap-2 px-5 py-2 font-body text-sm data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-sm">
@@ -148,76 +285,8 @@ const CoursesTab = ({ editions, materials, onDownload }: CoursesTabProps) => {
           </TabsTrigger>
         </TabsList>
 
-        {["live", "webinar"].map((type) => {
-          const typeEditions = editions.filter((e) => (e.type || "live") === type);
-          return (
-            <TabsContent key={type} value={type}>
-              <div className="grid gap-6">
-                {typeEditions.map((edition) => {
-                  const hasAccess = accessMap[edition.id] ?? false;
-                  const editionMaterials = getMaterialsForEdition(edition.id);
-
-                  return (
-                    <div key={edition.id} className="bg-card border border-border rounded-lg p-6 hover:shadow-card transition-shadow">
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
-                        <div>
-                          <h3 className="font-display text-lg font-semibold text-foreground">{edition.title}</h3>
-                          <div className="flex flex-wrap items-center gap-4 mt-1 text-sm text-muted-foreground">
-                            <span className="flex items-center gap-1"><Calendar size={14} />{formatDate(edition.date)}</span>
-                            {edition.location && <span className="flex items-center gap-1"><MapPin size={14} />{edition.location}</span>}
-                          </div>
-                        </div>
-                        <span className={`font-body text-xs font-semibold px-3 py-1 rounded-full whitespace-nowrap ${edition.status === "completed" ? "bg-primary/10 text-petrolio" : "bg-gold/10 text-gold"}`}>
-                          {edition.status === "completed" ? "Completato" : "In programma"}
-                        </span>
-                      </div>
-
-                      {accessLoading ? (
-                        <div className="border-t border-border pt-4">
-                          <p className="font-body text-sm text-muted-foreground italic">Verifica accesso...</p>
-                        </div>
-                      ) : hasAccess ? (
-                        editionMaterials.length > 0 ? (
-                          <div className="border-t border-border pt-4">
-                            <p className="font-body text-xs uppercase tracking-wider text-muted-foreground mb-3">
-                              <FileText size={12} className="inline mr-1" />
-                              {editionMaterials.length} materiale/i disponibile/i
-                            </p>
-                            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3">
-                              {editionMaterials.map((mat) => (
-                                <MaterialThumbnail key={mat.id} material={mat} onDownload={onDownload} />
-                              ))}
-                            </div>
-                          </div>
-                        ) : (
-                          <div className="border-t border-border pt-4">
-                            <p className="font-body text-sm text-muted-foreground italic">Nessun materiale disponibile al momento.</p>
-                          </div>
-                        )
-                      ) : (
-                        <div className="border-t border-border pt-4">
-                          <div className="flex items-center gap-3 py-3 px-4 rounded-md bg-muted/50">
-                            <Lock size={16} className="text-muted-foreground shrink-0" />
-                            <p className="font-body text-sm text-muted-foreground">
-                              Accesso consentito solo agli iscritti
-                            </p>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-                {typeEditions.length === 0 && (
-                  <div className="bg-muted/30 rounded-lg p-8 text-center">
-                    <p className="font-body text-muted-foreground">
-                      Nessun {type === "live" ? "corso live" : "webinar"} disponibile al momento.
-                    </p>
-                  </div>
-                )}
-              </div>
-            </TabsContent>
-          );
-        })}
+        <TabsContent value="live">{renderList("live")}</TabsContent>
+        <TabsContent value="webinar">{renderList("webinar")}</TabsContent>
       </Tabs>
     </div>
   );
