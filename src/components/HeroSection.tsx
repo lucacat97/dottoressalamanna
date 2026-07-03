@@ -66,6 +66,7 @@ const HeroSection = () => {
             Dott.ssa Annarita
             <br />
             <span className="italic font-medium">Lamanna</span>
+            <span className="sr-only"> — Ortodonzia e Postura</span>
           </motion.h1>
           <motion.p
             initial={{ opacity: 0, y: 20 }}
