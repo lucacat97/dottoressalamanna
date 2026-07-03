@@ -620,6 +620,101 @@ export type Database = {
           },
         ]
       }
+      learning_materials: {
+        Row: {
+          allowed_plans: Database["public"]["Enums"]["subscription_plan"][]
+          article_content: string | null
+          content_type: Database["public"]["Enums"]["material_content_type"]
+          created_at: string
+          created_by: string | null
+          description: string | null
+          file_mime: string | null
+          file_path: string | null
+          file_size: number | null
+          id: string
+          is_published: boolean
+          section_id: string
+          sort_order: number
+          title: string
+          updated_at: string
+          video_url: string | null
+        }
+        Insert: {
+          allowed_plans?: Database["public"]["Enums"]["subscription_plan"][]
+          article_content?: string | null
+          content_type: Database["public"]["Enums"]["material_content_type"]
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          file_mime?: string | null
+          file_path?: string | null
+          file_size?: number | null
+          id?: string
+          is_published?: boolean
+          section_id: string
+          sort_order?: number
+          title: string
+          updated_at?: string
+          video_url?: string | null
+        }
+        Update: {
+          allowed_plans?: Database["public"]["Enums"]["subscription_plan"][]
+          article_content?: string | null
+          content_type?: Database["public"]["Enums"]["material_content_type"]
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          file_mime?: string | null
+          file_path?: string | null
+          file_size?: number | null
+          id?: string
+          is_published?: boolean
+          section_id?: string
+          sort_order?: number
+          title?: string
+          updated_at?: string
+          video_url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "learning_materials_section_id_fkey"
+            columns: ["section_id"]
+            isOneToOne: false
+            referencedRelation: "material_sections"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      material_sections: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          slug: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          slug: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          slug?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       patient_screenings: {
         Row: {
           answers: Json
@@ -740,6 +835,30 @@ export type Database = {
         }
         Relationships: []
       }
+      user_plans: {
+        Row: {
+          assigned_at: string
+          assigned_by: string | null
+          plan: Database["public"]["Enums"]["subscription_plan"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          assigned_at?: string
+          assigned_by?: string | null
+          plan?: Database["public"]["Enums"]["subscription_plan"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          assigned_at?: string
+          assigned_by?: string | null
+          plan?: Database["public"]["Enums"]["subscription_plan"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           id: string
@@ -796,6 +915,10 @@ export type Database = {
           feedback: string
         }[]
       }
+      get_user_plan: {
+        Args: { _user_id: string }
+        Returns: Database["public"]["Enums"]["subscription_plan"]
+      }
       has_course_access: {
         Args: { _edition_id: string; _user_id: string }
         Returns: boolean
@@ -824,9 +947,15 @@ export type Database = {
           read_ct: number
         }[]
       }
+      user_can_access_material: {
+        Args: { _material_id: string; _user_id: string }
+        Returns: boolean
+      }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
+      material_content_type: "video_link" | "video_upload" | "pdf" | "article"
+      subscription_plan: "base" | "pro" | "platinum"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -955,6 +1084,8 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "moderator", "user"],
+      material_content_type: ["video_link", "video_upload", "pdf", "article"],
+      subscription_plan: ["base", "pro", "platinum"],
     },
   },
 } as const
