@@ -882,6 +882,22 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_list_user_plans: {
+        Args: never
+        Returns: {
+          assigned_at: string
+          email: string
+          plan: Database["public"]["Enums"]["subscription_plan"]
+          user_id: string
+        }[]
+      }
+      admin_set_user_plan: {
+        Args: {
+          _email: string
+          _plan: Database["public"]["Enums"]["subscription_plan"]
+        }
+        Returns: string
+      }
       delete_email: {
         Args: { message_id: number; queue_name: string }
         Returns: boolean
