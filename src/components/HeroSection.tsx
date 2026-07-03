@@ -30,6 +30,10 @@ const HeroSection = () => {
         <img
           src={lamannaHero}
           alt="Dott.ssa Annarita Lamanna"
+          width="1200"
+          height="1600"
+          fetchPriority="high"
+          decoding="async"
           className="h-full w-auto object-contain object-bottom drop-shadow-[0_0_80px_rgba(0,0,0,0.5)]"
           style={{ mixBlendMode: 'multiply' }} />
         
