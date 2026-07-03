@@ -60,8 +60,8 @@ const RegistrationModal = ({ edition, onClose }: RegistrationModalProps) => {
           className="bg-card rounded-lg shadow-elevated max-w-md w-full p-8 relative"
           onClick={(e) => e.stopPropagation()}
         >
-          <button onClick={onClose} className="absolute top-4 right-4 text-muted-foreground hover:text-foreground transition-colors">
-            <X size={20} />
+          <button onClick={onClose} aria-label="Chiudi" className="absolute top-4 right-4 text-muted-foreground hover:text-foreground transition-colors">
+            <X size={20} aria-hidden="true" />
           </button>
 
           {success ? (
