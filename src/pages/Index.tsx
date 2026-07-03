@@ -1,6 +1,7 @@
 import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/HeroSection";
 import AboutSection from "@/components/AboutSection";
+import MilaSection from "@/components/MilaSection";
 import CoursesSection from "@/components/CoursesSection";
 import EditionsSection from "@/components/EditionsSection";
 import GallerySection from "@/components/GallerySection";
