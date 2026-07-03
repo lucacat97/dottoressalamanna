@@ -57,6 +57,9 @@ const embedUrl = (url: string): string | null => {
     }
     return url;
   } catch { return null; }
+};
+
+
 
 const videoThumbnail = (url: string): string | null => {
   try {
