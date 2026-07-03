@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { BookOpen, Users, Upload, KeyRound, Calendar, MapPin, Trash2, Shield, Key, MessageSquareText, Pencil, Brain, Mail } from "lucide-react";
+import { BookOpen, Users, Upload, KeyRound, Calendar, MapPin, Trash2, Shield, Key, MessageSquareText, Pencil, Brain, Mail, Library, Crown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import AdminCreateEdition from "@/components/admin/AdminCreateEdition";
 import AdminRegistrations from "@/components/admin/AdminRegistrations";
@@ -10,6 +10,8 @@ import AdminFeedback from "@/components/admin/AdminFeedback";
 import AdminKnowledge from "@/components/admin/AdminKnowledge";
 import AdminLandingEditor from "@/components/admin/AdminLandingEditor";
 import AdminInvitations from "@/components/admin/AdminInvitations";
+import AdminLibrary from "@/components/admin/AdminLibrary";
+import AdminUserPlans from "@/components/admin/AdminUserPlans";
 
 interface CourseEdition {
   id: string;
@@ -38,7 +40,7 @@ interface AdminTabProps {
 }
 
 const AdminTab = ({ editions, materials, onFetchData, onDeleteEdition }: AdminTabProps) => {
-  const [adminTab, setAdminTab] = useState<"editions" | "registrations" | "materials" | "access" | "apikeys" | "invitations" | "feedback" | "knowledge">("editions");
+  const [adminTab, setAdminTab] = useState<"editions" | "registrations" | "materials" | "library" | "plans" | "access" | "apikeys" | "invitations" | "feedback" | "knowledge">("editions");
   const [editingLandingId, setEditingLandingId] = useState<string | null>(null);
 
   const formatDate = (dateStr: string) =>
@@ -55,7 +57,9 @@ const AdminTab = ({ editions, materials, onFetchData, onDeleteEdition }: AdminTa
         {([
           { key: "editions" as const, label: "Edizioni", icon: BookOpen },
           { key: "registrations" as const, label: "Iscrizioni", icon: Users },
-          { key: "materials" as const, label: "Materiali", icon: Upload },
+          { key: "materials" as const, label: "Materiali corsi", icon: Upload },
+          { key: "library" as const, label: "Libreria", icon: Library },
+          { key: "plans" as const, label: "Piani utenti", icon: Crown },
           { key: "access" as const, label: "Accessi", icon: KeyRound },
           { key: "apikeys" as const, label: "API Keys", icon: Key },
           { key: "invitations" as const, label: "Inviti", icon: Mail },
@@ -125,6 +129,8 @@ const AdminTab = ({ editions, materials, onFetchData, onDeleteEdition }: AdminTa
 
       {adminTab === "registrations" && <AdminRegistrations editions={editions} />}
       {adminTab === "materials" && <AdminMaterials editions={editions} materials={materials} onUpdated={onFetchData} />}
+      {adminTab === "library" && <AdminLibrary />}
+      {adminTab === "plans" && <AdminUserPlans />}
       {adminTab === "access" && <AdminAccessControl editions={editions} />}
       {adminTab === "apikeys" && <AdminApiKeys />}
       {adminTab === "invitations" && <AdminInvitations />}
