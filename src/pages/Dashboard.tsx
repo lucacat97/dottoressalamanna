@@ -213,6 +213,10 @@ const Dashboard = () => {
           <ToolsSection />
         )}
 
+        {activeTab === "libreria" && (
+          <LibraryTab />
+        )}
+
         {activeTab === "admin" && isAdmin && (
           <AdminTab
             editions={editions}
