@@ -39,7 +39,7 @@ const Dashboard = () => {
   const [materials, setMaterials] = useState<CourseMaterial[]>([]);
   const [searchParams, setSearchParams] = useSearchParams();
   const tabParam = searchParams.get("tab");
-  const validTabs: MainTab[] = ["strumenti", "corsi", "admin"];
+  const validTabs: MainTab[] = ["strumenti", "corsi", "libreria", "admin"];
   const activeTab: MainTab = validTabs.includes(tabParam as MainTab) ? (tabParam as MainTab) : "strumenti";
   const setActiveTab = (tab: MainTab) => setSearchParams({ tab });
   const navigate = useNavigate();
