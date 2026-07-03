@@ -7,6 +7,7 @@ import MilaMethodTool from "./MilaMethodTool";
 import BrandingSettings from "./BrandingSettings";
 import MTCHub from "./mtc/MTCHub";
 import CheckupTool from "./checkup/CheckupTool";
+import UsageWidget from "./UsageWidget";
 
 interface ToolCard {
   id: string;
