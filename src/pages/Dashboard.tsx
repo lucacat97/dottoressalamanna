@@ -29,7 +29,7 @@ interface CourseMaterial {
   file_size: number | null;
 }
 
-type MainTab = "corsi" | "strumenti" | "admin";
+type MainTab = "corsi" | "strumenti" | "libreria" | "admin";
 
 const Dashboard = () => {
   const [user, setUser] = useState<SupaUser | null>(null);
