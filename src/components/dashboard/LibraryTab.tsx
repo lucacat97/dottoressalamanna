@@ -59,6 +59,106 @@ const embedUrl = (url: string): string | null => {
   } catch { return null; }
 };
 
+
+
+const videoThumbnail = (url: string): string | null => {
+  try {
+    const u = new URL(url);
+    if (u.hostname.includes("youtube.com")) {
+      const id = u.searchParams.get("v");
+      return id ? `https://i.ytimg.com/vi/${id}/hqdefault.jpg` : null;
+    }
+    if (u.hostname === "youtu.be") {
+      return `https://i.ytimg.com/vi/${u.pathname.slice(1)}/hqdefault.jpg`;
+    }
+    if (u.hostname.includes("vimeo.com")) {
+      const id = u.pathname.split("/").filter(Boolean).pop();
+      return id ? `https://vumbnail.com/${id}.jpg` : null;
+    }
+    return null;
+  } catch { return null; }
+};
+
+/** Card thumbnail that lazily requests a signed URL for uploaded videos and PDFs
+ *  so the browser can render the first frame / first page as a preview. */
+const MaterialThumb = ({ material }: { material: Material }) => {
+  const [url, setUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    if (material.content_type === "video_link" && material.video_url) {
+      setUrl(videoThumbnail(material.video_url));
+      return;
+    }
+    if ((material.content_type === "video_upload" || material.content_type === "pdf") && material.file_path) {
+      supabase.storage.from("learning-materials").createSignedUrl(material.file_path, 600).then(({ data }) => {
+        if (!cancelled && data?.signedUrl) setUrl(data.signedUrl);
+      });
+    }
+    return () => { cancelled = true; };
+  }, [material]);
+
+  const Icon = TYPE_ICON[material.content_type];
+
+  if (material.content_type === "article") {
+    return (
+      <div className="relative aspect-video rounded-md overflow-hidden bg-gradient-to-br from-petrolio via-petrolio-dark to-gold/60 flex items-center justify-center">
+        <BookOpen size={32} className="text-cream/90" />
+        <span className="absolute bottom-2 left-2 font-body text-[10px] uppercase tracking-widest text-cream/80 font-semibold">Articolo</span>
+      </div>
+    );
+  }
+
+  if (material.content_type === "pdf") {
+    return (
+      <div className="relative aspect-video rounded-md overflow-hidden bg-muted/40 border border-border">
+        {url ? (
+          <object data={`${url}#toolbar=0&navpanes=0&view=FitH`} type="application/pdf" className="w-full h-full pointer-events-none">
+            <div className="flex items-center justify-center h-full">
+              <FileText size={32} className="text-red-500/70" />
+            </div>
+          </object>
+        ) : (
+          <div className="flex items-center justify-center h-full">
+            <FileText size={32} className="text-red-500/70" />
+          </div>
+        )}
+        <span className="absolute bottom-1.5 right-1.5 font-body text-[10px] uppercase tracking-wider bg-card/90 text-foreground px-1.5 py-0.5 rounded">PDF</span>
+      </div>
+    );
+  }
+
+  // video_link or video_upload
+  return (
+    <div className="relative aspect-video rounded-md overflow-hidden bg-black group/thumb">
+      {url ? (
+        material.content_type === "video_upload" ? (
+          <video
+            src={`${url}#t=0.5`}
+            preload="metadata"
+            muted
+            playsInline
+            className="w-full h-full object-cover"
+          />
+        ) : (
+          <img src={url} alt="" className="w-full h-full object-cover" loading="lazy" />
+        )
+      ) : (
+        <div className="w-full h-full flex items-center justify-center">
+          <Icon size={28} className="text-cream/60" />
+        </div>
+      )}
+      {/* Play overlay */}
+      <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-t from-black/50 via-black/10 to-transparent">
+        <div className="w-11 h-11 rounded-full bg-cream/95 flex items-center justify-center shadow-lg group-hover/thumb:scale-110 transition-transform">
+          <Play size={18} className="text-petrolio fill-petrolio ml-0.5" />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+
 const LibraryTab = () => {
   const [sections, setSections] = useState<Section[]>([]);
   const [materials, setMaterials] = useState<Material[]>([]);
@@ -167,31 +267,24 @@ const LibraryTab = () => {
 
                 {isOpen && (
                   <div className="border-t border-border grid sm:grid-cols-2 lg:grid-cols-3 gap-3 p-4 bg-muted/10">
-                    {items.map((m) => {
-                      const Icon = TYPE_ICON[m.content_type];
-                      return (
-                        <button
-                          key={m.id}
-                          onClick={() => openContent(m)}
-                          className="group text-left bg-card border border-border rounded-lg p-4 hover:border-primary/40 hover:shadow-md transition-all"
-                        >
-                          <div className="flex items-start gap-3">
-                            <div className="w-10 h-10 rounded-md bg-gradient-to-br from-primary/15 to-gold/10 flex items-center justify-center shrink-0 group-hover:scale-105 transition">
-                              <Icon size={18} className="text-petrolio" />
-                            </div>
-                            <div className="min-w-0 flex-1">
-                              <h4 className="font-display text-sm font-semibold text-foreground leading-snug line-clamp-2">{m.title}</h4>
-                              {m.description && (
-                                <p className="font-body text-xs text-muted-foreground line-clamp-2 mt-1">{m.description}</p>
-                              )}
-                              <div className="flex items-center gap-2 mt-2 font-body text-[11px] text-primary font-semibold">
-                                {m.content_type === "pdf" ? <><Download size={11} /> Apri / scarica</> : <><Play size={11} /> Apri</>}
-                              </div>
-                            </div>
+                    {items.map((m) => (
+                      <button
+                        key={m.id}
+                        onClick={() => openContent(m)}
+                        className="group text-left bg-card border border-border rounded-lg overflow-hidden hover:border-primary/40 hover:shadow-md transition-all"
+                      >
+                        <MaterialThumb material={m} />
+                        <div className="p-3">
+                          <h4 className="font-display text-sm font-semibold text-foreground leading-snug line-clamp-2">{m.title}</h4>
+                          {m.description && (
+                            <p className="font-body text-xs text-muted-foreground line-clamp-2 mt-1">{m.description}</p>
+                          )}
+                          <div className="flex items-center gap-1.5 mt-2 font-body text-[11px] text-primary font-semibold">
+                            {m.content_type === "pdf" ? <><Download size={11} /> Apri / scarica</> : <><Play size={11} /> Guarda</>}
                           </div>
-                        </button>
-                      );
-                    })}
+                        </div>
+                      </button>
+                    ))}
                   </div>
                 )}
               </section>
