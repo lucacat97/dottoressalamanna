@@ -129,6 +129,8 @@ const AdminTab = ({ editions, materials, onFetchData, onDeleteEdition }: AdminTa
 
       {adminTab === "registrations" && <AdminRegistrations editions={editions} />}
       {adminTab === "materials" && <AdminMaterials editions={editions} materials={materials} onUpdated={onFetchData} />}
+      {adminTab === "library" && <AdminLibrary />}
+      {adminTab === "plans" && <AdminUserPlans />}
       {adminTab === "access" && <AdminAccessControl editions={editions} />}
       {adminTab === "apikeys" && <AdminApiKeys />}
       {adminTab === "invitations" && <AdminInvitations />}
