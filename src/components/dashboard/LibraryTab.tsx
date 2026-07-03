@@ -267,31 +267,24 @@ const LibraryTab = () => {
 
                 {isOpen && (
                   <div className="border-t border-border grid sm:grid-cols-2 lg:grid-cols-3 gap-3 p-4 bg-muted/10">
-                    {items.map((m) => {
-                      const Icon = TYPE_ICON[m.content_type];
-                      return (
-                        <button
-                          key={m.id}
-                          onClick={() => openContent(m)}
-                          className="group text-left bg-card border border-border rounded-lg p-4 hover:border-primary/40 hover:shadow-md transition-all"
-                        >
-                          <div className="flex items-start gap-3">
-                            <div className="w-10 h-10 rounded-md bg-gradient-to-br from-primary/15 to-gold/10 flex items-center justify-center shrink-0 group-hover:scale-105 transition">
-                              <Icon size={18} className="text-petrolio" />
-                            </div>
-                            <div className="min-w-0 flex-1">
-                              <h4 className="font-display text-sm font-semibold text-foreground leading-snug line-clamp-2">{m.title}</h4>
-                              {m.description && (
-                                <p className="font-body text-xs text-muted-foreground line-clamp-2 mt-1">{m.description}</p>
-                              )}
-                              <div className="flex items-center gap-2 mt-2 font-body text-[11px] text-primary font-semibold">
-                                {m.content_type === "pdf" ? <><Download size={11} /> Apri / scarica</> : <><Play size={11} /> Apri</>}
-                              </div>
-                            </div>
+                    {items.map((m) => (
+                      <button
+                        key={m.id}
+                        onClick={() => openContent(m)}
+                        className="group text-left bg-card border border-border rounded-lg overflow-hidden hover:border-primary/40 hover:shadow-md transition-all"
+                      >
+                        <MaterialThumb material={m} />
+                        <div className="p-3">
+                          <h4 className="font-display text-sm font-semibold text-foreground leading-snug line-clamp-2">{m.title}</h4>
+                          {m.description && (
+                            <p className="font-body text-xs text-muted-foreground line-clamp-2 mt-1">{m.description}</p>
+                          )}
+                          <div className="flex items-center gap-1.5 mt-2 font-body text-[11px] text-primary font-semibold">
+                            {m.content_type === "pdf" ? <><Download size={11} /> Apri / scarica</> : <><Play size={11} /> Guarda</>}
                           </div>
-                        </button>
-                      );
-                    })}
+                        </div>
+                      </button>
+                    ))}
                   </div>
                 )}
               </section>
