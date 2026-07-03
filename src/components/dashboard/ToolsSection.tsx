@@ -152,6 +152,10 @@ const ToolsSection = () => {
         <BrandingSettings />
       </div>
 
+      <UsageWidget />
+
+
+
       {loadingPerms ? (
         <p className="font-body text-sm text-muted-foreground">Caricamento permessi...</p>
       ) : (
