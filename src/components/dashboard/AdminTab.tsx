@@ -57,7 +57,9 @@ const AdminTab = ({ editions, materials, onFetchData, onDeleteEdition }: AdminTa
         {([
           { key: "editions" as const, label: "Edizioni", icon: BookOpen },
           { key: "registrations" as const, label: "Iscrizioni", icon: Users },
-          { key: "materials" as const, label: "Materiali", icon: Upload },
+          { key: "materials" as const, label: "Materiali corsi", icon: Upload },
+          { key: "library" as const, label: "Libreria", icon: Library },
+          { key: "plans" as const, label: "Piani utenti", icon: Crown },
           { key: "access" as const, label: "Accessi", icon: KeyRound },
           { key: "apikeys" as const, label: "API Keys", icon: Key },
           { key: "invitations" as const, label: "Inviti", icon: Mail },
