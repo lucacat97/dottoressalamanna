@@ -3,10 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Plus, Trash2, FileText, Upload, Loader2, BookOpen, Power, PowerOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
-import * as pdfjsLib from "pdfjs-dist";
-import pdfjsWorker from "pdfjs-dist/build/pdf.worker.min.mjs?url";
-
-pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorker;
+import { extractPdfTextWithFallback } from "@/lib/pdf-extract";
 
 interface KnowledgeEntry {
   id: string;
@@ -68,16 +65,7 @@ const AdminKnowledge = () => {
   }, []);
 
   const extractTextFromPDF = async (pdfFile: File): Promise<string> => {
-    const arrayBuffer = await pdfFile.arrayBuffer();
-    const pdf = await pdfjsLib.getDocument({ data: new Uint8Array(arrayBuffer) }).promise;
-    let fullText = "";
-    for (let i = 1; i <= pdf.numPages; i++) {
-      const page = await pdf.getPage(i);
-      const textContent = await page.getTextContent();
-      const pageText = textContent.items.map((item: any) => item.str).join(" ");
-      fullText += pageText + "\n\n";
-    }
-    return fullText.trim();
+    return await extractPdfTextWithFallback(pdfFile);
   };
 
   const handleFileSelected = async (e: React.ChangeEvent<HTMLInputElement>) => {
