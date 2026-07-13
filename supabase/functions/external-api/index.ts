@@ -361,7 +361,8 @@ serve(async (req) => {
         : "";
       markdown = await callAI(
         DIAGNOSIS_SYSTEM_PROMPT,
-        `Analizza il seguente documento clinico e genera un CONSULENZA CLINICA COMPLETA:\n\n---\n${documentText}${reasonSection}${notesSection}${terapieSection}\n---`
+        `Analizza il seguente documento clinico e genera un CONSULENZA CLINICA COMPLETA:\n\n---\n${documentText}${reasonSection}${notesSection}${terapieSection}\n---`,
+        { scope: "diagnosis", toolName: "diagnosis-support", serviceClient: supabaseAdmin }
       );
     } else if (tool === "orthodontic") {
       const { nome, cognome, age, sex, angolo_sellare, anb, wits, angolo_articolare, angolo_goniaco, ns_mm, gome_mm, rapporto_ns_gome, classe_dentale, clinicalNotes } = body;
@@ -387,7 +388,7 @@ serve(async (req) => {
 - Angolo Goniaco (Ar-Go-Me): ${angolo_goniaco}°
 ${ratio ? `- Rapporto NS/GoMe: ${ratio}` : ""}
 ${classe_dentale ? `- Classe dentale/funzionale confermata: ${classe_dentale}` : ""}${notesSection}`;
-      markdown = await callAI(ORTHODONTIC_SYSTEM_PROMPT, userMsg);
+      markdown = await callAI(ORTHODONTIC_SYSTEM_PROMPT, userMsg, { scope: "orthodontic", toolName: "orthodontic-diagnosis", serviceClient: supabaseAdmin });
     } else if (tool === "mtc_sistemica") {
       const { sex, painPoints } = body;
       if (!painPoints || !Array.isArray(painPoints) || painPoints.length === 0) {
@@ -396,9 +397,12 @@ ${classe_dentale ? `- Classe dentale/funzionale confermata: ${classe_dentale}` :
           { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
-      const pointsList = painPoints.map((p: any, i: number) => `${i+1}. Regione: ${p.region} — Descrizione: ${p.description}`).join("\n");
-      const mtcSistemicaPrompt = `Sei un assistente MTC specializzato in analisi sistemica del dolore con doppia interpretazione (MTC + medicina occidentale/neurobiomodulazione). Analizza i punti dolorosi e suggerisci agopunti terapeutici, meridiani coinvolti e piano terapeutico integrato. Rispondi in italiano. NON includere disclaimer.`;
-      markdown = await callAI(mtcSistemicaPrompt, `Paziente: Sesso ${sex || "non specificato"}\n\nPunti dolorosi:\n${pointsList}`);
+      const pointsList = painPoints.map((p: { region: string; description: string }, i: number) => `${i+1}. Regione: ${p.region} — Descrizione: ${p.description}`).join("\n");
+      markdown = await callAI(
+        MTC_SISTEMICA_PROMPT,
+        `Paziente: Sesso ${sex || "non specificato"}\n\nPunti dolorosi segnalati:\n${pointsList}`,
+        { scope: "mtc", toolName: "mtc_sistemica", serviceClient: supabaseAdmin }
+      );
     } else {
       // mtc_organica
       const { sex, age, symptoms } = body;
@@ -408,9 +412,12 @@ ${classe_dentale ? `- Classe dentale/funzionale confermata: ${classe_dentale}` :
           { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
-      const symptomsList = symptoms.map((s: any) => `- [${s.category}] ${s.name}`).join("\n");
-      const mtcOrganicaPrompt = `Sei un assistente MTC specializzato in identificazione di pattern di disarmonia da sintomi con doppia interpretazione (MTC + medicina occidentale/neurobiomodulazione). Identifica pattern Zang-Fu, agopunti e piano terapeutico. Rispondi in italiano. NON includere disclaimer.`;
-      markdown = await callAI(mtcOrganicaPrompt, `Paziente: Sesso ${sex || "non specificato"}, Età ${age || "non specificata"}\n\nSintomi:\n${symptomsList}`);
+      const symptomsList = symptoms.map((s: { category: string; name: string }) => `- [${s.category}] ${s.name}`).join("\n");
+      markdown = await callAI(
+        MTC_ORGANICA_PROMPT,
+        `Paziente: Sesso ${sex || "non specificato"}, Età ${age || "non specificata"}\n\nSintomi riportati:\n${symptomsList}`,
+        { scope: "mtc", toolName: "mtc_organica", serviceClient: supabaseAdmin }
+      );
     }
 
     // ── Log usage ──
