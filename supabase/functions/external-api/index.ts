@@ -141,7 +141,7 @@ import { DIAGNOSIS_SYSTEM_PROMPT, ORTHODONTIC_SYSTEM_PROMPT, MTC_SISTEMICA_PROMP
 
 async function callAI(systemPrompt: string, userMessage: string, opts?: { scope?: string; toolName?: string; serviceClient?: ReturnType<typeof createClient> }): Promise<string> {
   // Inject Knowledge Base and retro-feedback the same way the site does
-  let augmented = systemPrompt;
+  let augmented = systemPrompt + `\n\n=== METODOLOGIA DI RIFERIMENTO ===\n${JSON.stringify(metodologia)}\n=== FINE METODOLOGIA ===\n\n=== MATERIALE DIDATTICO DEI CORSI (KNOWLEDGE BASE) ===\n${JSON.stringify(courseKnowledge)}\n=== FINE MATERIALE DIDATTICO ===`;
   if (opts?.scope && opts?.serviceClient) {
     try {
       const { data: knowledgeRows } = await opts.serviceClient.rpc("get_active_ai_knowledge", { _scope: opts.scope });
