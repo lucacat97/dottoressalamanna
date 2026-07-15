@@ -504,6 +504,8 @@ const MilaMethodTool = () => {
     resetCef();
     setDiagnosisResult("");
     setOrthoResult("");
+    setDiagEmailSent(false);
+    setOrthoEmailSent(false);
   };
 
   // ---------- Disclaimer screen ----------
