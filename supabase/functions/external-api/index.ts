@@ -577,7 +577,7 @@ ${classe_dentale ? `- Classe dentale/funzionale confermata: ${classe_dentale}` :
       professional: { first_name: profFirst, last_name: profLast, email: profEmail },
       message: "Consulenza accettata. La rielaborazione e l'invio via email avvengono in background: l'email arriva tipicamente entro 1-2 minuti.",
     }), {
-      status: 202,
+      status: 200,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (e) {
