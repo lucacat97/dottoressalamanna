@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import {
   Upload, Brain, AlertTriangle, FileText, Loader2, RotateCcw,
-  Download, FileDown, Info, Ruler, ClipboardList, Sparkles
+  Mail, Info, Ruler, ClipboardList, Sparkles, CheckCircle2
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
