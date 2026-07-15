@@ -119,7 +119,7 @@ serve(async (req) => {
       body: JSON.stringify({
         model: "openai/gpt-5",
         messages: [
-          { role: "system", content: SYSTEM_PROMPT + knowledgeSection + feedbackSection },
+          { role: "system", content: SYSTEM_PROMPT + `\n\n=== METODOLOGIA DI RIFERIMENTO ===\n${JSON.stringify(metodologia)}\n=== FINE METODOLOGIA ===\n\n=== MATERIALE DIDATTICO DEI CORSI (KNOWLEDGE BASE) ===\n${JSON.stringify(courseKnowledge)}\n=== FINE MATERIALE DIDATTICO ===` + knowledgeSection + feedbackSection },
           {
             role: "user",
             content: `Analizza i seguenti dati clinici e genera il consulenza finale completo rispettando rigorosamente struttura, ordine, logica clinica, tono e stile descritti nelle istruzioni.${clinicalNotesSection}${terapieSection}\n\n---\n${documentText}\n---`,
