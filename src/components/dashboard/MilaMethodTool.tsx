@@ -794,18 +794,21 @@ const MilaMethodTool = () => {
               <div className="flex items-center gap-2">
                 <Brain size={18} className="text-petrolio" />
                 <div>
-                  <h4 className="font-display text-base font-semibold text-foreground">Consulenza Clinico-Posturale pronto</h4>
-                  <p className="font-body text-xs text-muted-foreground">Scarica nel formato desiderato.</p>
+                  <h4 className="font-display text-base font-semibold text-foreground">Consulenza Clinico-Posturale pronta</h4>
+                  <p className="font-body text-xs text-muted-foreground">
+                    Invia il documento Word alla tua email {userEmail ? <span className="font-medium">({userEmail})</span> : null}.
+                  </p>
                 </div>
               </div>
               <div className="flex flex-wrap gap-2">
-                <Button variant="default" onClick={() => downloadAsWord(diagnosisResult, `Consulenza_Clinico_${clinicalFile?.name?.replace(/\.pdf$/i, "") || "paziente"}`, "Consulenza Clinica")} className="font-body gap-2">
-                  <FileDown size={14} />
-                  Word (editabile)
-                </Button>
-                <Button variant="outline" onClick={() => downloadAsPdf(diagnosisResult, "Consulenza Clinica")} className="font-body gap-2">
-                  <Download size={14} />
-                  Stampa / PDF
+                <Button
+                  variant="default"
+                  onClick={() => sendConsultationEmail("diagnosis", diagnosisResult, "Consulenza Clinica")}
+                  disabled={sendingDiagEmail || diagEmailSent}
+                  className="font-body gap-2"
+                >
+                  {sendingDiagEmail ? <Loader2 size={14} className="animate-spin" /> : diagEmailSent ? <CheckCircle2 size={14} /> : <Mail size={14} />}
+                  {sendingDiagEmail ? "Invio in corso…" : diagEmailSent ? "Email inviata" : "Invia via email"}
                 </Button>
               </div>
               <RetroFeedback toolName={DIAGNOSIS_TOOL} />
@@ -818,17 +821,20 @@ const MilaMethodTool = () => {
                 <Ruler size={18} className="text-petrolio" />
                 <div>
                   <h4 className="font-display text-base font-semibold text-foreground">Consulenza Cefalometrica pronta</h4>
-                  <p className="font-body text-xs text-muted-foreground">Scarica nel formato desiderato.</p>
+                  <p className="font-body text-xs text-muted-foreground">
+                    Invia il documento Word alla tua email {userEmail ? <span className="font-medium">({userEmail})</span> : null}.
+                  </p>
                 </div>
               </div>
               <div className="flex flex-wrap gap-2">
-                <Button variant="default" onClick={() => downloadAsWord(orthoResult, `Cefalometria_${orthoForm.cognome}_${orthoForm.nome}`, "Consulenza Cefalometrica")} className="font-body gap-2">
-                  <FileDown size={14} />
-                  Word (editabile)
-                </Button>
-                <Button variant="outline" onClick={() => downloadAsPdf(orthoResult, "Consulenza Cefalometrica")} className="font-body gap-2">
-                  <Download size={14} />
-                  Stampa / PDF
+                <Button
+                  variant="default"
+                  onClick={() => sendConsultationEmail("ortho", orthoResult, "Consulenza Cefalometrica")}
+                  disabled={sendingOrthoEmail || orthoEmailSent}
+                  className="font-body gap-2"
+                >
+                  {sendingOrthoEmail ? <Loader2 size={14} className="animate-spin" /> : orthoEmailSent ? <CheckCircle2 size={14} /> : <Mail size={14} />}
+                  {sendingOrthoEmail ? "Invio in corso…" : orthoEmailSent ? "Email inviata" : "Invia via email"}
                 </Button>
               </div>
               <RetroFeedback toolName={ORTHO_TOOL} />
