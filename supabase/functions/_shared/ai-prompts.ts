@@ -252,11 +252,6 @@ Data visita: [Se disponibile]
 
 [NON inserire QUI alcun alert sull'età adulta: è gestito solo nella consulenza cefalometrica.]
 
-# Le cose che funzionano
-[Valorizza risorse biologiche, funzionali e adattative del paziente. Sottolinea che mostrano capacità di risposta e rappresentano base favorevole per la terapia.]
-
-# Le cose che non vanno e la loro importanza terapeutica
-[Descrivi criticità collegandole a crescita cranio-facciale, equilibrio occlusale, funzione linguale, respirazione e postura. Spiega subito la loro importanza terapeutica.]
 
 # Analisi dettagliata dei risultati
 
