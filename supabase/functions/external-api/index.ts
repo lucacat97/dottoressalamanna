@@ -432,25 +432,10 @@ ${classe_dentale ? `- Classe dentale/funzionale confermata: ${classe_dentale}` :
       markdown = DISCLAIMER_BLOCK + markdown;
     }
 
-    // ── Rielaborazione con Claude (solo Consulenza Clinica) ──
-    let refinedHtml: string | null = null;
-    if (tool === "diagnosis") {
-      const hasKey = !!Deno.env.get("ANTHROPIC_API_KEY");
-      console.log(`[external-api] Claude refine start (ANTHROPIC_API_KEY present=${hasKey}, markdown_len=${markdown.length})`);
-      try {
-        refinedHtml = await refineWithClaude(markdown);
-        console.log(`[external-api] Claude refine done (refined=${!!refinedHtml}, len=${refinedHtml?.length ?? 0})`);
-      } catch (e) {
-        console.error("[external-api] Claude refine FAILED, falling back:", (e as Error)?.message);
-        refinedHtml = null;
-      }
-    }
-
-    // Build response based on format
-    const htmlBody = refinedHtml ?? mdToHtml(markdown);
-    const fullHtml = wrapInHtmlDocument(htmlBody);
-
-    // ── Send the consulenza by email to the professional via send-transactional-email ──
+    // ── Consegna asincrona ──
+    // La rielaborazione con Claude (solo diagnosis) + Word + email possono superare
+    // i 150s del limite Edge Function se eseguiti sincronamente. Rispondiamo subito
+    // e proseguiamo in background con EdgeRuntime.waitUntil.
     const consultationTypeMap: Record<string, string> = {
       diagnosis: "Consulenza sul caso",
       orthodontic: "Consulenza Cefalometrica",
@@ -459,25 +444,35 @@ ${classe_dentale ? `- Classe dentale/funzionale confermata: ${classe_dentale}` :
     };
     const consultationType = consultationTypeMap[tool] || "Consulenza sul caso";
 
-    // ── Estrai introduzione (da HTML raffinato se disponibile, altrimenti dal markdown) ──
     function extractIntroduction(md: string): string {
       const noDisclaimer = md.replace(/^>\s*\*\*Disclaimer:.*?(?=\n\n|\n#|$)/s, "").trim();
       const introMatch = noDisclaimer.match(/##?\s*Introduzione[^\n]*\n([\s\S]*?)(?=\n##?\s|\n#\s|$)/i);
-      if (introMatch && introMatch[1].trim().length > 40) {
-        return introMatch[1].trim();
-      }
-      const paragraphs = noDisclaimer.split(/\n\s*\n/)
-        .map(p => p.trim())
-        .filter(p => p && !p.startsWith("#") && !p.startsWith(">"))
-        .slice(0, 2);
+      if (introMatch && introMatch[1].trim().length > 40) return introMatch[1].trim();
+      const paragraphs = noDisclaimer.split(/\n\s*\n/).map(p => p.trim())
+        .filter(p => p && !p.startsWith("#") && !p.startsWith(">")).slice(0, 2);
       return paragraphs.join("\n\n") || "La consulenza completa è disponibile nel documento allegato.";
     }
-    const introHtml = refinedHtml
-      ? extractIntroFromHtml(refinedHtml)
-      : mdToHtml(extractIntroduction(markdown));
 
-    // ── Genera documento Word (HTML-as-Word) ──
-    const wordHtml = `<!DOCTYPE html>
+    const backgroundJob = async () => {
+      try {
+        // Claude refine solo per Consulenza Clinica
+        let refinedHtml: string | null = null;
+        if (tool === "diagnosis") {
+          const hasKey = !!Deno.env.get("ANTHROPIC_API_KEY");
+          console.log(`[external-api:bg] Claude refine start (key=${hasKey}, md_len=${markdown.length})`);
+          try {
+            refinedHtml = await refineWithClaude(markdown);
+            console.log(`[external-api:bg] Claude refine done (refined=${!!refinedHtml}, len=${refinedHtml?.length ?? 0})`);
+          } catch (e) {
+            console.error("[external-api:bg] Claude refine FAILED, fallback:", (e as Error)?.message);
+            refinedHtml = null;
+          }
+        }
+
+        const htmlBody = refinedHtml ?? mdToHtml(markdown);
+        const introHtml = refinedHtml ? extractIntroFromHtml(refinedHtml) : mdToHtml(extractIntroduction(markdown));
+
+        const wordHtml = `<!DOCTYPE html>
 <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">
 <head><meta charset="utf-8"><title>${consultationType}</title>
 <!--[if gte mso 9]><xml><w:WordDocument><w:View>Print</w:View><w:Zoom>100</w:Zoom></w:WordDocument></xml><![endif]-->
@@ -494,99 +489,95 @@ ${classe_dentale ? `- Classe dentale/funzionale confermata: ${classe_dentale}` :
   strong { color: #2a6f6f; }
 </style></head><body>${htmlBody}</body></html>`;
 
-    // ── Upload del documento Word su storage privato + token monouso ──
-    let downloadUrl = "";
-    try {
-      const safeType = consultationType.replace(/[^\w\-]+/g, "_");
-      const fileName = `consulenza_${safeType}_${new Date().toISOString().slice(0,10)}_${crypto.randomUUID().slice(0,8)}.doc`;
-      const filePath = `${keyRecord.id}/${fileName}`;
-      const { error: uploadError } = await supabaseAdmin.storage
-        .from("consultation-attachments")
-        .upload(filePath, new Blob([wordHtml], { type: "application/msword" }), {
-          contentType: "application/msword",
-          upsert: false,
-        });
-      if (uploadError) {
-        console.error("[external-api] storage upload error:", uploadError);
-      } else {
-        // Genera token sicuro (~256 bit) e registra l'autorizzazione di download
-        const tokenBytes = new Uint8Array(32);
-        crypto.getRandomValues(tokenBytes);
-        const token = Array.from(tokenBytes).map(b => b.toString(16).padStart(2, "0")).join("");
-        const expiresAt = new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString(); // 5 giorni
-
-        const { error: tokenError } = await supabaseAdmin
-          .from("consultation_downloads")
-          .insert({
-            token,
-            file_path: filePath,
-            file_name: fileName,
-            recipient_email: profEmail,
-            api_key_id: keyRecord.id,
-            consultation_type: consultationType,
-            max_downloads: 5,
-            expires_at: expiresAt,
-          });
-
-        if (tokenError) {
-          console.error("[external-api] token insert error:", tokenError);
-        } else {
-          const supaUrl = Deno.env.get("SUPABASE_URL")!.replace(/\/$/, "");
-          downloadUrl = `${supaUrl}/functions/v1/download-consultation?token=${token}`;
+        // Upload Word + token
+        let downloadUrl = "";
+        try {
+          const safeType = consultationType.replace(/[^\w\-]+/g, "_");
+          const fileName = `consulenza_${safeType}_${new Date().toISOString().slice(0,10)}_${crypto.randomUUID().slice(0,8)}.doc`;
+          const filePath = `${keyRecord.id}/${fileName}`;
+          const { error: uploadError } = await supabaseAdmin.storage
+            .from("consultation-attachments")
+            .upload(filePath, new Blob([wordHtml], { type: "application/msword" }), {
+              contentType: "application/msword",
+              upsert: false,
+            });
+          if (uploadError) {
+            console.error("[external-api:bg] storage upload error:", uploadError);
+          } else {
+            const tokenBytes = new Uint8Array(32);
+            crypto.getRandomValues(tokenBytes);
+            const token = Array.from(tokenBytes).map(b => b.toString(16).padStart(2, "0")).join("");
+            const expiresAt = new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString();
+            const { error: tokenError } = await supabaseAdmin
+              .from("consultation_downloads")
+              .insert({
+                token, file_path: filePath, file_name: fileName,
+                recipient_email: profEmail, api_key_id: keyRecord.id,
+                consultation_type: consultationType, max_downloads: 5, expires_at: expiresAt,
+              });
+            if (tokenError) {
+              console.error("[external-api:bg] token insert error:", tokenError);
+            } else {
+              const supaUrl = Deno.env.get("SUPABASE_URL")!.replace(/\/$/, "");
+              downloadUrl = `${supaUrl}/functions/v1/download-consultation?token=${token}`;
+            }
+          }
+        } catch (storageErr) {
+          console.error("[external-api:bg] storage exception:", storageErr);
         }
-      }
-    } catch (storageErr) {
-      console.error("[external-api] storage exception:", storageErr);
-    }
 
-    // ── Invio email al professionista (corpo: solo introduzione + link al documento Word) ──
-    let emailDelivery: { sent: boolean; error?: string } = { sent: false };
-    try {
-      const supaUrl2 = Deno.env.get("SUPABASE_URL")!.replace(/\/$/, "");
-      const anonJwt = Deno.env.get("SUPABASE_ANON_KEY")!;
-      const sendRespRaw = await fetch(`${supaUrl2}/functions/v1/send-transactional-email`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${anonJwt}`,
-          "apikey": anonJwt,
-        },
-        body: JSON.stringify({
-          templateName: "consultation-delivery",
-          recipientEmail: profEmail,
-          idempotencyKey: `consultation-${tool}-${keyRecord.id}-${crypto.randomUUID()}`,
-          templateData: {
-            professionalFirstName: profFirst,
-            professionalLastName: profLast,
-            consultationType,
-            introHtml,
-            downloadUrl,
-          },
-        }),
-      });
-      if (!sendRespRaw.ok) {
-        const errText = await sendRespRaw.text().catch(() => "");
-        console.error("[external-api] email send error:", sendRespRaw.status, errText);
-        emailDelivery = { sent: false, error: `HTTP ${sendRespRaw.status}: ${errText.slice(0, 200)}` };
-      } else {
-        await sendRespRaw.text().catch(() => "");
-        emailDelivery = { sent: true };
+        // Email
+        try {
+          const supaUrl2 = Deno.env.get("SUPABASE_URL")!.replace(/\/$/, "");
+          const anonJwt = Deno.env.get("SUPABASE_ANON_KEY")!;
+          const sendRespRaw = await fetch(`${supaUrl2}/functions/v1/send-transactional-email`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json", "Authorization": `Bearer ${anonJwt}`, "apikey": anonJwt },
+            body: JSON.stringify({
+              templateName: "consultation-delivery",
+              recipientEmail: profEmail,
+              idempotencyKey: `consultation-${tool}-${keyRecord.id}-${crypto.randomUUID()}`,
+              templateData: {
+                professionalFirstName: profFirst,
+                professionalLastName: profLast,
+                consultationType, introHtml, downloadUrl,
+              },
+            }),
+          });
+          if (!sendRespRaw.ok) {
+            const errText = await sendRespRaw.text().catch(() => "");
+            console.error("[external-api:bg] email send error:", sendRespRaw.status, errText);
+          } else {
+            await sendRespRaw.text().catch(() => "");
+            console.log("[external-api:bg] email sent to", profEmail);
+          }
+        } catch (mailErr) {
+          console.error("[external-api:bg] email send exception:", mailErr);
+        }
+      } catch (bgErr) {
+        console.error("[external-api:bg] fatal:", (bgErr as Error)?.message || bgErr);
       }
-    } catch (mailErr) {
-      console.error("[external-api] email send exception:", mailErr);
-      emailDelivery = { sent: false, error: String((mailErr as Error)?.message || mailErr) };
+    };
+
+    // Kick off async work — response returns immediately below.
+    // @ts-ignore EdgeRuntime is provided by Supabase Edge runtime
+    if (typeof EdgeRuntime !== "undefined" && EdgeRuntime?.waitUntil) {
+      // @ts-ignore
+      EdgeRuntime.waitUntil(backgroundJob());
+    } else {
+      // Fallback: fire-and-forget (dev/local)
+      backgroundJob();
     }
 
     return new Response(JSON.stringify({
       success: true,
+      status: "processing",
       tool,
       consultation_type: consultationType,
       professional: { first_name: profFirst, last_name: profLast, email: profEmail },
-      email_delivery: emailDelivery,
-      download_url: downloadUrl,
-      refined: !!refinedHtml,
+      message: "Consulenza accettata. La rielaborazione e l'invio via email avvengono in background: l'email arriva tipicamente entro 1-2 minuti.",
     }), {
-      status: 200,
+      status: 202,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (e) {
