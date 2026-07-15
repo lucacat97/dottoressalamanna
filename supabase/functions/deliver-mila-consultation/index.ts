@@ -108,9 +108,20 @@ serve(async (req) => {
     }
     const type = (consultationType && typeof consultationType === "string") ? consultationType : "Consulenza sul caso";
 
+    // ── Rielaborazione con Claude (solo Consulenza Clinica MILA) ──
+    let refinedHtml: string | null = null;
+    if (type === "Consulenza Clinica") {
+      try {
+        refinedHtml = await refineWithClaude(markdown);
+      } catch (e) {
+        console.error("[deliver-mila-consultation] Claude refine failed, falling back:", (e as Error)?.message);
+        refinedHtml = null;
+      }
+    }
+
     // ── HTML + Word ──
-    const bodyHtml = mdToHtml(markdown);
-    const introHtml = mdToHtml(extractIntroduction(markdown));
+    const bodyHtml = refinedHtml ?? mdToHtml(markdown);
+    const introHtml = refinedHtml ? extractIntroFromHtml(refinedHtml) : mdToHtml(extractIntroduction(markdown));
     const wordHtml = `<!DOCTYPE html>
 <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">
 <head><meta charset="utf-8"><title>${type}</title>
