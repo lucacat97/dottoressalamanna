@@ -279,6 +279,84 @@ ISTRUZIONE OPERATIVA: nelle prossime generazioni evita gli errori sopra descritt
         </form>
       </div>
 
+      {/* ── Correzione da Esempio ── */}
+      <div className="bg-card border border-border rounded-lg p-6">
+        <div className="flex items-center gap-2 mb-2">
+          <Wand2 size={18} className="text-gold" />
+          <h3 className="font-display text-lg font-semibold text-foreground">Correzione da Esempio</h3>
+        </div>
+        <p className="font-body text-sm text-muted-foreground mb-4">
+          Incolla un output generato dall'IA che <strong>non</strong> ti è piaciuto e spiega cosa non va.
+          Verrà salvato come regola correttiva e iniettato automaticamente nei prompt futuri dello strumento scelto.
+        </p>
+        <form onSubmit={handleSaveCorrection} className="space-y-4">
+          <div>
+            <label className="font-body text-xs uppercase tracking-wider text-muted-foreground mb-1 block">Strumento</label>
+            <select
+              value={correction.scope}
+              onChange={(e) => setCorrection({ ...correction, scope: e.target.value })}
+              className="w-full px-4 py-2.5 rounded-md border border-input bg-background font-body text-base text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+            >
+              {SCOPE_OPTIONS.filter((o) => o.value !== "global").map((o) => (
+                <option key={o.value} value={o.value}>{o.label}</option>
+              ))}
+              <option value="global">Globale (tutti gli strumenti)</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="font-body text-xs uppercase tracking-wider text-muted-foreground mb-1 block">
+              Output di esempio (non conforme) *
+            </label>
+            <textarea
+              required
+              rows={8}
+              value={correction.example}
+              onChange={(e) => setCorrection({ ...correction, example: e.target.value })}
+              className="w-full px-4 py-3 rounded-md border border-input bg-background font-body text-base text-foreground focus:outline-none focus:ring-2 focus:ring-ring resize-y"
+              placeholder="Incolla qui il testo della consulenza generata dall'IA che vuoi correggere..."
+            />
+          </div>
+
+          <div>
+            <label className="font-body text-xs uppercase tracking-wider text-muted-foreground mb-1 block">
+              Cosa non va *
+            </label>
+            <textarea
+              required
+              rows={3}
+              value={correction.problem}
+              onChange={(e) => setCorrection({ ...correction, problem: e.target.value })}
+              className="w-full px-4 py-3 rounded-md border border-input bg-background font-body text-base text-foreground focus:outline-none focus:ring-2 focus:ring-ring resize-y"
+              placeholder="Es. Il tono è troppo tentativo, usa parole come 'potrebbe' o 'tipicamente', e struttura in bullet point invece di prosa discorsiva."
+            />
+          </div>
+
+          <div>
+            <label className="font-body text-xs uppercase tracking-wider text-muted-foreground mb-1 block">
+              Comportamento atteso (opzionale)
+            </label>
+            <textarea
+              rows={3}
+              value={correction.expected}
+              onChange={(e) => setCorrection({ ...correction, expected: e.target.value })}
+              className="w-full px-4 py-3 rounded-md border border-input bg-background font-body text-base text-foreground focus:outline-none focus:ring-2 focus:ring-ring resize-y"
+              placeholder="Es. Prosa discorsiva empatica, affermazioni certe, nessun bullet point, tono da professionista esperto."
+            />
+          </div>
+
+          <div className="flex justify-end">
+            <Button
+              type="submit"
+              disabled={savingCorrection || !correction.example.trim() || !correction.problem.trim()}
+              className="bg-primary text-primary-foreground font-body"
+            >
+              {savingCorrection ? <><Loader2 size={14} className="mr-2 animate-spin" />Salvataggio...</> : <><Wand2 size={14} className="mr-2" />Salva correzione</>}
+            </Button>
+          </div>
+        </form>
+      </div>
+
       <div>
         <h3 className="font-display text-lg font-semibold text-foreground mb-3">Istruzioni attive</h3>
         {loading ? (
