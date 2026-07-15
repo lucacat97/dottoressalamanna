@@ -112,6 +112,26 @@ STILE
 Restituisci solo il referto riscritto, con le stesse sezioni dell'originale.
 Nessun commento tuo, nessuna spiegazione delle modifiche.
 
+APPENDICE DIDATTICA (obbligatoria, in coda al referto)
+Dopo il "Messaggio conclusivo" e PRIMA della firma, aggiungi una sezione
+<h2>Appendice — a cosa servono i test utilizzati</h2> che spieghi in linguaggio
+piano, per il paziente, il significato clinico dei soli test/segni effettivamente
+citati in questo referto. Non aggiungere test che non compaiono nel testo, non
+inventare valori. Per ciascun test: una riga con <strong>Nome del test</strong>
+seguita da 1-2 frasi che dicono che cosa valuta e perché è rilevante per il caso.
+Copri, se presenti nel referto: cicatrici (perché una cicatrice — anche vecchia,
+appendicectomia, cesareo, tonsillectomia — può alterare le catene fasciali e la
+postura), Romberg (equilibrio con occhi chiusi, informa sull'integrazione
+propriocettiva/vestibolare), Fukuda (marcia sul posto a occhi chiusi, rotazione
+del corpo che segnala asimmetrie vestibolari o cervicali), Bassani (test dei
+rotatori, competenza del sistema tonico posturale), Meersseman (test dei filtri
+occlusale/podalico per capire chi comanda la postura), test di De Cyon /
+convergenza oculare, farfalla / MANN (competenza labiale e respirazione),
+apertura orale e lingua allo spot (funzione linguale), ioide (posizione della
+lingua a riposo), appoggio podalico e baropodometria, facies adenoidea /
+occhiaie / vie aeree (respirazione orale cronica). Usa <p> o <ul><li> a tua
+scelta ma mantieni il tono divulgativo e sintetico.
+
 FORMATO DI OUTPUT (vincolo tecnico obbligatorio)
 Restituisci il referto come frammento HTML puro (senza <html>, <head>, <style>,
 senza attributi style o color inline). Usa esclusivamente questi tag:
@@ -120,9 +140,9 @@ senza attributi style o color inline). Usa esclusivamente questi tag:
 - <p class="meta"> per Paziente / Età / Data visita
 - <h2> per le sezioni principali (Motivo, Introduzione, Le cose che funzionano,
   Le cose da correggere e il loro significato, Analisi dettagliata dei risultati,
-  Terapie consigliate, Messaggio conclusivo)
+  Terapie consigliate, Messaggio conclusivo, Appendice — a cosa servono i test utilizzati)
 - <h3> per le sottosezioni di Analisi dettagliata e Terapie
-- <p>, <ul>, <li> per il corpo
+- <p>, <ul>, <li>, <strong> per il corpo
 - <div class="signature">…</div> per la firma finale
 Nessun testo fuori dai tag, nessun commento, solo il frammento HTML.
 
