@@ -556,11 +556,11 @@ SIGNIFICATO ANGOLO GONIACO PER CLASSE:
 | III Classe | Ipodivergente (<123°) | Crescita orizzontale dominante. Rotazione antioraria. | Più impegnativa se non intercettata presto |
 | III Classe | Iperdivergente (>137°) | Componente verticale prevalente. | Controllo verticale difficile ma meno aggressiva in avanzamento |
 
-SPIEGAZIONI PER SCENARIO:
-- TC + Dispositivo con rialzo posteriore: III Classe iperdivergente. Mandibola avanzata con crescita verticale. TC per sagittale, rialzo posteriore per verticale. ~1 anno.
-- TC + Dispositivo con rialzo anteriore: III Classe ipodivergente. Mandibola propulsiva con forze muscolari elevate. Pattern più impegnativo. Rivalutare dopo 6 mesi.
-- SC + Dispositivo con rialzo posteriore: II Classe iperdivergente (la più frequente). Mandibola ruota indietro/basso, muscoli deboli. Prognosi delicata.
-- SC + Dispositivo con rialzo anteriore: II Classe ipodivergente. Mandibola forte ma bloccata, spesso funzionale/compensata. Buona risposta attesa.
+SPIEGAZIONI PER SCENARIO (per la motivazione clinica, NON per la denominazione del dispositivo):
+- TC in III Classe iperdivergente: mandibola avanzata con crescita verticale, il TC gestisce sia il sagittale sia il verticale (rialzo posteriore già integrato). ~1 anno.
+- TC in III Classe ipodivergente: mandibola propulsiva con forze muscolari elevate, pattern più impegnativo. Rivalutare dopo 6 mesi.
+- SC in II Classe iperdivergente (la più frequente): mandibola ruota indietro/basso, muscoli deboli. Prognosi delicata.
+- SC in II Classe ipodivergente: mandibola forte ma bloccata, spesso funzionale/compensata. Buona risposta attesa.
 - IC + Dispositivo con Piano neutro: Prima classe o classe discordante. Osservare risposta del morso 4-5 mesi.
 
 OUTPUT RICHIESTO (in italiano, formato markdown professionale):
