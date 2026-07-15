@@ -102,18 +102,34 @@ serve(async (req) => {
 
     // ── Body ──
     const body = await req.json();
-    const { markdown, consultationType } = body as { markdown?: string; consultationType?: string };
+    const { markdown, consultationType, format } = body as { markdown?: string; consultationType?: string; format?: "word" | "pdf" };
     if (!markdown || typeof markdown !== "string" || markdown.trim().length < 50) {
       return new Response(JSON.stringify({ error: "Campo 'markdown' obbligatorio." }), {
         status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
     const type = (consultationType && typeof consultationType === "string") ? consultationType : "Consulenza sul caso";
+    const outFormat: "word" | "pdf" = format === "pdf" ? "pdf" : "word";
 
-    // ── HTML + Word ──
-    const bodyHtml = mdToHtml(markdown);
+    // ── HTML per email intro ──
     const introHtml = mdToHtml(extractIntroduction(markdown));
-    const wordHtml = `<!DOCTYPE html>
+
+    // ── Costruzione documento (Word o PDF) ──
+    const safeType = type.replace(/[^\w\-]+/g, "_");
+    const dateStr = new Date().toISOString().slice(0, 10);
+    const rndId = crypto.randomUUID().slice(0, 8);
+
+    let fileBlob: Blob;
+    let fileName: string;
+    let contentType: string;
+
+    if (outFormat === "pdf") {
+      fileBlob = new Blob([buildPdf(markdown, type)], { type: "application/pdf" });
+      fileName = `consulenza_${safeType}_${dateStr}_${rndId}.pdf`;
+      contentType = "application/pdf";
+    } else {
+      const bodyHtml = mdToHtml(markdown);
+      const wordHtml = `<!DOCTYPE html>
 <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">
 <head><meta charset="utf-8"><title>${type}</title>
 <!--[if gte mso 9]><xml><w:WordDocument><w:View>Print</w:View><w:Zoom>100</w:Zoom></w:WordDocument></xml><![endif]-->
@@ -129,18 +145,17 @@ serve(async (req) => {
   blockquote { border-left: 4px solid #f0b400; padding: 10px 14px; margin: 12px 0; background: #fff8e1; }
   strong { color: #2a6f6f; }
 </style></head><body>${bodyHtml}</body></html>`;
+      fileBlob = new Blob([wordHtml], { type: "application/msword" });
+      fileName = `consulenza_${safeType}_${dateStr}_${rndId}.doc`;
+      contentType = "application/msword";
+    }
 
-    // ── Upload ──
-    const safeType = type.replace(/[^\w\-]+/g, "_");
-    const fileName = `consulenza_${safeType}_${new Date().toISOString().slice(0, 10)}_${crypto.randomUUID().slice(0, 8)}.doc`;
     const filePath = `${userData.user.id}/${fileName}`;
     const { error: upErr } = await admin.storage
       .from("consultation-attachments")
-      .upload(filePath, new Blob([wordHtml], { type: "application/msword" }), {
-        contentType: "application/msword",
-        upsert: false,
-      });
+      .upload(filePath, fileBlob, { contentType, upsert: false });
     if (upErr) throw new Error(`storage upload: ${upErr.message}`);
+
 
     // ── Token ──
     const tokenBytes = new Uint8Array(32);
