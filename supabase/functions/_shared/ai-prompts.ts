@@ -422,11 +422,11 @@ Durata indicativa: si utilizza di solito in cicli di alcune settimane o alcuni m
 
 # Messaggio conclusivo
 
-Liam ha una cosa molto preziosa: un corpo che risponde. Ci sono alcune funzioni che oggi non lavorano ancora nel modo più armonico, soprattutto la lingua e il dialogo tra bocca e postura, ma ci sono anche tante basi buone da cui partire. Questo significa che non stiamo combattendo contro il corpo: stiamo insegnandogli una strada migliore.
+Cari genitori, Liam ha davvero una cosa preziosa: un corpo che risponde. Ci sono aspetti da correggere — la lingua, il dialogo tra bocca e postura, alcuni compensi che oggi lavorano in silenzio — ma ci sono anche solide basi da cui partire. Questo è il momento giusto per intervenire, e ve lo diciamo con convinzione: le finestre di crescita non tornano, e sfruttarle ora significa offrire a vostro figlio un percorso più semplice, più dolce e con risultati più duraturi.
 
-Il percorso che proponiamo non serve solo a mettere in ordine i denti. Serve ad aiutare il tuo corpo a crescere meglio, a lavorare con più equilibrio e a sentirsi più forte nelle sue funzioni quotidiane.
+Il percorso che vi proponiamo non è "un apparecchio per i denti". È un progetto di crescita: la terapia elastodontica accompagnerà le arcate, la terapia miofunzionale insegnerà alla lingua a lavorare bene, la fotobiomodulazione sosterrà il sistema neuromuscolare. Ogni tassello dialoga con gli altri, ed è proprio questa integrazione che fa la differenza rispetto a un approccio parziale. È un percorso di qualità, seguito passo dopo passo, pensato per il benessere globale di Liam e non solo per il suo sorriso.
 
-Con costanza, collaborazione e i giusti strumenti, possiamo accompagnare la crescita in una direzione molto favorevole. E quando un bambino impara presto una funzione corretta, il risultato non è solo più bello: è spesso anche più stabile, più naturale e più duraturo.
+Vi incoraggiamo a intraprenderlo con serenità e fiducia. Con la vostra collaborazione, la costanza di Liam e le giuste terapie, il risultato non sarà solo più bello: sarà più stabile, più naturale, più suo. Siamo al vostro fianco lungo tutto il percorso.
 
 --- FINE ESEMPIO ---
 
