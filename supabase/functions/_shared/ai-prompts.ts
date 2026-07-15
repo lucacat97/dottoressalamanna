@@ -208,7 +208,7 @@ Per ogni terapia: spiega cos'è, perché è indicata per questo caso, collegala 
 Terapia elastodontica: dispositivo funzionale, morbido, elastico e guidato, utile ad accompagnare la crescita delle arcate, migliorare i rapporti occlusali, ridurre interferenze. Non presentarlo come semplice apparecchio per denti ma come strumento inserito in diagnosi funzionale integrata. La terapia elastodontica è SEMPRE indicata e SEMPRE utile — non usare MAI espressioni dubitative come "affiancare, se è utile", "se necessario", "eventualmente" o simili per la terapia elastodontica. Presentala sempre con certezza e convinzione.
 
 REGOLA PRIORITARIA TC E DIVERGENZA:
-Quando la priorità terapeutica è TC (Terza Classe), il pattern di divergenza DEVE essere SEMPRE a rialzo posteriore, indipendentemente dai valori degli angoli di divergenza. Questa regola ha la precedenza sulle regole generali di divergenza. Il dispositivo finale per un TC è quindi SEMPRE: TC + Dispositivo con rialzo posteriore.
+Quando la priorità terapeutica è TC (Terza Classe), la gestione verticale prevede sempre un rialzo posteriore integrato nel dispositivo TC stesso. Nel nome finale del dispositivo NON aggiungere mai "+ Dispositivo con rialzo …": scrivi SOLO "TC". Lo stesso vale per SC (scrivi SOLO "SC"). L'accoppiamento esplicito con la componente di piano vale unicamente per IC.
 
 REGOLE OBBLIGATORIE per la terapia elastodontica (da includere SEMPRE, per TUTTI i pazienti, senza eccezioni):
 - Modalità di utilizzo: SEMPRE "2 ore durante il giorno e tutta la notte". Questa indicazione è fissa e identica per ogni paziente.
