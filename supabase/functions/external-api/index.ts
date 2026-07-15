@@ -435,10 +435,13 @@ ${classe_dentale ? `- Classe dentale/funzionale confermata: ${classe_dentale}` :
     // ── Rielaborazione con Claude (solo Consulenza Clinica) ──
     let refinedHtml: string | null = null;
     if (tool === "diagnosis") {
+      const hasKey = !!Deno.env.get("ANTHROPIC_API_KEY");
+      console.log(`[external-api] Claude refine start (ANTHROPIC_API_KEY present=${hasKey}, markdown_len=${markdown.length})`);
       try {
         refinedHtml = await refineWithClaude(markdown);
+        console.log(`[external-api] Claude refine done (refined=${!!refinedHtml}, len=${refinedHtml?.length ?? 0})`);
       } catch (e) {
-        console.error("[external-api] Claude refine failed, falling back:", (e as Error)?.message);
+        console.error("[external-api] Claude refine FAILED, falling back:", (e as Error)?.message);
         refinedHtml = null;
       }
     }
