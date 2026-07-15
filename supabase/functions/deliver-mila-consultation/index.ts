@@ -1,7 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
-import { jsPDF } from "npm:jspdf@2.5.2";
-
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -72,180 +70,6 @@ function extractIntroduction(md: string): string {
   return paragraphs.join("\n\n") || "La consulenza completa è disponibile nel documento allegato.";
 }
 
-// ── Markdown → PDF (jsPDF, layout semplice ma pulito) ──
-function buildPdf(md: string, title: string): ArrayBuffer {
-  const doc = new jsPDF({ unit: "pt", format: "a4" });
-  const pageW = doc.internal.pageSize.getWidth();
-  const pageH = doc.internal.pageSize.getHeight();
-  const marginX = 56;
-  const marginTop = 64;
-  const marginBottom = 64;
-  const maxW = pageW - marginX * 2;
-  let y = marginTop;
-
-  const ensureSpace = (h: number) => {
-    if (y + h > pageH - marginBottom) {
-      doc.addPage();
-      y = marginTop;
-    }
-  };
-
-  const stripInline = (s: string) =>
-    s.replace(/\*\*(.+?)\*\*/g, "$1").replace(/\*(.+?)\*/g, "$1").replace(/`([^`]+)`/g, "$1");
-
-  // Titolo documento
-  doc.setFont("helvetica", "bold");
-  doc.setTextColor(42, 111, 111);
-  doc.setFontSize(18);
-  const titleLines = doc.splitTextToSize(title, maxW) as string[];
-  ensureSpace(titleLines.length * 22 + 18);
-  doc.text(titleLines, marginX, y);
-  y += titleLines.length * 22 + 6;
-  doc.setDrawColor(220);
-  doc.line(marginX, y, marginX + maxW, y);
-  y += 18;
-
-  const lines = md.split("\n");
-  let inTable = false;
-  let tableRows: string[][] = [];
-
-  const flushTable = () => {
-    if (tableRows.length === 0) return;
-    const cols = tableRows[0].length;
-    const colW = maxW / cols;
-    const rowH = 20;
-    doc.setFontSize(10);
-    tableRows.forEach((row, ri) => {
-      ensureSpace(rowH);
-      if (ri === 0) {
-        doc.setFillColor(240, 247, 247);
-        doc.rect(marginX, y, maxW, rowH, "F");
-        doc.setFont("helvetica", "bold");
-      } else {
-        doc.setFont("helvetica", "normal");
-      }
-      doc.setTextColor(34, 34, 34);
-      doc.setDrawColor(210);
-      doc.rect(marginX, y, maxW, rowH);
-      row.forEach((cell, ci) => {
-        const cellLines = doc.splitTextToSize(stripInline(cell), colW - 10) as string[];
-        doc.text(cellLines[0] || "", marginX + ci * colW + 6, y + 14);
-        if (ci < cols - 1) doc.line(marginX + (ci + 1) * colW, y, marginX + (ci + 1) * colW, y + rowH);
-      });
-      y += rowH;
-    });
-    y += 10;
-    tableRows = [];
-  };
-
-  for (let i = 0; i < lines.length; i++) {
-    const raw = lines[i];
-    const line = raw.trim();
-
-    // Tabelle markdown
-    if (line.startsWith("|") && line.endsWith("|")) {
-      const cells = line.split("|").slice(1, -1).map((c) => c.trim());
-      if (cells.every((c) => /^[\s:-]+$/.test(c))) continue; // separatore
-      tableRows.push(cells);
-      inTable = true;
-      continue;
-    } else if (inTable) {
-      flushTable();
-      inTable = false;
-    }
-
-    if (!line) { y += 6; continue; }
-
-    // Heading 1
-    if (/^#\s+/.test(line)) {
-      const t = stripInline(line.replace(/^#\s+/, ""));
-      doc.setFont("helvetica", "bold");
-      doc.setTextColor(42, 111, 111);
-      doc.setFontSize(15);
-      const wr = doc.splitTextToSize(t, maxW) as string[];
-      ensureSpace(wr.length * 20 + 10);
-      doc.text(wr, marginX, y);
-      y += wr.length * 20 + 6;
-      continue;
-    }
-    // Heading 2
-    if (/^##\s+/.test(line)) {
-      const t = stripInline(line.replace(/^##\s+/, ""));
-      doc.setFont("helvetica", "bold");
-      doc.setTextColor(42, 111, 111);
-      doc.setFontSize(13);
-      const wr = doc.splitTextToSize(t, maxW) as string[];
-      ensureSpace(wr.length * 18 + 8);
-      doc.text(wr, marginX, y);
-      y += wr.length * 18 + 4;
-      continue;
-    }
-    // Heading 3-4
-    if (/^#{3,4}\s+/.test(line)) {
-      const t = stripInline(line.replace(/^#{3,4}\s+/, ""));
-      doc.setFont("helvetica", "bold");
-      doc.setTextColor(51, 51, 51);
-      doc.setFontSize(11.5);
-      const wr = doc.splitTextToSize(t, maxW) as string[];
-      ensureSpace(wr.length * 16 + 6);
-      doc.text(wr, marginX, y);
-      y += wr.length * 16 + 3;
-      continue;
-    }
-    // Blockquote (disclaimer)
-    if (/^>\s+/.test(line)) {
-      const t = stripInline(line.replace(/^>\s+/, ""));
-      doc.setFont("helvetica", "italic");
-      doc.setFontSize(10);
-      doc.setTextColor(91, 71, 8);
-      const wr = doc.splitTextToSize(t, maxW - 14) as string[];
-      const h = wr.length * 13 + 12;
-      ensureSpace(h);
-      doc.setFillColor(255, 248, 225);
-      doc.rect(marginX, y, maxW, h, "F");
-      doc.setDrawColor(240, 180, 0);
-      doc.setLineWidth(3);
-      doc.line(marginX, y, marginX, y + h);
-      doc.setLineWidth(0.5);
-      doc.text(wr, marginX + 10, y + 12);
-      y += h + 6;
-      continue;
-    }
-    // Lista puntata
-    if (/^[-*]\s+/.test(line)) {
-      const t = stripInline(line.replace(/^[-*]\s+/, ""));
-      doc.setFont("helvetica", "normal");
-      doc.setTextColor(34, 34, 34);
-      doc.setFontSize(10.5);
-      const wr = doc.splitTextToSize("• " + t, maxW - 12) as string[];
-      ensureSpace(wr.length * 14);
-      doc.text(wr, marginX + 12, y);
-      y += wr.length * 14 + 2;
-      continue;
-    }
-    // Divider
-    if (/^---+$/.test(line)) {
-      ensureSpace(14);
-      doc.setDrawColor(220);
-      doc.line(marginX, y + 6, marginX + maxW, y + 6);
-      y += 14;
-      continue;
-    }
-    // Paragrafo normale
-    doc.setFont("helvetica", "normal");
-    doc.setTextColor(34, 34, 34);
-    doc.setFontSize(10.5);
-    const wr = doc.splitTextToSize(stripInline(line), maxW) as string[];
-    ensureSpace(wr.length * 14 + 4);
-    doc.text(wr, marginX, y);
-    y += wr.length * 14 + 4;
-  }
-  if (inTable) flushTable();
-
-  return doc.output("arraybuffer") as ArrayBuffer;
-}
-
-
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
@@ -276,34 +100,18 @@ serve(async (req) => {
 
     // ── Body ──
     const body = await req.json();
-    const { markdown, consultationType, format } = body as { markdown?: string; consultationType?: string; format?: "word" | "pdf" };
+    const { markdown, consultationType } = body as { markdown?: string; consultationType?: string };
     if (!markdown || typeof markdown !== "string" || markdown.trim().length < 50) {
       return new Response(JSON.stringify({ error: "Campo 'markdown' obbligatorio." }), {
         status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
     const type = (consultationType && typeof consultationType === "string") ? consultationType : "Consulenza sul caso";
-    const outFormat: "word" | "pdf" = format === "pdf" ? "pdf" : "word";
 
-    // ── HTML per email intro ──
+    // ── HTML + Word ──
+    const bodyHtml = mdToHtml(markdown);
     const introHtml = mdToHtml(extractIntroduction(markdown));
-
-    // ── Costruzione documento (Word o PDF) ──
-    const safeType = type.replace(/[^\w\-]+/g, "_");
-    const dateStr = new Date().toISOString().slice(0, 10);
-    const rndId = crypto.randomUUID().slice(0, 8);
-
-    let fileBlob: Blob;
-    let fileName: string;
-    let contentType: string;
-
-    if (outFormat === "pdf") {
-      fileBlob = new Blob([buildPdf(markdown, type)], { type: "application/pdf" });
-      fileName = `consulenza_${safeType}_${dateStr}_${rndId}.pdf`;
-      contentType = "application/pdf";
-    } else {
-      const bodyHtml = mdToHtml(markdown);
-      const wordHtml = `<!DOCTYPE html>
+    const wordHtml = `<!DOCTYPE html>
 <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">
 <head><meta charset="utf-8"><title>${type}</title>
 <!--[if gte mso 9]><xml><w:WordDocument><w:View>Print</w:View><w:Zoom>100</w:Zoom></w:WordDocument></xml><![endif]-->
@@ -319,17 +127,18 @@ serve(async (req) => {
   blockquote { border-left: 4px solid #f0b400; padding: 10px 14px; margin: 12px 0; background: #fff8e1; }
   strong { color: #2a6f6f; }
 </style></head><body>${bodyHtml}</body></html>`;
-      fileBlob = new Blob([wordHtml], { type: "application/msword" });
-      fileName = `consulenza_${safeType}_${dateStr}_${rndId}.doc`;
-      contentType = "application/msword";
-    }
 
+    // ── Upload ──
+    const safeType = type.replace(/[^\w\-]+/g, "_");
+    const fileName = `consulenza_${safeType}_${new Date().toISOString().slice(0, 10)}_${crypto.randomUUID().slice(0, 8)}.doc`;
     const filePath = `${userData.user.id}/${fileName}`;
     const { error: upErr } = await admin.storage
       .from("consultation-attachments")
-      .upload(filePath, fileBlob, { contentType, upsert: false });
+      .upload(filePath, new Blob([wordHtml], { type: "application/msword" }), {
+        contentType: "application/msword",
+        upsert: false,
+      });
     if (upErr) throw new Error(`storage upload: ${upErr.message}`);
-
 
     // ── Token ──
     const tokenBytes = new Uint8Array(32);
@@ -369,8 +178,6 @@ serve(async (req) => {
           consultationType: type,
           introHtml,
           downloadUrl,
-          format: outFormat,
-
         },
       }),
     });
