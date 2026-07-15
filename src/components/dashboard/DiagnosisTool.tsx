@@ -32,7 +32,7 @@ const mdToHtml = (markdown: string) => {
     .replace(/\*(.+?)\*/g, "<em>$1</em>")
     .replace(/^- (.+)$/gm, '<li style="margin:4px 0;">$1</li>')
     .replace(/((<li[^>]*>.*<\/li>\n?)+)/g, '<ul style="margin:8px 0 8px 20px;padding:0;">$1</ul>')
-    .replace(/^> (.+)$/gm, '<blockquote style="border-left:4px solid #f0b400;padding:12px 16px;margin:14px 0;background:#fff8e1;color:#5b4708;border-radius:6px;">$1</blockquote>')
+    .replace(/^> (.+)$/gm, '<blockquote style="border-left:4px solid #1e40af;padding:12px 16px;margin:14px 0;background:#eff6ff;color:#1e3a8a;border-radius:6px;">$1</blockquote>')
     .replace(/^---$/gm, '<hr style="border:none;border-top:1px solid #ddd;margin:24px 0;">')
     .replace(/^(?!<[hublot]|<\/)(.+)$/gm, '<p style="margin:8px 0;line-height:1.6;">$1</p>');
   return html;
