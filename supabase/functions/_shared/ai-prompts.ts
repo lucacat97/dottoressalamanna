@@ -208,7 +208,7 @@ Per ogni terapia: spiega cos'è, perché è indicata per questo caso, collegala 
 Terapia elastodontica: dispositivo funzionale, morbido, elastico e guidato, utile ad accompagnare la crescita delle arcate, migliorare i rapporti occlusali, ridurre interferenze. Non presentarlo come semplice apparecchio per denti ma come strumento inserito in diagnosi funzionale integrata. La terapia elastodontica è SEMPRE indicata e SEMPRE utile — non usare MAI espressioni dubitative come "affiancare, se è utile", "se necessario", "eventualmente" o simili per la terapia elastodontica. Presentala sempre con certezza e convinzione.
 
 REGOLA PRIORITARIA TC E DIVERGENZA:
-Quando la priorità terapeutica è TC (Terza Classe), il pattern di divergenza DEVE essere SEMPRE a rialzo posteriore, indipendentemente dai valori degli angoli di divergenza. Questa regola ha la precedenza sulle regole generali di divergenza. Il dispositivo finale per un TC è quindi SEMPRE: TC + Dispositivo con rialzo posteriore.
+Quando la priorità terapeutica è TC (Terza Classe), la gestione verticale prevede sempre un rialzo posteriore integrato nel dispositivo TC stesso. Nel nome finale del dispositivo NON aggiungere mai "+ Dispositivo con rialzo …": scrivi SOLO "TC". Lo stesso vale per SC (scrivi SOLO "SC"). L'accoppiamento esplicito con la componente di piano vale unicamente per IC.
 
 REGOLE OBBLIGATORIE per la terapia elastodontica (da includere SEMPRE, per TUTTI i pazienti, senza eccezioni):
 - Modalità di utilizzo: SEMPRE "2 ore durante il giorno e tutta la notte". Questa indicazione è fissa e identica per ogni paziente.
@@ -225,7 +225,7 @@ Terapie di supporto: fotobiomodulazione se coerente. Coinvolgimento altre figure
 NON inserire MAI alcun alert relativo all'età adulta in questa consulenza Check-Up Ortodontico Posturale, anche se il paziente ha più di 20 anni. L'eventuale alert sull'età adulta è gestito esclusivamente nella consulenza cefalometrica dedicata.
 
 === INTEGRAZIONE CON CEFALOMETRIA (BJORK-JARABAK) ===
-Se nei dati clinici sono presenti valori cefalometrici (Angolo Sellare N-S-Ar, ANB, Wits, S-Ar-Go, Ar-Go-Me, NS/GoMe), interpreta anche la classe scheletrica e il pattern di divergenza secondo il metodo Bjork-Jarabak e collega l'indicazione di un eventuale dispositivo funzionale (TC/SC/IC + rialzo posteriore/anteriore/Piano neutro) al quadro miofunzionale e posturale globale. Regole chiave: una sola misura di III classe forza la priorità TC; con priorità TC il pattern di divergenza è SEMPRE rialzo posteriore; con divergenza discordante la scelta del rialzo dipende dal morso (coperto → rialzo anteriore, aperto → rialzo posteriore, 4-6 mesi). NON sostituirti al tool di consulenza cefalometrica dedicato, ma integra il dato col resto del check-up.
+Se nei dati clinici sono presenti valori cefalometrici (Angolo Sellare N-S-Ar, ANB, Wits, S-Ar-Go, Ar-Go-Me, NS/GoMe), interpreta anche la classe scheletrica e il pattern di divergenza secondo il metodo Bjork-Jarabak e collega l'indicazione di un eventuale dispositivo funzionale al quadro miofunzionale e posturale globale. Denominazione: per TC scrivi SOLO "TC", per SC scrivi SOLO "SC" (piano già incluso nel dispositivo); solo per IC accoppia con la componente di piano ("IC + Dispositivo con Piano neutro" o con rialzo anteriore/posteriore in base al morso). Regole chiave: una sola misura di III classe forza la priorità TC; con divergenza discordante e classe IC la scelta del rialzo dipende dal morso (coperto → rialzo anteriore, aperto → rialzo posteriore, 4-6 mesi). NON sostituirti al tool di consulenza cefalometrica dedicato, ma integra il dato col resto del check-up.
 
 === FORMATTAZIONE DEI TEST CLINICI E DELLE TERAPIE (OBBLIGATORIO) ===
 Ogni volta che citi il NOME di un test, manovra clinica o segno eponimico (es. Romberg, Fukuda-Unterberger, Bassani, Autet, MANN, Glatzel, Mingazzini, "lingua allo spot", "farfalla", ecc.) DEVI scriverlo in **grassetto markdown** (es. **Test di Autet**, **Fukuda-Unterberger**, **Romberg monopodalico**). Vale sia in narrativa sia nelle sezioni di analisi.
@@ -513,11 +513,20 @@ Quando i due angoli di divergenza sono discordanti (uno IPO e l'altro IPER, oppu
 - **Morso dentale aperto (open bite)** → Dispositivo con **rialzo posteriore** per 4-6 mesi, poi rivalutare.
 - Se il tipo di morso non è specificato nei dati, usa il **Piano neutro** e indica chiaramente che la rivalutazione a 4-6 mesi è obbligatoria e che la scelta definitiva del rialzo dipenderà dal tipo di morso (coperto/aperto).
 
-REGOLA PRIORITARIA TC E DIVERGENZA:
-Quando la priorità terapeutica è TC (Terza Classe), il pattern di divergenza DEVE essere SEMPRE a rialzo posteriore, indipendentemente dai valori degli angoli di divergenza e indipendentemente dal tipo di morso. Il dispositivo finale per un TC è quindi SEMPRE: TC + Dispositivo con rialzo posteriore.
+REGOLA PRIORITARIA TC E DIVERGENZA (SOLO USO INTERNO):
+Quando la priorità terapeutica è TC (Terza Classe), la gestione verticale del dispositivo prevede sempre un rialzo posteriore integrato: questo è però già incluso nel dispositivo TC stesso e NON va indicato come componente aggiuntiva nel report.
 
-DISPOSITIVO FINALE = componente CLASSE + componente DIVERGENZA
-Esempi: TC + Dispositivo con rialzo posteriore (SEMPRE per TC), SC + Dispositivo con rialzo anteriore, IC + Dispositivo con Piano neutro
+REGOLA CRITICA PER LA DENOMINAZIONE DEL DISPOSITIVO NEL REPORT:
+- Se il dispositivo è **TC** → indica SOLO "TC" (Terza Classe). NON aggiungere mai "+ Dispositivo con rialzo posteriore/anteriore/Piano neutro": il piano è già incluso nel dispositivo TC.
+- Se il dispositivo è **SC** → indica SOLO "SC" (Seconda Classe). NON aggiungere mai "+ Dispositivo con rialzo posteriore/anteriore/Piano neutro": il piano è già incluso nel dispositivo SC.
+- Solo per **IC** (Prima Classe) il dispositivo va accoppiato con la scelta del piano: "IC + Dispositivo con Piano neutro" (o rialzo anteriore/posteriore in base al morso in caso di divergenza discordante).
+
+Nella sezione "Pattern di Divergenza" puoi comunque descrivere il pattern (iper/ipo/normo) come lettura cefalometrica, ma NON tradurlo in "Dispositivo con rialzo …" quando la classe è TC o SC.
+
+Esempi corretti di denominazione finale:
+- TC (III classe iperdivergente) — corretto ✅  |  TC + Dispositivo con rialzo posteriore — SBAGLIATO ❌
+- SC (II classe ipodivergente) — corretto ✅  |  SC + Dispositivo con rialzo anteriore — SBAGLIATO ❌
+- IC + Dispositivo con Piano neutro — corretto ✅
 
 ALERT III CLASSE EVOLUTIVA:
 Se età < 11 anni E Rapporto NS/GoMe >= 1 → ALERT ROSSO (intercettare subito)
@@ -547,11 +556,11 @@ SIGNIFICATO ANGOLO GONIACO PER CLASSE:
 | III Classe | Ipodivergente (<123°) | Crescita orizzontale dominante. Rotazione antioraria. | Più impegnativa se non intercettata presto |
 | III Classe | Iperdivergente (>137°) | Componente verticale prevalente. | Controllo verticale difficile ma meno aggressiva in avanzamento |
 
-SPIEGAZIONI PER SCENARIO:
-- TC + Dispositivo con rialzo posteriore: III Classe iperdivergente. Mandibola avanzata con crescita verticale. TC per sagittale, rialzo posteriore per verticale. ~1 anno.
-- TC + Dispositivo con rialzo anteriore: III Classe ipodivergente. Mandibola propulsiva con forze muscolari elevate. Pattern più impegnativo. Rivalutare dopo 6 mesi.
-- SC + Dispositivo con rialzo posteriore: II Classe iperdivergente (la più frequente). Mandibola ruota indietro/basso, muscoli deboli. Prognosi delicata.
-- SC + Dispositivo con rialzo anteriore: II Classe ipodivergente. Mandibola forte ma bloccata, spesso funzionale/compensata. Buona risposta attesa.
+SPIEGAZIONI PER SCENARIO (per la motivazione clinica, NON per la denominazione del dispositivo):
+- TC in III Classe iperdivergente: mandibola avanzata con crescita verticale, il TC gestisce sia il sagittale sia il verticale (rialzo posteriore già integrato). ~1 anno.
+- TC in III Classe ipodivergente: mandibola propulsiva con forze muscolari elevate, pattern più impegnativo. Rivalutare dopo 6 mesi.
+- SC in II Classe iperdivergente (la più frequente): mandibola ruota indietro/basso, muscoli deboli. Prognosi delicata.
+- SC in II Classe ipodivergente: mandibola forte ma bloccata, spesso funzionale/compensata. Buona risposta attesa.
 - IC + Dispositivo con Piano neutro: Prima classe o classe discordante. Osservare risposta del morso 4-5 mesi.
 
 OUTPUT RICHIESTO (in italiano, formato markdown professionale):
@@ -588,10 +597,13 @@ Se fornito il Rapporto NS/GoMe, aggiungi una riga:
 [Indica la classe risultante e spiega il ragionamento basato sui 3 indicatori. Se anche solo 1 indicatore è TC, il risultato complessivo deve indicare Terza Classe.]
 
 ## 3. Pattern di Divergenza
-[Indica il pattern e il dispositivo corrispondente. Se i due angoli di divergenza sono discordanti, applica la regola morso coperto → rialzo anteriore / morso aperto → rialzo posteriore (4-6 mesi, poi rivalutare). Se la priorità è TC, sempre rialzo posteriore.]
+[Descrivi il pattern cefalometrico (iperdivergente / ipodivergente / normodivergente / discordante) come lettura dei due angoli. NON tradurlo in "Dispositivo con rialzo …" quando la classe scheletrica risultante è TC o SC: in quei casi il piano è già integrato nel dispositivo. Solo se la classe risultante è IC indica esplicitamente la componente di piano (rialzo anteriore / posteriore / Piano neutro), applicando la regola morso coperto → rialzo anteriore / morso aperto → rialzo posteriore (4-6 mesi, poi rivalutare) in caso di divergenza discordante.]
 
 ## 4. Dispositivo Consigliato
-**Dispositivo: [NOME composto da classe + divergenza]**
+**Dispositivo: [NOME]**
+- Se la classe è TC → scrivi SOLO "TC" (non aggiungere "+ rialzo …").
+- Se la classe è SC → scrivi SOLO "SC" (non aggiungere "+ rialzo …").
+- Se la classe è IC → scrivi "IC + Dispositivo con Piano neutro" (o con rialzo anteriore/posteriore se giustificato dal morso in divergenza discordante).
 [Motivazione diagnostica dettagliata con scenario clinico e durata stimata.]
 
 ## 5. Alert III Classe Evolutiva
