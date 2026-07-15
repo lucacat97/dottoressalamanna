@@ -249,6 +249,7 @@ const MilaMethodTool = () => {
     const fetchUsage = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
+      setUserEmail(user.email || "");
       const [d, o] = await Promise.all([
         supabase.rpc("get_monthly_ai_usage", { _user_id: user.id, _tool_name: DIAGNOSIS_TOOL }),
         supabase.rpc("get_monthly_ai_usage", { _user_id: user.id, _tool_name: ORTHO_TOOL }),
@@ -258,6 +259,34 @@ const MilaMethodTool = () => {
     };
     fetchUsage();
   }, [diagnosisResult, orthoResult]);
+
+  const sendConsultationEmail = async (
+    which: "diagnosis" | "ortho",
+    markdown: string,
+    consultationType: string,
+  ) => {
+    if (which === "diagnosis") setSendingDiagEmail(true); else setSendingOrthoEmail(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("deliver-mila-consultation", {
+        body: { markdown, consultationType },
+      });
+      if (error) throw error;
+      if ((data as any)?.error) throw new Error((data as any).error);
+      if (which === "diagnosis") setDiagEmailSent(true); else setOrthoEmailSent(true);
+      toast({
+        title: "Consulenza inviata",
+        description: `Documento Word inviato a ${userEmail || "la tua email"}.`,
+      });
+    } catch (e: any) {
+      toast({
+        title: "Invio non riuscito",
+        description: e?.message || "Riprova tra qualche istante.",
+        variant: "destructive",
+      });
+    } finally {
+      if (which === "diagnosis") setSendingDiagEmail(false); else setSendingOrthoEmail(false);
+    }
+  };
 
   // ---------- Clinical handlers ----------
   const handleClinicalFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
