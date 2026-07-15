@@ -279,6 +279,13 @@ Data visita: [Se disponibile]
 ## Sistema visivo
 [Se presenti dati visivi]
 
+# Quadro Riassuntivo
+[Fornisci un'interpretazione globale del caso in due parti obbligatorie e ben distinte:
+
+**Punti di forza** — un paragrafo discorsivo (3-6 righe) che valorizzi risorse biologiche, funzionali e adattative emerse dal check-up e che spieghi perché offrono motivo di fiducia in un buon esito terapeutico.
+
+**Criticità su cui basare la terapia** — introduci con una breve frase e poi presenta le criticità come ELENCO PUNTATO markdown (usa "- " a inizio riga), chiaramente visibile al clinico, un punto per ogni criticità rilevante. Ogni voce deve iniziare con la criticità in **grassetto** seguita da ":" e da una breve interpretazione clinica (1-2 frasi) che spieghi perché quella criticità orienta la scelta terapeutica. L'elenco deve essere sintetico ma completo: raccoglie e mette a fuoco i punti già emersi nell'analisi dettagliata, senza ripeterli per esteso.]
+
 # Terapie consigliate
 
 ## Terapia elastodontica
@@ -291,7 +298,7 @@ Data visita: [Se disponibile]
 [Se pertinente: fotobiomodulazione, altre figure professionali]
 
 # Messaggio conclusivo
-[Messaggio rassicurante e motivante. Trasmetti che il corpo ha risorse, il percorso non serve solo a raddrizzare i denti ma ad accompagnare una crescita più armonica, con costanza e guida corretta il risultato può essere più stabile, naturale e duraturo.]
+[Chiudi con un messaggio breve, caldo e incoraggiante rivolto direttamente al paziente e — quando si tratta di un bambino o ragazzo — anche ai genitori. Il tono deve essere positivo, motivante e concreto: incoraggia esplicitamente a intraprendere il percorso terapeutico proposto, spiega che si tratta di un percorso di qualità che accompagna la crescita nella sua globalità (non solo i denti), fa emergere il valore di intervenire nel momento giusto e sottolinea che con collaborazione, costanza e le giuste terapie il risultato può essere stabile, naturale e duraturo. Trasmetti fiducia: il corpo ha risorse, il percorso è chiaro, i genitori possono affrontarlo con serenità sapendo di offrire al proprio figlio uno strumento prezioso per il suo benessere futuro. Evita toni allarmistici o generici: il messaggio deve suonare sincero, professionale e umano.]
 
 ---
 
