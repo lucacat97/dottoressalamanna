@@ -149,6 +149,52 @@ const AdminKnowledge = () => {
     }
   };
 
+  // ── Correzione da Esempio ──
+  const [correction, setCorrection] = useState({
+    scope: "diagnosis",
+    example: "",
+    problem: "",
+    expected: "",
+  });
+  const [savingCorrection, setSavingCorrection] = useState(false);
+
+  const handleSaveCorrection = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!correction.example.trim() || !correction.problem.trim()) return;
+    setSavingCorrection(true);
+    const { data: userData } = await supabase.auth.getUser();
+    const scopeLabel = SCOPE_LABELS[correction.scope] || correction.scope;
+    const title = `Correzione da esempio — ${scopeLabel} — ${new Date().toLocaleDateString("it-IT")}`;
+    const content = `REGOLA CORRETTIVA (derivata da un output di esempio giudicato non conforme).
+Applica questa regola a TUTTE le consulenze future dello stesso strumento.
+
+--- OUTPUT DI ESEMPIO NON CONFORME ---
+${correction.example.trim()}
+--- FINE ESEMPIO ---
+
+PROBLEMA / COSA NON VA:
+${correction.problem.trim()}
+${correction.expected.trim() ? `\nCOMPORTAMENTO ATTESO:\n${correction.expected.trim()}` : ""}
+
+ISTRUZIONE OPERATIVA: nelle prossime generazioni evita gli errori sopra descritti e adegua stile, struttura e contenuto di conseguenza.`;
+    const { error } = await supabase.from("ai_knowledge").insert({
+      title,
+      content,
+      scope: correction.scope,
+      source_type: "correction",
+      file_name: null,
+      created_by: userData.user?.id,
+    });
+    setSavingCorrection(false);
+    if (error) {
+      toast({ title: "Errore", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: "Correzione salvata", description: "L'IA la applicherà dalla prossima generazione." });
+      setCorrection({ scope: correction.scope, example: "", problem: "", expected: "" });
+      fetchEntries();
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="bg-card border border-border rounded-lg p-6">
