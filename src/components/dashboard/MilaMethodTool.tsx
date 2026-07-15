@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import {
   Upload, Brain, AlertTriangle, FileText, Loader2, RotateCcw,
-  Download, FileDown, Info, Ruler, ClipboardList, Sparkles
+  Mail, Info, Ruler, ClipboardList, Sparkles, CheckCircle2
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -202,6 +202,13 @@ const MilaMethodTool = () => {
   const [diagnosisResult, setDiagnosisResult] = useState("");
   const [orthoResult, setOrthoResult] = useState("");
 
+  // Email delivery state
+  const [sendingDiagEmail, setSendingDiagEmail] = useState(false);
+  const [sendingOrthoEmail, setSendingOrthoEmail] = useState(false);
+  const [diagEmailSent, setDiagEmailSent] = useState(false);
+  const [orthoEmailSent, setOrthoEmailSent] = useState(false);
+  const [userEmail, setUserEmail] = useState<string>("");
+
   // Usage
   const [diagUsage, setDiagUsage] = useState<number | null>(null);
   const [orthoUsage, setOrthoUsage] = useState<number | null>(null);
@@ -242,6 +249,7 @@ const MilaMethodTool = () => {
     const fetchUsage = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
+      setUserEmail(user.email || "");
       const [d, o] = await Promise.all([
         supabase.rpc("get_monthly_ai_usage", { _user_id: user.id, _tool_name: DIAGNOSIS_TOOL }),
         supabase.rpc("get_monthly_ai_usage", { _user_id: user.id, _tool_name: ORTHO_TOOL }),
@@ -251,6 +259,34 @@ const MilaMethodTool = () => {
     };
     fetchUsage();
   }, [diagnosisResult, orthoResult]);
+
+  const sendConsultationEmail = async (
+    which: "diagnosis" | "ortho",
+    markdown: string,
+    consultationType: string,
+  ) => {
+    if (which === "diagnosis") setSendingDiagEmail(true); else setSendingOrthoEmail(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("deliver-mila-consultation", {
+        body: { markdown, consultationType },
+      });
+      if (error) throw error;
+      if ((data as any)?.error) throw new Error((data as any).error);
+      if (which === "diagnosis") setDiagEmailSent(true); else setOrthoEmailSent(true);
+      toast({
+        title: "Consulenza inviata",
+        description: `Documento Word inviato a ${userEmail || "la tua email"}.`,
+      });
+    } catch (e: any) {
+      toast({
+        title: "Invio non riuscito",
+        description: e?.message || "Riprova tra qualche istante.",
+        variant: "destructive",
+      });
+    } finally {
+      if (which === "diagnosis") setSendingDiagEmail(false); else setSendingOrthoEmail(false);
+    }
+  };
 
   // ---------- Clinical handlers ----------
   const handleClinicalFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -468,6 +504,8 @@ const MilaMethodTool = () => {
     resetCef();
     setDiagnosisResult("");
     setOrthoResult("");
+    setDiagEmailSent(false);
+    setOrthoEmailSent(false);
   };
 
   // ---------- Disclaimer screen ----------
@@ -758,18 +796,21 @@ const MilaMethodTool = () => {
               <div className="flex items-center gap-2">
                 <Brain size={18} className="text-petrolio" />
                 <div>
-                  <h4 className="font-display text-base font-semibold text-foreground">Consulenza Clinico-Posturale pronto</h4>
-                  <p className="font-body text-xs text-muted-foreground">Scarica nel formato desiderato.</p>
+                  <h4 className="font-display text-base font-semibold text-foreground">Consulenza Clinico-Posturale pronta</h4>
+                  <p className="font-body text-xs text-muted-foreground">
+                    Invia il documento Word alla tua email {userEmail ? <span className="font-medium">({userEmail})</span> : null}.
+                  </p>
                 </div>
               </div>
               <div className="flex flex-wrap gap-2">
-                <Button variant="default" onClick={() => downloadAsWord(diagnosisResult, `Consulenza_Clinico_${clinicalFile?.name?.replace(/\.pdf$/i, "") || "paziente"}`, "Consulenza Clinica")} className="font-body gap-2">
-                  <FileDown size={14} />
-                  Word (editabile)
-                </Button>
-                <Button variant="outline" onClick={() => downloadAsPdf(diagnosisResult, "Consulenza Clinica")} className="font-body gap-2">
-                  <Download size={14} />
-                  Stampa / PDF
+                <Button
+                  variant="default"
+                  onClick={() => sendConsultationEmail("diagnosis", diagnosisResult, "Consulenza Clinica")}
+                  disabled={sendingDiagEmail || diagEmailSent}
+                  className="font-body gap-2"
+                >
+                  {sendingDiagEmail ? <Loader2 size={14} className="animate-spin" /> : diagEmailSent ? <CheckCircle2 size={14} /> : <Mail size={14} />}
+                  {sendingDiagEmail ? "Invio in corso…" : diagEmailSent ? "Email inviata" : "Invia via email"}
                 </Button>
               </div>
               <RetroFeedback toolName={DIAGNOSIS_TOOL} />
@@ -782,17 +823,20 @@ const MilaMethodTool = () => {
                 <Ruler size={18} className="text-petrolio" />
                 <div>
                   <h4 className="font-display text-base font-semibold text-foreground">Consulenza Cefalometrica pronta</h4>
-                  <p className="font-body text-xs text-muted-foreground">Scarica nel formato desiderato.</p>
+                  <p className="font-body text-xs text-muted-foreground">
+                    Invia il documento Word alla tua email {userEmail ? <span className="font-medium">({userEmail})</span> : null}.
+                  </p>
                 </div>
               </div>
               <div className="flex flex-wrap gap-2">
-                <Button variant="default" onClick={() => downloadAsWord(orthoResult, `Cefalometria_${orthoForm.cognome}_${orthoForm.nome}`, "Consulenza Cefalometrica")} className="font-body gap-2">
-                  <FileDown size={14} />
-                  Word (editabile)
-                </Button>
-                <Button variant="outline" onClick={() => downloadAsPdf(orthoResult, "Consulenza Cefalometrica")} className="font-body gap-2">
-                  <Download size={14} />
-                  Stampa / PDF
+                <Button
+                  variant="default"
+                  onClick={() => sendConsultationEmail("ortho", orthoResult, "Consulenza Cefalometrica")}
+                  disabled={sendingOrthoEmail || orthoEmailSent}
+                  className="font-body gap-2"
+                >
+                  {sendingOrthoEmail ? <Loader2 size={14} className="animate-spin" /> : orthoEmailSent ? <CheckCircle2 size={14} /> : <Mail size={14} />}
+                  {sendingOrthoEmail ? "Invio in corso…" : orthoEmailSent ? "Email inviata" : "Invia via email"}
                 </Button>
               </div>
               <RetroFeedback toolName={ORTHO_TOOL} />
