@@ -15,6 +15,3 @@ verify_jwt = false
 [functions.download-consultation]
 verify_jwt = false
 
-[functions.deliver-mila-consultation]
-verify_jwt = false
-
