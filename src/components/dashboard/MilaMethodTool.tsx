@@ -265,18 +265,20 @@ const MilaMethodTool = () => {
     which: "diagnosis" | "ortho",
     markdown: string,
     consultationType: string,
+    format: "word" | "pdf",
   ) => {
-    if (which === "diagnosis") setSendingDiagEmail(true); else setSendingOrthoEmail(true);
+    if (which === "diagnosis") setSendingDiag(format); else setSendingOrtho(format);
     try {
       const { data, error } = await supabase.functions.invoke("deliver-mila-consultation", {
-        body: { markdown, consultationType },
+        body: { markdown, consultationType, format },
       });
       if (error) throw error;
       if ((data as any)?.error) throw new Error((data as any).error);
-      if (which === "diagnosis") setDiagEmailSent(true); else setOrthoEmailSent(true);
+      if (which === "diagnosis") setDiagSent((s) => ({ ...s, [format]: true }));
+      else setOrthoSent((s) => ({ ...s, [format]: true }));
       toast({
         title: "Consulenza inviata",
-        description: `Documento Word inviato a ${userEmail || "la tua email"}.`,
+        description: `Documento ${format === "pdf" ? "PDF" : "Word"} inviato a ${userEmail || "la tua email"}.`,
       });
     } catch (e: any) {
       toast({
@@ -285,9 +287,10 @@ const MilaMethodTool = () => {
         variant: "destructive",
       });
     } finally {
-      if (which === "diagnosis") setSendingDiagEmail(false); else setSendingOrthoEmail(false);
+      if (which === "diagnosis") setSendingDiag(null); else setSendingOrtho(null);
     }
   };
+
 
   // ---------- Clinical handlers ----------
   const handleClinicalFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
