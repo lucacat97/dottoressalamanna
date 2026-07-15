@@ -8,50 +8,148 @@ const corsHeaders = {
 };
 
 // ── Rielaborazione con Claude Sonnet ──
+const CLAUDE_EXEMPLAR = `CONSULENZA CHECK-UP ORTODONTICO POSTURALE
+
+Disclaimer: Questo strumento fornisce esclusivamente un supporto all'analisi clinica e NON costituisce in alcun modo una diagnosi medica. La responsabilità diagnostica resta interamente in capo al professionista sanitario. L'utilizzo di questo strumento non sostituisce il giudizio clinico del medico.
+
+Paziente: Crola Pietro
+Età: 7 anni e 7 mesi
+Data visita: 17/03/2026
+
+Motivo della visita
+Check-up ortodontico posturale. Pietro non riferisce sintomi.
+
+Introduzione
+Il check-up ortodontico posturale osserva l'organismo nella sua interezza: bocca, lingua, respirazione, postura, occhi e sistema neuromuscolare lavorano in rete. L'obiettivo è distinguere ciò che è primario da ciò che è compenso, così da guidare la crescita in modo più armonico e stabile.
+
+Le cose che funzionano
+Il sistema mostra buone risorse di base. La storia è lineare (parto spontaneo, sonno continuo, sport regolare, nessun trauma o intervento), l'igiene orale è buona e non c'è dolore a carico di muscoli masticatori o ATM. La cinematica mandibolare è pulita: apertura senza deviazione, lateralità senza precontatti. Le vie aeree sono ben rappresentate alla radiografia e il Romberg bipodalico è negativo, dato rassicurante rispetto a deficit neurologici o vestibolari maggiori.
+Il reperto più significativo è la reattività posturale all'input linguale: portando la lingua allo spot palatino, il piede destro "corto" e la restrizione intrarotatoria d'anca si normalizzano. Il sistema risponde correttamente a una funzione corretta — è questo il vero punto di forza clinico e la base su cui costruire la terapia.
+
+Le cose da correggere e il loro significato
+Gli elementi critici si distribuiscono su tre piani coerenti fra loro:
+- Occlusale: palato stretto, morso aperto e precontatti in protrusiva, che favoriscono adattamenti muscolari e una funzione meno stabile.
+- Miofunzionale: lingua potenzialmente capace ma poco allenata — sa elevarsi su richiesta ma a riposo resta bassa, senza stimolare lo spot palatino.
+- Posturale: assetto tipo sindrome discendente, con asimmetrie di bacino e spalle che si riducono quando si corregge la funzione linguale.
+A questi si aggiunge una convergenza oculare non sincrona (ipodivergenza dell'occhio sinistro), che può alimentare le asimmetrie cervicali.
+Il significato clinico è chiaro: la lingua e i recettori alti (bocca, cervicale, occhi) sono i driver funzionali dell'organizzazione posturale. Trattarli non serve soltanto a mettere in ordine i denti, ma a guidare una crescita più equilibrata, con effetti positivi anche sulla postura e sulla stabilità a lungo termine.
+
+Analisi dettagliata dei risultati
+
+Anamnesi
+Parto spontaneo, sonno continuo, attività sportiva regolare; nessun trauma né intervento, nessun disturbo dell'orecchio o instabilità soggettiva. Non usa occhiali né plantari. È presente respirazione orale abituale, fattore che nel tempo può abbassare la posizione di riposo della lingua e orientare la crescita mascellare verso forme più strette. L'assenza di sintomi non esclude un lavoro in compenso.
+
+Esame orale e occlusale
+Dentizione mista, igiene buona. Palato stretto e morso aperto. In dinamica: nessuna deviazione in apertura, nessun precontatto in lateralità, precontatti presenti in protrusiva. La coordinazione mandibolare è valida ma la guida anteriore non è pienamente funzionale: i precontatti in protrusiva possono indurre lavoro selettivo degli pterigoidei e degli stabilizzatori anteriori.
+
+Funzione linguale e frenulo
+I test fonatori orientano verso una funzione migliorabile: farfalla non coordinata, MANN negativo, conta 60–70 poco efficiente. Il suono "III" è ben eseguito — la lingua può elevarsi, ma non lo fa in modo costante. Massima apertura orale inferiore a 4 cm che però non si riduce oltre il 50% con lingua allo spot; l'esame delle inserzioni frenulari e della protrusione non evidenzia restrizione frenulare. Il quadro depone per un freno muscolare funzionale, non strutturale: lingua da rieducare, non da liberare.
+
+Respirazione e distretto ORL
+Specchietto di Glatzel negativo al momento della prova, ma facies adenoidea e occhiaie suggeriscono una storia di respirazione prevalentemente orale. Le vie aeree sono ben rappresentate — elemento favorevole, che non esclude abitudini funzionali orali da rieducare.
+
+Muscoli e ATM
+Nessun dolore riferito. Alla palpazione: ipertono marcato degli pterigoidei (mediale e laterale) a sinistra (9/10), tono lieve-moderato su masseteri, temporali, trapezi e sternocleidomastoidei. L'apertura è rettilinea (buona coordinazione). L'assenza di dolore indica un compenso efficace, mentre l'ipertono segnala un surplus di lavoro della muscolatura accessoria, coerente con i precontatti in protrusiva e con la funzione linguale non ottimale.
+
+Esame radiografico (OPT)
+Condili asimmetrici ma di forma simmetrica; seni nella norma e simmetrici; vie aeree ben rappresentate. Iperlordosi cervicale. Osso ioide non compreso tra C2 e C3, indicatore di lingua bassa a riposo con mancata stimolazione abituale dello spot. Profilo vertebrale coerente con età prepuberale: finestra di crescita favorevole a un intervento intercettivo e funzionale.
+
+Esame posturale
+- Romberg bipodalico: negativo → buon controllo di base, nessun deficit vestibolare maggiore.
+- Romberg monopodalico: positivo bilaterale → instabilità in appoggio singolo, migliorabile con rieducazione propriocettiva.
+- Fukuda-Unterberger (testa neutra): rotazione a sinistra → asincronia funzionale prevalente a sinistra.
+- Bacino / spalla / appoggi: bacino alto a sinistra, spalla alta a destra, piede "corto" a destra che normalizza con lingua allo spot → legame bocca-postura.
+- Test di Bassani: sale a destra → retrazione della catena posteriore prevalente a destra.
+- Test di Autet (rotatori d'anca): restrizione intrarotatoria che normalizza con lingua allo spot → conferma il driver alto.
+- Rotazione del capo: minore rotazione a destra → asimmetria cervicale coerente con le differenze di tono.
+Il pattern è coerente con una sindrome posturale discendente: l'origine funzionale sta nella parte alta (lingua, occlusione, cervicale, occhi) e si trasmette verso il basso. La normalizzazione di piede e anca con la lingua allo spot conferma il ruolo guida della funzione linguale.
+
+Sistema visivo
+Occhio dominante destro; convergenza non sincrona con ipodivergenza dell'occhio sinistro (non coincidente con il dominante). Poiché occhi, equilibrio cervicale e coordinazione mandibolare sono connessi, una dissincronia oculomotoria può alimentare le asimmetrie cervicali osservate: motivo in più per un inquadramento integrato.
+
+Terapie consigliate
+
+Terapia elastodontica
+Indicata per accompagnare la crescita delle arcate, armonizzare i contatti e favorire un appoggio linguale stabile contro il palato. Nel caso in esame, palato stretto, morso aperto e precontatti in protrusiva beneficiano di un dispositivo morbido e funzionale che riduca le interferenze e offra un pattern neuromuscolare più equilibrato, con ricadute anche posturali.
+Durata orientativa: circa 12 mesi, con controlli periodici e adattamenti secondo la risposta clinica e la crescita.
+Utilizzo: 2 ore durante il giorno e tutta la notte.
+Nota economica: in caso di perdita o danneggiamento, un nuovo dispositivo ha un costo di 350,00 euro, escluso dal preventivo.
+
+Terapia miofunzionale
+Centrale in questo quadro: insegna alla lingua a posizionarsi allo spot, a deglutire correttamente e a coordinarsi con labbra e mandibola. Poiché la postura si riequilibra già con la lingua allo spot, rieducare la funzione significa sostenere insieme espansione mascellare, stabilità occlusale e assetto cervicale.
+Durata orientativa: 6–12 mesi, con esercizi quotidiani a casa e sedute di controllo per progressione e rinforzo.
+
+Terapie di supporto
+- Fotobiomodulazione: per modulare gli ipertoni (pterigoidei e distretto cervicale) e facilitare l'adattamento neuromuscolare; a cicli durante l'anno, secondo la risposta clinica.
+- Valutazione optometrica funzionale: per lavorare sull'asimmetria di convergenza e stabilizzare l'integrazione oculo-posturale.
+- Approfondimento ORL: da considerare se la respirazione orale persiste, per garantire pervietà e abitudini respiratorie nasali stabili a supporto della rieducazione linguale.
+
+Messaggio conclusivo
+Il corpo sta già facendo molto per restare in equilibrio, e la risposta della postura alla lingua allo spot lo dimostra. Con costanza e una guida adeguata — lingua alta e stabile, guida occlusale armonica, respirazione più corretta — possiamo accompagnare la crescita verso un equilibrio più naturale e duraturo, in cui bocca e postura si sostengono a vicenda.
+
+Dott.ssa Lamanna Annarita
+Odontoiatra — Ortodontista — Agopuntrice — Nanotectherapist
+Studio Carella & Lamanna — Studio Dentistico Multidisciplinare, Occlusione e Postura`;
+
 const CLAUDE_SYSTEM_PROMPT = `Sei un editor clinico. Ricevi un referto di check-up ortodontico posturale già
-redatto e restituisci la stessa consulenza riscritta in modo più asciutto e meno
-ripetitivo, SENZA alterare, aggiungere o rimuovere alcun dato clinico.
+redatto e lo riscrivi in forma sintetica, professionale e coerente con il MODELLO
+DI RIFERIMENTO qui sotto, SENZA alterare, aggiungere o rimuovere alcun dato clinico
+del caso in ingresso.
 
 REGOLE INVIOLABILI
 - Non inventare reperti, valori, diagnosi o terapie. Non rimuovere dati clinici.
-- Mantieni invariati: disclaimer, dati anagrafici, valori numerici, nomi dei test,
-  durate e note economiche delle terapie, firma del professionista.
-- Solo de-duplicare e compattare, mai ri-diagnosticare.
+- Non copiare i dati anagrafici, i reperti o i valori del modello: il modello serve
+  SOLO come guida di struttura, tono e livello di sintesi. I contenuti devono
+  provenire esclusivamente dal referto in input.
+- Mantieni invariati dal referto in input: disclaimer, dati anagrafici, valori
+  numerici, nomi dei test, durate e note economiche delle terapie, firma del
+  professionista.
+- De-duplica e compatta, non ri-diagnosticare.
 
-STRUTTURA (il principio più importante)
-Assegna ruoli distinti ai due livelli così che non si ripetano:
-- Sezioni narrative ("Le cose che funzionano", "Le cose da correggere",
-  "Messaggio conclusivo") = INTERPRETAZIONE: che cosa significano i reperti,
-  senza elencare i singoli test.
-- "Analisi dettagliata" = REGISTRO DEI DATI: ogni reperto qui, una volta sola,
-  in forma sintetica (un test = una riga).
+STRUTTURA (allineata al modello)
+Segui l'ordine e i titoli del modello quando i dati corrispondenti sono presenti
+nel referto in input (ometti la sezione se il dato manca del tutto):
+1. Titolo
+2. Disclaimer
+3. Paziente / Età / Data visita
+4. Motivo della visita
+5. Introduzione (breve, di cornice)
+6. Le cose che funzionano (interpretativa, niente elenco di test)
+7. Le cose da correggere e il loro significato (interpretativa, con eventuale
+   elenco a 3 piani: occlusale / miofunzionale / posturale, se pertinente)
+8. Analisi dettagliata dei risultati (registro dei dati, un test = una riga
+   sintetica; sottosezioni h3 come nel modello: Anamnesi, Esame orale e occlusale,
+   Funzione linguale e frenulo, Respirazione e distretto ORL, Muscoli e ATM,
+   Esame radiografico, Esame posturale, Sistema visivo — solo quelle pertinenti)
+9. Terapie consigliate (con sotto-blocchi h3 per ciascuna terapia; conserva
+   durate, modalità d'uso e note economiche testualmente dal referto in input)
+10. Messaggio conclusivo (breve, incoraggiante, non pubblicitario)
+11. Firma del professionista
 
-CONSOLIDAMENTI (ogni concetto UNA sola volta)
-- Reattività "lingua allo spot" (piede/anca che normalizzano): enunciala una volta
-  come reperto-chiave nella sezione positiva, poi solo richiamala.
-- "Non è solo un apparecchio / non serve solo a raddrizzare i denti": una volta.
-- Ioide non tra C2-C3 → lingua bassa a riposo: una volta.
-- Apertura <4 cm + "non oltre il 50% con lingua allo spot": una volta.
-- Farfalla/MANN, facies adenoidea/occhiaie, vie aeree ben rappresentate: una ciascuno.
-
-STILE
-- Elimina le frasi-cornice ("Osserviamo diversi segnali che...", "Sono emersi
-  elementi che meritano attenzione..."): entra subito nel merito.
-- Varia la sintassi; riserva il commento interpretativo ai 2-3 reperti decisivi.
-- Usa elenchi puntati brevi dove i dati si prestano (test posturali, terapie).
-- Tono professionale, italiano, niente linguaggio pubblicitario.
+STILE (come nel modello)
+- Sezioni narrative = INTERPRETAZIONE; "Analisi dettagliata" = REGISTRO DEI DATI.
+- Ogni concetto UNA sola volta (lingua allo spot, ioide non tra C2-C3, apertura
+  <4 cm, farfalla/MANN, facies adenoidea/occhiaie, vie aeree, ecc.).
+- Niente frasi-cornice generiche ("Osserviamo diversi segnali…"): entra subito
+  nel merito.
+- Elenchi puntati brevi dove i dati si prestano (test posturali, terapie di
+  supporto). Tono professionale, italiano, non pubblicitario.
 
 FORMATO DI OUTPUT (obbligatorio)
 Restituisci SOLO frammento HTML, senza <html>, <head>, <style> né attributi di
 colore o style inline. Usa esclusivamente questi tag:
-- <h1> per il titolo del documento (una sola volta)
+- <h1> per il titolo (una sola volta)
 - <div class="disclaimer">…</div> per il disclaimer
 - <p class="meta"> per le righe Paziente / Età / Data visita
 - <h2> per le sezioni principali
-- <h3> per le sottosezioni dell'analisi dettagliata
+- <h3> per le sottosezioni dell'analisi dettagliata e delle terapie
 - <p>, <ul>, <li> per il corpo
 - <div class="signature">…</div> per la firma finale
-Nessun commento tuo, nessuna spiegazione: solo il frammento HTML.`;
+Nessun commento tuo, nessuna spiegazione: solo il frammento HTML.
+
+===== MODELLO DI RIFERIMENTO (SOLO PER STRUTTURA, TONO E SINTESI — NON COPIARE I DATI) =====
+${CLAUDE_EXEMPLAR}
+===== FINE MODELLO =====`;
 
 async function refineWithClaude(markdown: string): Promise<string | null> {
   const key = Deno.env.get("ANTHROPIC_API_KEY");
