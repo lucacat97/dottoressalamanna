@@ -203,10 +203,11 @@ const MilaMethodTool = () => {
   const [orthoResult, setOrthoResult] = useState("");
 
   // Email delivery state
-  const [sendingDiagEmail, setSendingDiagEmail] = useState(false);
-  const [sendingOrthoEmail, setSendingOrthoEmail] = useState(false);
-  const [diagEmailSent, setDiagEmailSent] = useState(false);
-  const [orthoEmailSent, setOrthoEmailSent] = useState(false);
+  const [sendingDiag, setSendingDiag] = useState<null | "word" | "pdf">(null);
+  const [sendingOrtho, setSendingOrtho] = useState<null | "word" | "pdf">(null);
+  const [diagSent, setDiagSent] = useState<{ word: boolean; pdf: boolean }>({ word: false, pdf: false });
+  const [orthoSent, setOrthoSent] = useState<{ word: boolean; pdf: boolean }>({ word: false, pdf: false });
+
   const [userEmail, setUserEmail] = useState<string>("");
 
   // Usage
@@ -264,18 +265,20 @@ const MilaMethodTool = () => {
     which: "diagnosis" | "ortho",
     markdown: string,
     consultationType: string,
+    format: "word" | "pdf",
   ) => {
-    if (which === "diagnosis") setSendingDiagEmail(true); else setSendingOrthoEmail(true);
+    if (which === "diagnosis") setSendingDiag(format); else setSendingOrtho(format);
     try {
       const { data, error } = await supabase.functions.invoke("deliver-mila-consultation", {
-        body: { markdown, consultationType },
+        body: { markdown, consultationType, format },
       });
       if (error) throw error;
       if ((data as any)?.error) throw new Error((data as any).error);
-      if (which === "diagnosis") setDiagEmailSent(true); else setOrthoEmailSent(true);
+      if (which === "diagnosis") setDiagSent((s) => ({ ...s, [format]: true }));
+      else setOrthoSent((s) => ({ ...s, [format]: true }));
       toast({
         title: "Consulenza inviata",
-        description: `Documento Word inviato a ${userEmail || "la tua email"}.`,
+        description: `Documento ${format === "pdf" ? "PDF" : "Word"} inviato a ${userEmail || "la tua email"}.`,
       });
     } catch (e: any) {
       toast({
@@ -284,9 +287,10 @@ const MilaMethodTool = () => {
         variant: "destructive",
       });
     } finally {
-      if (which === "diagnosis") setSendingDiagEmail(false); else setSendingOrthoEmail(false);
+      if (which === "diagnosis") setSendingDiag(null); else setSendingOrtho(null);
     }
   };
+
 
   // ---------- Clinical handlers ----------
   const handleClinicalFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -504,8 +508,9 @@ const MilaMethodTool = () => {
     resetCef();
     setDiagnosisResult("");
     setOrthoResult("");
-    setDiagEmailSent(false);
-    setOrthoEmailSent(false);
+    setDiagSent({ word: false, pdf: false });
+    setOrthoSent({ word: false, pdf: false });
+
   };
 
   // ---------- Disclaimer screen ----------
@@ -798,19 +803,28 @@ const MilaMethodTool = () => {
                 <div>
                   <h4 className="font-display text-base font-semibold text-foreground">Consulenza Clinico-Posturale pronta</h4>
                   <p className="font-body text-xs text-muted-foreground">
-                    Invia il documento Word alla tua email {userEmail ? <span className="font-medium">({userEmail})</span> : null}.
+                    Ricevi la consulenza in Word o PDF alla tua email {userEmail ? <span className="font-medium">({userEmail})</span> : null}.
                   </p>
                 </div>
               </div>
               <div className="flex flex-wrap gap-2">
                 <Button
                   variant="default"
-                  onClick={() => sendConsultationEmail("diagnosis", diagnosisResult, "Consulenza Clinica")}
-                  disabled={sendingDiagEmail || diagEmailSent}
+                  onClick={() => sendConsultationEmail("diagnosis", diagnosisResult, "Consulenza Clinica", "word")}
+                  disabled={sendingDiag !== null || diagSent.word}
                   className="font-body gap-2"
                 >
-                  {sendingDiagEmail ? <Loader2 size={14} className="animate-spin" /> : diagEmailSent ? <CheckCircle2 size={14} /> : <Mail size={14} />}
-                  {sendingDiagEmail ? "Invio in corso…" : diagEmailSent ? "Email inviata" : "Invia via email"}
+                  {sendingDiag === "word" ? <Loader2 size={14} className="animate-spin" /> : diagSent.word ? <CheckCircle2 size={14} /> : <Mail size={14} />}
+                  {sendingDiag === "word" ? "Invio in corso…" : diagSent.word ? "Word inviato" : "Invia Consulenza in Word"}
+                </Button>
+                <Button
+                  variant="secondary"
+                  onClick={() => sendConsultationEmail("diagnosis", diagnosisResult, "Consulenza Clinica", "pdf")}
+                  disabled={sendingDiag !== null || diagSent.pdf}
+                  className="font-body gap-2"
+                >
+                  {sendingDiag === "pdf" ? <Loader2 size={14} className="animate-spin" /> : diagSent.pdf ? <CheckCircle2 size={14} /> : <Mail size={14} />}
+                  {sendingDiag === "pdf" ? "Invio in corso…" : diagSent.pdf ? "PDF inviato" : "Invia Consulenza in PDF"}
                 </Button>
               </div>
               <RetroFeedback toolName={DIAGNOSIS_TOOL} />
@@ -824,24 +838,34 @@ const MilaMethodTool = () => {
                 <div>
                   <h4 className="font-display text-base font-semibold text-foreground">Consulenza Cefalometrica pronta</h4>
                   <p className="font-body text-xs text-muted-foreground">
-                    Invia il documento Word alla tua email {userEmail ? <span className="font-medium">({userEmail})</span> : null}.
+                    Ricevi la consulenza in Word o PDF alla tua email {userEmail ? <span className="font-medium">({userEmail})</span> : null}.
                   </p>
                 </div>
               </div>
               <div className="flex flex-wrap gap-2">
                 <Button
                   variant="default"
-                  onClick={() => sendConsultationEmail("ortho", orthoResult, "Consulenza Cefalometrica")}
-                  disabled={sendingOrthoEmail || orthoEmailSent}
+                  onClick={() => sendConsultationEmail("ortho", orthoResult, "Consulenza Cefalometrica", "word")}
+                  disabled={sendingOrtho !== null || orthoSent.word}
                   className="font-body gap-2"
                 >
-                  {sendingOrthoEmail ? <Loader2 size={14} className="animate-spin" /> : orthoEmailSent ? <CheckCircle2 size={14} /> : <Mail size={14} />}
-                  {sendingOrthoEmail ? "Invio in corso…" : orthoEmailSent ? "Email inviata" : "Invia via email"}
+                  {sendingOrtho === "word" ? <Loader2 size={14} className="animate-spin" /> : orthoSent.word ? <CheckCircle2 size={14} /> : <Mail size={14} />}
+                  {sendingOrtho === "word" ? "Invio in corso…" : orthoSent.word ? "Word inviato" : "Invia Consulenza in Word"}
+                </Button>
+                <Button
+                  variant="secondary"
+                  onClick={() => sendConsultationEmail("ortho", orthoResult, "Consulenza Cefalometrica", "pdf")}
+                  disabled={sendingOrtho !== null || orthoSent.pdf}
+                  className="font-body gap-2"
+                >
+                  {sendingOrtho === "pdf" ? <Loader2 size={14} className="animate-spin" /> : orthoSent.pdf ? <CheckCircle2 size={14} /> : <Mail size={14} />}
+                  {sendingOrtho === "pdf" ? "Invio in corso…" : orthoSent.pdf ? "PDF inviato" : "Invia Consulenza in PDF"}
                 </Button>
               </div>
               <RetroFeedback toolName={ORTHO_TOOL} />
             </div>
           )}
+
 
           <Button variant="ghost" onClick={handleResetAll} className="w-full font-body gap-2">
             <RotateCcw size={14} />

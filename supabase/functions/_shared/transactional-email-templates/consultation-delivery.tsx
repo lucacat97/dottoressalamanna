@@ -12,6 +12,7 @@ interface ConsultationDeliveryProps {
   consultationType?: string
   introHtml?: string
   downloadUrl?: string
+  format?: 'word' | 'pdf'
 }
 
 const ConsultationDeliveryEmail = ({
@@ -20,11 +21,18 @@ const ConsultationDeliveryEmail = ({
   consultationType,
   introHtml,
   downloadUrl,
+  format,
 }: ConsultationDeliveryProps) => {
+
   const greeting = professionalFirstName || professionalLastName
     ? `Gentile Dott./Dott.ssa ${[professionalFirstName, professionalLastName].filter(Boolean).join(' ')}`
     : 'Gentile Dottore/Dottoressa'
   const title = consultationType || 'Consulenza sul caso'
+  const isPdf = format === 'pdf'
+  const formatLabel = isPdf ? 'PDF' : 'Word'
+  const openWithNote = isPdf
+    ? 'Apra il file con qualunque lettore PDF.'
+    : 'Apra il file con Microsoft Word, Pages o Google Docs.'
 
   return (
     <Html lang="it" dir="ltr">
@@ -37,7 +45,7 @@ const ConsultationDeliveryEmail = ({
           <Text style={text}>
             di seguito trova una breve <strong>introduzione</strong> alla {title.toLowerCase()} elaborata
             secondo il Metodo MILA. La consulenza completa è disponibile nel
-            <strong> documento Word allegato</strong> scaricabile dal pulsante in fondo alla mail.
+            <strong> documento {formatLabel} allegato</strong> scaricabile dal pulsante in fondo alla mail.
           </Text>
 
           {introHtml ? (
@@ -52,12 +60,13 @@ const ConsultationDeliveryEmail = ({
           {downloadUrl ? (
             <Section style={{ textAlign: 'center', margin: '28px 0' }}>
               <Button href={downloadUrl} style={button}>
-                Scarica la consulenza completa (Word)
+                Scarica la consulenza completa ({formatLabel})
               </Button>
               <Text style={smallNote}>
-                Per motivi di sicurezza, il link è personale, valido <strong>5 giorni</strong> e consente al massimo <strong>5 download</strong>. Apra il file con Microsoft Word, Pages o Google Docs.
+                Per motivi di sicurezza, il link è personale, valido <strong>5 giorni</strong> e consente al massimo <strong>5 download</strong>. {openWithNote}
               </Text>
             </Section>
+
           ) : (
             <Text style={text}>
               <em>Non è stato possibile generare il link di download. Risponda a questa email per ricevere il documento.</em>
