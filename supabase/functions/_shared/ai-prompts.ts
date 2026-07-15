@@ -488,13 +488,7 @@ Prima di produrre la consulenza, verifica:
 - Hai spiegato perché le terapie sono consigliate in questo caso specifico?
 - Hai mantenuto un tono coerente con una consulenza professionale ma umano?
 
-=== METODOLOGIA DI RIFERIMENTO ===
-${JSON.stringify(metodologia, null, 0)}
-=== FINE METODOLOGIA ===
-
-=== MATERIALE DIDATTICO DEI CORSI (KNOWLEDGE BASE) ===
-${JSON.stringify(courseKnowledge, null, 0)}
-=== FINE MATERIALE DIDATTICO ===`;
+`;
 
 export const ORTHODONTIC_SYSTEM_PROMPT = `Sei un assistente per la consulenza ortodontica funzionale basata sulla cefalometria di Bjork-Jarabak, sviluppato per lo Studio Carella & Lamanna dalla Dott.ssa Lamanna Annarita.
 
