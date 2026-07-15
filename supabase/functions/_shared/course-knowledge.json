@@ -1,0 +1,420 @@
+{
+  "corso_check_up_ortodontico_posturale": {
+    "titolo": "CHECK UP ORTODONTICO-POSTURALE - Approccio multidisciplinare per un riequilibrio occlusale, neuromuscolare e posturale",
+    "autore": "Dott.ssa Lamanna Annarita - Odontoiatra, Ortodontista, Agopuntrice, Nanotectherapist",
+    "contenuti": {
+      "linee_guida_nazionali": "Raccomandazione 4: L'esame clinico di un disturbo posturale deve prevedere un percorso in senso cranio-caudale (Forza A, Evidenza I). L'adattamento della postura eretta umana si è realizzato evolutivamente a partenza dal livello craniale (vista, occlusione, ossa mascellari e apparato vestibolare), in senso discendente. In fase diagnostica si prevedono: anamnesi con scala VAS, esame clinico obiettivo cranio-vertebrale, valutazione asse verticale del tronco, valutazione allineamento bacino nei tre piani, valutazione con esami radiografici a basso dosaggio. Per un'analisi più accurata degli elementi dentari e dell'occlusione, è possibile l'utilizzo di scanner intraorali.",
+      "malattia_posturale": "Si definisce malattia posturale una condizione in cui l'organismo perde la propria armonia di equilibrio statico e dinamico, a causa di una disfunzione nei sistemi di controllo posturale — visivo, vestibolare, podalico, stomatognatico o propriocettivo. Questo squilibrio può determinare compensi muscolari, asimmetrie, dolore cronico, disturbi dell'occlusione, cefalee, tensioni miofasciali, fino ad alterare la biomeccanica articolare e la funzione respiratoria.",
+      "cinque_recettori_posturali": [
+        "APPARATO STOMATOGNATICO (occlusione, ATM, deglutizione)",
+        "SISTEMA VESTIBOLARE",
+        "PIEDI",
+        "OCCHI",
+        "PELLE (cicatrici)"
+      ],
+      "occlusione_recettore_posturale": "L'apparato stomatognatico è uno dei 5 recettori posturali. È responsabilità del clinico funzionalizzarla per contribuire alla terapia posturale e non renderla disfunzionale in seguito a un intervento ortodontico, conservativo o protesico.",
+      "sistema_polivagale": {
+        "descrizione": "Il sistema polivagale (Porges) descrive come il nervo vago regola le risposte emotive, fisiologiche e posturali. Il vago ha tre circuiti distinti che determinano il comportamento in base al senso di sicurezza o minaccia percepito.",
+        "tre_circuiti": {
+          "vago_ventrale": "Sicurezza e fiducia: respiro fluido, spalle aperte, sguardo orizzontale",
+          "simpatico": "Allerta o paura: mandibola serrata, collo rigido, respiro corto, sguardo fisso",
+          "vago_dorsale": "Blocco o ritiro: spalle chiuse, torace collassato, respiro superficiale, voce flebile"
+        },
+        "principio": "La postura è una mappa visibile dello stato del sistema nervoso autonomo. Il sistema polivagale collega emozioni, respiro e postura: il corpo si apre nella sicurezza e si chiude nella paura."
+      },
+      "classificazione_dolore_IASP": {
+        "nocicettivo": "Coerenza stimolo-risposta, dolore associato a movimento o trauma, origina da tessuti non neurali. Risoluzione coerente con tempi di guarigione. Risponde ai FANS. Domande chiave: migliora o peggiora? Quali movimenti lo cambiano? È comparso dopo trauma?",
+        "neuropatico": "Alterazione strutturale e funzionale del sistema nervoso somatosensoriale. Bruciore, formicolio, scossa. Severità alta, test neurodinamici spesso positivi. Postura antalgica. Domande chiave: è spontaneo? Lo percepisce come bruciore/scossa? Segue un percorso preciso?",
+        "nociplastico": "Alterata modulazione del dolore senza evidenza di lesione. No coerenza stimolo-risposta. Durata molto lunga, scarsa risposta ai FANS. Forte associazione con fattori psicosociali. Domande chiave: difficile da localizzare? Risponde ai FANS? Associato a disturbi del sonno?"
+      },
+      "anamnesi": {
+        "tipo_di_parto": {
+          "spontaneo": "Il passaggio nel canale del parto stimola il sistema cranio-sacrale, comprimendo fisiologicamente le ossa craniche e favorendo la maturazione dei riflessi orali.",
+          "cesareo": "Necessaria visita osteopata. Possibile ipomobilità occipitale-atlantea: suzione debole, lingua ipotonica, persistenza pattern deglutitorio infantile, tendenza a respirazione orale.",
+          "indotto": "Necessaria visita osteopata. Micro-tensioni craniche possono interferire con nervi cranici IX, X e XII. Possibili: difficoltà suzione, riflesso del vomito accentuato, retrazione linguale, deglutizione asimmetrica."
+        },
+        "sonno": {
+          "descrizione": "La lingua stimola lo spot? La mancata stimolazione porta a deficit di Acetilcolina necessaria per la fase REM. La respirazione orale causa congestione nasale e posizione bassa della lingua.",
+          "cosa_fare": "RI-PIN 1 misurino al giorno prima di dormire, RI-PIN After 20 gocce al mattino, occhiali blue-block dalle 21:00, magnesio e potassio (Alka flor Mirabilis), elastodontico e terapia miofunzionale, Taopatch in punti specifici."
+        },
+        "sport": {
+          "benefici": [
+            "Migliora postura direttamente: rinforza muscolatura stabilizzatrice del rachide (core, multifidi, paravertebrali), riduce iperlordosi/ipercifosi, aumenta propriocezione",
+            "Migliora sistema respiratorio e diaframma",
+            "Potenzia sistema cardiovascolare e HRV",
+            "Rinforza sistema osteo-muscolare",
+            "Migliora equilibrio e controllo posturale: ottimizza lavoro recettori posturali, raffina strategie antigravitarie",
+            "Riduce infiammazione e dolore: aumenta endorfine",
+            "Migliora funzione cognitiva e umore",
+            "Regola peso corporeo",
+            "Migliora qualità del sonno, energia e risposta immunitaria"
+          ],
+          "consigliati": [
+            "Pilates",
+            "Nuoto stile libero (no rana che aumenta iperlordosi)",
+            "Ginnastica posturale",
+            "Camminata veloce",
+            "Tai Qi, Qi Gong",
+            "Cuscino Seven (strumento di autocura per rilassare schiena e ridurre rigidità)"
+          ]
+        },
+        "traumi": "I traumi anche lontani nel tempo possono modificare equilibrio, postura e funzione mandibolare. Un colpo di frusta, caduta, trauma cranico possono alterare tono muscoli posturali, propriocezione vestibolare, mobilità cervicale, carico articolazioni, controllo neuromuscolare. Questi adattamenti diventano nuove mappe posturali interne.",
+        "traumi_emotivi": "Il trauma emotivo modifica il tono del sistema polivagale: il corpo entra in difesa, la muscolatura si irrigidisce, il respiro si restringe. La postura diventa una memoria del trauma. Non entriamo in merito ai problemi psicologici ma possiamo dare supporto integrativo attraverso la terapia luminosa.",
+        "interventi_chirurgici": "Le cicatrici possono modificare tensioni, recettori cutanei e catene miofasciali. Ogni cicatrice è un possibile punto di interferenza che può influenzare postura, equilibrio e funzione.",
+        "occhiali": "Gli occhiali modificano il modo in cui l'occhio organizza le informazioni visive, influenzando equilibrio e catene posturali. Verificare il tipo di correzione e testare il paziente in pedana con e senza lenti.",
+        "apparecchi_ortodontici": "L'ortodonzia modella l'occlusione ma anche i movimenti mandibolari, il lavoro linguale e l'adattamento dell'ATM. Trattamenti pregressi possono aver generato nuovi squilibri.",
+        "apparecchi_acustici": "Modificano l'elaborazione dei segnali uditivi e possono influenzare il sistema vestibolare. Possono contribuire a instabilità, compensi cervicali.",
+        "patologie_orecchio": "Labirintiti e vestiboliti (ipersensibilità vestibolare e instabilità cronica), neuriti vestibolari (deficit compensati parzialmente dal SNC), Malattia di Ménière (fluttuazioni pressorie), ipoacusia improvvisa, otiti ricorrenti (alterazioni pressorie), esiti di interventi o traumi dell'orecchio.",
+        "solette_plantari": "Modificano la percezione del suolo e l'attività dei recettori podalici. Se non adeguati, possono generare compensi ascendenti. Testarli sulla pedana posturale."
+      },
+      "esame_orale": {
+        "valutazione": "Valutare: dentizione (decidua/definitiva/mista), carie, usure, recessioni gengivali, colletti, impianti, protesi totali, ponti e corone, igiene, mediana.",
+        "fotografie": {
+          "profilo": [
+            "Frontale serio",
+            "Frontali con sorriso",
+            "Profilo dx serio e con sorriso",
+            "Profilo sx serio e con sorriso"
+          ],
+          "endorali": [
+            "Max intercuspidazione frontale, laterale dx e sx",
+            "Arcata superiore",
+            "Arcata inferiore"
+          ]
+        },
+        "movimenti_mandibolari": {
+          "apertura_chiusura": "Movimento combinato: fase iniziale di rotazione del condilo nel compartimento inferiore dell'ATM, fase successiva di traslazione condilo-discale. Pattern rettilineo indica sistema ben equilibrato; deviazioni o deflessioni suggeriscono asimmetrie, interferenze occlusali o disfunzioni articolari.",
+          "protrusione": "Richiede traslazione bilaterale simmetrica dei condili. Valuta integrità superfici articolari, coordinazione neuromuscolare, interferenze anteriori, funzionalità guida incisiva. Protrusione limitata o asimmetrica può rivelare restrizioni capsulari o precontatti.",
+          "lateralita": "Meccanica di Bennett: lato lavorante (condilo ruota sul proprio asse), lato bilanciante (condilo trasla avanti, basso, medialmente). Valuta qualità guide canine, interferenze, simmetria funzionale. Alterazioni correlate a parafunzioni, malocclusioni II/III classe, cross-bite.",
+          "linea_mediana": "Deviazione può indicare asimmetrie occlusali, morfologiche o funzionali. Deviazione in apertura che non rientra: origine articolare. Deviazione che rientra: pattern muscolare.",
+          "prevalenza_masticazione": "70-90% dei pazienti ha masticazione preferenziale. Induce ipertono selettivo omolaterale, carichi occlusali asimmetrici, adattamenti articolari, deviazioni mandibolari funzionali."
+        }
+      },
+      "fonazione": {
+        "farfalla": "Se pronuncia fluida con mandibola stabile e labbra rilassate: funzione armonica, occlusione coerente con posizione neuromuscolare. Se distorta: disorganizzazione neuromuscolare, possibile morso aperto, tipping incisivo, overjet aumentato, incompetenza labiale.",
+        "mann": "Se pronuncia bene: buon tono linguale, lingua stabile sul palato duro retroincisale. Se non pronuncia bene: lingua manca di tono, bisogna rafforzare muscolo longitudinale superiore.",
+        "suono_III": "Richiede lingua alta, anteriorizzata, stabilizzata contro palato pre-palatale. Se non mantiene il suono o è basso/soffiato/stridulo: lingua ipotona, mancato contatto palatale (palato stretto? ogivale?), pattern deglutizione atipica, scarsa competenza movimenti verticali (frenulo?).",
+        "suono_S": "Richiede canale d'aria stretto tra incisivi e margini laterali lingua, punta in posizione neutra, dorso elevato, componente laterale ferma e adesa al palato. Conta 60-69: se fischia/si apre/diventa 'sth'/si disperde lateralmente: lingua non stabile al palato, scarso controllo laterale, pattern immaturo. Se mandibola si muove in avanti durante la conta: compenso per funzione linguale insufficiente. La mandibola deve rimanere stabile e neutra: è la lingua che deve lavorare."
+      },
+      "frenulo_vestibolare": {
+        "criteri_corto": "1) Inserzione alta e fibrosa (papillare o trans-papillare). 2) Scarsa elasticità durante trazione. 3) Tirage test: sbiancamento papilla, apertura gap interincisivo, dolore o tensione.",
+        "conseguenze": "Retrazione gengivale su incisivi, instabilità sigillo labiale, disturbi fonetici leggeri.",
+        "quando_tagliare": "Dopo eruzione incisivi laterali (alcuni studi dicono anche canini), dopo gli 8 anni circa."
+      },
+      "lingua": {
+        "osservare": "Forma, dimensione, funzione, impronte dei denti, deviazioni in protrusiva, limitazioni nei movimenti.",
+        "lesioni_mucose": "Valutare: durata, evoluzione (stabile/aumento/dolorosa/sanguinante), fattori scatenanti (traumi, protesi, abitudini viziate, fumo, alcol), sintomi associati (dolore, bruciore, disfagia, linfonodi), patologie pregresse (lichen planus, infezioni virali). Fare fotografia con righello. Se non regredisce entro 10-15 giorni: considerarla potenzialmente preneoplastica. NEL DUBBIO INVIARE DALLO SPECIALISTA."
+      },
+      "frenulo_linguale": {
+        "protocollo_marchesan": {
+          "test_apertura": "Misura bocca aperta e poi con lingua allo spot. Se riduzione supera 50%, il frenulo è corto.",
+          "forma_punta": "In massima apertura valutare: punta quadrata, fessura o depressione, punta a cuore, impossibilità ad alzarsi.",
+          "inserzione_pavimento": "Frenulo corto se visibile dalla cresta alveolare superiore, medio se visibile dalle caruncole. Più l'inserzione è anteriore, più è ostacolata l'elevazione.",
+          "inserzione_lingua": "Più è vicino all'apice, maggiore è il limite del movimento.",
+          "protrusione": "Frenulo disfunzionale se la punta devia da un lato o mostra depressione nel terzo anteriore."
+        },
+        "terapia": "In caso di frenulo corto: frenulectomia, frenulotomia o frenuloplastica."
+      },
+      "tonsille_adenoidi": {
+        "classificazione_brodsky": {
+          "grado_0": "Tonsille assenti",
+          "grado_1": "<25% dell'orofaringe",
+          "grado_2": "25-50%",
+          "grado_3": "50-75%",
+          "grado_4": ">75%"
+        },
+        "valutazione": "Con abbassalingua e buona luce, pronunciare 'AAA'. Valutare colore, cripticità, essudati, tonsilloliti, contatto a riposo. Tonsille 3-4 quasi sempre associate a respirazione orale e deglutizione atipica.",
+        "esame_adenoidi_indiretto": "Senza endoscopio: voce chiusa/iponasale, buccal breathing, rumore inspiratorio, alito secco, labbra aperte, palato alto/ogivale, arcata superiore stretta, ipertono mentale, collo in estensione. Se non riesce a stare a labbra chiuse per 30 secondi: sospetto adenoideo elevato.",
+        "endoscopia_rinofaringea": "Gold standard. Richiedere in caso di respirazione orale persistente, russamento, pattern miofunzionale immaturo, palato stretto con postura linguale bassa. Classificazione grado 1-4.",
+        "indicazioni_rimozione": "Ostruzione severa documentata (russamento + apnea, CPAP non utilizzabile, endoscopia III-IV), conseguenze funzionali gravi (respiratore orale permanente, OSAS pediatrica, dismorfosi, disturbi alimentari e sonno), infezioni ricorrenti (>=5 tonsilliti/anno, otiti ricorrenti).",
+        "prescrizione": "Non scrivere solo 'adenoidi/tonsille ipertrofiche' ma anche che interferiscono con le funzioni. Elencare le funzioni e inviare con documenti e referti."
+      },
+      "test_respirazione": {
+        "specchietto_glatzel": {
+          "indicazioni_diagnostiche": "1) Pervietà cavità nasali: appannamento simmetrico = flusso equilibrato; ridotto/assente da un lato = ostruzione (deviazione setto, ipertrofia turbinati, edema, riniti). 2) Qualità respirazione nasale: appannamento debole = respirazione prevalentemente orale. 3) Screening pre-terapia miofunzionale.",
+          "significato": "Lo specchietto di Glatzel non misura solo aria: misura equilibrio. Appannamento asimmetrico = respiro non libero, funzione che modifica forma del volto, postura che si sta adattando."
+        }
+      },
+      "valutazione_ATM": {
+        "ispezione": "Allineamento cranio-cervicale, asimmetrie mandibolari a riposo.",
+        "palpazione": "Masseteri, temporali, pterigoidei, capsula articolare preauricolare, palpazione intraorale pterigoidei.",
+        "misurazioni_funzionali": "Ampiezza apertura (mm), lateralità e protrusiva (mm), overjet e overbite.",
+        "analisi_movimenti": "Apertura/chiusura, deviazione o deflessione, lateralità e protrusiva, rumori articolari.",
+        "auscultazione": "Clic singolo o doppio = sospetto dislocazione discale. Crepitii = degenerazione articolare.",
+        "esami_strumentali": {
+          "OPT": "Condizioni generali, alterazioni ossee grossolane.",
+          "CBCT": "Indagine 3D per forme condilari, erosioni, osteofiti, asimmetrie processi condilari.",
+          "RMN_ATM": "Indispensabile per posizione disco, integrità capsulo-legamentosa, versamento. Tecnica principale per distinguere fasi della dislocazione discale."
+        },
+        "prescrizione_RMN": "RMN ATM senza contrasto: scouting centraggio, sagittali bocca chiusa T1 e T2 FSE FS, coronali bocca chiusa T1, sagittali bocca aperta T1. PRIMA DELL'ESAME far deambulare il paziente a piedi scalzi per 10 minuti. Ripetere prima sequenza con rialzo posizionato in bocca."
+      },
+      "muscoli": {
+        "palpazione": "Trapezi, sternocleidomastoidei, muscoli masticatori, muscoli mimici."
+      },
+      "OPT": {
+        "valutazione": "Simmetria condili, forma condili, seni nasali, conta denti (agenesie, sovranumerari, inclusioni), impianti, germi/denti del giudizio, recessioni gengivali, carie/granulomi/cisti.",
+        "cronologia_eruttiva": "Importante nel bambino/adolescente per intercettare disarmonie di crescita e impostare terapia in caso di agenesie.",
+        "segni_patologie": "Aree radiotrasparenti o radiopache, segni di osteoporosi, tossicità da bifosfonati, inspessimento mucosa seni (sinusiti odontogene)."
+      },
+      "telecranio_laterolaterale": {
+        "valutazione": "Lordosi cervicale, osso ioide (dietro angolo mandibolare circa C3), forma vertebre per età metabolica, vie aeree.",
+        "angolo_sellare_NSAr": {
+          "norma": "123° +-5",
+          "ridotto": "<118°: posizione avanzata della fossa glenoide, mandibola posizionata in avanti. Segno sfavorevole per III classe.",
+          "aumentato": ">128°: posizione arretrata della fossa. Segno sfavorevole alla II classe.",
+          "significato": "Questo angolo imposta la classe scheletrica.",
+          "interpretazione_per_classe": {
+            "classe_I": {
+              "norma": "Relazione scheletrica favorevole, classe I di base.",
+              "ampio": "Tendenza latente alla Classe II.",
+              "ridotto": "Tendenza latente alla Classe III."
+            },
+            "classe_II": {
+              "ampio": "Classe II di base cranica, mandibola svantaggiata fin dall'inizio.",
+              "norma": "Classe II spesso funzionale o dentale.",
+              "ridotto": "Classe II compensata, buona risposta a terapie funzionali."
+            },
+            "classe_III": {
+              "ridotto": "Base cranica sfavorevole, Classe III impostata, cerca compenso dentale.",
+              "norma_o_ampio": "Classe III spesso secondaria o compensata."
+            }
+          }
+        },
+        "angolo_articolare_SArGo": {
+          "norma": "143° +-5",
+          "aumentato": ">148°: iperdivergente, crescita verticale, rotazione posteriore mandibola.",
+          "ridotto": "<138°: ipodivergente, crescita orizzontale, rotazione anteriore.",
+          "significato": "Indica direzione di crescita mandibolare e evoluzione della classe.",
+          "interpretazione_per_classe": {
+            "classe_I": {
+              "norma": "Crescita mandibolare equilibrata, classe I stabile.",
+              "aumentato": "Tendenza verticale, possibile instabilità, affollamento, open bite.",
+              "ridotto": "Crescita orizzontale, classe I robusta, attenzione a iperforze muscolari."
+            },
+            "classe_II": {
+              "aumentato": "Mandibola ruota indietro, Classe II scheletrica vera, alto rischio peggioramento.",
+              "norma_o_ridotto": "Classe II spesso dentale o funzionale, buona risposta a terapia."
+            },
+            "classe_III": {
+              "ridotto": "Crescita mandibolare orizzontale in avanti, Classe III evolutiva, forze muscolari elevate, attenzione massima in crescita.",
+              "aumentato": "Componente verticale prevalente (ammortizzatore), Classe III compensata o meno aggressiva. L'angolo è strumento predittivo potentissimo."
+            }
+          }
+        },
+        "angolo_goniaco_ArGoMe": {
+          "norma": "130° +-7",
+          "aumentato": ">138°: iperdivergente.",
+          "ridotto": "<124°: ipodivergente.",
+          "interpretazione_per_classe": {
+            "classe_I_ipodivergente": "Mandibola forte e compatta, muscoli ipertonici, stabilità buona ma rischio compressione, spesso morso profondo.",
+            "classe_I_iperdivergente": "Mandibola che scende, sistema instabile verticalmente, rischio affollamento, open bite, recidiva.",
+            "classe_II_iperdivergente": "La più frequente. Mandibola ruota indietro e in basso, altezza facciale aumentata, muscoli deboli, prognosi delicata. Classe II scheletrica vera.",
+            "classe_II_ipodivergente": "Mandibola forte ma bloccata, Classe II spesso funzionale o compensata, buona risposta a terapia funzionale.",
+            "classe_III_ipodivergente": "Prognosi favorevole e risultato stabile.",
+            "classe_III_iperdivergente": "Instabile se non controlli componente verticale.",
+            "classe_III_scheletrica_ipodivergente": "Crescita orizzontale dominante, rotazione antioraria, mandibola propulsiva, prognosi impegnativa se non intercettata.",
+            "classe_III_scheletrica_iperdivergente": "Controllo verticale difficile ma mandibola non propulsiva, più verticale che anteriorizzata."
+          }
+        },
+        "scelta_dispositivi": {
+          "regola": "Gli angoli di divergenza suggeriscono il piano da usare: deep oppure open.",
+          "iperdivergente": "Se SArGo >149° E ArGoMe >138°: OPEN.",
+          "ipodivergente": "Se SArGo <123° E ArGoMe <124°: DEEP.",
+          "discordanti": "Se valori discordanti o ipo/iper lievi: OPEN o BASIC per 4-5 mesi.",
+          "un_solo_angolo": "Se solo uno dei due angoli è iper/ipo: OPEN o BASIC per 4-5 mesi."
+        },
+        "angolo_ANB": {
+          "norma": "0-4°: I classe. >4°: II classe. <0°: III classe.",
+          "significato": "Valuta relazione sagittale mascellare-mandibola rispetto a base cranica. Non va mai letto da solo: influenzato da posizione Nasion, rotazione piano mandibolare, crescita verticale, inclinazione base cranica. Integrare sempre con Wits, pattern crescita, funzione."
+        },
+        "wits": {
+          "descrizione": "Linea perpendicolare dai punti A e B sul piano occlusale. Norma: 0 mm femmine, -1 mm maschi.",
+          "significato": "Misurazione di Jacobson per compensare inadeguatezza dell'ANB. Aiuto diagnostico per valutare entità disarmonia scheletrica e attendibilità ANB.",
+          "relazione_ANB_Wits": {
+            "concordanti": "Diagnosi sagittale affidabile. ANB aumentato + Wits positivo = Classe II vera.",
+            "discordanti": "ANB aumentato + Wits neutro/negativo: possibile rotazione mandibolare, mascellare ben posizionato, mandibola che tende in avanti. L'ANB sovrastima la classe, il Wits avverte di fare attenzione."
+          }
+        },
+        "rapporto_NS_GoMe": {
+          "descrizione": "Rapporto tra NS (base cranica) e Go-Me (lunghezza corpo mandibolare). A 11 anni il rapporto = 1.",
+          "significato": "PROGNOSTICO DI CRESCITA. Se rapporto = 1 PRIMA degli 11 anni: mandibola ha raggiunto precocemente la proporzione ma la crescita non è finita. Nei successivi anni puberali mandibola tenderà a superare la base cranica e crescere in avanti. Indicazione: tendenza a III classe scheletrica. Segnale prognostico forte: base cranica cresce prima e si stabilizza prima, mandibola cresce più a lungo."
+        }
+      },
+      "rx_anteroposteriore": "Valuta simmetria facciale e cranica, rapporti trasversali (larghezza arcate, cross-bite, deficit trasversali), posizione mascellari rispetto a linea mediana (deviazione dentale o scheletrica), valutazione ortopedica e chirurgica in asimmetria marcata.",
+      "dimensione_verticale": {
+        "rialzo_occlusale": "Tendenzialmente dà sollievo al paziente sintomatico perché crea spazio tra fossa e condilo, alleggerendo l'ATM da carichi disfunzionali. Bisogna avere accorgimento quando si decide di aumentare la DVO.",
+        "articolazione_cranio_vertebrale": "Nel cranio 3 articolazioni importanti: ATM, occlusione, C0-C1-C2. C0 = base del cranio (osso occipitale). C1 = atlante (prima vertebra). C2 = epistrofeo. Ciò che succede lì riflette ciò che c'è in bocca. La prima vertebra corrisponde alla mandibola (Daly, AM J Orthod, 1982: aumentando la dimensione occlusale si può indurre rotazione posteriore del cranio da 0 a 9 gradi)."
+      },
+      "esame_posturale": {
+        "principio": "La postura è l'espressione dinamica dell'armonia funzionale.",
+        "componenti": [
+          "Foto posturali",
+          "Cicatrici",
+          "Colpo di frusta",
+          "Romberg test",
+          "Test di Unterberger-Fukuda",
+          "Leg/Pelvic/Acromion balance",
+          "Test Bassani e Fontana",
+          "Rotazione capo",
+          "Test oculomotricità",
+          "Test rotatori dell'anca (Autet)",
+          "Pedana baropodometrica e stabilometrica"
+        ],
+        "foto_posturali": {
+          "abbigliamento": "Costume due pezzi per donne, slip per uomini, piedi nudi su superficie piana, rilassato.",
+          "posizioni": [
+            "Frontale con piedi paralleli e braccia lungo i fianchi",
+            "Laterale dx e sx",
+            "Posteriore con piedi paralleli e braccia lungo i fianchi"
+          ],
+          "accorgimenti": "Obiettivo all'altezza ombelico, stessa distanza (es. 2,5m), segni sul pavimento, treppiede, sfondo neutro, marker adesivi su punti anatomici (spina iliaca, acromion, ginocchio), filo a piombo."
+        },
+        "cicatrici": {
+          "descrizione": "La cicatrice è un'interruzione della continuità fasciale capace di alterare la trasmissione tensiva lungo le catene miofasciali, modificando schemi motori e posturali (Myers, Anatomy Trains; Stecco & Schleip).",
+          "cicatrice_velenosa": "Cicatrice che non è tessuto silente, continua a inviare stimoli anomali al sistema nervoso (campi di disturbo), può interferire con postura, circolazione energetica MTC, trasmissione nervosa.",
+          "test_riconoscimento": "Si sfiora delicatamente la cicatrice con pennellino o carta. Si osserva variazione del battito cardiaco. Se il battito cambia: cicatrice funziona da campo di disturbo.",
+          "importanza": "Se presente cicatrice velenosa, i test posturali potrebbero essere sfalsati. Disattivare la cicatrice PRIMA di continuare il check posturale.",
+          "disattivazione": "Invio da osteopata/fisioterapista, Taopatch stripes lungo tutta la cicatrice per un mese, Taopatch inizio e fine cicatrice, iniezioni sottocutanee di procaina."
+        },
+        "colpo_di_frusta": {
+          "test": "1) Paziente supino, scaricare bacino, allineare corpo. 2) Occhi chiusi, denti non a contatto, porta braccia indietro come dorso in piscina. Osservare posizione neutra. 3) Segnare se un braccio più corto. 4) Ripetere con capo in estensione: se normalizza = colpo di frusta presente.",
+          "conseguenza": "Se presente, i test posturali potrebbero essere sfalsati. Inviare da osteopata per risolvere conflitto cervicale PRIMA di continuare."
+        },
+        "romberg": {
+          "bipodalico": "Eseguito occhi chiusi, braccia tese avanti, 50 secondi. Test vestibolare e disfunzione podalica. Se positivo: inviare immediatamente da neurologo o vestibologo.",
+          "monopodalico": "Dx e sx, occhi chiusi, 20-30 secondi. Se positivo: conflitto muscolare, ipertono monolaterale o carenza tono muscolare. Migliorabile con esercizi.",
+          "come_migliorare": "Esercizi su cuscino giusto tono con movimenti dello sguardo, Tai Qi, movimenti rotatori testa su un piede, plank, tavola dell'equilibrio oscillante, light therapy TFL craniopuntura MTC, TFL processo mastoideo se congestione cronica post-otite, Tecnica FIVE di Vicini, Taopatch."
+        },
+        "unterberger_fukuda": {
+          "obiettivo": "Valutare alterazione equilibrio vestibolare o postura.",
+          "procedura": "Paziente in piedi, occhi chiusi, braccia avanti 90°, marciare sul posto 1 minuto. Rotazione >30° = possibile problema vestibolare (verso lato lesionato) o asimmetria posturale.",
+          "con_testa_ruotata": "Testa ruotata = valuta anche effetto riflesso cervico-nucale. Comportamento normale: testa dx → corpo devia leggermente sx (compensazione). Se deviazione nella stessa direzione: problema cervicale o integrazione cervico-vestibolare alterata.",
+          "test_diagnostico": "Ripetere con: lingua allo spot (se normalizza = rieducazione linguale impatta su cervicale), rulli cotone tra canini/premolari (DVO da aumentare), se non normalizza fare affidamento su altri test.",
+          "assenza_riflesso_nucale": "Inviare da osteopata con indicazione conflitto cervicale. Esercizi per Romberg. Taopatch su C2 e C3 bilaterali."
+        },
+        "balance": {
+          "descrizione": "Leg balance, pelvic balance, acromion balance con bolla e attrezzo calibrato.",
+          "dismetria": "Vera (in scoliosi accertata) o muscolare. Spesso migliora con lingua allo spot: segnale fortemente motivante per TMF."
+        },
+        "test_bassani": "Forward bending dinamico. Paziente in piedi di spalle, pollici su SIPS zona L3 con forza ~50g. Abbassare testa poi busto fino a toccare piedi. Testa retrazione catene muscolari posteriori e gibbo costale. Se pollice rimasto più alto: ipertono della parte omolaterale.",
+        "test_fontana": "Misura forza equilibrio e velocità comunicazione cervello-recettori (reattività). Forza su braccio controlaterale a gamba sollevata. Dinamometro. Migliorano spesso con lingua allo spot e Taopatch su PCA.",
+        "rotazione_capo": "Operatore dietro paziente, mani sulle spalle ferme. Girare testa dx e sx. Chiedere cosa vede: mani, polsi, gomiti, spalle, viso, occhi. Riferimento pratico sul grado di rotazione cervicale.",
+        "oculomotricita": {
+          "test_mira_centro": "Penna avvicinata al naso: osservare convergenza simmetrica, nistagmo, foria (squilibrio muscolare latente), ipoconvergenza.",
+          "corda_di_brock": "Corda con pallina, un'estremità sul naso. Fissare pallina più vicina a fuoco. Associare movimenti piedi (rotazione esterna/interna). Se durante rotazione un occhio devia: relazione sistema oculomotorio-catena posturale arti inferiori.",
+          "occhio_dominante": {
+            "descrizione": "Occhio che il cervello usa come riferimento per allineamento visivo. Può influenzare assetto capo, rotazioni cervicali, equilibrio, coordinazione occhio-mandibola.",
+            "test_lontano": "Triangolo con mani, oggetto lontano, chiudere un occhio alla volta. Dominante = mantiene oggetto centrato. Esplora dominanza visiva spaziale.",
+            "test_vicino": "Dito a 20-30cm allineato a punto vicino o carta con foro. Dominante = mantiene allineamento. Legato a visione funzionale prossimale."
+          },
+          "come_migliorare_convergenza": "Inviare da optometrista. Esercizio matita (nord, sud, ovest, est, centro, 4 secondi per occhio poi entrambi). Movimenti sincroni con arto superiore, inferiore e rotazione capo. Esercizi con cuscino giusto tono."
+        },
+        "rotatori_anca_autet": {
+          "descrizione": "Verifica ampiezza rotazione interna arti inferiori, simmetria tono rotatori esterni (piriforme), mobilità coxo-femorale.",
+          "utilizzo": "Distingue sindrome posturale ascendente, discendente, psico-emozionale o viscerale.",
+          "procedura": "Manovra di convergenza podalica (rotazione interna anca), valutare resistenza rotatori esterni. Ripetere stimolando recettori."
+        },
+        "sindromi_posturali": {
+          "ascendente": "Mano controlaterale a piede ipoconvergente dietro la nuca. Problema da piedi, arti inferiori o bacino. Figure: podologo, osteopata, fisioterapista.",
+          "discendente": "Mano omolaterale a piede ipoconvergente sulla spalla opposta. Se normalizza: problema dalla parte alta (testa, occhi, bocca, recettori cervicali). Ripetere: occhi chiusi (recettore oculare), bocca aperta (ATM), lingua allo spot (deglutizione). Figure: optometrista, ortognatodontista, protesista, logopedista.",
+          "mista_viscerale_emotiva": "Procedere con priorità rieducazione funzione deglutitoria e occlusale. Coinvolgere altre figure. Per valutazione viscerale: Taopatch su CV12 (stomaco/milza-pancreas), LV14 (fegato), CV4 (intestino), LU1 (polmone), CV14 (cuore), CV3 (vescica), ST25 (colon), GB25/Ki27 (rene). Per valutazione emotiva: Taopatch su PC6 o SP21."
+        },
+        "pedana_baropodometrica": {
+          "statica": "Centro di pressione (CoP): carico dx/sx, avanti/dietro. Distribuzione carico, superficie appoggio, oscillazioni posturali.",
+          "dinamica": "Fase appoggio e spinta, linea progressione passo, tempo appoggio dx/sx, velocità spostamento baricentro."
+        },
+        "pedana_stabilometrica": {
+          "descrizione": "Registra oscillazioni baricentro (CoP) in piedi fermo. Valuta stabilità posturale e equilibrio neuromotorio.",
+          "parametri": {
+            "frequenza": "Oscillazioni/sec. Alto = instabilità/controllo nervoso. Basso = stabilità.",
+            "superficie_ellisse": "Area che contiene 90-95% CoP. Alto = instabilità/dispendio energia. Basso = buona stabilità/controllo efficiente.",
+            "lunghezza_gomitolo": "Lunghezza percorso CoP. Alto = instabilità/spostamenti correttivi. Basso = minore attività correttiva.",
+            "lunghezza_X": "Spostamenti dx-sx. Alto = instabilità laterale.",
+            "lunghezza_Y": "Spostamento avanti-indietro. Alto = instabilità sagittale.",
+            "velocita_media": "Velocità CoP. Alto = molta attività correttiva. Basso = controllo posturale economico.",
+            "varianza_velocita": "Alto = correzioni brusche e irregolari. Basso = controllo fluido e costante.",
+            "accelerazione_media": "Alto = controllo nervoso, scatti, rigidità. Basso = controllo armonico.",
+            "CoP_medio_X": "Posizione media laterale. Valuta distribuzione simmetrica.",
+            "CoP_medio_Y": "Posizione media antero-posteriore.",
+            "LSF": "Rapporto lunghezza/superficie. Alto = molti aggiustamenti in area ridotta (controllo nervoso). Basso = pochi movimenti ampi (controllo economico).",
+            "sway_density": "Tempo che CoP rimane stabile prima di spostarsi. Tanti picchi alti = maggiore stabilità."
+          },
+          "test_recettori": "Valutare ruolo recettori misurando: occhi chiusi (visivo), lingua allo spot (come cambia appoggio)."
+        }
+      },
+      "nanotecnologia": {
+        "taopatch": "Dispositivo medico di 14mm contenente nanocristalli di quantum dots (Nobel 2023). Assorbono luce del corpo/ambiente e la riemettono come fotoni a lunghezze d'onda benefiche. Sfruttano fotoneuromodulazione e neurocezione.",
+        "stripes": "Dispositivi taopatch tagliabili e integrabili in bite rigidi, stanghetta occhiali o sulle cicatrici.",
+        "tfl": "Laser LED che emette luce rossa e vicino infrarosso con nanotecnologia."
+      },
+      "take_home_message": "Prima di mettere un apparecchio ortodontico, è fondamentale valutare l'equilibrio posturale del corpo: spalle, mandibola, lingua, occhi, piedi e catene miofasciali sono tra loro connesse e si influenzano reciprocamente, in modo ascendente e/o discendente. Un blocco in un punto può generare compensi altrove, alterando i risultati del trattamento o provocando recidive. La recidiva non è una condanna inevitabile, ma un segnale: qualcosa è stato trascurato — che sia la postura, la funzione deglutitoria o respiratoria."
+    }
+  },
+  "corso_terapia_miofunzionale": {
+    "titolo": "TERAPIA MIOFUNZIONALE - La chiave terapeutica per un riequilibrio occlusale, neuromuscolare e posturale",
+    "autore": "Dott.ssa Lamanna Annarita",
+    "contenuti": {
+      "catene_muscolari": {
+        "descrizione": "Le catene muscolari sono gruppi di muscoli che lavorano in maniera complementare per compiere un movimento e mantenere postura e stabilità. Sono uniti in un programma di attivazione comune conservato a livello neurologico cerebellare.",
+        "catena_linguale_antero_mediana": "Inizia dai muscoli della lingua, attraversa sternocleidomastoideo, quinta costola, grande retto dell'addome, adduttori, gemello interno del polpaccio, fino all'estensore breve dell'alluce. Ipertono causa: alterazioni suzione, fonazione, postura anteriore e flessione, compressioni lombari, predisposizione ernie del disco. Frenulo corto + deglutizione disfunzionale → II classe scheletrica, ipomandibulia.",
+        "catena_postero_mediana": "Bilanciante alla catena linguale. Dall'occipite attraverso fascia occipitale e dorsale fino al sacro e flessori plantari. Ipertono porta postura in estensione con testa estesa e piede cavo. Possibili: III classe scheletrica, problemi ATM, bruxismo, disfunzioni podaliche, problemi convergenza oculare, colpi di frusta.",
+        "catena_postero_anteriore": "Specifica del tronco, responsabile dell'allungamento della colonna. Coinvolge multifidi, retto anteriore del collo, piccolo obliquo della testa, muscoli oculari, muscoli del sorriso, diaframma. Punto di ancoraggio: fascia faringea. Alterazioni deglutizione possono compromettere respirazione diaframmatica e causare forie o alterazioni convergenza.",
+        "catena_antero_posteriore": "Bilancia la postero-anteriore. Eccesso di tensione può provocare iperlordosi cervicale e lombare ed estensione del ginocchio.",
+        "catene_laterali": {
+          "antero_laterale": "Coinvolge mastoide e mandibola. Aumento tensione causa rotazione interna di spalle, mani e piedi.",
+          "postero_laterale": "Include pterigoidei e trapezio. Eccesso tensione provoca rotazione esterna di spalle, mani e piedi e ginocchio varo."
+        },
+        "collegamento_piedi_mandibola": "Problemi ai piedi e alla mandibola sono strettamente collegati e si influenzano reciprocamente."
+      },
+      "spot_palatino": {
+        "descrizione": "Lo SPOT (Sensore Primitivo Orale Trigeminale) è un interruttore nervoso che stimola costantemente una risposta del SNC. Durante la deglutizione corretta si ha una costante stimolazione dello spot palatino. La stimolazione neurologica avviene SOLO per la pressione dello spot, resta assente se la lingua viene semplicemente appoggiata.",
+        "posizione_lingua": "La punta della lingua a riposo si poggia sullo spot. Questa posizione è determinata dall'equilibrio dei muscoli elevatori (stiloglosso, palatoglosso, longitudinale superiore) e protrusori (genioglosso, trasversale). Durante l'atto deglutitorio la lingua schiaccia l'apice dello spot che costituisce il fulcro del suo movimento di sollevamento progressivo del dorso contro il palato.",
+        "esterocettori": "Nello spot troviamo 5 tipi di esterocettori (gli stessi della pianta del piede): corpuscoli di Meissner, Pacini, Ruffini, terminazioni lanceolate, terminazioni libere.",
+        "aree_cerebrali_stimolate": [
+          "Area dell'insula: implicata nelle crisi di panico quando la stimolazione manca",
+          "Area limbica: memoria, attenzione (ADHD), concentrazione, emotività, controllo ansia e depressione",
+          "Area talamica e ipotalamica: produzione di neuromediatori",
+          "Cervelletto: memorie motorie, tono muscolare, coordinazione motoria",
+          "Ghiandola pineale: stimolata dalla noradrenalina → serotonina → melatonina"
+        ],
+        "effetto_posturale": "La posizione della lingua e la deglutizione hanno effetti sulla postura. La lingua allo spot modifica la contrazione della muscolatura masticatoria e la posizione della mandibola. In pedana si riducono le oscillazioni."
+      },
+      "frenulo_linguale": {
+        "protocollo_marchesan": {
+          "test_apertura": "Misura bocca aperta e poi con lingua allo spot. Se riduzione supera 50%, il frenulo è corto.",
+          "forma_punta": "In massima apertura valutare: punta quadrata, fessura o depressione, punta a cuore, impossibilità ad alzarsi.",
+          "inserzione_pavimento": "Frenulo corto se visibile dalla cresta alveolare superiore, medio se visibile dalle caruncole. Più l'inserzione è anteriore, più è ostacolata l'elevazione.",
+          "inserzione_lingua": "Più è vicino all'apice, maggiore è il limite del movimento.",
+          "protrusione": "Frenulo disfunzionale se la punta devia da un lato o mostra depressione nel terzo anteriore."
+        }
+      },
+      "pazienti_da_riabilitare": [
+        "Frenulo corto",
+        "Respiratori orali",
+        "Anziani con protesi",
+        "Pazienti con problemi di sonno",
+        "Bruxisti",
+        "Disarmonie dentali",
+        "Problemi di ATM",
+        "Dolori cronici persistenti"
+      ],
+      "protocollo_frenulo_corto": {
+        "pre_intervento": "2 appuntamenti alla settimana per 2 settimane. Esercizi mobilizzazione passivi (garzina per allungare lingua verso spot, protrusiva, lateralità). Esercizi attivi: Leone, Freccia, Passeggiata. Utilizzo TFL taopatch o vibrazione locale.",
+        "intervento": "Preferibile laser a diodo per miglior controllo sanguinamento, senza punti. Guarigione in seconda intenzione.",
+        "post_intervento": "Un giorno sì e uno no per i primi 10 giorni, poi 3 volte a settimana per i successivi 10 giorni. Stessi esercizi + applicazione taopatch zona pavimento."
+      },
+      "esercizi_miofunzionali": {
+        "leone": "Schiacciare con forza la lingua sotto il palato, aprire la bocca portando in basso la mandibola finché possibile senza staccare la lingua. 2 volte al giorno, da pochi secondi a 4 minuti. Dopo frenulectomia 3 volte per 4 minuti.",
+        "passeggiata": "Scorrere la punta della lingua dal margine posteriore di una emi-arcata all'altro lato passando sulla superficie vestibolare. 2-3 passeggiate arcata superiore e inferiore, 2 volte al giorno.",
+        "freccia": "Spingere la punta della lingua fuori dalla bocca verso la commessura labiale da un lato poi dall'altro. Stretching dopo liberazione frenulo. 2 volte per 2 volte al dì."
+      },
+      "nanotecnologia": {
+        "taopatch": "Dispositivo medico di 14mm contenente nanocristalli di quantum dots (Nobel 2023). Assorbono luce del corpo/ambiente e la riemettono come fotoni a lunghezze d'onda benefiche. Sfruttano fotoneuromodulazione e neurocezione.",
+        "tfl": "Laser LED che emette luce rossa e vicino infrarosso con nanotecnologia.",
+        "protocollo_pre_frenulectomia": "Luce pulsata ALL per muscolatura intrinseca e pavimento (5 min). Per muscolatura estrinseca: sessione pulsata ALL + fissa ALL.",
+        "protocollo_post_frenulectomia": "Luce blu pulsata primi 2 giorni per fotobiomodulazione ed effetto su patogeni. Poi luce pulsata ALL per muscolatura intrinseca, pulsata+fissa ALL per estrinseca."
+      },
+      "nota_importante": "Il paziente e i genitori devono comprendere l'importanza della respirazione nasale. Alcuni pazienti non riusciranno ad usare l'elastodontico se non respirano con il naso. A volte occorre riabilitare prima la respirazione e poi l'occlusione."
+    }
+  }
+}
