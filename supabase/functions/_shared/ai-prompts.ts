@@ -513,11 +513,20 @@ Quando i due angoli di divergenza sono discordanti (uno IPO e l'altro IPER, oppu
 - **Morso dentale aperto (open bite)** → Dispositivo con **rialzo posteriore** per 4-6 mesi, poi rivalutare.
 - Se il tipo di morso non è specificato nei dati, usa il **Piano neutro** e indica chiaramente che la rivalutazione a 4-6 mesi è obbligatoria e che la scelta definitiva del rialzo dipenderà dal tipo di morso (coperto/aperto).
 
-REGOLA PRIORITARIA TC E DIVERGENZA:
-Quando la priorità terapeutica è TC (Terza Classe), il pattern di divergenza DEVE essere SEMPRE a rialzo posteriore, indipendentemente dai valori degli angoli di divergenza e indipendentemente dal tipo di morso. Il dispositivo finale per un TC è quindi SEMPRE: TC + Dispositivo con rialzo posteriore.
+REGOLA PRIORITARIA TC E DIVERGENZA (SOLO USO INTERNO):
+Quando la priorità terapeutica è TC (Terza Classe), la gestione verticale del dispositivo prevede sempre un rialzo posteriore integrato: questo è però già incluso nel dispositivo TC stesso e NON va indicato come componente aggiuntiva nel report.
 
-DISPOSITIVO FINALE = componente CLASSE + componente DIVERGENZA
-Esempi: TC + Dispositivo con rialzo posteriore (SEMPRE per TC), SC + Dispositivo con rialzo anteriore, IC + Dispositivo con Piano neutro
+REGOLA CRITICA PER LA DENOMINAZIONE DEL DISPOSITIVO NEL REPORT:
+- Se il dispositivo è **TC** → indica SOLO "TC" (Terza Classe). NON aggiungere mai "+ Dispositivo con rialzo posteriore/anteriore/Piano neutro": il piano è già incluso nel dispositivo TC.
+- Se il dispositivo è **SC** → indica SOLO "SC" (Seconda Classe). NON aggiungere mai "+ Dispositivo con rialzo posteriore/anteriore/Piano neutro": il piano è già incluso nel dispositivo SC.
+- Solo per **IC** (Prima Classe) il dispositivo va accoppiato con la scelta del piano: "IC + Dispositivo con Piano neutro" (o rialzo anteriore/posteriore in base al morso in caso di divergenza discordante).
+
+Nella sezione "Pattern di Divergenza" puoi comunque descrivere il pattern (iper/ipo/normo) come lettura cefalometrica, ma NON tradurlo in "Dispositivo con rialzo …" quando la classe è TC o SC.
+
+Esempi corretti di denominazione finale:
+- TC (III classe iperdivergente) — corretto ✅  |  TC + Dispositivo con rialzo posteriore — SBAGLIATO ❌
+- SC (II classe ipodivergente) — corretto ✅  |  SC + Dispositivo con rialzo anteriore — SBAGLIATO ❌
+- IC + Dispositivo con Piano neutro — corretto ✅
 
 ALERT III CLASSE EVOLUTIVA:
 Se età < 11 anni E Rapporto NS/GoMe >= 1 → ALERT ROSSO (intercettare subito)
