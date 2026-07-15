@@ -584,6 +584,7 @@ ${classe_dentale ? `- Classe dentale/funzionale confermata: ${classe_dentale}` :
       professional: { first_name: profFirst, last_name: profLast, email: profEmail },
       email_delivery: emailDelivery,
       download_url: downloadUrl,
+      refined: !!refinedHtml,
     }), {
       status: 200,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
