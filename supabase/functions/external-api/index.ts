@@ -134,6 +134,7 @@ ${bodyHtml}
 
 // ── System prompts (reused from existing functions) ──
 import { DIAGNOSIS_SYSTEM_PROMPT, ORTHODONTIC_SYSTEM_PROMPT, MTC_SISTEMICA_PROMPT, MTC_ORGANICA_PROMPT } from "../_shared/ai-prompts.ts";
+import { refineWithClaude, extractIntroFromHtml } from "../_shared/claude-refine.ts";
 
 
 
