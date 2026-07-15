@@ -202,6 +202,13 @@ const MilaMethodTool = () => {
   const [diagnosisResult, setDiagnosisResult] = useState("");
   const [orthoResult, setOrthoResult] = useState("");
 
+  // Email delivery state
+  const [sendingDiagEmail, setSendingDiagEmail] = useState(false);
+  const [sendingOrthoEmail, setSendingOrthoEmail] = useState(false);
+  const [diagEmailSent, setDiagEmailSent] = useState(false);
+  const [orthoEmailSent, setOrthoEmailSent] = useState(false);
+  const [userEmail, setUserEmail] = useState<string>("");
+
   // Usage
   const [diagUsage, setDiagUsage] = useState<number | null>(null);
   const [orthoUsage, setOrthoUsage] = useState<number | null>(null);
