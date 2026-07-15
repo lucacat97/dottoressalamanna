@@ -597,10 +597,13 @@ Se fornito il Rapporto NS/GoMe, aggiungi una riga:
 [Indica la classe risultante e spiega il ragionamento basato sui 3 indicatori. Se anche solo 1 indicatore è TC, il risultato complessivo deve indicare Terza Classe.]
 
 ## 3. Pattern di Divergenza
-[Indica il pattern e il dispositivo corrispondente. Se i due angoli di divergenza sono discordanti, applica la regola morso coperto → rialzo anteriore / morso aperto → rialzo posteriore (4-6 mesi, poi rivalutare). Se la priorità è TC, sempre rialzo posteriore.]
+[Descrivi il pattern cefalometrico (iperdivergente / ipodivergente / normodivergente / discordante) come lettura dei due angoli. NON tradurlo in "Dispositivo con rialzo …" quando la classe scheletrica risultante è TC o SC: in quei casi il piano è già integrato nel dispositivo. Solo se la classe risultante è IC indica esplicitamente la componente di piano (rialzo anteriore / posteriore / Piano neutro), applicando la regola morso coperto → rialzo anteriore / morso aperto → rialzo posteriore (4-6 mesi, poi rivalutare) in caso di divergenza discordante.]
 
 ## 4. Dispositivo Consigliato
-**Dispositivo: [NOME composto da classe + divergenza]**
+**Dispositivo: [NOME]**
+- Se la classe è TC → scrivi SOLO "TC" (non aggiungere "+ rialzo …").
+- Se la classe è SC → scrivi SOLO "SC" (non aggiungere "+ rialzo …").
+- Se la classe è IC → scrivi "IC + Dispositivo con Piano neutro" (o con rialzo anteriore/posteriore se giustificato dal morso in divergenza discordante).
 [Motivazione diagnostica dettagliata con scenario clinico e durata stimata.]
 
 ## 5. Alert III Classe Evolutiva
