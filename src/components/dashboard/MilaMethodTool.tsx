@@ -508,8 +508,9 @@ const MilaMethodTool = () => {
     resetCef();
     setDiagnosisResult("");
     setOrthoResult("");
-    setDiagEmailSent(false);
-    setOrthoEmailSent(false);
+    setDiagSent({ word: false, pdf: false });
+    setOrthoSent({ word: false, pdf: false });
+
   };
 
   // ---------- Disclaimer screen ----------
