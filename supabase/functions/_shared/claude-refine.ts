@@ -184,36 +184,32 @@ export function extractIntroFromHtml(html: string): string {
 }
 
 export async function refineWithClaude(markdown: string): Promise<string | null> {
-  const key = Deno.env.get("ANTHROPIC_API_KEY");
+  const key = Deno.env.get("LOVABLE_API_KEY");
   if (!key) {
-    console.warn("[refineWithClaude] ANTHROPIC_API_KEY missing, skip refine");
+    console.warn("[refineWithClaude] LOVABLE_API_KEY missing, skip refine");
     return null;
   }
-  const res = await fetch("https://api.anthropic.com/v1/messages", {
+  const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
     method: "POST",
     headers: {
       "content-type": "application/json",
-      "x-api-key": key,
-      "anthropic-version": "2023-06-01",
+      "authorization": `Bearer ${key}`,
     },
     body: JSON.stringify({
-      model: "claude-sonnet-4-5",
-      max_tokens: 4000,
+      model: "openai/gpt-5.5",
       temperature: 0.2,
-      system: CLAUDE_SYSTEM_PROMPT,
-      messages: [{ role: "user", content: markdown }],
+      messages: [
+        { role: "system", content: CLAUDE_SYSTEM_PROMPT },
+        { role: "user", content: markdown },
+      ],
     }),
   });
   if (!res.ok) {
     const txt = await res.text().catch(() => "");
-    throw new Error(`Anthropic HTTP ${res.status}: ${txt.slice(0, 200)}`);
+    throw new Error(`Lovable AI HTTP ${res.status}: ${txt.slice(0, 200)}`);
   }
   const data = await res.json();
-  const fragment = (data?.content ?? [])
-    .filter((b: any) => b?.type === "text")
-    .map((b: any) => b.text as string)
-    .join("")
-    .trim();
+  const fragment = (data?.choices?.[0]?.message?.content ?? "").trim();
   const cleaned = fragment
     .replace(/^```html\s*/i, "")
     .replace(/^```\s*/i, "")
@@ -222,3 +218,4 @@ export async function refineWithClaude(markdown: string): Promise<string | null>
   if (!cleaned || cleaned.length < 50) return null;
   return applyInlineStyles(cleaned);
 }
+
