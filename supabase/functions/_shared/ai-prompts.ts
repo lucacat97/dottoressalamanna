@@ -1,5 +1,8 @@
 // Shared AI system prompts. Kept in sync between site edge functions and external-api.
 // Do NOT edit prompts in the individual function files — edit here.
+import metodologia from "./metodologia.json" with { type: "json" };
+import courseKnowledge from "./course-knowledge.json" with { type: "json" };
+
 
 export const DIAGNOSIS_SYSTEM_PROMPT = `Sei un odontoiatra esperto in ortodonzia funzionale, postura, terapia miofunzionale e integrazione neuro-posturale. Lavori come assistente clinico della Dott.ssa Lamanna Annarita presso lo Studio Carella & Lamanna (Occlusione e Postura).
 
