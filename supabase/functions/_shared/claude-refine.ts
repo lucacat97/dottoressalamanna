@@ -77,7 +77,17 @@ REGOLE INVIOLABILI
 - Non inventare reperti, valori, diagnosi o terapie. Non rimuovere dati clinici.
 - Mantieni invariati: disclaimer, dati anagrafici, valori numerici, nomi dei test,
   durate e note economiche delle terapie, firma del professionista.
-- Il tuo compito è SOLO de-duplicare e compattare, mai ri-diagnosticare.
+- CONSERVAZIONE INTEGRALE DEI TEST: ogni test/manovra/segno citato nel referto
+  originale DEVE comparire, con il suo nome esplicito, nella sezione
+  "Analisi dettagliata dei risultati" — anche se il risultato è negativo,
+  normale o non significativo, anche se ritieni sia ridondante. Vale in
+  particolare per: Farfalla/MANN, Romberg, Fukuda, Bassani, Meersseman,
+  De Cyon/convergenza, test dei rotatori, test podalico/baropodometrico,
+  cicatrici, ioide, apertura orale, lingua allo spot, facies adenoidea.
+  Se un test compare nell'input, DEVE comparire nell'output. Vietato omettere
+  un test per "sintesi" o perché "già implicito".
+- Il tuo compito è SOLO de-duplicare frasi ridondanti e compattare la prosa,
+  MAI rimuovere test o reperti dal registro dei dati.
 
 STRUTTURA (il principio più importante)
 Il referto ripete le stesse cose perché le sezioni narrative e l'analisi dettagliata
