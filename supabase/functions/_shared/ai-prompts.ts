@@ -323,24 +323,6 @@ Il check-up ortodontico posturale è una valutazione globale che analizza il bam
 
 L'obiettivo è comprendere le cause profonde degli squilibri, distinguendo ciò che è primario da ciò che è compenso, per guidare una crescita armonica e stabile.
 
-# Le cose che funzionano
-
-Nel quadro clinico di Liam sono presenti diversi aspetti positivi, molto importanti perché indicano che il sistema ha ancora una buona capacità di risposta e di adattamento.
-
-Il sonno risulta continuo, non sono presenti bruxismo, traumi riferiti, interventi chirurgici o precedenti trattamenti ortodontici. L'igiene orale è buona. In apertura mandibolare non si osservano deviazioni, la protrusiva non presenta precontatti e non emergono segni di dolore articolare o muscolare riferito a riposo o durante la masticazione. Anche alcuni test funzionali risultano ben eseguiti: "farfalla" è coordinato, il suono "III" è ben prodotto, la conta da 60 a 70 ha una buona dinamica e non emerge tendenza a eccessiva protrusione mandibolare. Le vie aeree risultano ben rappresentate e i test di Romberg bipodalico e monopodalico sono negativi, elemento che non suggerisce un deficit neurologico o vestibolare maggiore.
-
-Questi dati ci dicono che non siamo davanti a un quadro destrutturato, ma a un organismo che conserva una buona base funzionale. Questo è un punto di forza prezioso, perché significa che il percorso terapeutico può lavorare su una base biologica favorevole.
-
-# Le cose che non vanno e la loro importanza terapeutica
-
-Accanto agli elementi positivi, il check-up ha evidenziato alcune criticità che meritano attenzione, perché possono influenzare la crescita cranio-facciale, l'equilibrio occlusale e l'organizzazione posturale.
-
-Liam presenta cefalee frequenti, dolore alle gambe e alle ginocchia durante la corsa e una storia di otiti ricorrenti. Dal punto di vista odontoiatrico è in dentizione mista e compare una dismorfosi indicata come prima classe con tendenza alla terza classe, dato che richiede osservazione attenta della crescita. Sono presenti precontatti in lateralità destra e sinistra, mentre il test "MANN" evidenzia un tono linguale non adeguato. Inoltre, la lingua mostra più segni di restrizione funzionale: riduzione dell'apertura con lingua allo spot superiore al 50%, inserzione del frenulo molto vicina agli alveoli inferiori e alla punta della lingua, protrusione linguale alterata.
-
-In OPT si osservano condili asimmetrici e radio-opacità diffusa dei seni. Sul piano posturale emergono alterazioni nel test di marcia sul posto, asimmetrie di bacino, spalle e appoggio, restrizione intrarotazionale destra, normalizzazione del piede con lingua allo spot e sindrome posturale classificata come discendente. A livello oculomotorio la convergenza non è sincrona e l'occhio sinistro risulta ipodivergente.
-
-L'importanza terapeutica di questi dati è alta perché suggerisce che la bocca non sta lavorando in modo isolato: lingua, occlusione, occhi e postura stanno dialogando tra loro. In particolare, il fatto che alcuni parametri posturali migliorino con la lingua allo spot indica che la funzione linguale ha un impatto reale sull'equilibrio corporeo. Questo rende il trattamento non solo utile per i denti, ma strategico per guidare la crescita in modo più armonico.
-
 # Analisi dettagliata dei risultati
 
 ## Anamnesi e sintomi
