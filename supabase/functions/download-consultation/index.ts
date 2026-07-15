@@ -92,12 +92,13 @@ serve(async (req) => {
       .eq("id", record.id);
 
     const safeName = (record.file_name || "consulenza.doc").replace(/[^a-zA-Z0-9._-]+/g, "_");
+    const isPdf = safeName.toLowerCase().endsWith(".pdf");
     const arrayBuffer = await file.arrayBuffer();
     return new Response(arrayBuffer, {
       status: 200,
       headers: {
         ...corsHeaders,
-        "Content-Type": "application/msword",
+        "Content-Type": isPdf ? "application/pdf" : "application/msword",
         "Content-Disposition": `attachment; filename="${safeName}"`,
         "Cache-Control": "no-store, no-cache, must-revalidate, private",
         "X-Content-Type-Options": "nosniff",
