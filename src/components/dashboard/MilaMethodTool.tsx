@@ -203,10 +203,11 @@ const MilaMethodTool = () => {
   const [orthoResult, setOrthoResult] = useState("");
 
   // Email delivery state
-  const [sendingDiagEmail, setSendingDiagEmail] = useState(false);
-  const [sendingOrthoEmail, setSendingOrthoEmail] = useState(false);
-  const [diagEmailSent, setDiagEmailSent] = useState(false);
-  const [orthoEmailSent, setOrthoEmailSent] = useState(false);
+  const [sendingDiag, setSendingDiag] = useState<null | "word" | "pdf">(null);
+  const [sendingOrtho, setSendingOrtho] = useState<null | "word" | "pdf">(null);
+  const [diagSent, setDiagSent] = useState<{ word: boolean; pdf: boolean }>({ word: false, pdf: false });
+  const [orthoSent, setOrthoSent] = useState<{ word: boolean; pdf: boolean }>({ word: false, pdf: false });
+
   const [userEmail, setUserEmail] = useState<string>("");
 
   // Usage
