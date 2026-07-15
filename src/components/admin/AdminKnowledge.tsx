@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Plus, Trash2, FileText, Upload, Loader2, BookOpen, Power, PowerOff } from "lucide-react";
+import { Plus, Trash2, FileText, Upload, Loader2, BookOpen, Power, PowerOff, Wand2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
 import { extractPdfTextWithFallback } from "@/lib/pdf-extract";
