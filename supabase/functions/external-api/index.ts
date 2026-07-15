@@ -432,8 +432,19 @@ ${classe_dentale ? `- Classe dentale/funzionale confermata: ${classe_dentale}` :
       markdown = DISCLAIMER_BLOCK + markdown;
     }
 
+    // ── Rielaborazione con Claude (solo Consulenza Clinica) ──
+    let refinedHtml: string | null = null;
+    if (tool === "diagnosis") {
+      try {
+        refinedHtml = await refineWithClaude(markdown);
+      } catch (e) {
+        console.error("[external-api] Claude refine failed, falling back:", (e as Error)?.message);
+        refinedHtml = null;
+      }
+    }
+
     // Build response based on format
-    const htmlBody = mdToHtml(markdown);
+    const htmlBody = refinedHtml ?? mdToHtml(markdown);
     const fullHtml = wrapInHtmlDocument(htmlBody);
 
     // ── Send the consulenza by email to the professional via send-transactional-email ──
@@ -445,24 +456,22 @@ ${classe_dentale ? `- Classe dentale/funzionale confermata: ${classe_dentale}` :
     };
     const consultationType = consultationTypeMap[tool] || "Consulenza sul caso";
 
-    // ── Estrai introduzione dal markdown (sezione "Introduzione" o primi paragrafi dopo il disclaimer) ──
+    // ── Estrai introduzione (da HTML raffinato se disponibile, altrimenti dal markdown) ──
     function extractIntroduction(md: string): string {
-      // Rimuovi disclaimer (blockquote iniziale)
       const noDisclaimer = md.replace(/^>\s*\*\*Disclaimer:.*?(?=\n\n|\n#|$)/s, "").trim();
-      // Cerca sezione Introduzione
       const introMatch = noDisclaimer.match(/##?\s*Introduzione[^\n]*\n([\s\S]*?)(?=\n##?\s|\n#\s|$)/i);
       if (introMatch && introMatch[1].trim().length > 40) {
         return introMatch[1].trim();
       }
-      // Fallback: primi 2-3 paragrafi non-heading
       const paragraphs = noDisclaimer.split(/\n\s*\n/)
         .map(p => p.trim())
         .filter(p => p && !p.startsWith("#") && !p.startsWith(">"))
         .slice(0, 2);
       return paragraphs.join("\n\n") || "La consulenza completa è disponibile nel documento allegato.";
     }
-    const introMarkdown = extractIntroduction(markdown);
-    const introHtml = mdToHtml(introMarkdown);
+    const introHtml = refinedHtml
+      ? extractIntroFromHtml(refinedHtml)
+      : mdToHtml(extractIntroduction(markdown));
 
     // ── Genera documento Word (HTML-as-Word) ──
     const wordHtml = `<!DOCTYPE html>
