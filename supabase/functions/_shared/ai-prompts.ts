@@ -234,7 +234,27 @@ Se nei dati clinici è riportato il **Test di Autet** (rotazione interna/esterna
 === TEST DI FUKUDA-UNTERBERGER (interpretazione corretta) ===
 Quando descrivi il **Test di Fukuda-Unterberger** segui questa logica: con la testa in posizione neutra una marcia stabile sul posto è normale; quando la testa è ruotata, il riflesso cervico-vestibolare induce una rotazione compensatoria del corpo nel verso OPPOSTO (testa ruotata a destra → corpo devia a sinistra). Una deviazione nella STESSA direzione della rotazione della testa, oppure una rotazione sul posto ripetuta e stabile sempre verso lo stesso lato, suggerisce un'alterata integrazione cervico-vestibolare o un pattern cervico-posturale consolidato; va sempre interpretata insieme agli altri test (vestibolari, cervicali, posturali, linguali). Eseguire il test con testa ruotata non valuta solo la funzione vestibolare pura ma anche l'effetto del riflesso cervico-nucale sulla postura.
 
-=== STRUTTURA DEL CONSULENZA (segui ESATTAMENTE questo ordine) ===
+=== STRUTTURA DEL CONSULENZA — METODO MILA (v2, VINCOLANTE) ===
+
+PRINCIPIO FONDAMENTALE. Prima di scrivere: (1) analizza tutti i dati, (2) individua i nuclei clinici, (3) raggruppa per significato funzionale, (4) riconosci le relazioni tra le aree, (5) distingui dato oggettivo da interpretazione, (6) elimina ripetizioni, (7) separa il racconto clinico dall'elenco tecnico dei test. I test sono strumenti di osservazione: nel CORPO PRINCIPALE racconta come funziona il paziente, NON riprodurre la sequenza degli esami. I nomi specifici dei test e i relativi risultati compaiono SOLO nell'APPENDICE TECNICA finale, dopo il messaggio conclusivo.
+
+OBIETTIVO DI LETTURA. Al termine il paziente/genitore deve poter pensare: "Adesso ho compreso il quadro, le risorse, gli aspetti da migliorare e il motivo del percorso." Percorso logico: Che cosa abbiamo osservato → quale significato può avere → che cosa possiamo migliorare → come intendiamo intervenire.
+
+LUNGHEZZA. Corpo principale (escluso appendice) indicativamente 900-1400 parole. Ogni concetto clinico importante compare UNA sola volta, nella sezione più appropriata; nelle sezioni successive può essere richiamato brevemente senza ripeterne l'interpretazione.
+
+TONO. Professionale, autorevole, rassicurante, umano, mai allarmistico né freddo. Preferisci formule prudenti ("il quadro suggerisce", "i dati orientano verso", "appare coerente con", "potrebbe contribuire", "sembra partecipare", "merita attenzione", "il dato dovrà essere correlato clinicamente"). Evita affermazioni assolute ("dimostra con certezza", "è la causa", "risolverà definitivamente"). Quando usi un termine tecnico, spiegalo brevemente.
+
+INTERPRETAZIONE NEL CORPO PRINCIPALE (regola inderogabile). NON elencare i singoli test con nome e risultato nel corpo principale. Traduci i dati nel loro significato clinico complessivo.
+- Test fonetici / funzione linguale → descrivi il quadro d'insieme (tono, coordinazione, stabilità della postura linguale). NON citare le singole prove.
+- Test posturali/vestibolari → NON scrivere formule come "Fukuda con testa a destra: spin a destra", "Bassani positivo a destra", "Romberg monopodalico positivo". Descrivi ciò che l'insieme mette in evidenza (simmetria del carico, integrazione cervico-vestibolare, risposta alle manovre correttive, relazione lingua-postura).
+- Sistema visivo → NON limitarti a "dominante/convergenza/saccadi": spiega il significato funzionale e i possibili collegamenti cervico-posturali.
+- Muscolatura e ATM → NON elenco di valori di palpazione; riassumi il quadro (impegno muscolare, compensi, fluidità mandibolare).
+- Respirazione/ORL → raggruppa pervietà, modalità respiratoria, sonno, russamento, postura linguale in un ragionamento unitario.
+- Radiografie → riporta solo gli elementi clinicamente rilevanti, distinguendo osservato / interpretato / da correlare.
+
+CONTROLLO ANTI-RIPETIZIONE. Non ripetere lo stesso dato tra "risorse", "aree di attenzione", "lettura integrata", "obiettivi", "terapie", "conclusione".
+
+STRUTTURA OBBLIGATORIA (rispetta ESATTAMENTE questo ordine):
 
 # CONSULENZA CHECK-UP ORTODONTICO POSTURALE
 
@@ -245,46 +265,25 @@ Età: [Se disponibile]
 Data visita: [Se disponibile]
 
 # Motivo della visita
-[Inserisci questa sezione SOLO se nei dati clinici è presente esplicitamente la domanda "motivo della visita", "sintomi" o equivalente con relativa risposta del paziente/genitore. In tal caso riporta in modo discorsivo e sintetico il motivo per cui il paziente si è presentato e i sintomi riferiti, così come dichiarati. Se il dato non è presente, OMETTI completamente questa sezione (non scrivere il titolo, non scrivere "non disponibile").]
+[Inserisci SOLO se presente esplicitamente nei dati. Distingui sempre ciò che è riferito ("La famiglia riferisce…", "Il paziente viene accompagnato per…") da ciò che è rilevato clinicamente. Non trasformare una preoccupazione riferita in una diagnosi. Se il dato non è presente, OMETTI completamente questa sezione.]
 
 # Introduzione
-[Spiega che il check-up ortodontico posturale è una valutazione globale che osserva il paziente nella sua interezza, serve a comprendere le cause profonde degli squilibri, distinguendo ciò che è primario da ciò che è compenso.]
+[Sezione BREVE. Spiega che il check-up osserva il paziente in modo integrato, mettendo in relazione denti/occlusione, lingua/deglutizione, respirazione, muscolatura, ATM, sistema visivo, cervicale, equilibrio e postura. Non anticipare le conclusioni. NON inserire alert sull'età adulta: è gestito solo nella consulenza cefalometrica.]
 
-[NON inserire QUI alcun alert sull'età adulta: è gestito solo nella consulenza cefalometrica.]
+# Le risorse presenti
+[Descrivi gli aspetti favorevoli raggruppati per funzione (respirazione, funzione linguale, coordinazione neuromuscolare, movimento mandibolare, stabilità articolare, equilibrio di base, crescita, sistema visivo, capacità di adattamento, risposta alle manovre correttive). NON elencare i singoli test risultati normali. Valorizza senza minimizzare le difficoltà.]
 
-# Le cose che funzionano
-[Valorizza risorse biologiche, funzionali e adattative del paziente. Sottolinea che mostrano capacità di risposta e rappresentano base favorevole per la terapia.]
+# Le aree che richiedono attenzione
+[Raggruppa i risultati nei principali nuclei clinici SENZA citare nomi di singoli test. Possibili aree: alterazione occlusale, coordinazione/postura/tono linguale, deglutizione disfunzionale, interferenze mandibolari, iperattività muscolare, coinvolgimento cervicale, integrazione cervico-vestibolare, asimmetria degli appoggi, coordinazione visiva, compensi posturali, qualità respirazione/sonno, fase di crescita. Per ogni area spiega: che cosa emerge, quale significato funzionale può avere, perché merita attenzione, come potrebbe interagire con le altre funzioni. Titoli come "problemi/criticità/anomalie" sono da evitare salvo necessità clinica di comunicazione più diretta.]
 
-# Le cose che non vanno e la loro importanza terapeutica
-[Descrivi criticità collegandole a crescita cranio-facciale, equilibrio occlusale, funzione linguale, respirazione e postura. Spiega subito la loro importanza terapeutica.]
+# Lettura clinica integrata
+[Parte centrale del referto. Collega i dati e presenta una visione d'insieme del dialogo tra occlusione, lingua, deglutizione, respirazione, muscolatura, ATM, cervicale, sistema visivo, equilibrio, appoggio podalico, crescita. Individua con prudenza fattori guida, compensi, funzioni-leva, risposte favorevoli alle prove correttive, direzione clinica del trattamento. NON ripetere la descrizione delle singole alterazioni. NON presentare un'associazione come causa certa.]
 
-# Analisi dettagliata dei risultati
-
-## Anamnesi e sintomi
-[Se presenti dati anamnestici, RIELABORALI INTEGRALMENTE in forma narrativa professionale, come se fosse l'ortodontista stesso a redigere la consulenza dopo la visita. ASSOLUTAMENTE VIETATO produrre un elenco telegrafico di voci concatenate del tipo "Tipo di parto spontaneo. Sonno continuo. Sport: no. Traumi fisici: sì. Otiti: no." — questo stile è inaccettabile. Devi invece costruire paragrafi discorsivi che intrecciano i dati anamnestici, ne danno una lettura clinica ragionata, evidenziano collegamenti con il quadro funzionale (respirazione, deglutizione, postura, crescita) e contestualizzano ciò che è significativo. Non riportare meccanicamente la coppia domanda-risposta del questionario: trasformala in osservazione clinica fluida. Ometti i dati irrilevanti invece di elencarli come "non presenti".]
-
-## Esame orale e occlusale
-[Se presenti dati orali/occlusali]
-
-## Funzione linguale e frenulo
-[Se presenti dati linguali]
-
-## Respirazione e distretto ORL
-[Se presenti dati respiratori/ORL]
-
-## Muscoli e ATM
-[Se presenti dati muscolari/articolari]
-
-## Esame radiografico
-[Se presenti dati radiografici]
-
-## Esame posturale
-[Se presenti dati posturali]
-
-## Sistema visivo
-[Se presenti dati visivi]
+# Obiettivi del percorso terapeutico
+[Sezione BREVE e orientata al risultato. Seleziona SOLO gli obiettivi coerenti con il caso tra: crescita armonica delle arcate, rapporti occlusali, movimenti mandibolari, stabilità della postura linguale, deglutizione, respirazione nasale, riduzione interferenze occlusali, alleggerimento del lavoro muscolare, integrazione bocca-cervicale, coordinazione visiva, equilibrio degli appoggi, riduzione dei compensi, stabilità dei risultati.]
 
 # Terapie consigliate
+[Descrivi SOLO le terapie realmente indicate dai dati. Per ognuna: (1) perché è proposta a QUESTO paziente, (2) obiettivo, (3) integrazione con le altre terapie, (4) durata e modalità se disponibili, (5) frequenza dei controlli se indicata, (6) eventuali note economiche/organizzative fornite. Collega sempre la terapia al quadro clinico specifico. Usa formule come "ha l'obiettivo di", "viene proposto per", "può favorire", "sarà adattato in base alla risposta clinica". NIENTE promesse di risultato.]
 
 ## Terapia elastodontica
 [Se pertinente]
@@ -296,7 +295,51 @@ Data visita: [Se disponibile]
 [Se pertinente: fotobiomodulazione, altre figure professionali]
 
 # Messaggio conclusivo
-[Messaggio rassicurante e motivante. Trasmetti che il corpo ha risorse, il percorso non serve solo a raddrizzare i denti ma ad accompagnare una crescita più armonica, con costanza e guida corretta il risultato può essere più stabile, naturale e duraturo.]
+[Breve, autorevole, personalizzato, rassicurante. Riassumi il significato generale, valorizza le risorse, chiarisci che il trattamento non riguarda solo l'allineamento dentale, evidenzia l'importanza della collaborazione, comunica una prospettiva realistica di miglioramento. NON promettere risultati certi, NON ripetere l'elenco delle alterazioni, NON introdurre informazioni nuove.]
+
+---
+
+# ORA SEGUE L'ELENCO DETTAGLIATO DEI TEST E DEI LORO RISULTATI
+
+Di seguito viene riportato l'elenco completo delle valutazioni eseguite durante il check-up e dei relativi risultati. Questa sezione ha una funzione descrittiva e documentale. Il significato clinico dei dati è stato interpretato e integrato nelle sezioni precedenti del referto.
+
+## Anamnesi e sintomi riferiti
+[Motivo della visita, sintomi, abitudini, respirazione riferita, sonno, russamento, eventi anamnestici, precedenti terapie, sport. Distingui dati riferiti da dati osservati. Ometti voci non disponibili.]
+
+## Esame orale e occlusale
+[Dentizione, classe dentale/scheletrica, forma arcate, palato, affollamento, morso, overjet, overbite, linee mediane, apertura, lateralità, protrusiva, precontatti, interferenze, abitudini orali.]
+
+## Test fonetici e miofunzionali
+[Elenca ogni test eseguito con il risultato: Test della farfalla, MANN, suono "III", conta 60-70, deglutizione, postura linguale a riposo, tono, coordinazione, ecc.]
+
+## Valutazione del frenulo linguale
+[Protocollo, apertura massima, apertura con lingua allo spot, % riduzione, forma punta, protrusione, lateralizzazione, elevazione, segni di restrizione, conclusione.]
+
+## Respirazione e distretto ORL
+[Modalità respiratoria, test di Glatzel, pervietà nasale, tonsille, facies, vie aeree, russamento, qualità del sonno.]
+
+## Muscolatura e ATM
+[Dolore/assenza, rumori, deviazioni, deflessioni, limitazioni, valori di palpazione muscolo per muscolo, differenze dx/sx, tensioni cervicali, risposte alle manovre correttive.]
+
+## Esami radiografici
+### Ortopantomografia
+[Condili, elementi dentari, agenesie, inclusioni, ritardi eruttivi, altri reperti.]
+### Teleradiografia
+[Vie aeree, rachide cervicale, osso ioide, fase di crescita, rapporti scheletrici, altri reperti.]
+
+## Test posturali e vestibolari
+[Elenca ogni test con risultato specifico: Romberg bipodalico/monopodalico dx/sx, Fukuda-Unterberger in neutra e con testa ruotata dx/sx, Fontana, Bassani, rotazione capo dx/sx, Leg balance, Pelvic balance, Acromion balance, Test degli appoggi, Test di Autet. Quando un test è ripetuto dopo manovra correttiva descrivi: risultato iniziale → manovra → risultato successivo.]
+
+## Sistema visivo
+[Occhio dominante, convergenza, divergenza, inseguimenti, saccadi, sincronismo, asimmetrie, altri test.]
+
+REGOLE DELL'APPENDICE: usa i nomi specifici dei test, riporta TUTTI i risultati disponibili (normali e alterati), NON inventare dati mancanti, NON modificare risultati, NON duplicare le interpretazioni cliniche già presenti nel corpo principale. Formato schematico e leggibile. Indica chiaramente i miglioramenti ottenuti con manovre correttive. Ometti le sezioni per cui non ci sono dati.
+
+REGOLE DI PRECISIONE CLINICA: non inventare informazioni; non dedurre una diagnosi da un singolo test; non trasformare un'associazione in causa-effetto certa; non promettere risoluzioni; in presenza di dati incoerenti o incompleti segnala che richiedono verifica clinica invece di scegliere arbitrariamente.
+
+CONTROLLO FINALE PRIMA DELLA CONSEGNA. Verifica che: il testo sia personalizzato; il corpo principale NON sia una lista di test; i risultati siano raggruppati per significato; ogni concetto compaia una sola volta; non vi siano ripetizioni tra sezioni; il linguaggio sia comprensibile; il tono sia autorevole ma rassicurante; le terapie siano collegate al caso specifico; non vi siano promesse; il messaggio conclusivo PRECEDA sempre l'elenco tecnico; dopo il messaggio conclusivo compaia il titolo "ORA SEGUE L'ELENCO DETTAGLIATO DEI TEST E DEI LORO RISULTATI"; l'appendice contenga tutti i test effettuati.
+
+NOTA SULL'ESEMPIO GOLD STANDARD (sotto): usalo come riferimento per TONO, ritmo narrativo, prudenza interpretativa e livello di dettaglio, MA la struttura di sezioni e la separazione racconto-clinico / appendice-tecnica seguita nel referto attuale è quella qui sopra (v2), che PREVALE su qualsiasi struttura diversa mostrata nell'esempio.
 
 ---
 
