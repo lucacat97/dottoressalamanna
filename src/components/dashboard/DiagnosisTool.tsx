@@ -25,14 +25,14 @@ const mdToHtml = (markdown: string) => {
     })
     .replace(/((<tr>.*<\/tr>\n?)+)/g, '<table style="width:100%;border-collapse:collapse;margin:16px 0;">$1</table>')
     .replace(/<!--table-sep-->\n?/g, "")
-    .replace(/^# (.+)$/gm, '<h1 style="font-size:20px;color:#2a6f6f;margin:28px 0 12px;font-family:Georgia,serif;border-bottom:1px solid #eee;padding-bottom:8px;">$1</h1>')
-    .replace(/^## (.+)$/gm, '<h2 style="font-size:17px;color:#2a6f6f;margin:24px 0 10px;font-family:Georgia,serif;">$1</h2>')
-    .replace(/^### (.+)$/gm, '<h3 style="font-size:15px;color:#333;margin:20px 0 8px;">$1</h3>')
+    .replace(/^# (.+)$/gm, '<h1 style="font-size:20px;color:#1e3a8a;margin:28px 0 12px;font-family:Georgia,serif;border-bottom:2px solid #1e3a8a;padding-bottom:8px;">$1</h1>')
+    .replace(/^## (.+)$/gm, '<h2 style="font-size:17px;color:#1e40af;margin:24px 0 10px;font-family:Georgia,serif;">$1</h2>')
+    .replace(/^### (.+)$/gm, '<h3 style="font-size:15px;color:#1e3a8a;margin:20px 0 8px;">$1</h3>')
     .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
     .replace(/\*(.+?)\*/g, "<em>$1</em>")
     .replace(/^- (.+)$/gm, '<li style="margin:4px 0;">$1</li>')
     .replace(/((<li[^>]*>.*<\/li>\n?)+)/g, '<ul style="margin:8px 0 8px 20px;padding:0;">$1</ul>')
-    .replace(/^> (.+)$/gm, '<blockquote style="border-left:4px solid #f0b400;padding:12px 16px;margin:14px 0;background:#fff8e1;color:#5b4708;border-radius:6px;">$1</blockquote>')
+    .replace(/^> (.+)$/gm, '<blockquote style="border-left:4px solid #1e40af;padding:12px 16px;margin:14px 0;background:#eff6ff;color:#1e3a8a;border-radius:6px;">$1</blockquote>')
     .replace(/^---$/gm, '<hr style="border:none;border-top:1px solid #ddd;margin:24px 0;">')
     .replace(/^(?!<[hublot]|<\/)(.+)$/gm, '<p style="margin:8px 0;line-height:1.6;">$1</p>');
   return html;

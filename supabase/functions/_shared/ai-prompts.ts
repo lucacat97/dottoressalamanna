@@ -252,11 +252,6 @@ Data visita: [Se disponibile]
 
 [NON inserire QUI alcun alert sull'età adulta: è gestito solo nella consulenza cefalometrica.]
 
-# Le cose che funzionano
-[Valorizza risorse biologiche, funzionali e adattative del paziente. Sottolinea che mostrano capacità di risposta e rappresentano base favorevole per la terapia.]
-
-# Le cose che non vanno e la loro importanza terapeutica
-[Descrivi criticità collegandole a crescita cranio-facciale, equilibrio occlusale, funzione linguale, respirazione e postura. Spiega subito la loro importanza terapeutica.]
 
 # Analisi dettagliata dei risultati
 
@@ -284,6 +279,13 @@ Data visita: [Se disponibile]
 ## Sistema visivo
 [Se presenti dati visivi]
 
+# Quadro Riassuntivo
+[Fornisci un'interpretazione globale del caso in due parti obbligatorie e ben distinte:
+
+**Punti di forza** — un paragrafo discorsivo (3-6 righe) che valorizzi risorse biologiche, funzionali e adattative emerse dal check-up e che spieghi perché offrono motivo di fiducia in un buon esito terapeutico.
+
+**Criticità su cui basare la terapia** — introduci con una breve frase e poi presenta le criticità come ELENCO PUNTATO markdown (usa "- " a inizio riga), chiaramente visibile al clinico, un punto per ogni criticità rilevante. Ogni voce deve iniziare con la criticità in **grassetto** seguita da ":" e da una breve interpretazione clinica (1-2 frasi) che spieghi perché quella criticità orienta la scelta terapeutica. L'elenco deve essere sintetico ma completo: raccoglie e mette a fuoco i punti già emersi nell'analisi dettagliata, senza ripeterli per esteso.]
+
 # Terapie consigliate
 
 ## Terapia elastodontica
@@ -296,7 +298,7 @@ Data visita: [Se disponibile]
 [Se pertinente: fotobiomodulazione, altre figure professionali]
 
 # Messaggio conclusivo
-[Messaggio rassicurante e motivante. Trasmetti che il corpo ha risorse, il percorso non serve solo a raddrizzare i denti ma ad accompagnare una crescita più armonica, con costanza e guida corretta il risultato può essere più stabile, naturale e duraturo.]
+[Chiudi con un messaggio breve, caldo e incoraggiante rivolto direttamente al paziente e — quando si tratta di un bambino o ragazzo — anche ai genitori. Il tono deve essere positivo, motivante e concreto: incoraggia esplicitamente a intraprendere il percorso terapeutico proposto, spiega che si tratta di un percorso di qualità che accompagna la crescita nella sua globalità (non solo i denti), fa emergere il valore di intervenire nel momento giusto e sottolinea che con collaborazione, costanza e le giuste terapie il risultato può essere stabile, naturale e duraturo. Trasmetti fiducia: il corpo ha risorse, il percorso è chiaro, i genitori possono affrontarlo con serenità sapendo di offrire al proprio figlio uno strumento prezioso per il suo benessere futuro. Evita toni allarmistici o generici: il messaggio deve suonare sincero, professionale e umano.]
 
 ---
 
@@ -320,24 +322,6 @@ Data visita: 01/04/2026
 Il check-up ortodontico posturale è una valutazione globale che analizza il bambino nella sua interezza: non solo denti e occlusione, ma anche lingua, respirazione, postura, occhi e sistema neuromuscolare.
 
 L'obiettivo è comprendere le cause profonde degli squilibri, distinguendo ciò che è primario da ciò che è compenso, per guidare una crescita armonica e stabile.
-
-# Le cose che funzionano
-
-Nel quadro clinico di Liam sono presenti diversi aspetti positivi, molto importanti perché indicano che il sistema ha ancora una buona capacità di risposta e di adattamento.
-
-Il sonno risulta continuo, non sono presenti bruxismo, traumi riferiti, interventi chirurgici o precedenti trattamenti ortodontici. L'igiene orale è buona. In apertura mandibolare non si osservano deviazioni, la protrusiva non presenta precontatti e non emergono segni di dolore articolare o muscolare riferito a riposo o durante la masticazione. Anche alcuni test funzionali risultano ben eseguiti: "farfalla" è coordinato, il suono "III" è ben prodotto, la conta da 60 a 70 ha una buona dinamica e non emerge tendenza a eccessiva protrusione mandibolare. Le vie aeree risultano ben rappresentate e i test di Romberg bipodalico e monopodalico sono negativi, elemento che non suggerisce un deficit neurologico o vestibolare maggiore.
-
-Questi dati ci dicono che non siamo davanti a un quadro destrutturato, ma a un organismo che conserva una buona base funzionale. Questo è un punto di forza prezioso, perché significa che il percorso terapeutico può lavorare su una base biologica favorevole.
-
-# Le cose che non vanno e la loro importanza terapeutica
-
-Accanto agli elementi positivi, il check-up ha evidenziato alcune criticità che meritano attenzione, perché possono influenzare la crescita cranio-facciale, l'equilibrio occlusale e l'organizzazione posturale.
-
-Liam presenta cefalee frequenti, dolore alle gambe e alle ginocchia durante la corsa e una storia di otiti ricorrenti. Dal punto di vista odontoiatrico è in dentizione mista e compare una dismorfosi indicata come prima classe con tendenza alla terza classe, dato che richiede osservazione attenta della crescita. Sono presenti precontatti in lateralità destra e sinistra, mentre il test "MANN" evidenzia un tono linguale non adeguato. Inoltre, la lingua mostra più segni di restrizione funzionale: riduzione dell'apertura con lingua allo spot superiore al 50%, inserzione del frenulo molto vicina agli alveoli inferiori e alla punta della lingua, protrusione linguale alterata.
-
-In OPT si osservano condili asimmetrici e radio-opacità diffusa dei seni. Sul piano posturale emergono alterazioni nel test di marcia sul posto, asimmetrie di bacino, spalle e appoggio, restrizione intrarotazionale destra, normalizzazione del piede con lingua allo spot e sindrome posturale classificata come discendente. A livello oculomotorio la convergenza non è sincrona e l'occhio sinistro risulta ipodivergente.
-
-L'importanza terapeutica di questi dati è alta perché suggerisce che la bocca non sta lavorando in modo isolato: lingua, occlusione, occhi e postura stanno dialogando tra loro. In particolare, il fatto che alcuni parametri posturali migliorino con la lingua allo spot indica che la funzione linguale ha un impatto reale sull'equilibrio corporeo. Questo rende il trattamento non solo utile per i denti, ma strategico per guidare la crescita in modo più armonico.
 
 # Analisi dettagliata dei risultati
 
@@ -391,6 +375,21 @@ L'occhio dominante è il destro. La convergenza non è sincrona. È presente ipo
 
 Anche questo dato è clinicamente rilevante, poiché occhi, equilibrio, rotazioni cervicali e coordinazione mandibolare sono profondamente connessi. Una disfunzione oculomotoria può contribuire ai compensi posturali e meritare, se necessario, un approfondimento dedicato.
 
+# Quadro Riassuntivo
+
+**Punti di forza.** Liam arriva alla valutazione con basi biologiche molto favorevoli: sonno continuo e ristoratore, assenza di bruxismo, buona igiene orale, apertura mandibolare simmetrica senza deviazioni né dolore, protrusiva libera da precontatti e alcuni test funzionali (farfalla, suono "III", conta 60-70) ben eseguiti. Le vie aeree sono ben rappresentate e i test di Romberg negativi escludono deficit neurologici o vestibolari maggiori. Non siamo davanti a un sistema destrutturato: c'è una capacità di risposta viva, ed è proprio questo che rende ragionevole essere fiduciosi sull'esito del percorso terapeutico.
+
+**Criticità su cui basare la terapia.**
+
+- **Restrizione funzionale del frenulo linguale**: riduzione dell'apertura con lingua allo spot > 50%, inserzione del frenulo molto vicina agli alveoli inferiori e alla punta, protrusione alterata. È il driver funzionale principale del caso e orienta verso la rieducazione miofunzionale.
+- **Tono linguale non adeguato (test MANN alterato)**: la lingua non stabilizza in modo efficiente lo spot palatino, con ricadute su deglutizione, respirazione e crescita delle arcate.
+- **Precontatti in lateralità destra e sinistra**: possibile fonte di compenso muscolare che giustifica l'inserimento di un dispositivo elastodontico per riorganizzare i contatti occlusali.
+- **Dismorfosi in dentizione mista con tendenza alla III classe**: dato che richiede intercettazione precoce e monitoraggio attento della crescita.
+- **Sindrome posturale discendente con normalizzazione a lingua allo spot**: dimostra un legame diretto bocca-postura, motivando l'integrazione miofunzionale come leva terapeutica reale.
+- **Asimmetrie di bacino, spalle e appoggio con alterazione del test di marcia**: indicano compensi sui quali il riequilibrio funzionale potrà agire in modo indiretto ma significativo.
+- **Convergenza oculare non sincrona e ipodivergenza dell'occhio sinistro**: giustificano un approfondimento optometrico integrato al percorso ortodontico.
+- **Cefalee frequenti, dolori a gambe e ginocchia, storia di otiti ricorrenti**: elementi anamnestici da tenere presenti perché confermano il quadro di sistema in adattamento e rendono ancora più urgente un intervento tempestivo.
+
 # Terapie consigliate
 
 ## Terapia elastodontica
@@ -423,11 +422,11 @@ Durata indicativa: si utilizza di solito in cicli di alcune settimane o alcuni m
 
 # Messaggio conclusivo
 
-Liam ha una cosa molto preziosa: un corpo che risponde. Ci sono alcune funzioni che oggi non lavorano ancora nel modo più armonico, soprattutto la lingua e il dialogo tra bocca e postura, ma ci sono anche tante basi buone da cui partire. Questo significa che non stiamo combattendo contro il corpo: stiamo insegnandogli una strada migliore.
+Cari genitori, Liam ha davvero una cosa preziosa: un corpo che risponde. Ci sono aspetti da correggere — la lingua, il dialogo tra bocca e postura, alcuni compensi che oggi lavorano in silenzio — ma ci sono anche solide basi da cui partire. Questo è il momento giusto per intervenire, e ve lo diciamo con convinzione: le finestre di crescita non tornano, e sfruttarle ora significa offrire a vostro figlio un percorso più semplice, più dolce e con risultati più duraturi.
 
-Il percorso che proponiamo non serve solo a mettere in ordine i denti. Serve ad aiutare il tuo corpo a crescere meglio, a lavorare con più equilibrio e a sentirsi più forte nelle sue funzioni quotidiane.
+Il percorso che vi proponiamo non è "un apparecchio per i denti". È un progetto di crescita: la terapia elastodontica accompagnerà le arcate, la terapia miofunzionale insegnerà alla lingua a lavorare bene, la fotobiomodulazione sosterrà il sistema neuromuscolare. Ogni tassello dialoga con gli altri, ed è proprio questa integrazione che fa la differenza rispetto a un approccio parziale. È un percorso di qualità, seguito passo dopo passo, pensato per il benessere globale di Liam e non solo per il suo sorriso.
 
-Con costanza, collaborazione e i giusti strumenti, possiamo accompagnare la crescita in una direzione molto favorevole. E quando un bambino impara presto una funzione corretta, il risultato non è solo più bello: è spesso anche più stabile, più naturale e più duraturo.
+Vi incoraggiamo a intraprenderlo con serenità e fiducia. Con la vostra collaborazione, la costanza di Liam e le giuste terapie, il risultato non sarà solo più bello: sarà più stabile, più naturale, più suo. Siamo al vostro fianco lungo tutto il percorso.
 
 --- FINE ESEMPIO ---
 
