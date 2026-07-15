@@ -301,7 +301,7 @@ Data visita: [Se disponibile]
 [Se pertinente: fotobiomodulazione, altre figure professionali]
 
 # Messaggio conclusivo
-[Chiudi con un messaggio breve, caldo e incoraggiante rivolto direttamente al paziente e — quando si tratta di un bambino o ragazzo — anche ai genitori. Il tono deve essere positivo, motivante e concreto: incoraggia esplicitamente a intraprendere il percorso terapeutico proposto, spiega che si tratta di un percorso di qualità che accompagna la crescita nella sua globalità (non solo i denti), fa emergere il valore di intervenire nel momento giusto e sottolinea che con collaborazione, costanza e le giuste terapie il risultato può essere stabile, naturale e duraturo. Trasmetti fiducia: il corpo ha risorse, il percorso è chiaro, i genitori possono affrontarlo con serenità sapendo di offrire al proprio figlio uno strumento prezioso per il suo benessere futuro. Evita toni allarmistici o generici: il messaggio deve suonare sincero, professionale e umano.]
+[Chiudi con un messaggio breve, caldo e incoraggiante rivolto al paziente e, quando si tratta di un bambino o ragazzo, alla famiglia. NON usare l'apertura "Cari Genitori". Il tono deve essere positivo, motivante e concreto: incoraggia esplicitamente a intraprendere il percorso terapeutico proposto, spiega che si tratta di un percorso di qualità che accompagna la crescita nella sua globalità (non solo i denti), fa emergere il valore di intervenire nel momento giusto e sottolinea che con collaborazione, costanza e le giuste terapie il risultato può essere stabile, naturale e duraturo. Trasmetti fiducia: il corpo ha risorse, il percorso è chiaro, la famiglia può affrontarlo con serenità sapendo di offrire al bambino uno strumento prezioso per il suo benessere futuro. Evita toni allarmistici o generici: il messaggio deve suonare sincero, professionale e umano.]
 
 ---
 
@@ -425,11 +425,11 @@ Durata indicativa: si utilizza di solito in cicli di alcune settimane o alcuni m
 
 # Messaggio conclusivo
 
-Cari genitori, Liam ha davvero una cosa preziosa: un corpo che risponde. Ci sono aspetti da correggere — la lingua, il dialogo tra bocca e postura, alcuni compensi che oggi lavorano in silenzio — ma ci sono anche solide basi da cui partire. Questo è il momento giusto per intervenire, e ve lo diciamo con convinzione: le finestre di crescita non tornano, e sfruttarle ora significa offrire a vostro figlio un percorso più semplice, più dolce e con risultati più duraturi.
+Liam ha davvero una cosa preziosa: un corpo che risponde. Ci sono aspetti da correggere — la lingua, il dialogo tra bocca e postura, alcuni compensi che oggi lavorano in silenzio — ma ci sono anche solide basi da cui partire. Questo è il momento giusto per intervenire, e lo diciamo con convinzione: le finestre di crescita non tornano, e sfruttarle ora significa offrire a Liam un percorso più semplice, più dolce e con risultati più duraturi.
 
-Il percorso che vi proponiamo non è "un apparecchio per i denti". È un progetto di crescita: la terapia elastodontica accompagnerà le arcate, la terapia miofunzionale insegnerà alla lingua a lavorare bene, la fotobiomodulazione sosterrà il sistema neuromuscolare. Ogni tassello dialoga con gli altri, ed è proprio questa integrazione che fa la differenza rispetto a un approccio parziale. È un percorso di qualità, seguito passo dopo passo, pensato per il benessere globale di Liam e non solo per il suo sorriso.
+Il percorso che proponiamo non è "un apparecchio per i denti". È un progetto di crescita: la terapia elastodontica accompagnerà le arcate, la terapia miofunzionale insegnerà alla lingua a lavorare bene, la fotobiomodulazione sosterrà il sistema neuromuscolare. Ogni tassello dialoga con gli altri, ed è proprio questa integrazione che fa la differenza rispetto a un approccio parziale. È un percorso di qualità, seguito passo dopo passo, pensato per il benessere globale di Liam e non solo per il suo sorriso.
 
-Vi incoraggiamo a intraprenderlo con serenità e fiducia. Con la vostra collaborazione, la costanza di Liam e le giuste terapie, il risultato non sarà solo più bello: sarà più stabile, più naturale, più suo. Siamo al vostro fianco lungo tutto il percorso.
+Incoraggiamo a intraprenderlo con serenità e fiducia. Con la collaborazione della famiglia, la costanza di Liam e le giuste terapie, il risultato non sarà solo più bello: sarà più stabile, più naturale, più suo. Siamo al fianco lungo tutto il percorso.
 
 --- FINE ESEMPIO ---
 
