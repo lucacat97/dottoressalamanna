@@ -375,6 +375,21 @@ L'occhio dominante è il destro. La convergenza non è sincrona. È presente ipo
 
 Anche questo dato è clinicamente rilevante, poiché occhi, equilibrio, rotazioni cervicali e coordinazione mandibolare sono profondamente connessi. Una disfunzione oculomotoria può contribuire ai compensi posturali e meritare, se necessario, un approfondimento dedicato.
 
+# Quadro Riassuntivo
+
+**Punti di forza.** Liam arriva alla valutazione con basi biologiche molto favorevoli: sonno continuo e ristoratore, assenza di bruxismo, buona igiene orale, apertura mandibolare simmetrica senza deviazioni né dolore, protrusiva libera da precontatti e alcuni test funzionali (farfalla, suono "III", conta 60-70) ben eseguiti. Le vie aeree sono ben rappresentate e i test di Romberg negativi escludono deficit neurologici o vestibolari maggiori. Non siamo davanti a un sistema destrutturato: c'è una capacità di risposta viva, ed è proprio questo che rende ragionevole essere fiduciosi sull'esito del percorso terapeutico.
+
+**Criticità su cui basare la terapia.**
+
+- **Restrizione funzionale del frenulo linguale**: riduzione dell'apertura con lingua allo spot > 50%, inserzione del frenulo molto vicina agli alveoli inferiori e alla punta, protrusione alterata. È il driver funzionale principale del caso e orienta verso la rieducazione miofunzionale.
+- **Tono linguale non adeguato (test MANN alterato)**: la lingua non stabilizza in modo efficiente lo spot palatino, con ricadute su deglutizione, respirazione e crescita delle arcate.
+- **Precontatti in lateralità destra e sinistra**: possibile fonte di compenso muscolare che giustifica l'inserimento di un dispositivo elastodontico per riorganizzare i contatti occlusali.
+- **Dismorfosi in dentizione mista con tendenza alla III classe**: dato che richiede intercettazione precoce e monitoraggio attento della crescita.
+- **Sindrome posturale discendente con normalizzazione a lingua allo spot**: dimostra un legame diretto bocca-postura, motivando l'integrazione miofunzionale come leva terapeutica reale.
+- **Asimmetrie di bacino, spalle e appoggio con alterazione del test di marcia**: indicano compensi sui quali il riequilibrio funzionale potrà agire in modo indiretto ma significativo.
+- **Convergenza oculare non sincrona e ipodivergenza dell'occhio sinistro**: giustificano un approfondimento optometrico integrato al percorso ortodontico.
+- **Cefalee frequenti, dolori a gambe e ginocchia, storia di otiti ricorrenti**: elementi anamnestici da tenere presenti perché confermano il quadro di sistema in adattamento e rendono ancora più urgente un intervento tempestivo.
+
 # Terapie consigliate
 
 ## Terapia elastodontica
