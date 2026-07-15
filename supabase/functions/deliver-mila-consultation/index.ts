@@ -369,6 +369,8 @@ serve(async (req) => {
           consultationType: type,
           introHtml,
           downloadUrl,
+          format: outFormat,
+
         },
       }),
     });
