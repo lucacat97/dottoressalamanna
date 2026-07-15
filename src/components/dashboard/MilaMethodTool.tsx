@@ -803,19 +803,28 @@ const MilaMethodTool = () => {
                 <div>
                   <h4 className="font-display text-base font-semibold text-foreground">Consulenza Clinico-Posturale pronta</h4>
                   <p className="font-body text-xs text-muted-foreground">
-                    Invia il documento Word alla tua email {userEmail ? <span className="font-medium">({userEmail})</span> : null}.
+                    Ricevi la consulenza in Word o PDF alla tua email {userEmail ? <span className="font-medium">({userEmail})</span> : null}.
                   </p>
                 </div>
               </div>
               <div className="flex flex-wrap gap-2">
                 <Button
                   variant="default"
-                  onClick={() => sendConsultationEmail("diagnosis", diagnosisResult, "Consulenza Clinica")}
-                  disabled={sendingDiagEmail || diagEmailSent}
+                  onClick={() => sendConsultationEmail("diagnosis", diagnosisResult, "Consulenza Clinica", "word")}
+                  disabled={sendingDiag !== null || diagSent.word}
                   className="font-body gap-2"
                 >
-                  {sendingDiagEmail ? <Loader2 size={14} className="animate-spin" /> : diagEmailSent ? <CheckCircle2 size={14} /> : <Mail size={14} />}
-                  {sendingDiagEmail ? "Invio in corso…" : diagEmailSent ? "Email inviata" : "Invia via email"}
+                  {sendingDiag === "word" ? <Loader2 size={14} className="animate-spin" /> : diagSent.word ? <CheckCircle2 size={14} /> : <Mail size={14} />}
+                  {sendingDiag === "word" ? "Invio in corso…" : diagSent.word ? "Word inviato" : "Invia Consulenza in Word"}
+                </Button>
+                <Button
+                  variant="secondary"
+                  onClick={() => sendConsultationEmail("diagnosis", diagnosisResult, "Consulenza Clinica", "pdf")}
+                  disabled={sendingDiag !== null || diagSent.pdf}
+                  className="font-body gap-2"
+                >
+                  {sendingDiag === "pdf" ? <Loader2 size={14} className="animate-spin" /> : diagSent.pdf ? <CheckCircle2 size={14} /> : <Mail size={14} />}
+                  {sendingDiag === "pdf" ? "Invio in corso…" : diagSent.pdf ? "PDF inviato" : "Invia Consulenza in PDF"}
                 </Button>
               </div>
               <RetroFeedback toolName={DIAGNOSIS_TOOL} />
@@ -829,24 +838,34 @@ const MilaMethodTool = () => {
                 <div>
                   <h4 className="font-display text-base font-semibold text-foreground">Consulenza Cefalometrica pronta</h4>
                   <p className="font-body text-xs text-muted-foreground">
-                    Invia il documento Word alla tua email {userEmail ? <span className="font-medium">({userEmail})</span> : null}.
+                    Ricevi la consulenza in Word o PDF alla tua email {userEmail ? <span className="font-medium">({userEmail})</span> : null}.
                   </p>
                 </div>
               </div>
               <div className="flex flex-wrap gap-2">
                 <Button
                   variant="default"
-                  onClick={() => sendConsultationEmail("ortho", orthoResult, "Consulenza Cefalometrica")}
-                  disabled={sendingOrthoEmail || orthoEmailSent}
+                  onClick={() => sendConsultationEmail("ortho", orthoResult, "Consulenza Cefalometrica", "word")}
+                  disabled={sendingOrtho !== null || orthoSent.word}
                   className="font-body gap-2"
                 >
-                  {sendingOrthoEmail ? <Loader2 size={14} className="animate-spin" /> : orthoEmailSent ? <CheckCircle2 size={14} /> : <Mail size={14} />}
-                  {sendingOrthoEmail ? "Invio in corso…" : orthoEmailSent ? "Email inviata" : "Invia via email"}
+                  {sendingOrtho === "word" ? <Loader2 size={14} className="animate-spin" /> : orthoSent.word ? <CheckCircle2 size={14} /> : <Mail size={14} />}
+                  {sendingOrtho === "word" ? "Invio in corso…" : orthoSent.word ? "Word inviato" : "Invia Consulenza in Word"}
+                </Button>
+                <Button
+                  variant="secondary"
+                  onClick={() => sendConsultationEmail("ortho", orthoResult, "Consulenza Cefalometrica", "pdf")}
+                  disabled={sendingOrtho !== null || orthoSent.pdf}
+                  className="font-body gap-2"
+                >
+                  {sendingOrtho === "pdf" ? <Loader2 size={14} className="animate-spin" /> : orthoSent.pdf ? <CheckCircle2 size={14} /> : <Mail size={14} />}
+                  {sendingOrtho === "pdf" ? "Invio in corso…" : orthoSent.pdf ? "PDF inviato" : "Invia Consulenza in PDF"}
                 </Button>
               </div>
               <RetroFeedback toolName={ORTHO_TOOL} />
             </div>
           )}
+
 
           <Button variant="ghost" onClick={handleResetAll} className="w-full font-body gap-2">
             <RotateCcw size={14} />
