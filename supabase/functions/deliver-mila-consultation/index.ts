@@ -7,6 +7,125 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type",
 };
 
+// ── Rielaborazione con Claude Sonnet ──
+const CLAUDE_SYSTEM_PROMPT = `Sei un editor clinico. Ricevi un referto di check-up ortodontico posturale già
+redatto e restituisci la stessa consulenza riscritta in modo più asciutto e meno
+ripetitivo, SENZA alterare, aggiungere o rimuovere alcun dato clinico.
+
+REGOLE INVIOLABILI
+- Non inventare reperti, valori, diagnosi o terapie. Non rimuovere dati clinici.
+- Mantieni invariati: disclaimer, dati anagrafici, valori numerici, nomi dei test,
+  durate e note economiche delle terapie, firma del professionista.
+- Solo de-duplicare e compattare, mai ri-diagnosticare.
+
+STRUTTURA (il principio più importante)
+Assegna ruoli distinti ai due livelli così che non si ripetano:
+- Sezioni narrative ("Le cose che funzionano", "Le cose da correggere",
+  "Messaggio conclusivo") = INTERPRETAZIONE: che cosa significano i reperti,
+  senza elencare i singoli test.
+- "Analisi dettagliata" = REGISTRO DEI DATI: ogni reperto qui, una volta sola,
+  in forma sintetica (un test = una riga).
+
+CONSOLIDAMENTI (ogni concetto UNA sola volta)
+- Reattività "lingua allo spot" (piede/anca che normalizzano): enunciala una volta
+  come reperto-chiave nella sezione positiva, poi solo richiamala.
+- "Non è solo un apparecchio / non serve solo a raddrizzare i denti": una volta.
+- Ioide non tra C2-C3 → lingua bassa a riposo: una volta.
+- Apertura <4 cm + "non oltre il 50% con lingua allo spot": una volta.
+- Farfalla/MANN, facies adenoidea/occhiaie, vie aeree ben rappresentate: una ciascuno.
+
+STILE
+- Elimina le frasi-cornice ("Osserviamo diversi segnali che...", "Sono emersi
+  elementi che meritano attenzione..."): entra subito nel merito.
+- Varia la sintassi; riserva il commento interpretativo ai 2-3 reperti decisivi.
+- Usa elenchi puntati brevi dove i dati si prestano (test posturali, terapie).
+- Tono professionale, italiano, niente linguaggio pubblicitario.
+
+FORMATO DI OUTPUT (obbligatorio)
+Restituisci SOLO frammento HTML, senza <html>, <head>, <style> né attributi di
+colore o style inline. Usa esclusivamente questi tag:
+- <h1> per il titolo del documento (una sola volta)
+- <div class="disclaimer">…</div> per il disclaimer
+- <p class="meta"> per le righe Paziente / Età / Data visita
+- <h2> per le sezioni principali
+- <h3> per le sottosezioni dell'analisi dettagliata
+- <p>, <ul>, <li> per il corpo
+- <div class="signature">…</div> per la firma finale
+Nessun commento tuo, nessuna spiegazione: solo il frammento HTML.`;
+
+async function refineWithClaude(markdown: string): Promise<string | null> {
+  const key = Deno.env.get("ANTHROPIC_API_KEY");
+  if (!key) {
+    console.warn("[refineWithClaude] ANTHROPIC_API_KEY missing, skip refine");
+    return null;
+  }
+  const res = await fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+      "x-api-key": key,
+      "anthropic-version": "2023-06-01",
+    },
+    body: JSON.stringify({
+      model: "claude-sonnet-4-5",
+      max_tokens: 4000,
+      temperature: 0.2,
+      system: CLAUDE_SYSTEM_PROMPT,
+      messages: [{ role: "user", content: markdown }],
+    }),
+  });
+  if (!res.ok) {
+    const txt = await res.text().catch(() => "");
+    throw new Error(`Anthropic HTTP ${res.status}: ${txt.slice(0, 200)}`);
+  }
+  const data = await res.json();
+  const fragment = (data?.content ?? [])
+    .filter((b: any) => b?.type === "text")
+    .map((b: any) => b.text as string)
+    .join("")
+    .trim();
+  // Rimuovi eventuali fence ```html
+  const cleaned = fragment
+    .replace(/^```html\s*/i, "")
+    .replace(/^```\s*/i, "")
+    .replace(/```\s*$/i, "")
+    .trim();
+  if (!cleaned || cleaned.length < 50) return null;
+
+  // Applica gli stili inline per il documento Word (il CSS del sito non serve qui).
+  return applyInlineStyles(cleaned);
+}
+
+function applyInlineStyles(html: string): string {
+  const ACCENT = "#1F3864";
+  const DISC_BG = "#FBF3D9";
+  const DISC_BORDER = "#E0C97A";
+  const GREY = "#444444";
+  return html
+    .replace(/<h1(\s|>)/gi, `<h1 style="color:${ACCENT};font-family:Georgia,serif;font-size:20pt;margin:28px 0 12px;border-bottom:1px solid #eee;padding-bottom:8px;"$1`)
+    .replace(/<h2(\s|>)/gi, `<h2 style="color:${ACCENT};font-family:Georgia,serif;font-size:16pt;margin:24px 0 10px;"$1`)
+    .replace(/<h3(\s|>)/gi, `<h3 style="color:#333;font-size:12pt;margin:18px 0 6px;"$1`)
+    .replace(/<div class="disclaimer"(\s|>)/gi, `<div style="background:${DISC_BG};border:1px solid ${DISC_BORDER};padding:12px 16px;border-radius:6px;margin:16px 0;color:#5b4708;font-size:11pt;line-height:1.5;"$1`)
+    .replace(/<div class="signature"(\s|>)/gi, `<div style="color:${GREY};font-style:italic;margin-top:28px;padding-top:12px;border-top:1px solid #ddd;font-size:11pt;"$1`)
+    .replace(/<p class="meta"(\s|>)/gi, `<p style="color:${GREY};font-size:11pt;margin:4px 0;"$1`);
+}
+
+function extractIntroFromHtml(html: string): string {
+  // Estrai i primi 1-2 <p> "normali" (non meta, non dentro disclaimer/signature).
+  const stripped = html
+    .replace(/<div[^>]*(?:disclaimer|signature)[^>]*>[\s\S]*?<\/div>/gi, "")
+    .replace(/<p[^>]*class="meta"[^>]*>[\s\S]*?<\/p>/gi, "");
+  const paragraphs: string[] = [];
+  const re = /<p\b[^>]*>([\s\S]*?)<\/p>/gi;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(stripped)) && paragraphs.length < 2) {
+    const inner = m[1].trim();
+    if (inner) paragraphs.push(`<p style="margin:8px 0;line-height:1.6;">${inner}</p>`);
+  }
+  return paragraphs.join("\n") || "<p>La consulenza completa è disponibile nel documento allegato.</p>";
+}
+
+
 // ── Markdown → HTML (allineato al sito) ──
 function mdToHtml(md: string): string {
   const lines = md.split("\n");
