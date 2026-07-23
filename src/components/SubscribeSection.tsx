@@ -1,9 +1,18 @@
 import { useState, useEffect } from "react";
-import { Check, Crown, Sparkles, X, FileText, Loader2 } from "lucide-react";
+import { Check, Crown, Sparkles, X, FileText, Loader2, AlertTriangle, Calendar, CreditCard } from "lucide-react";
 import { StripeEmbeddedCheckoutView } from "./StripeEmbeddedCheckout";
 import { isPaymentsConfigured, getStripeEnvironment } from "@/lib/stripe";
 import { PaymentTestModeBanner } from "./PaymentTestModeBanner";
 import { supabase } from "@/integrations/supabase/client";
+
+interface Subscription {
+  id: string;
+  stripe_subscription_id: string;
+  price_id: string;
+  status: string;
+  current_period_end: string | null;
+  cancel_at_period_end: boolean;
+}
 
 type Interval = "monthly" | "yearly";
 
@@ -78,13 +87,48 @@ const formatAmount = (amount: number, currency: string) => {
 
 const formatDate = (ts: number) => new Date(ts * 1000).toLocaleDateString("it-IT");
 
+const priceToPlanName = (priceId: string) => {
+  if (priceId.includes("platinum")) return "MILA Platinum";
+  if (priceId.includes("pro")) return "MILA Pro";
+  if (priceId.includes("basic")) return "MILA Basic";
+  if (priceId.includes("test")) return "MILA Test";
+  return "MILA";
+};
+
 const SubscribeSection = () => {
   const [interval, setInterval] = useState<Interval>("monthly");
   const [checkout, setCheckout] = useState<{ priceId: string; label: string } | null>(null);
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [invoicesLoading, setInvoicesLoading] = useState(false);
   const [invoicesError, setInvoicesError] = useState<string | null>(null);
+  const [subscription, setSubscription] = useState<Subscription | null>(null);
+  const [subscriptionLoading, setSubscriptionLoading] = useState(false);
+  const [showCancelDialog, setShowCancelDialog] = useState(false);
+  const [cancelling, setCancelling] = useState(false);
+  const [cancelMessage, setCancelMessage] = useState<string | null>(null);
   const configured = isPaymentsConfigured();
+
+  const loadSubscription = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) return;
+    setSubscriptionLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from("subscriptions")
+        .select("id,stripe_subscription_id,price_id,status,current_period_end,cancel_at_period_end")
+        .eq("user_id", session.user.id)
+        .eq("environment", getStripeEnvironment())
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (error) throw error;
+      setSubscription(data as Subscription | null);
+    } catch (e: any) {
+      console.error("loadSubscription error:", e);
+    } finally {
+      setSubscriptionLoading(false);
+    }
+  };
 
   useEffect(() => {
     const loadInvoices = async () => {
@@ -104,8 +148,36 @@ const SubscribeSection = () => {
         setInvoicesLoading(false);
       }
     };
+    loadSubscription();
     loadInvoices();
   }, []);
+
+  const handleCancel = async () => {
+    setCancelling(true);
+    setCancelMessage(null);
+    try {
+      const { data, error } = await supabase.functions.invoke("cancel-stripe-subscription", {
+        body: { environment: getStripeEnvironment() },
+      });
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      setCancelMessage("Abbonamento disdetto correttamente. Continuerai ad avere accesso fino alla scadenza del periodo in corso.");
+      await loadSubscription();
+    } catch (e: any) {
+      setCancelMessage(e?.message || "Errore durante la disdetta");
+    } finally {
+      setCancelling(false);
+      setShowCancelDialog(false);
+    }
+  };
+
+  const isActive = subscription &&
+    !subscription.cancel_at_period_end &&
+    ["active", "trialing"].includes(subscription.status);
+
+  const renewalDate = subscription?.current_period_end
+    ? new Date(subscription.current_period_end).toLocaleDateString("it-IT", { day: "2-digit", month: "long", year: "numeric" })
+    : null;
 
   return (
     <section id="abbonamenti" className="py-24 bg-background">
@@ -133,6 +205,62 @@ const SubscribeSection = () => {
             ))}
           </div>
         </div>
+
+        {subscriptionLoading && (
+          <div className="mb-10 flex items-center justify-center gap-2 text-muted-foreground font-body text-sm">
+            <Loader2 size={16} className="animate-spin" />
+            Caricamento abbonamento...
+          </div>
+        )}
+
+        {cancelMessage && (
+          <div className={`mb-10 p-4 rounded-lg border font-body text-sm ${cancelMessage.includes("disdetto") ? "bg-primary/10 border-primary/30 text-foreground" : "bg-gold/10 border-gold/30 text-foreground"}`}>
+            {cancelMessage}
+          </div>
+        )}
+
+        {subscription && (
+          <div className="mb-10 bg-card border border-border rounded-xl p-6 shadow-sm">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+              <div className="flex items-start gap-4">
+                <div className="p-3 rounded-full bg-primary/10 text-petrolio">
+                  <CreditCard size={22} />
+                </div>
+                <div>
+                  <h3 className="font-display text-lg font-bold text-foreground">
+                    {priceToPlanName(subscription.price_id)}
+                  </h3>
+                  <p className="font-body text-sm text-muted-foreground flex items-center gap-1 mt-1">
+                    <Calendar size={14} />
+                    {subscription.cancel_at_period_end
+                      ? `Abbonamento in scadenza il ${renewalDate}`
+                      : `Rinnovo automatico il ${renewalDate || "—"}`}
+                  </p>
+                  <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-body font-semibold uppercase mt-2 ${
+                    subscription.status === "active" || subscription.status === "trialing"
+                      ? "bg-primary/10 text-primary"
+                      : "bg-muted text-muted-foreground"
+                  }`}>
+                    {subscription.status === "active" ? "Attivo" : subscription.status === "trialing" ? "In prova" : subscription.status}
+                  </span>
+                </div>
+              </div>
+              {isActive && (
+                <button
+                  onClick={() => setShowCancelDialog(true)}
+                  className="px-5 py-2.5 rounded-md font-body font-semibold text-sm border border-border text-foreground hover:bg-muted transition-all"
+                >
+                  Annulla abbonamento
+                </button>
+              )}
+              {subscription.cancel_at_period_end && (
+                <span className="px-5 py-2.5 rounded-md font-body font-semibold text-sm bg-muted text-muted-foreground border border-border">
+                  Disdetto — accesso fino al {renewalDate}
+                </span>
+              )}
+            </div>
+          </div>
+        )}
 
         <div className="grid md:grid-cols-3 gap-6">
           {PLANS.map((plan) => {
@@ -301,6 +429,43 @@ const SubscribeSection = () => {
               <h3 className="font-display text-xl font-bold text-foreground mb-1">Completa l'abbonamento</h3>
               <p className="font-body text-sm text-muted-foreground mb-4">{checkout.label}</p>
               <StripeEmbeddedCheckoutView priceId={checkout.priceId} />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showCancelDialog && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" onClick={() => setShowCancelDialog(false)}>
+          <div className="relative w-full max-w-md bg-card rounded-lg shadow-elevated p-6" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-start gap-3 mb-4">
+              <div className="p-2 rounded-full bg-gold/10 text-gold">
+                <AlertTriangle size={22} />
+              </div>
+              <div>
+                <h3 className="font-display text-lg font-bold text-foreground">Annulla abbonamento</h3>
+                <p className="font-body text-sm text-muted-foreground mt-1">
+                  Sei sicuro di voler disdire <strong>{priceToPlanName(subscription?.price_id || "")}</strong>?
+                </p>
+              </div>
+            </div>
+            <p className="font-body text-sm text-foreground bg-muted/50 p-3 rounded-md mb-6">
+              L&apos;accesso rimarrà attivo fino al <strong>{renewalDate}</strong>. Dopo quella data l&apos;abbonamento non si rinnoverà più.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <button
+                onClick={() => setShowCancelDialog(false)}
+                className="flex-1 py-2.5 rounded-md font-body font-semibold text-sm border border-border text-foreground hover:bg-muted transition-all"
+              >
+                Torna indietro
+              </button>
+              <button
+                onClick={handleCancel}
+                disabled={cancelling}
+                className="flex-1 py-2.5 rounded-md font-body font-semibold text-sm bg-gold text-primary hover:bg-gold-light transition-all disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              >
+                {cancelling && <Loader2 size={16} className="animate-spin" />}
+                {cancelling ? "Annullamento..." : "Conferma disdetta"}
+              </button>
             </div>
           </div>
         </div>
