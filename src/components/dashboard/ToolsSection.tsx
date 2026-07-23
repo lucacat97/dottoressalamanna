@@ -114,8 +114,8 @@ const ToolsSection = () => {
 
 
 
-      {loadingPerms ? (
-        <p className="font-body text-sm text-muted-foreground">Caricamento permessi...</p>
+      {false ? (
+        <p className="font-body text-sm text-muted-foreground">Caricamento...</p>
       ) : (
         <TooltipProvider delayDuration={300}>
           <div className="space-y-6">
