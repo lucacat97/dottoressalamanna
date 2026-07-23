@@ -12,8 +12,10 @@ import LibraryTab from "@/components/dashboard/LibraryTab";
 import DocumentsTab from "@/components/dashboard/DocumentsTab";
 import ContractFab from "@/components/dashboard/ContractFab";
 import PecAvatarFab from "@/components/PecAvatarFab";
+import WhatsAppFab from "@/components/WhatsAppFab";
 import SubscribeSection from "@/components/SubscribeSection";
 import PlanBadge from "@/components/dashboard/PlanBadge";
+import CreditsBadge from "@/components/dashboard/CreditsBadge";
 
 interface CourseEdition {
   id: string;
