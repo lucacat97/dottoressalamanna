@@ -40,38 +40,21 @@ serve(async (req) => {
     }
     const userId = user.id;
 
-    // ── Server-side license check ──
+    // ── Server-side access check: admin OR active subscription ──
     const serviceClient = createClient(supabaseUrl, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
-    let apiKeyId: string | null = null;
+    const apiKeyId: string | null = null;
     {
-      const { data: keyRecords } = await serviceClient
-        .from("api_keys")
-        .select("id, tools")
-        .eq("client_email", user.email)
-        .eq("is_active", true)
-        .order("created_at", { ascending: false })
-        .limit(1);
-      const keyRecord = keyRecords?.[0];
-      if (!keyRecord || !Array.isArray(keyRecord.tools) || !keyRecord.tools.includes("orthodontic")) {
+      const { data: isAdmin } = await serviceClient.rpc("has_role", { _user_id: userId, _role: "admin" });
+      const { data: hasSubLive } = await serviceClient.rpc("has_active_subscription", { user_uuid: userId, check_env: "live" });
+      const { data: hasSubSbx } = await serviceClient.rpc("has_active_subscription", { user_uuid: userId, check_env: "sandbox" });
+      if (!isAdmin && !hasSubLive && !hasSubSbx) {
         return new Response(
-          JSON.stringify({ error: "Accesso allo strumento non abilitato per il tuo account." }),
+          JSON.stringify({ error: "Nessuna consulenza disponibile. Attiva un abbonamento MILA per generare consulenze." }),
           { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
-      apiKeyId = keyRecord.id;
     }
 
-    // ── Server-side rate limiting ──
-    const { data: usageCount } = await serviceClient.rpc("get_monthly_ai_usage", {
-      _user_id: userId,
-      _tool_name: TOOL_NAME,
-    });
-    if (usageCount !== null && usageCount >= MONTHLY_LIMIT) {
-      return new Response(
-        JSON.stringify({ error: `Limite mensile raggiunto (${MONTHLY_LIMIT} analisi/mese). Riprova il prossimo mese.` }),
-        { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
 
     const body = await req.json();
     const { nome, cognome, age, sex, angolo_sellare, anb, wits, angolo_articolare, angolo_goniaco, rapporto_ns_gome, classe_dentale } = body;
