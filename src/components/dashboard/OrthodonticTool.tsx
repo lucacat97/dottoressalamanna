@@ -130,10 +130,8 @@ const OrthodonticTool = () => {
 
   const handleAnalyze = async () => {
     if (!isFormValid()) return;
-    if (monthlyUsage !== null && monthlyUsage >= MONTHLY_LIMIT) {
-      toast({ title: "Limite mensile raggiunto", description: `Hai raggiunto il limite di ${MONTHLY_LIMIT} analisi per questo mese.`, variant: "destructive" });
-      return;
-    }
+
+
     setIsAnalyzing(true);
     setResult("");
 
