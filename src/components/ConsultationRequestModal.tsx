@@ -15,9 +15,22 @@ const schema = z.object({
 interface Props {
   open: boolean;
   onClose: () => void;
+  recipientEmail?: string;
+  variant?: "standard" | "pec";
+  eyebrow?: string;
+  title?: string;
+  description?: string;
 }
 
-const ConsultationRequestModal = ({ open, onClose }: Props) => {
+const ConsultationRequestModal = ({
+  open,
+  onClose,
+  recipientEmail = "dott.lamanna.a@gmail.com",
+  variant = "standard",
+  eyebrow = "Consulenza personalizzata",
+  title = "Richiedi una consulenza",
+  description = "Compila il modulo: la richiesta arriverà direttamente alla Dott.ssa Annarita Lamanna, che la ricontatterà personalmente.",
+}: Props) => {
   const [form, setForm] = useState({ name: "", email: "", phone: "", message: "", consent: false });
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
@@ -36,8 +49,8 @@ const ConsultationRequestModal = ({ open, onClose }: Props) => {
       const { error } = await supabase.functions.invoke("send-transactional-email", {
         body: {
           templateName: "consultation-request",
-          recipientEmail: "dott.lamanna.a@gmail.com",
-          idempotencyKey: `consult-req-${Date.now()}-${form.email}`,
+          recipientEmail,
+          idempotencyKey: `consult-req-${variant}-${Date.now()}-${form.email}`,
           purpose: "transactional",
           templateData: {
             requesterName: form.name,
@@ -45,6 +58,7 @@ const ConsultationRequestModal = ({ open, onClose }: Props) => {
             requesterPhone: form.phone,
             message: form.message,
             sourcePage: typeof window !== "undefined" ? window.location.href : "",
+            channel: variant === "pec" ? "PEC — Richiesta diretta alla Dott.ssa" : "Web — Richiesta consulenza",
           },
           replyTo: form.email,
         },
