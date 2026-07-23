@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { LogOut, BookOpen, User, Shield, Wrench, Library, FileText } from "lucide-react";
+import { LogOut, BookOpen, User, Shield, Wrench, Library, FileText, CreditCard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
 import type { User as SupaUser } from "@supabase/supabase-js";
@@ -12,6 +12,7 @@ import LibraryTab from "@/components/dashboard/LibraryTab";
 import DocumentsTab from "@/components/dashboard/DocumentsTab";
 import ContractFab from "@/components/dashboard/ContractFab";
 import PecAvatarFab from "@/components/PecAvatarFab";
+import SubscribeSection from "@/components/SubscribeSection";
 
 interface CourseEdition {
   id: string;
