@@ -38,10 +38,15 @@ const CreditsBadge = ({ userId, onClick }: Props) => {
     <button
       onClick={onClick}
       title={`Consulenze generate questo mese: ${used}`}
-      className="hidden md:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-gold/40 bg-gold/10 text-gold font-body text-xs font-semibold transition-all hover:shadow-sm"
+      className="hidden md:inline-flex items-center gap-2 pl-2 pr-3 py-1 rounded-full border border-border/60 bg-background/60 backdrop-blur-sm hover:border-gold/50 hover:bg-gold/5 transition-all group"
     >
-      <Sparkles size={13} />
-      <span>{used} consulenze questo mese</span>
+      <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-gold/15 text-gold">
+        <Sparkles size={12} strokeWidth={2.5} />
+      </span>
+      <span className="flex items-baseline gap-1 font-body">
+        <span className="text-sm font-semibold text-foreground tabular-nums">{used}</span>
+        <span className="text-[11px] uppercase tracking-wider text-muted-foreground">questo mese</span>
+      </span>
     </button>
   );
 };
