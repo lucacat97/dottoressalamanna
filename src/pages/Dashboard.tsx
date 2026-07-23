@@ -79,6 +79,26 @@ const Dashboard = () => {
       .then(({ data }) => {
         setIsAdmin(data !== null && data.length > 0);
       });
+    // Check active subscription (any environment) to decide default tab & highlight
+    import("@/lib/stripe").then(({ getStripeEnvironment }) => {
+      supabase
+        .from("subscriptions")
+        .select("status,current_period_end")
+        .eq("user_id", user.id)
+        .eq("environment", getStripeEnvironment())
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle()
+        .then(({ data }) => {
+          const now = Date.now();
+          const active = !!data && (
+            (["active","trialing","past_due"].includes(data.status) &&
+              (!data.current_period_end || new Date(data.current_period_end).getTime() > now)) ||
+            (data.status === "canceled" && data.current_period_end && new Date(data.current_period_end).getTime() > now)
+          );
+          setHasActivePlan(active);
+        });
+    });
   }, [user]);
 
   const fetchData = useCallback(async () => {
