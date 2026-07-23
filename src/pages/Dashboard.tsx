@@ -33,7 +33,7 @@ interface CourseMaterial {
   file_size: number | null;
 }
 
-type MainTab = "corsi" | "strumenti" | "libreria" | "documenti" | "admin";
+type MainTab = "corsi" | "strumenti" | "libreria" | "documenti" | "abbonamento" | "admin";
 
 const Dashboard = () => {
   const [user, setUser] = useState<SupaUser | null>(null);
@@ -43,7 +43,7 @@ const Dashboard = () => {
   const [materials, setMaterials] = useState<CourseMaterial[]>([]);
   const [searchParams, setSearchParams] = useSearchParams();
   const tabParam = searchParams.get("tab");
-  const validTabs: MainTab[] = ["strumenti", "corsi", "libreria", "documenti", "admin"];
+  const validTabs: MainTab[] = ["strumenti", "corsi", "libreria", "documenti", "abbonamento", "admin"];
   const activeTab: MainTab = validTabs.includes(tabParam as MainTab) ? (tabParam as MainTab) : "strumenti";
   const setActiveTab = (tab: MainTab) => setSearchParams({ tab });
   const navigate = useNavigate();
