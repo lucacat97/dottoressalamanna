@@ -89,6 +89,7 @@ Deno.serve(async (req) => {
       ui_mode: "embedded_page",
       return_url: returnUrl,
       automatic_tax: { enabled: true },
+      ...(customerId && { customer_update: { address: "auto", name: "auto" } }),
       ...(customerId && { customer: customerId }),
       ...(!isRecurring && { payment_intent_data: { description: productDescription } }),
       ...(userId && {
