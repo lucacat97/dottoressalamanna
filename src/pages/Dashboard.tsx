@@ -233,6 +233,7 @@ const Dashboard = () => {
           />
         )}
       </main>
+      <ContractFab />
     </div>
   );
 };
