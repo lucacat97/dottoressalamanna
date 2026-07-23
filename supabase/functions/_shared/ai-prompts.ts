@@ -297,8 +297,8 @@ Data visita: [Se disponibile]
 ## Terapia miofunzionale
 [Se pertinente]
 
-## Eventuale terapia di supporto
-[Se pertinente: fotobiomodulazione, altre figure professionali]
+## Altre terapie
+[SOLO se il professionista ha indicato terapie ulteriori (oltre a elastodontica e miofunzionale) nel campo "Terapie consigliate" / "Quali terapie servono". NON usare il titolo generico "Eventuale terapia di supporto": crea invece una SOTTOSEZIONE ## dedicata per OGNI singola terapia selezionata (es. "## Fotobiomodulazione", "## Osteopatia", "## Logopedia miofunzionale", "## Plantari propriocettivi", "## Coinvolgimento ORL", ecc.), usando il nome esatto della terapia in **grassetto** nel titolo. Per ciascuna spiega in modo discorsivo: cos'è, perché è indicata per questo specifico paziente, come si integra con le altre terapie, durata/frequenza orientative. Elenca e argomenta TUTTE le terapie selezionate, senza raggrupparle sotto un unico titolo generico e senza ometterne alcuna. Se nessuna terapia aggiuntiva è stata selezionata, OMETTI completamente questa sezione.]
 
 # Messaggio conclusivo
 [Chiudi con un messaggio breve, caldo e incoraggiante rivolto al paziente e, quando si tratta di un bambino o ragazzo, alla famiglia. NON usare l'apertura "Cari Genitori". Il tono deve essere positivo, motivante e concreto: incoraggia esplicitamente a intraprendere il percorso terapeutico proposto, spiega che si tratta di un percorso di qualità che accompagna la crescita nella sua globalità (non solo i denti), fa emergere il valore di intervenire nel momento giusto e sottolinea che con collaborazione, costanza e le giuste terapie il risultato può essere stabile, naturale e duraturo. Trasmetti fiducia: il corpo ha risorse, il percorso è chiaro, la famiglia può affrontarlo con serenità sapendo di offrire al bambino uno strumento prezioso per il suo benessere futuro. Evita toni allarmistici o generici: il messaggio deve suonare sincero, professionale e umano.]

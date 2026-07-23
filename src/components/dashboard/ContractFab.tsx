@@ -56,7 +56,7 @@ const ContractFab = () => {
               <section>
                 <h3 className="font-display text-base font-semibold text-foreground mb-2">Parti</h3>
                 <p>
-                  <strong>Titolare / Licenziante:</strong> Studio Odontoiatrico Carella Lamanna SRL (P.IVA 1310640012),
+                  <strong>Titolare / Licenziante:</strong> Studio Odontoiatrico Carella Lamanna SRL (P.IVA 13101640012),
                   con sede in Chivasso, via Demetrio Cosola 5/A — PEC{" "}
                   <a href="mailto:studioodontoiatricocarellalamannasrl@legalmail.it" className="text-petrolio underline">
                     studioodontoiatricocarellalamannasrl@legalmail.it
