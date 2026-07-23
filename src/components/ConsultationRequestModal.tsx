@@ -102,10 +102,10 @@ const ConsultationRequestModal = ({
           </div>
         ) : (
           <form onSubmit={submit} className="p-8">
-            <p className="font-body text-xs uppercase tracking-[0.2em] text-gold mb-2">Consulenza personalizzata</p>
-            <h3 className="font-display text-2xl font-bold text-foreground mb-2">Richiedi una consulenza</h3>
+            <p className="font-body text-xs uppercase tracking-[0.2em] text-gold mb-2">{eyebrow}</p>
+            <h3 className="font-display text-2xl font-bold text-foreground mb-2">{title}</h3>
             <p className="font-body text-sm text-muted-foreground mb-6">
-              Compila il modulo: la richiesta arriverà direttamente alla Dott.ssa Annarita Lamanna, che la ricontatterà personalmente.
+              {description}
             </p>
 
             <div className="space-y-4">
