@@ -235,6 +235,7 @@ const Dashboard = () => {
         )}
       </main>
       <ContractFab />
+      <PecAvatarFab />
     </div>
   );
 };
