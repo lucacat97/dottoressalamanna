@@ -422,15 +422,8 @@ const MilaMethodTool = () => {
   const handleGenerate = async () => {
     if (!canGenerate) return;
 
-    // Limit checks (only for sections actually being run)
-    if (clinicalReady && diagUsage !== null && diagUsage >= MONTHLY_LIMIT) {
-      toast({ title: "Limite mensile consulenza clinica", description: `Hai raggiunto ${MONTHLY_LIMIT} analisi.`, variant: "destructive" });
-      return;
-    }
-    if (orthoReady && orthoUsage !== null && orthoUsage >= MONTHLY_LIMIT) {
-      toast({ title: "Limite mensile cefalometria", description: `Hai raggiunto ${MONTHLY_LIMIT} analisi.`, variant: "destructive" });
-      return;
-    }
+
+
 
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) {
@@ -509,19 +502,16 @@ const MilaMethodTool = () => {
         {diagUsage !== null && (
           <div className="flex items-center justify-between p-3 bg-muted/50 rounded-md">
             <span className="font-body text-xs text-muted-foreground">Diagnosi clinica — questo mese</span>
-            <span className={`font-body text-sm font-semibold ${diagUsage >= MONTHLY_LIMIT ? "text-destructive" : "text-petrolio"}`}>
-              {diagUsage}/{MONTHLY_LIMIT}
-            </span>
+            <span className="font-body text-sm font-semibold text-petrolio">{diagUsage}</span>
           </div>
         )}
         {orthoUsage !== null && (
           <div className="flex items-center justify-between p-3 bg-muted/50 rounded-md">
             <span className="font-body text-xs text-muted-foreground">Cefalometria — questo mese</span>
-            <span className={`font-body text-sm font-semibold ${orthoUsage >= MONTHLY_LIMIT ? "text-destructive" : "text-petrolio"}`}>
-              {orthoUsage}/{MONTHLY_LIMIT}
-            </span>
+            <span className="font-body text-sm font-semibold text-petrolio">{orthoUsage}</span>
           </div>
         )}
+
       </div>
 
       {/* Two input sections side by side */}

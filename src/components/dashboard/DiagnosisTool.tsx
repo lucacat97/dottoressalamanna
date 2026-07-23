@@ -130,10 +130,8 @@ const DiagnosisTool = () => {
 
   const handleAnalyze = async () => {
     if (!extractedText) return;
-    if (monthlyUsage !== null && monthlyUsage >= MONTHLY_LIMIT) {
-      toast({ title: "Limite mensile raggiunto", description: `Hai raggiunto il limite di ${MONTHLY_LIMIT} analisi per questo mese.`, variant: "destructive" });
-      return;
-    }
+
+
     setIsAnalyzing(true);
     setResult("");
 
@@ -238,9 +236,8 @@ const DiagnosisTool = () => {
       {monthlyUsage !== null && (
         <div className="flex items-center justify-between p-3 bg-muted/50 rounded-md">
           <span className="font-body text-xs text-muted-foreground">Analisi utilizzate questo mese</span>
-          <span className={`font-body text-sm font-semibold ${monthlyUsage >= MONTHLY_LIMIT ? "text-destructive" : "text-petrolio"}`}>
-            {monthlyUsage}/{MONTHLY_LIMIT}
-          </span>
+          <span className="font-body text-sm font-semibold text-petrolio">{monthlyUsage}</span>
+
         </div>
       )}
 
