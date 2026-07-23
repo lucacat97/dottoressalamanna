@@ -1,10 +1,26 @@
-import { useState } from "react";
-import { Check, Crown, Sparkles, X } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Check, Crown, Sparkles, X, FileText, Loader2 } from "lucide-react";
 import { StripeEmbeddedCheckoutView } from "./StripeEmbeddedCheckout";
-import { isPaymentsConfigured } from "@/lib/stripe";
+import { isPaymentsConfigured, getStripeEnvironment } from "@/lib/stripe";
 import { PaymentTestModeBanner } from "./PaymentTestModeBanner";
+import { supabase } from "@/integrations/supabase/client";
 
 type Interval = "monthly" | "yearly";
+
+interface Invoice {
+  id: string;
+  number: string | null;
+  status: string | null;
+  amount_due: number;
+  amount_paid: number;
+  currency: string;
+  created: number;
+  period_start: number | null;
+  period_end: number | null;
+  hosted_invoice_url: string | null;
+  invoice_pdf: string | null;
+  description: string | null;
+}
 
 const PLANS = [
   {
@@ -53,10 +69,43 @@ const PLANS = [
   },
 ];
 
+const formatAmount = (amount: number, currency: string) => {
+  return new Intl.NumberFormat("it-IT", {
+    style: "currency",
+    currency: currency.toUpperCase(),
+  }).format(amount / 100);
+};
+
+const formatDate = (ts: number) => new Date(ts * 1000).toLocaleDateString("it-IT");
+
 const SubscribeSection = () => {
   const [interval, setInterval] = useState<Interval>("monthly");
   const [checkout, setCheckout] = useState<{ priceId: string; label: string } | null>(null);
+  const [invoices, setInvoices] = useState<Invoice[]>([]);
+  const [invoicesLoading, setInvoicesLoading] = useState(false);
+  const [invoicesError, setInvoicesError] = useState<string | null>(null);
   const configured = isPaymentsConfigured();
+
+  useEffect(() => {
+    const loadInvoices = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+      setInvoicesLoading(true);
+      setInvoicesError(null);
+      try {
+        const { data, error } = await supabase.functions.invoke("get-stripe-invoices", {
+          body: { environment: getStripeEnvironment() },
+        });
+        if (error) throw error;
+        setInvoices(data?.invoices || []);
+      } catch (e: any) {
+        setInvoicesError(e?.message || "Errore caricamento fatture");
+      } finally {
+        setInvoicesLoading(false);
+      }
+    };
+    loadInvoices();
+  }, []);
 
   return (
     <section id="abbonamenti" className="py-24 bg-background">
@@ -157,6 +206,84 @@ const SubscribeSection = () => {
           Pagamenti sicuri gestiti tramite Stripe. Per informazioni fiscali e condizioni consulta il{" "}
           <a href="/documenti/contratto-mila.docx" className="underline hover:text-foreground">contratto MILA</a>.
         </p>
+
+        {invoicesLoading && (
+          <div className="mt-16 flex items-center justify-center gap-2 text-muted-foreground font-body text-sm">
+            <Loader2 size={16} className="animate-spin" />
+            Caricamento fatture...
+          </div>
+        )}
+
+        {invoicesError && !invoices.length && (
+          <div className="mt-16 p-4 rounded-lg bg-muted border border-border text-muted-foreground font-body text-sm">
+            {invoicesError}
+          </div>
+        )}
+
+        {invoices.length > 0 && (
+          <div className="mt-16">
+            <h3 className="font-display text-2xl font-bold text-foreground mb-6 flex items-center gap-2">
+              <FileText size={22} className="text-petrolio" />
+              Fatture e ricevute
+            </h3>
+            <div className="bg-card border border-border rounded-xl overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="w-full text-left">
+                  <thead className="bg-muted/50">
+                    <tr>
+                      <th className="px-4 py-3 font-body text-xs uppercase tracking-wider text-muted-foreground">Numero</th>
+                      <th className="px-4 py-3 font-body text-xs uppercase tracking-wider text-muted-foreground">Data</th>
+                      <th className="px-4 py-3 font-body text-xs uppercase tracking-wider text-muted-foreground">Periodo</th>
+                      <th className="px-4 py-3 font-body text-xs uppercase tracking-wider text-muted-foreground">Importo</th>
+                      <th className="px-4 py-3 font-body text-xs uppercase tracking-wider text-muted-foreground">Stato</th>
+                      <th className="px-4 py-3 font-body text-xs uppercase tracking-wider text-muted-foreground"></th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-border">
+                    {invoices.map((inv) => (
+                      <tr key={inv.id} className="hover:bg-muted/30 transition-colors">
+                        <td className="px-4 py-3 font-body text-sm text-foreground">{inv.number || inv.id}</td>
+                        <td className="px-4 py-3 font-body text-sm text-muted-foreground">{formatDate(inv.created)}</td>
+                        <td className="px-4 py-3 font-body text-sm text-muted-foreground">
+                          {inv.period_start && inv.period_end
+                            ? `${formatDate(inv.period_start)} – ${formatDate(inv.period_end)}`
+                            : "—"}
+                        </td>
+                        <td className="px-4 py-3 font-body text-sm text-foreground">{formatAmount(inv.amount_due, inv.currency)}</td>
+                        <td className="px-4 py-3">
+                          <span
+                            className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-body font-semibold uppercase ${
+                              inv.status === "paid"
+                                ? "bg-primary/10 text-primary"
+                                : inv.status === "open"
+                                ? "bg-gold/10 text-gold"
+                                : "bg-muted text-muted-foreground"
+                            }`}
+                          >
+                            {inv.status === "paid" ? "Pagata" : inv.status === "open" ? "Da pagare" : inv.status}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 text-right">
+                          {inv.hosted_invoice_url && (
+                            <a
+                              href={inv.hosted_invoice_url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1 font-body text-sm text-petrolio hover:underline"
+                            >
+                              <FileText size={14} />
+                              Visualizza
+                            </a>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {checkout && (
