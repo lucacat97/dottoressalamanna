@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Activity, Sparkles } from "lucide-react";
+import { Activity } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 const TOOL_LABELS: Record<string, string> = {
@@ -9,8 +9,6 @@ const TOOL_LABELS: Record<string, string> = {
   mtc_organica: "MTC Organica",
   checkup: "Check-up posturale",
 };
-
-const MONTHLY_INCLUDED = 5;
 
 const UsageWidget = () => {
   const [counts, setCounts] = useState<Record<string, number>>({});
@@ -43,8 +41,6 @@ const UsageWidget = () => {
   }, []);
 
   const monthLabel = new Date().toLocaleDateString("it-IT", { month: "long", year: "numeric" });
-  const pct = Math.min(100, (total / MONTHLY_INCLUDED) * 100);
-  const overIncluded = Math.max(0, total - MONTHLY_INCLUDED);
 
   return (
     <div className="relative overflow-hidden rounded-2xl border border-border bg-gradient-to-br from-card via-card to-primary/5 p-5">
@@ -65,24 +61,6 @@ const UsageWidget = () => {
           <p className="font-body text-[11px] text-muted-foreground mt-1">
             consulenze generate
           </p>
-        </div>
-      </div>
-
-      <div className="space-y-2 mb-4">
-        <div className="h-2 bg-muted rounded-full overflow-hidden">
-          <div
-            className="h-full bg-gradient-to-r from-petrolio to-gold transition-all"
-            style={{ width: `${pct}%` }}
-          />
-        </div>
-        <div className="flex items-center justify-between font-body text-[11px] text-muted-foreground">
-          <span>{Math.min(total, MONTHLY_INCLUDED)} di {MONTHLY_INCLUDED} incluse</span>
-          {overIncluded > 0 && (
-            <span className="inline-flex items-center gap-1 text-gold font-semibold">
-              <Sparkles size={11} />
-              +{overIncluded} extra
-            </span>
-          )}
         </div>
       </div>
 
