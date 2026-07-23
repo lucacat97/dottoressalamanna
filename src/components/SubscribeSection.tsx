@@ -1,9 +1,18 @@
 import { useState, useEffect } from "react";
-import { Check, Crown, Sparkles, X, FileText, Loader2 } from "lucide-react";
+import { Check, Crown, Sparkles, X, FileText, Loader2, AlertTriangle, Calendar, CreditCard } from "lucide-react";
 import { StripeEmbeddedCheckoutView } from "./StripeEmbeddedCheckout";
 import { isPaymentsConfigured, getStripeEnvironment } from "@/lib/stripe";
 import { PaymentTestModeBanner } from "./PaymentTestModeBanner";
 import { supabase } from "@/integrations/supabase/client";
+
+interface Subscription {
+  id: string;
+  stripe_subscription_id: string;
+  price_id: string;
+  status: string;
+  current_period_end: string | null;
+  cancel_at_period_end: boolean;
+}
 
 type Interval = "monthly" | "yearly";
 
