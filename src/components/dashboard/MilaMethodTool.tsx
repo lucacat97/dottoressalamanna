@@ -422,15 +422,8 @@ const MilaMethodTool = () => {
   const handleGenerate = async () => {
     if (!canGenerate) return;
 
-    // Limit checks (only for sections actually being run)
-    if (clinicalReady && diagUsage !== null && diagUsage >= MONTHLY_LIMIT) {
-      toast({ title: "Limite mensile consulenza clinica", description: `Hai raggiunto ${MONTHLY_LIMIT} analisi.`, variant: "destructive" });
-      return;
-    }
-    if (orthoReady && orthoUsage !== null && orthoUsage >= MONTHLY_LIMIT) {
-      toast({ title: "Limite mensile cefalometria", description: `Hai raggiunto ${MONTHLY_LIMIT} analisi.`, variant: "destructive" });
-      return;
-    }
+
+
 
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) {
