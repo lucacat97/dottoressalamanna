@@ -42,12 +42,14 @@ const Dashboard = () => {
   const [user, setUser] = useState<SupaUser | null>(null);
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [hasActivePlan, setHasActivePlan] = useState<boolean | null>(null);
   const [editions, setEditions] = useState<CourseEdition[]>([]);
   const [materials, setMaterials] = useState<CourseMaterial[]>([]);
   const [searchParams, setSearchParams] = useSearchParams();
   const tabParam = searchParams.get("tab");
-  const validTabs: MainTab[] = ["strumenti", "corsi", "libreria", "documenti", "abbonamento", "admin"];
-  const activeTab: MainTab = validTabs.includes(tabParam as MainTab) ? (tabParam as MainTab) : "strumenti";
+  const validTabs: MainTab[] = ["abbonamento", "strumenti", "corsi", "libreria", "documenti", "admin"];
+  const defaultTab: MainTab = hasActivePlan === false ? "abbonamento" : "strumenti";
+  const activeTab: MainTab = validTabs.includes(tabParam as MainTab) ? (tabParam as MainTab) : defaultTab;
   const setActiveTab = (tab: MainTab) => setSearchParams({ tab });
   const navigate = useNavigate();
 
