@@ -227,6 +227,11 @@ const Dashboard = () => {
           <DocumentsTab />
         )}
 
+        {activeTab === "abbonamento" && (
+          <SubscribeSection />
+        )}
+
+
         {activeTab === "admin" && isAdmin && (
           <AdminTab
             editions={editions}
