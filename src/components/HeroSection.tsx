@@ -84,16 +84,16 @@ const HeroSection = () => {
             className="flex flex-col sm:flex-row gap-4">
             
             <a
-              href="#edizioni"
-              className="inline-flex items-center justify-center px-8 py-4 bg-primary-foreground text-petrolio-dark font-body font-semibold rounded-md hover:bg-gold-light transition-all duration-300 hover:scale-105 text-base">
+              href="/area-riservata?tab=strumenti"
+              className="inline-flex items-center justify-center px-8 py-4 bg-gold text-primary font-body font-semibold rounded-md hover:bg-gold-light transition-all duration-300 hover:scale-105 text-base">
               
-              Scopri le Prossime Edizioni
+              Vai al Tool MILA
             </a>
             <a
-              href="#chi-sono"
+              href="#edizioni"
               className="inline-flex items-center justify-center px-8 py-4 border border-primary-foreground/30 text-primary-foreground font-body font-medium rounded-md hover:bg-primary-foreground/10 transition-all duration-300 text-base">
               
-              Chi Sono
+              Prossime Edizioni
             </a>
           </motion.div>
         </div>
