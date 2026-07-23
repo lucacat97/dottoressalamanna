@@ -157,7 +157,7 @@ const Dashboard = () => {
 
   const tabs: { key: MainTab; label: string; icon: typeof BookOpen; adminOnly?: boolean }[] = [
     { key: "abbonamento", label: "Abbonamento", icon: CreditCard },
-    { key: "strumenti", label: "Strumenti", icon: Wrench },
+    { key: "strumenti", label: "MILA e Strumenti", icon: Wrench },
     { key: "libreria", label: "Libreria", icon: Library },
     { key: "corsi", label: "Corsi", icon: BookOpen },
     { key: "documenti", label: "Documenti", icon: FileText },
