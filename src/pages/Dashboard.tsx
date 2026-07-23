@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { LogOut, BookOpen, User, Shield, Wrench, Library } from "lucide-react";
+import { LogOut, BookOpen, User, Shield, Wrench, Library, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
 import type { User as SupaUser } from "@supabase/supabase-js";
@@ -9,6 +9,7 @@ import CoursesTab from "@/components/dashboard/CoursesTab";
 import ToolsSection from "@/components/dashboard/ToolsSection";
 import AdminTab from "@/components/dashboard/AdminTab";
 import LibraryTab from "@/components/dashboard/LibraryTab";
+import DocumentsTab from "@/components/dashboard/DocumentsTab";
 
 interface CourseEdition {
   id: string;
