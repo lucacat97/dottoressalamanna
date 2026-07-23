@@ -30,7 +30,7 @@ interface CourseMaterial {
   file_size: number | null;
 }
 
-type MainTab = "corsi" | "strumenti" | "libreria" | "admin";
+type MainTab = "corsi" | "strumenti" | "libreria" | "documenti" | "admin";
 
 const Dashboard = () => {
   const [user, setUser] = useState<SupaUser | null>(null);
@@ -40,7 +40,7 @@ const Dashboard = () => {
   const [materials, setMaterials] = useState<CourseMaterial[]>([]);
   const [searchParams, setSearchParams] = useSearchParams();
   const tabParam = searchParams.get("tab");
-  const validTabs: MainTab[] = ["strumenti", "corsi", "libreria", "admin"];
+  const validTabs: MainTab[] = ["strumenti", "corsi", "libreria", "documenti", "admin"];
   const activeTab: MainTab = validTabs.includes(tabParam as MainTab) ? (tabParam as MainTab) : "strumenti";
   const setActiveTab = (tab: MainTab) => setSearchParams({ tab });
   const navigate = useNavigate();
@@ -131,6 +131,7 @@ const Dashboard = () => {
     { key: "strumenti", label: "Strumenti", icon: Wrench },
     { key: "libreria", label: "Libreria", icon: Library },
     { key: "corsi", label: "Corsi", icon: BookOpen },
+    { key: "documenti", label: "Documenti", icon: FileText },
     ...(isAdmin ? [{ key: "admin" as MainTab, label: "Admin", icon: Shield, adminOnly: true }] : []),
   ];
 
@@ -216,6 +217,10 @@ const Dashboard = () => {
 
         {activeTab === "libreria" && (
           <LibraryTab />
+        )}
+
+        {activeTab === "documenti" && (
+          <DocumentsTab />
         )}
 
         {activeTab === "admin" && isAdmin && (
