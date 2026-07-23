@@ -20,3 +20,6 @@ verify_jwt = false
 
 [functions.get-stripe-invoices]
 verify_jwt = false
+
+[functions.cancel-stripe-subscription]
+verify_jwt = false
