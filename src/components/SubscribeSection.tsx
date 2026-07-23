@@ -152,6 +152,33 @@ const SubscribeSection = () => {
     loadInvoices();
   }, []);
 
+  const handleCancel = async () => {
+    setCancelling(true);
+    setCancelMessage(null);
+    try {
+      const { data, error } = await supabase.functions.invoke("cancel-stripe-subscription", {
+        body: { environment: getStripeEnvironment() },
+      });
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      setCancelMessage("Abbonamento disdetto correttamente. Continuerai ad avere accesso fino alla scadenza del periodo in corso.");
+      await loadSubscription();
+    } catch (e: any) {
+      setCancelMessage(e?.message || "Errore durante la disdetta");
+    } finally {
+      setCancelling(false);
+      setShowCancelDialog(false);
+    }
+  };
+
+  const isActive = subscription &&
+    !subscription.cancel_at_period_end &&
+    ["active", "trialing"].includes(subscription.status);
+
+  const renewalDate = subscription?.current_period_end
+    ? new Date(subscription.current_period_end).toLocaleDateString("it-IT", { day: "2-digit", month: "long", year: "numeric" })
+    : null;
+
   return (
     <section id="abbonamenti" className="py-24 bg-background">
       <div className="max-w-6xl mx-auto px-6">
