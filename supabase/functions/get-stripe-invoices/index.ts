@@ -23,6 +23,10 @@ Deno.serve(async (req) => {
       throw new Error("Invalid environment");
     }
 
+    const stripe = createStripeClient(environment as StripeEnv);
+
+    // 1) prova a trovare stripe_customer_id nelle subscriptions (env corrente)
+    let customerId: string | null = null;
     const { data: sub } = await supabase
       .from("subscriptions")
       .select("stripe_customer_id")
@@ -31,11 +35,33 @@ Deno.serve(async (req) => {
       .order("created_at", { ascending: false })
       .limit(1)
       .maybeSingle();
-    if (!sub?.stripe_customer_id) throw new Error("Nessun abbonamento trovato");
+    if (sub?.stripe_customer_id) customerId = sub.stripe_customer_id as string;
 
-    const stripe = createStripeClient(environment as StripeEnv);
+    // 2) fallback: cerca customer su Stripe per metadata userId
+    if (!customerId) {
+      try {
+        const byMeta = await stripe.customers.search({
+          query: `metadata['userId']:'${user.id}'`,
+          limit: 1,
+        });
+        if (byMeta.data[0]) customerId = byMeta.data[0].id;
+      } catch (_) { /* search may be unavailable */ }
+    }
+
+    // 3) fallback: cerca customer per email
+    if (!customerId && user.email) {
+      const byEmail = await stripe.customers.list({ email: user.email, limit: 1 });
+      if (byEmail.data[0]) customerId = byEmail.data[0].id;
+    }
+
+    if (!customerId) {
+      return new Response(JSON.stringify({ invoices: [] }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     const invoices = await stripe.invoices.list({
-      customer: sub.stripe_customer_id as string,
+      customer: customerId,
       limit: 100,
     });
 
