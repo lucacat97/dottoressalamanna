@@ -7,6 +7,7 @@ import EditionsSection from "@/components/EditionsSection";
 import GallerySection from "@/components/GallerySection";
 import ContactSection from "@/components/ContactSection";
 import Footer from "@/components/Footer";
+import ConsultationFab from "@/components/ConsultationFab";
 
 const Index = () => {
   return (
@@ -20,6 +21,7 @@ const Index = () => {
       <GallerySection />
       <ContactSection />
       <Footer />
+      <ConsultationFab />
     </div>
   );
 };

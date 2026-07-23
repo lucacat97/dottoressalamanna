@@ -46,10 +46,10 @@ const MilaSection = () => {
 
               <div className="mt-10 flex flex-wrap gap-4">
                 <Link
-                  to="/dashboard"
+                  to="/area-riservata?tab=strumenti"
                   className="group inline-flex items-center gap-3 px-8 py-4 bg-gold text-primary font-body font-semibold uppercase tracking-wider text-sm rounded-sm hover:bg-gold-light transition-colors"
                 >
-                  Esplora MILA
+                  Vai al Tool MILA
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </Link>
                 <a
