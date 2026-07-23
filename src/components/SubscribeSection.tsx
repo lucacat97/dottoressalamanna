@@ -143,6 +143,16 @@ const SubscribeSection = () => {
           })}
         </div>
 
+        <div className="mt-8 flex justify-center">
+          <button
+            disabled={!configured}
+            onClick={() => setCheckout({ priceId: "mila_test_monthly", label: "MILA Test — €0,10/mese" })}
+            className="text-xs font-body text-muted-foreground underline hover:text-foreground disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            Piano di test €0,10/mese (verifica pagamento reale)
+          </button>
+        </div>
+
         <p className="text-center font-body text-xs text-muted-foreground mt-8 max-w-2xl mx-auto">
           Pagamenti sicuri gestiti tramite Stripe. Per informazioni fiscali e condizioni consulta il{" "}
           <a href="/documenti/contratto-mila.docx" className="underline hover:text-foreground">contratto MILA</a>.
