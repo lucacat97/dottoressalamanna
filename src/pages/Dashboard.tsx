@@ -13,6 +13,7 @@ import DocumentsTab from "@/components/dashboard/DocumentsTab";
 import ContractFab from "@/components/dashboard/ContractFab";
 import PecAvatarFab from "@/components/PecAvatarFab";
 import SubscribeSection from "@/components/SubscribeSection";
+import PlanBadge from "@/components/dashboard/PlanBadge";
 
 interface CourseEdition {
   id: string;
