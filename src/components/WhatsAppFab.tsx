@@ -1,4 +1,4 @@
-const WHATSAPP_NUMBER = "393332635804"; // +39 333 263 5804
+const WHATSAPP_NUMBER = "390119111149"; // +39 011 9111149
 const DEFAULT_MSG = "Salve Dott.ssa Lamanna, vorrei alcune informazioni.";
 
 const WhatsAppFab = () => {
