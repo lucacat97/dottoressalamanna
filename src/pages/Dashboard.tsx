@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { LogOut, BookOpen, User, Shield, Wrench, Library, FileText } from "lucide-react";
+import { LogOut, BookOpen, User, Shield, Wrench, Library, FileText, CreditCard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
 import type { User as SupaUser } from "@supabase/supabase-js";
@@ -12,6 +12,7 @@ import LibraryTab from "@/components/dashboard/LibraryTab";
 import DocumentsTab from "@/components/dashboard/DocumentsTab";
 import ContractFab from "@/components/dashboard/ContractFab";
 import PecAvatarFab from "@/components/PecAvatarFab";
+import SubscribeSection from "@/components/SubscribeSection";
 
 interface CourseEdition {
   id: string;
@@ -32,7 +33,7 @@ interface CourseMaterial {
   file_size: number | null;
 }
 
-type MainTab = "corsi" | "strumenti" | "libreria" | "documenti" | "admin";
+type MainTab = "corsi" | "strumenti" | "libreria" | "documenti" | "abbonamento" | "admin";
 
 const Dashboard = () => {
   const [user, setUser] = useState<SupaUser | null>(null);
@@ -42,7 +43,7 @@ const Dashboard = () => {
   const [materials, setMaterials] = useState<CourseMaterial[]>([]);
   const [searchParams, setSearchParams] = useSearchParams();
   const tabParam = searchParams.get("tab");
-  const validTabs: MainTab[] = ["strumenti", "corsi", "libreria", "documenti", "admin"];
+  const validTabs: MainTab[] = ["strumenti", "corsi", "libreria", "documenti", "abbonamento", "admin"];
   const activeTab: MainTab = validTabs.includes(tabParam as MainTab) ? (tabParam as MainTab) : "strumenti";
   const setActiveTab = (tab: MainTab) => setSearchParams({ tab });
   const navigate = useNavigate();
@@ -134,6 +135,7 @@ const Dashboard = () => {
     { key: "libreria", label: "Libreria", icon: Library },
     { key: "corsi", label: "Corsi", icon: BookOpen },
     { key: "documenti", label: "Documenti", icon: FileText },
+    { key: "abbonamento", label: "Abbonamento", icon: CreditCard },
     ...(isAdmin ? [{ key: "admin" as MainTab, label: "Admin", icon: Shield, adminOnly: true }] : []),
   ];
 
@@ -224,6 +226,11 @@ const Dashboard = () => {
         {activeTab === "documenti" && (
           <DocumentsTab />
         )}
+
+        {activeTab === "abbonamento" && (
+          <SubscribeSection />
+        )}
+
 
         {activeTab === "admin" && isAdmin && (
           <AdminTab
