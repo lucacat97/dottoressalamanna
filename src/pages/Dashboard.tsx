@@ -229,20 +229,28 @@ const Dashboard = () => {
 
           {/* Mobile tab bar */}
           <div className="flex sm:hidden gap-1 pb-3 overflow-x-auto">
-            {tabs.map(({ key, label, icon: Icon }) => (
-              <button
-                key={key}
-                onClick={() => setActiveTab(key)}
-                className={`flex items-center gap-1.5 px-4 py-2 rounded-full font-body text-xs whitespace-nowrap transition-all ${
-                  activeTab === key
-                    ? "bg-primary text-primary-foreground font-semibold"
-                    : "bg-muted text-muted-foreground"
-                }`}
-              >
-                <Icon size={13} />
-                {label}
-              </button>
-            ))}
+            {tabs.map(({ key, label, icon: Icon }) => {
+              const isSub = key === "abbonamento";
+              const isActive = activeTab === key;
+              return (
+                <button
+                  key={key}
+                  onClick={() => setActiveTab(key)}
+                  className={`flex items-center gap-1.5 px-4 py-2 rounded-full font-body text-xs whitespace-nowrap transition-all ${
+                    isActive
+                      ? isSub
+                        ? "bg-gold text-primary font-bold ring-2 ring-gold/50"
+                        : "bg-primary text-primary-foreground font-semibold"
+                      : isSub && highlightSub
+                        ? "bg-gold/20 text-primary font-semibold ring-1 ring-gold/50 animate-pulse"
+                        : "bg-muted text-muted-foreground"
+                  }`}
+                >
+                  <Icon size={13} />
+                  {label}
+                </button>
+              );
+            })}
           </div>
         </div>
       </header>
