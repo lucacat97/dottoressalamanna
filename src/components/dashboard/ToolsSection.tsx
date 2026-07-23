@@ -78,12 +78,33 @@ const ToolsSection = () => {
         return;
       }
 
+      // Check active subscription — unlocks all tools
+      const { getStripeEnvironment } = await import("@/lib/stripe");
+      const { data: sub } = await supabase
+        .from("subscriptions")
+        .select("status,current_period_end")
+        .eq("user_id", user.id)
+        .eq("environment", getStripeEnvironment())
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      const now = Date.now();
+      const hasActiveSub = !!sub && (
+        (["active","trialing","past_due"].includes(sub.status) &&
+          (!sub.current_period_end || new Date(sub.current_period_end).getTime() > now)) ||
+        (sub.status === "canceled" && sub.current_period_end && new Date(sub.current_period_end).getTime() > now)
+      );
+      if (hasActiveSub) {
+        setAllowedTools(null); // unlocks everything like admin
+        setLoadingPerms(false);
+        return;
+      }
+
       // Get user email
       const email = user.email;
       if (!email) { setAllowedTools([]); setLoadingPerms(false); return; }
 
       // Look up API key for this email
-      // We need a server-side function since api_keys is admin-only via RLS
       const { data: keyData } = await supabase.functions.invoke("check-tool-access", {
         body: { email },
       });

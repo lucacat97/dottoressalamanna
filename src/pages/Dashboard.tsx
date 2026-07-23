@@ -42,12 +42,14 @@ const Dashboard = () => {
   const [user, setUser] = useState<SupaUser | null>(null);
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [hasActivePlan, setHasActivePlan] = useState<boolean | null>(null);
   const [editions, setEditions] = useState<CourseEdition[]>([]);
   const [materials, setMaterials] = useState<CourseMaterial[]>([]);
   const [searchParams, setSearchParams] = useSearchParams();
   const tabParam = searchParams.get("tab");
-  const validTabs: MainTab[] = ["strumenti", "corsi", "libreria", "documenti", "abbonamento", "admin"];
-  const activeTab: MainTab = validTabs.includes(tabParam as MainTab) ? (tabParam as MainTab) : "strumenti";
+  const validTabs: MainTab[] = ["abbonamento", "strumenti", "corsi", "libreria", "documenti", "admin"];
+  const defaultTab: MainTab = hasActivePlan === false ? "abbonamento" : "strumenti";
+  const activeTab: MainTab = validTabs.includes(tabParam as MainTab) ? (tabParam as MainTab) : defaultTab;
   const setActiveTab = (tab: MainTab) => setSearchParams({ tab });
   const navigate = useNavigate();
 
@@ -77,6 +79,26 @@ const Dashboard = () => {
       .then(({ data }) => {
         setIsAdmin(data !== null && data.length > 0);
       });
+    // Check active subscription (any environment) to decide default tab & highlight
+    import("@/lib/stripe").then(({ getStripeEnvironment }) => {
+      supabase
+        .from("subscriptions")
+        .select("status,current_period_end")
+        .eq("user_id", user.id)
+        .eq("environment", getStripeEnvironment())
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle()
+        .then(({ data }) => {
+          const now = Date.now();
+          const active = !!data && (
+            (["active","trialing","past_due"].includes(data.status) &&
+              (!data.current_period_end || new Date(data.current_period_end).getTime() > now)) ||
+            (data.status === "canceled" && data.current_period_end && new Date(data.current_period_end).getTime() > now)
+          );
+          setHasActivePlan(active);
+        });
+    });
   }, [user]);
 
   const fetchData = useCallback(async () => {
@@ -134,13 +156,14 @@ const Dashboard = () => {
   const displayName = user?.user_metadata?.full_name || user?.email || "";
 
   const tabs: { key: MainTab; label: string; icon: typeof BookOpen; adminOnly?: boolean }[] = [
+    { key: "abbonamento", label: "Abbonamento", icon: CreditCard },
     { key: "strumenti", label: "Strumenti", icon: Wrench },
     { key: "libreria", label: "Libreria", icon: Library },
     { key: "corsi", label: "Corsi", icon: BookOpen },
     { key: "documenti", label: "Documenti", icon: FileText },
-    { key: "abbonamento", label: "Abbonamento", icon: CreditCard },
     ...(isAdmin ? [{ key: "admin" as MainTab, label: "Admin", icon: Shield, adminOnly: true }] : []),
   ];
+  const highlightSub = hasActivePlan === false;
 
   return (
     <div className="min-h-screen bg-background">
@@ -154,20 +177,30 @@ const Dashboard = () => {
 
             {/* Main navigation tabs */}
             <nav className="hidden sm:flex items-center gap-1 bg-muted/60 rounded-full p-1">
-              {tabs.map(({ key, label, icon: Icon }) => (
-                <button
-                  key={key}
-                  onClick={() => setActiveTab(key)}
-                  className={`flex items-center gap-2 px-5 py-2 rounded-full font-body text-sm transition-all ${
-                    activeTab === key
-                      ? "bg-card text-foreground shadow-sm font-semibold"
-                      : "text-muted-foreground hover:text-foreground"
-                  }`}
-                >
-                  <Icon size={15} />
-                  {label}
-                </button>
-              ))}
+              {tabs.map(({ key, label, icon: Icon }) => {
+                const isSub = key === "abbonamento";
+                const isActive = activeTab === key;
+                return (
+                  <button
+                    key={key}
+                    onClick={() => setActiveTab(key)}
+                    className={`flex items-center gap-2 px-5 py-2 rounded-full font-body text-sm transition-all ${
+                      isActive
+                        ? isSub
+                          ? "bg-gold text-primary shadow-md font-bold ring-2 ring-gold/40"
+                          : "bg-card text-foreground shadow-sm font-semibold"
+                        : isSub && highlightSub
+                          ? "bg-gold/15 text-primary font-semibold ring-1 ring-gold/40 hover:bg-gold/25 animate-pulse"
+                          : isSub
+                            ? "text-primary font-semibold hover:text-foreground"
+                            : "text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    <Icon size={15} />
+                    {label}
+                  </button>
+                );
+              })}
             </nav>
 
             <div className="flex items-center gap-3">
@@ -196,20 +229,28 @@ const Dashboard = () => {
 
           {/* Mobile tab bar */}
           <div className="flex sm:hidden gap-1 pb-3 overflow-x-auto">
-            {tabs.map(({ key, label, icon: Icon }) => (
-              <button
-                key={key}
-                onClick={() => setActiveTab(key)}
-                className={`flex items-center gap-1.5 px-4 py-2 rounded-full font-body text-xs whitespace-nowrap transition-all ${
-                  activeTab === key
-                    ? "bg-primary text-primary-foreground font-semibold"
-                    : "bg-muted text-muted-foreground"
-                }`}
-              >
-                <Icon size={13} />
-                {label}
-              </button>
-            ))}
+            {tabs.map(({ key, label, icon: Icon }) => {
+              const isSub = key === "abbonamento";
+              const isActive = activeTab === key;
+              return (
+                <button
+                  key={key}
+                  onClick={() => setActiveTab(key)}
+                  className={`flex items-center gap-1.5 px-4 py-2 rounded-full font-body text-xs whitespace-nowrap transition-all ${
+                    isActive
+                      ? isSub
+                        ? "bg-gold text-primary font-bold ring-2 ring-gold/50"
+                        : "bg-primary text-primary-foreground font-semibold"
+                      : isSub && highlightSub
+                        ? "bg-gold/20 text-primary font-semibold ring-1 ring-gold/50 animate-pulse"
+                        : "bg-muted text-muted-foreground"
+                  }`}
+                >
+                  <Icon size={13} />
+                  {label}
+                </button>
+              );
+            })}
           </div>
         </div>
       </header>
