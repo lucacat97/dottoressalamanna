@@ -87,13 +87,48 @@ const formatAmount = (amount: number, currency: string) => {
 
 const formatDate = (ts: number) => new Date(ts * 1000).toLocaleDateString("it-IT");
 
+const priceToPlanName = (priceId: string) => {
+  if (priceId.includes("platinum")) return "MILA Platinum";
+  if (priceId.includes("pro")) return "MILA Pro";
+  if (priceId.includes("basic")) return "MILA Basic";
+  if (priceId.includes("test")) return "MILA Test";
+  return "MILA";
+};
+
 const SubscribeSection = () => {
   const [interval, setInterval] = useState<Interval>("monthly");
   const [checkout, setCheckout] = useState<{ priceId: string; label: string } | null>(null);
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [invoicesLoading, setInvoicesLoading] = useState(false);
   const [invoicesError, setInvoicesError] = useState<string | null>(null);
+  const [subscription, setSubscription] = useState<Subscription | null>(null);
+  const [subscriptionLoading, setSubscriptionLoading] = useState(false);
+  const [showCancelDialog, setShowCancelDialog] = useState(false);
+  const [cancelling, setCancelling] = useState(false);
+  const [cancelMessage, setCancelMessage] = useState<string | null>(null);
   const configured = isPaymentsConfigured();
+
+  const loadSubscription = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) return;
+    setSubscriptionLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from("subscriptions")
+        .select("id,stripe_subscription_id,price_id,status,current_period_end,cancel_at_period_end")
+        .eq("user_id", session.user.id)
+        .eq("environment", getStripeEnvironment())
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (error) throw error;
+      setSubscription(data as Subscription | null);
+    } catch (e: any) {
+      console.error("loadSubscription error:", e);
+    } finally {
+      setSubscriptionLoading(false);
+    }
+  };
 
   useEffect(() => {
     const loadInvoices = async () => {
@@ -113,6 +148,7 @@ const SubscribeSection = () => {
         setInvoicesLoading(false);
       }
     };
+    loadSubscription();
     loadInvoices();
   }, []);
 
