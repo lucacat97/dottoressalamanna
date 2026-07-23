@@ -23,6 +23,7 @@ const Index = () => {
       <ContactSection />
       <Footer />
       <ConsultationFab />
+      <PecAvatarFab />
     </div>
   );
 };
