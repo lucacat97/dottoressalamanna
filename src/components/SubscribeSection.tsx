@@ -433,6 +433,43 @@ const SubscribeSection = () => {
           </div>
         </div>
       )}
+
+      {showCancelDialog && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" onClick={() => setShowCancelDialog(false)}>
+          <div className="relative w-full max-w-md bg-card rounded-lg shadow-elevated p-6" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-start gap-3 mb-4">
+              <div className="p-2 rounded-full bg-gold/10 text-gold">
+                <AlertTriangle size={22} />
+              </div>
+              <div>
+                <h3 className="font-display text-lg font-bold text-foreground">Annulla abbonamento</h3>
+                <p className="font-body text-sm text-muted-foreground mt-1">
+                  Sei sicuro di voler disdire <strong>{priceToPlanName(subscription?.price_id || "")}</strong>?
+                </p>
+              </div>
+            </div>
+            <p className="font-body text-sm text-foreground bg-muted/50 p-3 rounded-md mb-6">
+              L&apos;accesso rimarrà attivo fino al <strong>{renewalDate}</strong>. Dopo quella data l&apos;abbonamento non si rinnoverà più.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <button
+                onClick={() => setShowCancelDialog(false)}
+                className="flex-1 py-2.5 rounded-md font-body font-semibold text-sm border border-border text-foreground hover:bg-muted transition-all"
+              >
+                Torna indietro
+              </button>
+              <button
+                onClick={handleCancel}
+                disabled={cancelling}
+                className="flex-1 py-2.5 rounded-md font-body font-semibold text-sm bg-gold text-primary hover:bg-gold-light transition-all disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              >
+                {cancelling && <Loader2 size={16} className="animate-spin" />}
+                {cancelling ? "Annullamento..." : "Conferma disdetta"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 };
