@@ -252,9 +252,8 @@ const OrthodonticTool = () => {
           <span className="font-body text-xs text-muted-foreground">Analisi utilizzate questo mese</span>
           <span className="font-body text-sm font-semibold text-petrolio">{monthlyUsage}</span>
         </div>
-
-        </div>
       )}
+
 
       {!result && !isAnalyzing && (
         <div className="space-y-5">
