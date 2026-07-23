@@ -8,6 +8,7 @@ import GallerySection from "@/components/GallerySection";
 import ContactSection from "@/components/ContactSection";
 import Footer from "@/components/Footer";
 import ConsultationFab from "@/components/ConsultationFab";
+import PecAvatarFab from "@/components/PecAvatarFab";
 
 const Index = () => {
   return (
@@ -22,6 +23,7 @@ const Index = () => {
       <ContactSection />
       <Footer />
       <ConsultationFab />
+      <PecAvatarFab />
     </div>
   );
 };
