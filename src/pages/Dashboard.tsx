@@ -135,6 +135,7 @@ const Dashboard = () => {
     { key: "libreria", label: "Libreria", icon: Library },
     { key: "corsi", label: "Corsi", icon: BookOpen },
     { key: "documenti", label: "Documenti", icon: FileText },
+    { key: "abbonamento", label: "Abbonamento", icon: CreditCard },
     ...(isAdmin ? [{ key: "admin" as MainTab, label: "Admin", icon: Shield, adminOnly: true }] : []),
   ];
 
