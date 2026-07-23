@@ -1,17 +1,19 @@
 project_id = "pjgpducvkdrtigorpzrm"
 
+[functions.send-invitation]
+verify_jwt = false
+
+[functions.external-api]
+verify_jwt = false
+
 [functions.send-transactional-email]
 verify_jwt = false
 
-[functions.preview-transactional-email]
+[functions.create-checkout]
 verify_jwt = false
 
-[functions.handle-email-unsubscribe]
+[functions.payments-webhook]
 verify_jwt = false
 
-[functions.handle-email-suppression]
+[functions.create-portal-session]
 verify_jwt = false
-
-[functions.download-consultation]
-verify_jwt = false
-
