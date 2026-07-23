@@ -13,6 +13,7 @@ import DocumentsTab from "@/components/dashboard/DocumentsTab";
 import ContractFab from "@/components/dashboard/ContractFab";
 import PecAvatarFab from "@/components/PecAvatarFab";
 import SubscribeSection from "@/components/SubscribeSection";
+import PlanBadge from "@/components/dashboard/PlanBadge";
 
 interface CourseEdition {
   id: string;
@@ -168,6 +169,7 @@ const Dashboard = () => {
             </nav>
 
             <div className="flex items-center gap-3">
+              {user && <PlanBadge userId={user.id} onClick={() => setActiveTab("abbonamento")} />}
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
                   {isAdmin ? <Shield size={16} className="text-gold" /> : <User size={16} className="text-petrolio" />}
