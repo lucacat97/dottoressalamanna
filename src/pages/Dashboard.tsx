@@ -156,13 +156,14 @@ const Dashboard = () => {
   const displayName = user?.user_metadata?.full_name || user?.email || "";
 
   const tabs: { key: MainTab; label: string; icon: typeof BookOpen; adminOnly?: boolean }[] = [
+    { key: "abbonamento", label: "Abbonamento", icon: CreditCard },
     { key: "strumenti", label: "Strumenti", icon: Wrench },
     { key: "libreria", label: "Libreria", icon: Library },
     { key: "corsi", label: "Corsi", icon: BookOpen },
     { key: "documenti", label: "Documenti", icon: FileText },
-    { key: "abbonamento", label: "Abbonamento", icon: CreditCard },
     ...(isAdmin ? [{ key: "admin" as MainTab, label: "Admin", icon: Shield, adminOnly: true }] : []),
   ];
+  const highlightSub = hasActivePlan === false;
 
   return (
     <div className="min-h-screen bg-background">
