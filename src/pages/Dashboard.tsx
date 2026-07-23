@@ -10,6 +10,7 @@ import ToolsSection from "@/components/dashboard/ToolsSection";
 import AdminTab from "@/components/dashboard/AdminTab";
 import LibraryTab from "@/components/dashboard/LibraryTab";
 import DocumentsTab from "@/components/dashboard/DocumentsTab";
+import ContractFab from "@/components/dashboard/ContractFab";
 
 interface CourseEdition {
   id: string;
