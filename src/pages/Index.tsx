@@ -9,6 +9,7 @@ import ContactSection from "@/components/ContactSection";
 import Footer from "@/components/Footer";
 import ConsultationFab from "@/components/ConsultationFab";
 import PecAvatarFab from "@/components/PecAvatarFab";
+import WhatsAppFab from "@/components/WhatsAppFab";
 import SubscribeSection from "@/components/SubscribeSection";
 
 const Index = () => {
@@ -26,6 +27,7 @@ const Index = () => {
       <Footer />
       <ConsultationFab />
       <PecAvatarFab />
+      <WhatsAppFab />
     </div>
   );
 };

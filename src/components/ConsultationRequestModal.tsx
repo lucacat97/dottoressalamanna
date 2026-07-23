@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { X, Send, CheckCircle2 } from "lucide-react";
+import { X, Send, CheckCircle2, Paperclip, Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { z } from "zod";
@@ -12,14 +12,19 @@ const schema = z.object({
   consent: z.literal(true, { errorMap: () => ({ message: "Consenso obbligatorio" }) }),
 });
 
+const MAX_FILES = 5;
+const MAX_SIZE = 10 * 1024 * 1024; // 10MB
+const ALLOWED = /^(image\/(png|jpe?g|webp|heic|heif)|application\/pdf)$/i;
+
 interface Props {
   open: boolean;
   onClose: () => void;
   recipientEmail?: string;
-  variant?: "standard" | "pec";
+  variant?: "standard" | "pec" | "direct";
   eyebrow?: string;
   title?: string;
   description?: string;
+  allowAttachments?: boolean;
 }
 
 const ConsultationRequestModal = ({
@@ -30,12 +35,52 @@ const ConsultationRequestModal = ({
   eyebrow = "Consulenza personalizzata",
   title = "Richiedi una consulenza",
   description = "Compila il modulo: la richiesta arriverà direttamente alla Dott.ssa Annarita Lamanna, che la ricontatterà personalmente.",
+  allowAttachments = false,
 }: Props) => {
   const [form, setForm] = useState({ name: "", email: "", phone: "", message: "", consent: false });
+  const [files, setFiles] = useState<File[]>([]);
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
 
   if (!open) return null;
+
+  const handleFiles = (list: FileList | null) => {
+    if (!list) return;
+    const incoming = Array.from(list);
+    const valid: File[] = [];
+    for (const f of incoming) {
+      if (!ALLOWED.test(f.type)) {
+        toast({ title: "Formato non supportato", description: `${f.name}: usa immagini o PDF.`, variant: "destructive" });
+        continue;
+      }
+      if (f.size > MAX_SIZE) {
+        toast({ title: "File troppo grande", description: `${f.name}: massimo 10MB.`, variant: "destructive" });
+        continue;
+      }
+      valid.push(f);
+    }
+    setFiles((prev) => [...prev, ...valid].slice(0, MAX_FILES));
+  };
+
+  const uploadFiles = async (): Promise<{ name: string; url: string }[]> => {
+    if (files.length === 0) return [];
+    const uploaded: { name: string; url: string }[] = [];
+    const folder = `web/${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+    for (const file of files) {
+      const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+      const path = `${folder}/${safeName}`;
+      const { error: upErr } = await supabase.storage
+        .from("consultation-attachments")
+        .upload(path, file, { upsert: false, contentType: file.type });
+      if (upErr) throw new Error(`Upload fallito per ${file.name}: ${upErr.message}`);
+      const { data: signed, error: sErr } = await supabase.storage
+        .from("consultation-attachments")
+        .createSignedUrl(path, 60 * 60 * 24 * 30); // 30 days
+      if (sErr || !signed?.signedUrl) throw new Error(`URL fallito per ${file.name}`);
+      uploaded.push({ name: file.name, url: signed.signedUrl });
+    }
+    return uploaded;
+  };
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,6 +91,7 @@ const ConsultationRequestModal = ({
     }
     setLoading(true);
     try {
+      const attachments = allowAttachments ? await uploadFiles() : [];
       const { error } = await supabase.functions.invoke("send-transactional-email", {
         body: {
           templateName: "consultation-request",
@@ -58,7 +104,12 @@ const ConsultationRequestModal = ({
             requesterPhone: form.phone,
             message: form.message,
             sourcePage: typeof window !== "undefined" ? window.location.href : "",
-            channel: variant === "pec" ? "PEC — Richiesta diretta alla Dott.ssa" : "Web — Richiesta consulenza",
+            channel: variant === "pec"
+              ? "PEC — Richiesta diretta alla Dott.ssa"
+              : variant === "direct"
+              ? "Diretto — Scrivi alla Dott.ssa"
+              : "Web — Richiesta consulenza",
+            attachments,
           },
           replyTo: form.email,
         },
@@ -150,6 +201,39 @@ const ConsultationRequestModal = ({
                   required
                 />
               </div>
+
+              {allowAttachments && (
+                <div>
+                  <label className="font-body text-xs uppercase tracking-wider text-muted-foreground mb-1.5 block">
+                    Allega immagini o PDF (facoltativo, max {MAX_FILES})
+                  </label>
+                  <label className="flex items-center justify-center gap-2 w-full px-4 py-3 rounded-md border border-dashed border-input bg-background/50 font-body text-sm text-muted-foreground hover:bg-background hover:text-foreground cursor-pointer transition-colors">
+                    <Paperclip size={16} />
+                    <span>{files.length < MAX_FILES ? "Aggiungi file (immagini, radiografie, PDF)" : "Limite raggiunto"}</span>
+                    <input
+                      type="file"
+                      multiple
+                      accept="image/*,application/pdf"
+                      className="hidden"
+                      disabled={files.length >= MAX_FILES}
+                      onChange={(e) => { handleFiles(e.target.files); e.target.value = ""; }}
+                    />
+                  </label>
+                  {files.length > 0 && (
+                    <ul className="mt-2 space-y-1.5">
+                      {files.map((f, i) => (
+                        <li key={i} className="flex items-center justify-between gap-2 px-3 py-2 rounded-md bg-muted/50 font-body text-xs text-foreground">
+                          <span className="truncate">{f.name} <span className="text-muted-foreground">· {(f.size / 1024).toFixed(0)} KB</span></span>
+                          <button type="button" onClick={() => setFiles((p) => p.filter((_, idx) => idx !== i))} className="text-muted-foreground hover:text-destructive">
+                            <Trash2 size={14} />
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              )}
+
               <label className="flex items-start gap-2 text-xs text-muted-foreground font-body cursor-pointer">
                 <input
                   type="checkbox"

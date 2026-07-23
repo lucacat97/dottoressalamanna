@@ -3,7 +3,7 @@ import { Mail } from "lucide-react";
 import ConsultationRequestModal from "./ConsultationRequestModal";
 import avatar from "@/assets/dottoressa-lamanna-avatar.png.asset.json";
 
-const PEC_EMAIL = "studioodontoiatricocarellalamannasrl@legalmail.it";
+const DIRECT_EMAIL = "dott.lamanna.a@gmail.com";
 
 const PecAvatarFab = () => {
   const [open, setOpen] = useState(false);
@@ -12,12 +12,12 @@ const PecAvatarFab = () => {
     <>
       <button
         onClick={() => setOpen(true)}
-        aria-label="Scrivi alla Dott.ssa Lamanna via PEC"
+        aria-label="Scrivi alla Dott.ssa Lamanna"
         className="fixed bottom-24 right-6 sm:bottom-6 sm:right-28 z-50 group flex items-center gap-3 animate-in fade-in"
       >
         <span className="hidden sm:flex flex-col items-end pr-1 opacity-0 group-hover:opacity-100 transition-opacity">
           <span className="font-display text-xs font-semibold text-foreground bg-card border border-border rounded-full px-3 py-1 shadow-md">
-            Scrivi via PEC
+            Scrivi alla Dott.ssa
           </span>
         </span>
         <span className="relative inline-flex">
@@ -39,11 +39,12 @@ const PecAvatarFab = () => {
       <ConsultationRequestModal
         open={open}
         onClose={() => setOpen(false)}
-        recipientEmail={PEC_EMAIL}
-        variant="pec"
-        eyebrow="Contatto diretto via PEC"
+        recipientEmail={DIRECT_EMAIL}
+        variant="direct"
+        eyebrow="Contatto diretto"
         title="Scrivi alla Dott.ssa Lamanna"
-        description={`La tua richiesta di consulenza personale arriverà via PEC direttamente allo studio (${PEC_EMAIL}). Riceverai risposta all'indirizzo email che indichi qui sotto.`}
+        description="La tua richiesta arriverà direttamente alla Dott.ssa Annarita Lamanna. Puoi allegare immagini, radiografie o PDF utili al caso."
+        allowAttachments
       />
     </>
   );

@@ -1,15 +1,18 @@
 import * as React from 'npm:react@18.3.1'
 import {
-  Body, Container, Head, Heading, Html, Preview, Section, Text, Hr,
+  Body, Container, Head, Heading, Html, Preview, Section, Text, Hr, Link,
 } from 'npm:@react-email/components@0.0.22'
 import type { TemplateEntry } from './registry.ts'
 
+interface Attachment { name: string; url: string }
 interface Props {
   requesterName?: string
   requesterEmail?: string
   requesterPhone?: string
   message?: string
   sourcePage?: string
+  channel?: string
+  attachments?: Attachment[]
 }
 
 const ConsultationRequestEmail = ({
@@ -18,6 +21,8 @@ const ConsultationRequestEmail = ({
   requesterPhone,
   message,
   sourcePage,
+  channel,
+  attachments,
 }: Props) => (
   <Html lang="it" dir="ltr">
     <Head />
@@ -29,6 +34,9 @@ const ConsultationRequestEmail = ({
           È arrivata una nuova richiesta di consulenza personalizzata dal sito.
         </Text>
         <Section style={box}>
+          {channel ? (
+            <Text style={row}><strong>Canale:</strong> {channel}</Text>
+          ) : null}
           <Text style={row}><strong>Nome:</strong> {requesterName || '—'}</Text>
           <Text style={row}><strong>Email:</strong> {requesterEmail || '—'}</Text>
           <Text style={row}><strong>Telefono:</strong> {requesterPhone || '—'}</Text>
@@ -38,6 +46,20 @@ const ConsultationRequestEmail = ({
           <Hr style={hr} />
           <Text style={row}><strong>Messaggio:</strong></Text>
           <Text style={messageStyle}>{message || '—'}</Text>
+          {attachments && attachments.length > 0 ? (
+            <>
+              <Hr style={hr} />
+              <Text style={row}><strong>Allegati ({attachments.length}):</strong></Text>
+              {attachments.map((a, i) => (
+                <Text key={i} style={row}>
+                  📎 <Link href={a.url} style={linkStyle}>{a.name}</Link>
+                </Text>
+              ))}
+              <Text style={{ ...row, fontSize: '11px', color: '#666' }}>
+                I link sono validi per 30 giorni.
+              </Text>
+            </>
+          ) : null}
         </Section>
         <Text style={footer}>
           Per rispondere, scrivere direttamente a {requesterEmail || 'l\'indirizzo del richiedente'}.
@@ -60,6 +82,8 @@ export const template = {
     requesterPhone: '+39 333 000 0000',
     message: 'Vorrei una consulenza per mio figlio di 9 anni.',
     sourcePage: 'https://dottoressalamanna.com/',
+    channel: 'Diretto — Scrivi alla Dott.ssa',
+    attachments: [{ name: 'radiografia.jpg', url: 'https://example.com/x.jpg' }],
   },
 } satisfies TemplateEntry
 
@@ -72,3 +96,4 @@ const row = { fontSize: '14px', color: '#222', margin: '4px 0', lineHeight: '1.5
 const messageStyle = { fontSize: '14px', color: '#222', margin: '4px 0 0', lineHeight: '1.6', whiteSpace: 'pre-wrap' as const }
 const hr = { borderColor: '#d9e6e4', margin: '12px 0' }
 const footer = { fontSize: '12px', color: '#666', margin: '20px 0 0' }
+const linkStyle = { color: '#2a6f6f', textDecoration: 'underline' }
