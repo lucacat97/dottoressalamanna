@@ -177,20 +177,30 @@ const Dashboard = () => {
 
             {/* Main navigation tabs */}
             <nav className="hidden sm:flex items-center gap-1 bg-muted/60 rounded-full p-1">
-              {tabs.map(({ key, label, icon: Icon }) => (
-                <button
-                  key={key}
-                  onClick={() => setActiveTab(key)}
-                  className={`flex items-center gap-2 px-5 py-2 rounded-full font-body text-sm transition-all ${
-                    activeTab === key
-                      ? "bg-card text-foreground shadow-sm font-semibold"
-                      : "text-muted-foreground hover:text-foreground"
-                  }`}
-                >
-                  <Icon size={15} />
-                  {label}
-                </button>
-              ))}
+              {tabs.map(({ key, label, icon: Icon }) => {
+                const isSub = key === "abbonamento";
+                const isActive = activeTab === key;
+                return (
+                  <button
+                    key={key}
+                    onClick={() => setActiveTab(key)}
+                    className={`flex items-center gap-2 px-5 py-2 rounded-full font-body text-sm transition-all ${
+                      isActive
+                        ? isSub
+                          ? "bg-gold text-primary shadow-md font-bold ring-2 ring-gold/40"
+                          : "bg-card text-foreground shadow-sm font-semibold"
+                        : isSub && highlightSub
+                          ? "bg-gold/15 text-primary font-semibold ring-1 ring-gold/40 hover:bg-gold/25 animate-pulse"
+                          : isSub
+                            ? "text-primary font-semibold hover:text-foreground"
+                            : "text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    <Icon size={15} />
+                    {label}
+                  </button>
+                );
+              })}
             </nav>
 
             <div className="flex items-center gap-3">
