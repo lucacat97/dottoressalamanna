@@ -272,7 +272,7 @@ const Dashboard = () => {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
         {/* Tab content */}
         {activeTab === "corsi" && (
-          <CoursesTab editions={editions} materials={materials} onDownload={handleDownload} />
+          <CoursesTab editions={editions} materials={materials} modules={modules} onDownload={handleDownload} />
         )}
 
         {activeTab === "strumenti" && (
