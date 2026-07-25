@@ -1,4 +1,4 @@
-import { Calendar, MapPin, FileText, Play, Monitor, Brain, Image as ImageIcon, FileSpreadsheet, File, Lock, CheckCircle2, Clock, X, Eye, PlayCircle, BookOpen } from "lucide-react";
+import { Calendar, MapPin, FileText, Play, Monitor, Brain, Image as ImageIcon, FileSpreadsheet, File, Lock, CheckCircle2, Clock, X, Eye, PlayCircle, BookOpen, Link2, ExternalLink } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
 import { useState, useEffect, useMemo } from "react";
@@ -18,11 +18,13 @@ interface CourseMaterial {
   id: string;
   edition_id: string;
   file_name: string;
-  file_path: string;
+  file_path: string | null;
   file_size: number | null;
   module_id: string | null;
   description: string | null;
   sort_order: number;
+  material_type?: "file" | "link" | "image" | null;
+  external_url?: string | null;
 }
 
 interface CourseModule {
