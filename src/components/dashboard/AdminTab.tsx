@@ -30,16 +30,28 @@ interface CourseMaterial {
   file_name: string;
   file_path: string;
   file_size: number | null;
+  module_id: string | null;
+  description: string | null;
+  sort_order: number;
+}
+
+interface CourseModule {
+  id: string;
+  edition_id: string;
+  title: string;
+  description: string | null;
+  sort_order: number;
 }
 
 interface AdminTabProps {
   editions: CourseEdition[];
   materials: CourseMaterial[];
+  modules: CourseModule[];
   onFetchData: () => void;
   onDeleteEdition: (id: string) => void;
 }
 
-const AdminTab = ({ editions, materials, onFetchData, onDeleteEdition }: AdminTabProps) => {
+const AdminTab = ({ editions, materials, modules, onFetchData, onDeleteEdition }: AdminTabProps) => {
   const [adminTab, setAdminTab] = useState<"editions" | "registrations" | "materials" | "library" | "plans" | "access" | "apikeys" | "invitations" | "feedback" | "knowledge">("editions");
   const [editingLandingId, setEditingLandingId] = useState<string | null>(null);
 
@@ -128,7 +140,7 @@ const AdminTab = ({ editions, materials, onFetchData, onDeleteEdition }: AdminTa
       )}
 
       {adminTab === "registrations" && <AdminRegistrations editions={editions} />}
-      {adminTab === "materials" && <AdminMaterials editions={editions} materials={materials} onUpdated={onFetchData} />}
+      {adminTab === "materials" && <AdminMaterials editions={editions} materials={materials} modules={modules} onUpdated={onFetchData} />}
       {adminTab === "library" && <AdminLibrary />}
       {adminTab === "plans" && <AdminUserPlans />}
       {adminTab === "access" && <AdminAccessControl editions={editions} />}

@@ -20,11 +20,23 @@ interface CourseMaterial {
   file_name: string;
   file_path: string;
   file_size: number | null;
+  module_id: string | null;
+  description: string | null;
+  sort_order: number;
+}
+
+interface CourseModule {
+  id: string;
+  edition_id: string;
+  title: string;
+  description: string | null;
+  sort_order: number;
 }
 
 interface CoursesTabProps {
   editions: CourseEdition[];
   materials: CourseMaterial[];
+  modules: CourseModule[];
   onDownload: (material: CourseMaterial) => void;
 }
 
@@ -99,6 +111,7 @@ const MaterialThumbnail = ({ material, onDownload }: { material: CourseMaterial;
 const EditionCard = ({
   edition,
   materials,
+  modules,
   hasAccess,
   accessLoading,
   isPast,
@@ -106,6 +119,7 @@ const EditionCard = ({
 }: {
   edition: CourseEdition;
   materials: CourseMaterial[];
+  modules: CourseModule[];
   hasAccess: boolean;
   accessLoading: boolean;
   isPast: boolean;
@@ -116,10 +130,13 @@ const EditionCard = ({
   const month = dateObj.toLocaleDateString("it-IT", { month: "short" }).toUpperCase().replace(".", "");
   const year = dateObj.getFullYear();
 
+  const editionModules = modules.filter((m) => m.edition_id === edition.id).sort((a, b) => a.sort_order - b.sort_order);
+  const orphans = materials.filter((m) => !m.module_id);
+  const totalCount = materials.length;
+
   return (
     <article className="bg-card border border-border rounded-xl overflow-hidden hover:shadow-md hover:border-primary/20 transition-all">
       <div className="flex items-stretch">
-        {/* Date badge */}
         <div className={`shrink-0 w-20 sm:w-24 flex flex-col items-center justify-center py-4 border-r border-border ${isPast ? "bg-muted/40" : "bg-gradient-to-br from-petrolio/10 to-gold/10"}`}>
           <span className={`font-body text-[10px] uppercase tracking-widest font-semibold ${isPast ? "text-muted-foreground" : "text-gold"}`}>{month}</span>
           <span className="font-display text-3xl font-bold text-foreground leading-none my-0.5">{day}</span>
@@ -148,23 +165,49 @@ const EditionCard = ({
             <p className="font-body text-sm text-muted-foreground line-clamp-2 mb-3">{edition.description}</p>
           )}
 
-          {/* Materials block */}
           {accessLoading ? (
             <p className="font-body text-xs text-muted-foreground italic mt-3">Verifica accesso…</p>
           ) : hasAccess ? (
-            materials.length > 0 ? (
-              <div className="mt-3">
-                <div className="flex items-center gap-2 mb-2">
-                  <FileText size={12} className="text-muted-foreground" />
-                  <span className="font-body text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">
-                    Materiali · {materials.length}
-                  </span>
-                </div>
-                <div className="grid sm:grid-cols-2 gap-2">
-                  {materials.map((m) => (
-                    <MaterialThumbnail key={m.id} material={m} onDownload={onDownload} />
-                  ))}
-                </div>
+            totalCount > 0 || editionModules.length > 0 ? (
+              <div className="mt-4 space-y-4">
+                {editionModules.map((mod, idx) => {
+                  const modMats = materials.filter((m) => m.module_id === mod.id);
+                  if (modMats.length === 0 && !mod.description) return null;
+                  return (
+                    <div key={mod.id} className="border-l-2 border-gold/40 pl-3">
+                      <div className="flex items-baseline gap-2 mb-1">
+                        <span className="font-body text-[10px] font-bold text-gold tracking-widest">MODULO {idx + 1}</span>
+                        <span className="font-body text-[10px] text-muted-foreground">·</span>
+                        <span className="font-body text-[10px] text-muted-foreground">{modMats.length} {modMats.length === 1 ? "lezione" : "lezioni"}</span>
+                      </div>
+                      <h4 className="font-display text-sm font-semibold text-foreground leading-tight mb-1">{mod.title}</h4>
+                      {mod.description && (
+                        <p className="font-body text-xs text-muted-foreground mb-2">{mod.description}</p>
+                      )}
+                      {modMats.length > 0 && (
+                        <div className="grid sm:grid-cols-2 gap-2 mt-2">
+                          {modMats.map((m) => <MaterialThumbnail key={m.id} material={m} onDownload={onDownload} />)}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+
+                {orphans.length > 0 && (
+                  <div>
+                    {editionModules.length > 0 && (
+                      <div className="flex items-center gap-2 mb-2">
+                        <FileText size={12} className="text-muted-foreground" />
+                        <span className="font-body text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">
+                          Altri materiali · {orphans.length}
+                        </span>
+                      </div>
+                    )}
+                    <div className="grid sm:grid-cols-2 gap-2">
+                      {orphans.map((m) => <MaterialThumbnail key={m.id} material={m} onDownload={onDownload} />)}
+                    </div>
+                  </div>
+                )}
               </div>
             ) : (
               <p className="font-body text-xs text-muted-foreground italic mt-3">
@@ -183,7 +226,7 @@ const EditionCard = ({
   );
 };
 
-const CoursesTab = ({ editions, materials, onDownload }: CoursesTabProps) => {
+const CoursesTab = ({ editions, materials, modules, onDownload }: CoursesTabProps) => {
   const [accessMap, setAccessMap] = useState<Record<string, boolean>>({});
   const [accessLoading, setAccessLoading] = useState(true);
 
@@ -246,6 +289,7 @@ const CoursesTab = ({ editions, materials, onDownload }: CoursesTabProps) => {
                 key={edition.id}
                 edition={edition}
                 materials={materials.filter((m) => m.edition_id === edition.id)}
+                modules={modules}
                 hasAccess={accessMap[edition.id] ?? false}
                 accessLoading={accessLoading}
                 isPast={isPast}

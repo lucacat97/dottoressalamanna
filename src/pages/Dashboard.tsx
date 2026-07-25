@@ -34,6 +34,17 @@ interface CourseMaterial {
   file_name: string;
   file_path: string;
   file_size: number | null;
+  module_id: string | null;
+  description: string | null;
+  sort_order: number;
+}
+
+interface CourseModule {
+  id: string;
+  edition_id: string;
+  title: string;
+  description: string | null;
+  sort_order: number;
 }
 
 type MainTab = "corsi" | "strumenti" | "libreria" | "documenti" | "abbonamento" | "admin";
@@ -45,6 +56,7 @@ const Dashboard = () => {
   const [hasActivePlan, setHasActivePlan] = useState<boolean | null>(null);
   const [editions, setEditions] = useState<CourseEdition[]>([]);
   const [materials, setMaterials] = useState<CourseMaterial[]>([]);
+  const [modules, setModules] = useState<CourseModule[]>([]);
   const [searchParams, setSearchParams] = useSearchParams();
   const tabParam = searchParams.get("tab");
   const validTabs: MainTab[] = ["abbonamento", "strumenti", "corsi", "libreria", "documenti", "admin"];
@@ -103,12 +115,14 @@ const Dashboard = () => {
 
   const fetchData = useCallback(async () => {
     if (!user) return;
-    const [editionsRes, materialsRes] = await Promise.all([
+    const [editionsRes, materialsRes, modulesRes] = await Promise.all([
       supabase.from("course_editions").select("*").order("date", { ascending: false }),
-      supabase.from("course_materials").select("*"),
+      supabase.from("course_materials").select("*").order("sort_order", { ascending: true }),
+      supabase.from("course_modules").select("*").order("sort_order", { ascending: true }),
     ]);
     if (editionsRes.data) setEditions(editionsRes.data);
-    if (materialsRes.data) setMaterials(materialsRes.data);
+    if (materialsRes.data) setMaterials(materialsRes.data as CourseMaterial[]);
+    if (modulesRes.data) setModules(modulesRes.data as CourseModule[]);
   }, [user]);
 
   useEffect(() => { fetchData(); }, [fetchData]);
@@ -258,7 +272,7 @@ const Dashboard = () => {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
         {/* Tab content */}
         {activeTab === "corsi" && (
-          <CoursesTab editions={editions} materials={materials} onDownload={handleDownload} />
+          <CoursesTab editions={editions} materials={materials} modules={modules} onDownload={handleDownload} />
         )}
 
         {activeTab === "strumenti" && (
@@ -282,6 +296,7 @@ const Dashboard = () => {
           <AdminTab
             editions={editions}
             materials={materials}
+            modules={modules}
             onFetchData={fetchData}
             onDeleteEdition={handleDeleteEdition}
           />
