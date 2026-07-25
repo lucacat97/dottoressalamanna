@@ -56,6 +56,7 @@ const Dashboard = () => {
   const [hasActivePlan, setHasActivePlan] = useState<boolean | null>(null);
   const [editions, setEditions] = useState<CourseEdition[]>([]);
   const [materials, setMaterials] = useState<CourseMaterial[]>([]);
+  const [modules, setModules] = useState<CourseModule[]>([]);
   const [searchParams, setSearchParams] = useSearchParams();
   const tabParam = searchParams.get("tab");
   const validTabs: MainTab[] = ["abbonamento", "strumenti", "corsi", "libreria", "documenti", "admin"];
