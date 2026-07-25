@@ -205,9 +205,17 @@ const MaterialViewer = ({ material, onClose }: { material: CourseMaterial; onClo
 
 /* ---------------- Material tile ---------------- */
 const MaterialTile = ({ material, index, onOpen }: { material: CourseMaterial; index: number; onOpen: (m: CourseMaterial) => void }) => {
-  const Icon = getFileIcon(material.file_name);
-  const accent = getAccent(material.file_name);
-  const video = isVideo(material.file_name);
+  const isLink = material.material_type === "link";
+  const isExtImage = material.material_type === "image";
+  const Icon = isLink ? Link2 : isExtImage ? ImageIcon : getFileIcon(material.file_name);
+  const accent = isLink
+    ? { chip: "bg-amber-500/10 text-amber-700 border-amber-500/20", icon: "text-amber-700 bg-amber-50 dark:bg-amber-950/30", label: "Link" }
+    : isExtImage
+    ? { chip: "bg-blue-500/10 text-blue-600 border-blue-500/20", icon: "text-blue-600 bg-blue-50 dark:bg-blue-950/30", label: "Immagine" }
+    : getAccent(material.file_name);
+  const video = !isLink && !isExtImage && isVideo(material.file_name);
+  const displayTitle = isLink || isExtImage ? material.file_name : material.file_name.replace(/\.[^.]+$/, "");
+  const displayMeta = material.description || (isLink ? material.external_url : (!isExtImage ? formatSize(material.file_size) : null));
 
   return (
     <button
@@ -215,8 +223,12 @@ const MaterialTile = ({ material, index, onOpen }: { material: CourseMaterial; i
       onClick={() => onOpen(material)}
       className="group relative flex items-center gap-3 p-3 rounded-xl border border-border bg-card hover:border-petrolio/40 hover:shadow-md hover:-translate-y-0.5 transition-all text-left w-full"
     >
-      <div className={`relative w-12 h-12 shrink-0 rounded-lg flex items-center justify-center ${accent.icon}`}>
-        <Icon size={22} />
+      <div className={`relative w-12 h-12 shrink-0 rounded-lg flex items-center justify-center overflow-hidden ${accent.icon}`}>
+        {isExtImage && material.external_url ? (
+          <img src={material.external_url} alt="" className="w-full h-full object-cover" draggable={false} />
+        ) : (
+          <Icon size={22} />
+        )}
         {video && (
           <span className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-petrolio text-white flex items-center justify-center shadow-md ring-2 ring-card">
             <Play size={10} fill="currentColor" />
@@ -231,16 +243,16 @@ const MaterialTile = ({ material, index, onOpen }: { material: CourseMaterial; i
           </span>
         </div>
         <p className="font-body text-sm text-foreground truncate leading-tight" title={material.file_name}>
-          {material.file_name.replace(/\.[^.]+$/, "")}
+          {displayTitle}
         </p>
-        {(material.description || material.file_size) && (
+        {displayMeta && (
           <p className="font-body text-[11px] text-muted-foreground truncate mt-0.5">
-            {material.description || formatSize(material.file_size)}
+            {displayMeta}
           </p>
         )}
       </div>
       <span className="shrink-0 w-8 h-8 rounded-full bg-muted group-hover:bg-petrolio group-hover:text-white flex items-center justify-center transition-colors">
-        <Eye size={14} />
+        {isLink ? <ExternalLink size={14} /> : <Eye size={14} />}
       </span>
     </button>
   );
