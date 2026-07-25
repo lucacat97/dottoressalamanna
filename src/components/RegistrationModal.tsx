@@ -16,6 +16,7 @@ interface RegistrationModalProps {
 
 const RegistrationModal = ({ edition, onClose }: RegistrationModalProps) => {
   const [form, setForm] = useState({ full_name: "", email: "", phone: "", notes: "" });
+  const [newsletterConsent, setNewsletterConsent] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
 
@@ -24,13 +25,22 @@ const RegistrationModal = ({ edition, onClose }: RegistrationModalProps) => {
     if (!form.full_name.trim() || !form.email.trim()) return;
 
     setSubmitting(true);
+    const email = form.email.trim().toLowerCase();
     const { error } = await supabase.from("course_registrations").insert({
       edition_id: edition.id,
       full_name: form.full_name.trim(),
-      email: form.email.trim(),
+      email,
       phone: form.phone.trim() || null,
       notes: form.notes.trim() || null,
-    });
+      newsletter_consent: newsletterConsent,
+    } as any);
+
+    if (!error && newsletterConsent) {
+      await supabase.from("newsletter_consents").insert({
+        email,
+        source: "course_registration",
+      });
+    }
 
     setSubmitting(false);
     if (error) {
