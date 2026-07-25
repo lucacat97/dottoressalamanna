@@ -30,11 +30,23 @@ interface CourseMaterial {
   file_name: string;
   file_path: string;
   file_size: number | null;
+  module_id: string | null;
+  description: string | null;
+  sort_order: number;
+}
+
+interface CourseModule {
+  id: string;
+  edition_id: string;
+  title: string;
+  description: string | null;
+  sort_order: number;
 }
 
 interface AdminTabProps {
   editions: CourseEdition[];
   materials: CourseMaterial[];
+  modules: CourseModule[];
   onFetchData: () => void;
   onDeleteEdition: (id: string) => void;
 }
