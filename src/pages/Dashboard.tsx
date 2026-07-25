@@ -60,7 +60,7 @@ const Dashboard = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const tabParam = searchParams.get("tab");
   const validTabs: MainTab[] = ["abbonamento", "strumenti", "corsi", "libreria", "documenti", "admin"];
-  const defaultTab: MainTab = hasActivePlan === false ? "abbonamento" : "strumenti";
+  const defaultTab: MainTab = "strumenti";
   const activeTab: MainTab = validTabs.includes(tabParam as MainTab) ? (tabParam as MainTab) : defaultTab;
   const setActiveTab = (tab: MainTab) => setSearchParams({ tab });
   const navigate = useNavigate();
