@@ -279,7 +279,32 @@ const AdminMaterials = ({ editions, materials, modules, onUpdated }: Props) => {
                   </Button>
                 </div>
               </div>
-              <p className="font-body text-[11px] text-muted-foreground mt-1.5">Puoi selezionare più file contemporaneamente.</p>
+              <p className="font-body text-[11px] text-muted-foreground mt-1.5">Puoi selezionare più file contemporaneamente. Upload resumable — non chiudere la pagina finché non finisce.</p>
+
+              {Object.keys(progress).length > 0 && (
+                <div className="mt-4 space-y-2 border-t border-border pt-4">
+                  {Object.entries(progress).map(([key, item]) => {
+                    const pct = item.size > 0 ? Math.min(100, Math.round((item.loaded / item.size) * 100)) : 0;
+                    return (
+                      <div key={key} className="space-y-1">
+                        <div className="flex items-center justify-between gap-2 text-xs">
+                          <span className="font-body text-foreground truncate flex-1" title={item.name}>{item.name}</span>
+                          <span className={`font-body shrink-0 ${item.status === "error" ? "text-destructive" : item.status === "done" ? "text-primary" : "text-muted-foreground"}`}>
+                            {item.status === "error" ? "Errore" : item.status === "done" ? "✓ Completato" : `${pct}% · ${formatSize(item.loaded)} / ${formatSize(item.size)}`}
+                          </span>
+                        </div>
+                        <div className="h-1.5 bg-muted rounded-full overflow-hidden">
+                          <div
+                            className={`h-full transition-all ${item.status === "error" ? "bg-destructive" : "bg-primary"}`}
+                            style={{ width: `${pct}%` }}
+                          />
+                        </div>
+                        {item.error && <p className="font-body text-[10px] text-destructive">{item.error}</p>}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           </>
         )}
