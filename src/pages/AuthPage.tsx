@@ -90,7 +90,7 @@ const AuthPage = () => {
         if (error) throw error;
         navigate("/area-riservata");
       } else {
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
           email,
           password,
           options: {
@@ -98,7 +98,29 @@ const AuthPage = () => {
             emailRedirectTo: `${window.location.origin}/area-riservata`,
           },
         });
-        if (error) throw error;
+        if (error) {
+          const msg = error.message?.toLowerCase() || "";
+          if (msg.includes("already") || msg.includes("registered") || msg.includes("exists")) {
+            toast({
+              title: "Email già registrata",
+              description: "Questa email è già iscritta. Accedi o usa 'Password dimenticata'.",
+              variant: "destructive",
+            });
+            setIsLogin(true);
+            return;
+          }
+          throw error;
+        }
+        // Supabase obfuscates duplicate signups: user returned but identities is empty
+        if (data.user && Array.isArray(data.user.identities) && data.user.identities.length === 0) {
+          toast({
+            title: "Email già registrata",
+            description: "Questa email è già iscritta. Accedi o usa 'Password dimenticata'.",
+            variant: "destructive",
+          });
+          setIsLogin(true);
+          return;
+        }
         if (newsletterConsent) {
           await supabase.from("newsletter_consents").insert({
             email: email.trim().toLowerCase(),
@@ -109,6 +131,7 @@ const AuthPage = () => {
           title: "Registrazione completata",
           description: "Per favore, controlla la tua email per confermare l'account.",
         });
+
       }
     } catch (error: any) {
       toast({ title: "Errore", description: error.message, variant: "destructive" });
