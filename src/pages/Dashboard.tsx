@@ -296,6 +296,7 @@ const Dashboard = () => {
           <AdminTab
             editions={editions}
             materials={materials}
+            modules={modules}
             onFetchData={fetchData}
             onDeleteEdition={handleDeleteEdition}
           />
