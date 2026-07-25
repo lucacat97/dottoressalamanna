@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Upload, Trash2, FileText, FolderPlus, ChevronDown, ChevronRight, GripVertical, Pencil, Check, X } from "lucide-react";
+import { Upload, Trash2, FileText, FolderPlus, ChevronDown, ChevronRight, GripVertical, Pencil, Check, X, Link2, Image as ImageIcon, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
 import * as tus from "tus-js-client";
@@ -17,11 +17,13 @@ interface Material {
   id: string;
   edition_id: string;
   file_name: string;
-  file_path: string;
+  file_path: string | null;
   file_size: number | null;
   module_id: string | null;
   description: string | null;
   sort_order: number;
+  material_type?: "file" | "link" | "image" | null;
+  external_url?: string | null;
 }
 
 interface Module {
@@ -64,6 +66,13 @@ const AdminMaterials = ({ editions, materials, modules, onUpdated }: Props) => {
   const [draggedModuleId, setDraggedModuleId] = useState<string | null>(null);
   const [dragOverModuleId, setDragOverModuleId] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
+
+  // Link/image form
+  const [linkType, setLinkType] = useState<"link" | "image">("link");
+  const [linkTitle, setLinkTitle] = useState("");
+  const [linkUrl, setLinkUrl] = useState("");
+  const [linkDescription, setLinkDescription] = useState("");
+  const [addingLink, setAddingLink] = useState(false);
 
   const toggleExpanded = (id: string) => setExpanded((p) => ({ ...p, [id]: !p[id] }));
 
@@ -265,10 +274,40 @@ const AdminMaterials = ({ editions, materials, modules, onUpdated }: Props) => {
   };
 
   const handleDeleteMaterial = async (material: Material) => {
-    await supabase.storage.from("course-materials").remove([material.file_path]);
+    if (material.material_type !== "link" && material.material_type !== "image" && material.file_path) {
+      await supabase.storage.from("course-materials").remove([material.file_path]);
+    }
     const { error } = await supabase.from("course_materials").delete().eq("id", material.id);
     if (error) toast({ title: "Errore", description: error.message, variant: "destructive" });
     else { toast({ title: "Materiale eliminato" }); onUpdated(); }
+  };
+
+  const handleAddLink = async () => {
+    if (!selectedEdition || !linkTitle.trim() || !linkUrl.trim()) return;
+    let url = linkUrl.trim();
+    if (!/^https?:\/\//i.test(url)) url = "https://" + url;
+    setAddingLink(true);
+    const editionMats = materials.filter((m) => m.edition_id === selectedEdition && m.module_id === (selectedModule || null));
+    const nextOrder = editionMats.length > 0 ? Math.max(...editionMats.map((m) => m.sort_order || 0)) + 1 : 0;
+    const { error } = await supabase.from("course_materials").insert({
+      edition_id: selectedEdition,
+      module_id: selectedModule || null,
+      file_name: linkTitle.trim(),
+      file_path: null,
+      file_size: null,
+      material_type: linkType,
+      external_url: url,
+      description: linkDescription.trim() || null,
+      sort_order: nextOrder,
+    });
+    setAddingLink(false);
+    if (error) {
+      toast({ title: "Errore", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: linkType === "image" ? "Immagine aggiunta" : "Link aggiunto" });
+      setLinkTitle(""); setLinkUrl(""); setLinkDescription("");
+      onUpdated();
+    }
   };
 
   const currentEditionModules = modules.filter((m) => m.edition_id === selectedEdition).sort((a, b) => a.sort_order - b.sort_order);
@@ -364,9 +403,66 @@ const AdminMaterials = ({ editions, materials, modules, onUpdated }: Props) => {
                 </div>
               )}
             </div>
+
+            {/* Add link or external image */}
+            <div className="border-t border-border pt-4">
+              <label className="font-body text-xs uppercase tracking-wider text-muted-foreground font-semibold block mb-2">
+                Aggiungi link o immagine (con descrizione)
+              </label>
+              <div className="flex gap-2 mb-2">
+                <button
+                  type="button"
+                  onClick={() => setLinkType("link")}
+                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border text-xs font-body font-semibold transition-colors ${linkType === "link" ? "bg-primary text-primary-foreground border-primary" : "bg-background border-input text-foreground hover:bg-muted"}`}
+                >
+                  <Link2 size={13} /> Link
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setLinkType("image")}
+                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border text-xs font-body font-semibold transition-colors ${linkType === "image" ? "bg-primary text-primary-foreground border-primary" : "bg-background border-input text-foreground hover:bg-muted"}`}
+                >
+                  <ImageIcon size={13} /> Immagine (URL)
+                </button>
+              </div>
+              <div className="grid gap-2">
+                <input
+                  type="text"
+                  value={linkTitle}
+                  onChange={(e) => setLinkTitle(e.target.value)}
+                  placeholder="Titolo"
+                  className="w-full px-4 py-2.5 rounded-md border border-input bg-background font-body text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                />
+                <input
+                  type="url"
+                  value={linkUrl}
+                  onChange={(e) => setLinkUrl(e.target.value)}
+                  placeholder={linkType === "image" ? "https://... (URL immagine)" : "https://..."}
+                  className="w-full px-4 py-2.5 rounded-md border border-input bg-background font-body text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                />
+                <textarea
+                  value={linkDescription}
+                  onChange={(e) => setLinkDescription(e.target.value)}
+                  placeholder="Descrizione (opzionale)"
+                  rows={2}
+                  className="w-full px-4 py-2.5 rounded-md border border-input bg-background font-body text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring resize-none"
+                />
+                <div className="flex justify-end">
+                  <Button
+                    onClick={handleAddLink}
+                    disabled={addingLink || !linkTitle.trim() || !linkUrl.trim()}
+                    className="bg-primary text-primary-foreground"
+                  >
+                    <Plus size={16} className="mr-2" />
+                    {addingLink ? "Aggiunta..." : `Aggiungi ${linkType === "image" ? "immagine" : "link"}`}
+                  </Button>
+                </div>
+              </div>
+            </div>
           </>
         )}
       </div>
+
 
       {/* Materials tree by edition */}
       {editions.map((edition) => {
@@ -477,23 +573,41 @@ const MaterialRow = ({ material, modules, onAssign, onDelete }: {
   modules: Module[];
   onAssign: (id: string, modId: string) => void;
   onDelete: (m: Material) => void;
-}) => (
-  <div className="flex items-center gap-2 p-2 bg-muted/20 rounded">
-    <FileText size={13} className="text-petrolio shrink-0" />
-    <span className="font-body text-sm text-foreground truncate flex-1" title={material.file_name}>{material.file_name}</span>
-    {material.file_size && <span className="font-body text-xs text-muted-foreground shrink-0">{formatSize(material.file_size)}</span>}
-    <select
-      value={material.module_id || ""}
-      onChange={(e) => onAssign(material.id, e.target.value)}
-      className="text-xs px-2 py-1 rounded border border-input bg-background max-w-[140px]"
-    >
-      <option value="">— nessun modulo —</option>
-      {modules.map((m) => <option key={m.id} value={m.id}>{m.title}</option>)}
-    </select>
-    <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive hover:bg-destructive/10 shrink-0 h-7 w-7" onClick={() => onDelete(material)}>
-      <Trash2 size={12} />
-    </Button>
-  </div>
-);
+}) => {
+  const isLink = material.material_type === "link";
+  const isImage = material.material_type === "image";
+  const Icon = isLink ? Link2 : isImage ? ImageIcon : FileText;
+  const iconColor = isLink ? "text-amber-600" : isImage ? "text-blue-600" : "text-petrolio";
+  return (
+    <div className="flex items-center gap-2 p-2 bg-muted/20 rounded">
+      <Icon size={13} className={`shrink-0 ${iconColor}`} />
+      <div className="min-w-0 flex-1">
+        <p className="font-body text-sm text-foreground truncate" title={material.file_name}>{material.file_name}</p>
+        {(isLink || isImage) && material.external_url && (
+          <a href={material.external_url} target="_blank" rel="noopener noreferrer" className="font-body text-[10px] text-muted-foreground hover:text-petrolio truncate block underline">
+            {material.external_url}
+          </a>
+        )}
+        {material.description && !isLink && !isImage && (
+          <p className="font-body text-[10px] text-muted-foreground truncate">{material.description}</p>
+        )}
+      </div>
+      {material.file_size && !isLink && !isImage && (
+        <span className="font-body text-xs text-muted-foreground shrink-0">{formatSize(material.file_size)}</span>
+      )}
+      <select
+        value={material.module_id || ""}
+        onChange={(e) => onAssign(material.id, e.target.value)}
+        className="text-xs px-2 py-1 rounded border border-input bg-background max-w-[140px]"
+      >
+        <option value="">— nessun modulo —</option>
+        {modules.map((m) => <option key={m.id} value={m.id}>{m.title}</option>)}
+      </select>
+      <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive hover:bg-destructive/10 shrink-0 h-7 w-7" onClick={() => onDelete(material)}>
+        <Trash2 size={12} />
+      </Button>
+    </div>
+  );
+};
 
 export default AdminMaterials;

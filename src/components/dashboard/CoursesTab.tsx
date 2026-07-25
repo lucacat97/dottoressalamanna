@@ -1,4 +1,4 @@
-import { Calendar, MapPin, FileText, Play, Monitor, Brain, Image as ImageIcon, FileSpreadsheet, File, Lock, CheckCircle2, Clock, X, Eye, PlayCircle, BookOpen } from "lucide-react";
+import { Calendar, MapPin, FileText, Play, Monitor, Brain, Image as ImageIcon, FileSpreadsheet, File, Lock, CheckCircle2, Clock, X, Eye, PlayCircle, BookOpen, Link2, ExternalLink } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
 import { useState, useEffect, useMemo } from "react";
@@ -18,11 +18,13 @@ interface CourseMaterial {
   id: string;
   edition_id: string;
   file_name: string;
-  file_path: string;
+  file_path: string | null;
   file_size: number | null;
   module_id: string | null;
   description: string | null;
   sort_order: number;
+  material_type?: "file" | "link" | "image" | null;
+  external_url?: string | null;
 }
 
 interface CourseModule {
@@ -76,11 +78,23 @@ const formatSize = (bytes: number | null) => {
 const MaterialViewer = ({ material, onClose }: { material: CourseMaterial; onClose: () => void }) => {
   const [url, setUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const accent = getAccent(material.file_name);
+  const isLink = material.material_type === "link";
+  const isExtImage = material.material_type === "image";
+  const accent = isLink
+    ? { chip: "bg-amber-500/10 text-amber-700 border-amber-500/20", icon: "text-amber-700 bg-amber-50 dark:bg-amber-950/30", label: "Link" }
+    : isExtImage
+    ? { chip: "bg-blue-500/10 text-blue-600 border-blue-500/20", icon: "text-blue-600 bg-blue-50 dark:bg-blue-950/30", label: "Immagine" }
+    : getAccent(material.file_name);
 
   useEffect(() => {
     let cancelled = false;
     (async () => {
+      if (isLink || isExtImage) {
+        setUrl(material.external_url || null);
+        if (!material.external_url) setError("URL non disponibile.");
+        return;
+      }
+      if (!material.file_path) { setError("File non disponibile."); return; }
       const { data, error } = await supabase.storage
         .from("course-materials")
         .createSignedUrl(material.file_path, 3600);
@@ -91,9 +105,10 @@ const MaterialViewer = ({ material, onClose }: { material: CourseMaterial; onClo
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
     window.addEventListener("keydown", onKey);
     return () => { cancelled = true; window.removeEventListener("keydown", onKey); };
-  }, [material.file_path, onClose]);
+  }, [material.file_path, material.external_url, isLink, isExtImage, onClose]);
 
   const blockCtx = (e: React.MouseEvent) => e.preventDefault();
+  const HeaderIcon = isLink ? Link2 : isExtImage ? ImageIcon : getFileIcon(material.file_name);
 
   return (
     <div className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in" onClick={onClose}>
@@ -104,14 +119,24 @@ const MaterialViewer = ({ material, onClose }: { material: CourseMaterial; onClo
       >
         <header className="flex items-center gap-3 px-5 py-3 border-b border-border bg-muted/30">
           <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 ${accent.icon}`}>
-            {(() => { const I = getFileIcon(material.file_name); return <I size={18} />; })()}
+            <HeaderIcon size={18} />
           </div>
           <div className="min-w-0 flex-1">
             <p className="font-display text-sm font-semibold text-foreground truncate">{material.file_name}</p>
-            <p className="font-body text-[11px] text-muted-foreground flex items-center gap-1.5">
-              <Lock size={10} /> Fruibile solo online · non scaricabile
-            </p>
+            {material.description && (
+              <p className="font-body text-[11px] text-muted-foreground truncate">{material.description}</p>
+            )}
           </div>
+          {isLink && url && (
+            <a
+              href={url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-petrolio text-white font-body text-xs font-semibold hover:bg-petrolio/90 transition-colors"
+            >
+              <ExternalLink size={12} /> Apri
+            </a>
+          )}
           <button
             onClick={onClose}
             className="w-9 h-9 rounded-lg hover:bg-muted flex items-center justify-center transition-colors"
@@ -128,6 +153,21 @@ const MaterialViewer = ({ material, onClose }: { material: CourseMaterial; onClo
             <div className="flex flex-col items-center gap-3 p-8">
               <div className="w-8 h-8 border-2 border-white/20 border-t-white rounded-full animate-spin" />
               <p className="font-body text-xs text-white/60">Caricamento…</p>
+            </div>
+          ) : isExtImage ? (
+            <img src={url} alt={material.file_name} className="max-h-[80vh] max-w-full object-contain select-none pointer-events-none" draggable={false} />
+          ) : isLink ? (
+            <div className="p-10 text-center max-w-lg">
+              <Link2 size={40} className="mx-auto mb-4 text-white/60" />
+              <p className="font-body text-sm text-white/90 mb-2">Risorsa esterna</p>
+              <a
+                href={url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-body text-xs text-petrolio break-all underline hover:text-white transition-colors"
+              >
+                {url}
+              </a>
             </div>
           ) : isVideo(material.file_name) ? (
             <video
@@ -165,9 +205,17 @@ const MaterialViewer = ({ material, onClose }: { material: CourseMaterial; onClo
 
 /* ---------------- Material tile ---------------- */
 const MaterialTile = ({ material, index, onOpen }: { material: CourseMaterial; index: number; onOpen: (m: CourseMaterial) => void }) => {
-  const Icon = getFileIcon(material.file_name);
-  const accent = getAccent(material.file_name);
-  const video = isVideo(material.file_name);
+  const isLink = material.material_type === "link";
+  const isExtImage = material.material_type === "image";
+  const Icon = isLink ? Link2 : isExtImage ? ImageIcon : getFileIcon(material.file_name);
+  const accent = isLink
+    ? { chip: "bg-amber-500/10 text-amber-700 border-amber-500/20", icon: "text-amber-700 bg-amber-50 dark:bg-amber-950/30", label: "Link" }
+    : isExtImage
+    ? { chip: "bg-blue-500/10 text-blue-600 border-blue-500/20", icon: "text-blue-600 bg-blue-50 dark:bg-blue-950/30", label: "Immagine" }
+    : getAccent(material.file_name);
+  const video = !isLink && !isExtImage && isVideo(material.file_name);
+  const displayTitle = isLink || isExtImage ? material.file_name : material.file_name.replace(/\.[^.]+$/, "");
+  const displayMeta = material.description || (isLink ? material.external_url : (!isExtImage ? formatSize(material.file_size) : null));
 
   return (
     <button
@@ -175,8 +223,12 @@ const MaterialTile = ({ material, index, onOpen }: { material: CourseMaterial; i
       onClick={() => onOpen(material)}
       className="group relative flex items-center gap-3 p-3 rounded-xl border border-border bg-card hover:border-petrolio/40 hover:shadow-md hover:-translate-y-0.5 transition-all text-left w-full"
     >
-      <div className={`relative w-12 h-12 shrink-0 rounded-lg flex items-center justify-center ${accent.icon}`}>
-        <Icon size={22} />
+      <div className={`relative w-12 h-12 shrink-0 rounded-lg flex items-center justify-center overflow-hidden ${accent.icon}`}>
+        {isExtImage && material.external_url ? (
+          <img src={material.external_url} alt="" className="w-full h-full object-cover" draggable={false} />
+        ) : (
+          <Icon size={22} />
+        )}
         {video && (
           <span className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-petrolio text-white flex items-center justify-center shadow-md ring-2 ring-card">
             <Play size={10} fill="currentColor" />
@@ -191,16 +243,16 @@ const MaterialTile = ({ material, index, onOpen }: { material: CourseMaterial; i
           </span>
         </div>
         <p className="font-body text-sm text-foreground truncate leading-tight" title={material.file_name}>
-          {material.file_name.replace(/\.[^.]+$/, "")}
+          {displayTitle}
         </p>
-        {(material.description || material.file_size) && (
+        {displayMeta && (
           <p className="font-body text-[11px] text-muted-foreground truncate mt-0.5">
-            {material.description || formatSize(material.file_size)}
+            {displayMeta}
           </p>
         )}
       </div>
       <span className="shrink-0 w-8 h-8 rounded-full bg-muted group-hover:bg-petrolio group-hover:text-white flex items-center justify-center transition-colors">
-        <Eye size={14} />
+        {isLink ? <ExternalLink size={14} /> : <Eye size={14} />}
       </span>
     </button>
   );
