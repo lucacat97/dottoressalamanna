@@ -573,23 +573,41 @@ const MaterialRow = ({ material, modules, onAssign, onDelete }: {
   modules: Module[];
   onAssign: (id: string, modId: string) => void;
   onDelete: (m: Material) => void;
-}) => (
-  <div className="flex items-center gap-2 p-2 bg-muted/20 rounded">
-    <FileText size={13} className="text-petrolio shrink-0" />
-    <span className="font-body text-sm text-foreground truncate flex-1" title={material.file_name}>{material.file_name}</span>
-    {material.file_size && <span className="font-body text-xs text-muted-foreground shrink-0">{formatSize(material.file_size)}</span>}
-    <select
-      value={material.module_id || ""}
-      onChange={(e) => onAssign(material.id, e.target.value)}
-      className="text-xs px-2 py-1 rounded border border-input bg-background max-w-[140px]"
-    >
-      <option value="">— nessun modulo —</option>
-      {modules.map((m) => <option key={m.id} value={m.id}>{m.title}</option>)}
-    </select>
-    <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive hover:bg-destructive/10 shrink-0 h-7 w-7" onClick={() => onDelete(material)}>
-      <Trash2 size={12} />
-    </Button>
-  </div>
-);
+}) => {
+  const isLink = material.material_type === "link";
+  const isImage = material.material_type === "image";
+  const Icon = isLink ? Link2 : isImage ? ImageIcon : FileText;
+  const iconColor = isLink ? "text-amber-600" : isImage ? "text-blue-600" : "text-petrolio";
+  return (
+    <div className="flex items-center gap-2 p-2 bg-muted/20 rounded">
+      <Icon size={13} className={`shrink-0 ${iconColor}`} />
+      <div className="min-w-0 flex-1">
+        <p className="font-body text-sm text-foreground truncate" title={material.file_name}>{material.file_name}</p>
+        {(isLink || isImage) && material.external_url && (
+          <a href={material.external_url} target="_blank" rel="noopener noreferrer" className="font-body text-[10px] text-muted-foreground hover:text-petrolio truncate block underline">
+            {material.external_url}
+          </a>
+        )}
+        {material.description && !isLink && !isImage && (
+          <p className="font-body text-[10px] text-muted-foreground truncate">{material.description}</p>
+        )}
+      </div>
+      {material.file_size && !isLink && !isImage && (
+        <span className="font-body text-xs text-muted-foreground shrink-0">{formatSize(material.file_size)}</span>
+      )}
+      <select
+        value={material.module_id || ""}
+        onChange={(e) => onAssign(material.id, e.target.value)}
+        className="text-xs px-2 py-1 rounded border border-input bg-background max-w-[140px]"
+      >
+        <option value="">— nessun modulo —</option>
+        {modules.map((m) => <option key={m.id} value={m.id}>{m.title}</option>)}
+      </select>
+      <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive hover:bg-destructive/10 shrink-0 h-7 w-7" onClick={() => onDelete(material)}>
+        <Trash2 size={12} />
+      </Button>
+    </div>
+  );
+};
 
 export default AdminMaterials;
