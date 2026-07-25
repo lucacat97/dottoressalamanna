@@ -495,6 +495,7 @@ export type Database = {
           email: string
           full_name: string
           id: string
+          newsletter_consent: boolean
           notes: string | null
           phone: string | null
           registered_by: string | null
@@ -506,6 +507,7 @@ export type Database = {
           email: string
           full_name: string
           id?: string
+          newsletter_consent?: boolean
           notes?: string | null
           phone?: string | null
           registered_by?: string | null
@@ -517,6 +519,7 @@ export type Database = {
           email?: string
           full_name?: string
           id?: string
+          newsletter_consent?: boolean
           notes?: string | null
           phone?: string | null
           registered_by?: string | null
@@ -766,6 +769,33 @@ export type Database = {
           slug?: string
           sort_order?: number
           updated_at?: string
+        }
+        Relationships: []
+      }
+      newsletter_consents: {
+        Row: {
+          consented_at: string
+          created_at: string
+          email: string
+          id: string
+          source: string
+          user_id: string | null
+        }
+        Insert: {
+          consented_at?: string
+          created_at?: string
+          email: string
+          id?: string
+          source?: string
+          user_id?: string | null
+        }
+        Update: {
+          consented_at?: string
+          created_at?: string
+          email?: string
+          id?: string
+          source?: string
+          user_id?: string | null
         }
         Relationships: []
       }

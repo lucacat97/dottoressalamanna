@@ -16,6 +16,7 @@ interface RegistrationModalProps {
 
 const RegistrationModal = ({ edition, onClose }: RegistrationModalProps) => {
   const [form, setForm] = useState({ full_name: "", email: "", phone: "", notes: "" });
+  const [newsletterConsent, setNewsletterConsent] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
 
@@ -24,13 +25,22 @@ const RegistrationModal = ({ edition, onClose }: RegistrationModalProps) => {
     if (!form.full_name.trim() || !form.email.trim()) return;
 
     setSubmitting(true);
+    const email = form.email.trim().toLowerCase();
     const { error } = await supabase.from("course_registrations").insert({
       edition_id: edition.id,
       full_name: form.full_name.trim(),
-      email: form.email.trim(),
+      email,
       phone: form.phone.trim() || null,
       notes: form.notes.trim() || null,
-    });
+      newsletter_consent: newsletterConsent,
+    } as any);
+
+    if (!error && newsletterConsent) {
+      await supabase.from("newsletter_consents").insert({
+        email,
+        source: "course_registration",
+      });
+    }
 
     setSubmitting(false);
     if (error) {
@@ -141,6 +151,17 @@ const RegistrationModal = ({ edition, onClose }: RegistrationModalProps) => {
                     placeholder="Eventuali note o richieste..."
                   />
                 </div>
+                <label className="flex items-start gap-3 cursor-pointer select-none">
+                  <input
+                    type="checkbox"
+                    checked={newsletterConsent}
+                    onChange={(e) => setNewsletterConsent(e.target.checked)}
+                    className="mt-1 h-4 w-4 rounded border-input text-petrolio focus:ring-ring accent-petrolio"
+                  />
+                  <span className="font-body text-xs text-muted-foreground leading-relaxed">
+                    Acconsento a ricevere <strong className="text-foreground">newsletter e comunicazioni</strong> dalla Dott.ssa Lamanna. Potrò disiscrivermi in qualsiasi momento.
+                  </span>
+                </label>
                 <Button
                   type="submit"
                   disabled={submitting}

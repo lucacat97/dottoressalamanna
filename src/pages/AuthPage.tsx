@@ -17,6 +17,7 @@ const AuthPage = () => {
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [resetEmail, setResetEmail] = useState("");
   const [resetSent, setResetSent] = useState(false);
+  const [newsletterConsent, setNewsletterConsent] = useState(false);
 
   // Invite flow state
   const [inviteState, setInviteState] = useState<"loading" | "valid" | "invalid" | "done" | null>(
@@ -98,6 +99,12 @@ const AuthPage = () => {
           },
         });
         if (error) throw error;
+        if (newsletterConsent) {
+          await supabase.from("newsletter_consents").insert({
+            email: email.trim().toLowerCase(),
+            source: "signup",
+          });
+        }
         toast({
           title: "Registrazione completata",
           description: "Per favore, controlla la tua email per confermare l'account.",
@@ -330,6 +337,19 @@ const AuthPage = () => {
                   Password dimenticata?
                 </button>
               </div>
+            )}
+            {!isLogin && (
+              <label className="flex items-start gap-3 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={newsletterConsent}
+                  onChange={(e) => setNewsletterConsent(e.target.checked)}
+                  className="mt-1 h-4 w-4 rounded border-input text-petrolio focus:ring-ring accent-petrolio"
+                />
+                <span className="font-body text-xs text-muted-foreground leading-relaxed">
+                  Acconsento a ricevere <strong className="text-foreground">newsletter e comunicazioni</strong> dalla Dott.ssa Lamanna (novità, corsi, aggiornamenti clinici). Potrò disiscrivermi in qualsiasi momento.
+                </span>
+              </label>
             )}
             <Button type="submit" disabled={loading} className="w-full bg-primary text-primary-foreground font-body font-semibold hover:bg-accent">
               {loading ? "Caricamento..." : isLogin ? "Accedi" : "Registrati"}
