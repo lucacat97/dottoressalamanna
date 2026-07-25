@@ -67,6 +67,13 @@ const AdminMaterials = ({ editions, materials, modules, onUpdated }: Props) => {
   const [dragOverModuleId, setDragOverModuleId] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
+  // Link/image form
+  const [linkType, setLinkType] = useState<"link" | "image">("link");
+  const [linkTitle, setLinkTitle] = useState("");
+  const [linkUrl, setLinkUrl] = useState("");
+  const [linkDescription, setLinkDescription] = useState("");
+  const [addingLink, setAddingLink] = useState(false);
+
   const toggleExpanded = (id: string) => setExpanded((p) => ({ ...p, [id]: !p[id] }));
 
   const handleModuleDragStart = (e: React.DragEvent<HTMLDivElement>, modId: string) => {
@@ -267,10 +274,40 @@ const AdminMaterials = ({ editions, materials, modules, onUpdated }: Props) => {
   };
 
   const handleDeleteMaterial = async (material: Material) => {
-    await supabase.storage.from("course-materials").remove([material.file_path]);
+    if (material.material_type !== "link" && material.material_type !== "image" && material.file_path) {
+      await supabase.storage.from("course-materials").remove([material.file_path]);
+    }
     const { error } = await supabase.from("course_materials").delete().eq("id", material.id);
     if (error) toast({ title: "Errore", description: error.message, variant: "destructive" });
     else { toast({ title: "Materiale eliminato" }); onUpdated(); }
+  };
+
+  const handleAddLink = async () => {
+    if (!selectedEdition || !linkTitle.trim() || !linkUrl.trim()) return;
+    let url = linkUrl.trim();
+    if (!/^https?:\/\//i.test(url)) url = "https://" + url;
+    setAddingLink(true);
+    const editionMats = materials.filter((m) => m.edition_id === selectedEdition && m.module_id === (selectedModule || null));
+    const nextOrder = editionMats.length > 0 ? Math.max(...editionMats.map((m) => m.sort_order || 0)) + 1 : 0;
+    const { error } = await supabase.from("course_materials").insert({
+      edition_id: selectedEdition,
+      module_id: selectedModule || null,
+      file_name: linkTitle.trim(),
+      file_path: null,
+      file_size: null,
+      material_type: linkType,
+      external_url: url,
+      description: linkDescription.trim() || null,
+      sort_order: nextOrder,
+    });
+    setAddingLink(false);
+    if (error) {
+      toast({ title: "Errore", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: linkType === "image" ? "Immagine aggiunta" : "Link aggiunto" });
+      setLinkTitle(""); setLinkUrl(""); setLinkDescription("");
+      onUpdated();
+    }
   };
 
   const currentEditionModules = modules.filter((m) => m.edition_id === selectedEdition).sort((a, b) => a.sort_order - b.sort_order);
