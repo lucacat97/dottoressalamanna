@@ -3,6 +3,15 @@ import { supabase } from "@/integrations/supabase/client";
 import { Upload, Trash2, FileText, FolderPlus, ChevronDown, ChevronRight, GripVertical, Pencil, Check, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
+import * as tus from "tus-js-client";
+
+interface UploadProgressItem {
+  name: string;
+  size: number;
+  loaded: number;
+  status: "uploading" | "done" | "error";
+  error?: string;
+}
 
 interface Material {
   id: string;
