@@ -47,6 +47,7 @@ const isVideo = (name: string) => ["mp4", "webm", "mov", "m4v", "ogv"].includes(
 const isImage = (name: string) => ["jpg", "jpeg", "png", "gif", "webp", "svg"].includes(extOf(name));
 const isPdf = (name: string) => extOf(name) === "pdf";
 const isAudio = (name: string) => ["mp3", "wav", "m4a", "ogg", "aac"].includes(extOf(name));
+const isOffice = (name: string) => ["ppt", "pptx", "doc", "docx", "xls", "xlsx"].includes(extOf(name));
 
 const getFileIcon = (name: string) => {
   if (isVideo(name)) return PlayCircle;
