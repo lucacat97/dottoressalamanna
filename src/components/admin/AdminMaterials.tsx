@@ -395,10 +395,17 @@ const AdminMaterials = ({ editions, materials, modules, onUpdated }: Props) => {
                   const modMats = edMats.filter((m) => m.module_id === mod.id).sort((a, b) => a.sort_order - b.sort_order);
                   const isEditing = editingModule === mod.id;
                   return (
-                    <div key={mod.id} className="border border-border/60 rounded-md">
-                      <div className="flex items-center justify-between gap-2 px-3 py-2 bg-gold/5 border-b border-border/60">
+                    <div key={mod.id} className={`border border-border/60 rounded-md transition-all ${draggedModuleId === mod.id ? "opacity-40" : ""} ${dragOverModuleId === mod.id ? "border-primary shadow-sm" : ""}`}>
+                      <div
+                        draggable
+                        onDragStart={(e) => handleModuleDragStart(e, mod.id)}
+                        onDragOver={(e) => handleModuleDragOver(e, mod.id)}
+                        onDrop={(e) => handleModuleDrop(e, mod.id)}
+                        onDragEnd={handleModuleDragEnd}
+                        className={`flex items-center justify-between gap-2 px-3 py-2 bg-gold/5 border-b border-border/60 cursor-move transition-colors ${dragOverModuleId === mod.id ? "bg-primary/20" : ""}`}
+                      >
                         <div className="flex items-center gap-2 min-w-0 flex-1">
-                          <GripVertical size={14} className="text-muted-foreground" />
+                          <GripVertical size={14} className="text-muted-foreground cursor-grab active:cursor-grabbing" />
                           {isEditing ? (
                             <div className="flex-1 space-y-1">
                               <input
