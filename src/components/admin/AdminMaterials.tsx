@@ -3,6 +3,15 @@ import { supabase } from "@/integrations/supabase/client";
 import { Upload, Trash2, FileText, FolderPlus, ChevronDown, ChevronRight, GripVertical, Pencil, Check, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
+import * as tus from "tus-js-client";
+
+interface UploadProgressItem {
+  name: string;
+  size: number;
+  loaded: number;
+  status: "uploading" | "done" | "error";
+  error?: string;
+}
 
 interface Material {
   id: string;
@@ -51,6 +60,7 @@ const AdminMaterials = ({ editions, materials, modules, onUpdated }: Props) => {
   const [editingModule, setEditingModule] = useState<string | null>(null);
   const [editTitle, setEditTitle] = useState("");
   const [editDescription, setEditDescription] = useState("");
+  const [progress, setProgress] = useState<Record<string, UploadProgressItem>>({});
   const fileRef = useRef<HTMLInputElement>(null);
 
   const toggleExpanded = (id: string) => setExpanded((p) => ({ ...p, [id]: !p[id] }));
@@ -95,6 +105,44 @@ const AdminMaterials = ({ editions, materials, modules, onUpdated }: Props) => {
     else { toast({ title: "Modulo aggiornato" }); setEditingModule(null); onUpdated(); }
   };
 
+  const uploadOneTus = (file: File, filePath: string, key: string) =>
+    new Promise<void>(async (resolve, reject) => {
+      const { data: sess } = await supabase.auth.getSession();
+      const token = sess.session?.access_token;
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string;
+      const anonKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string;
+
+      const upload = new tus.Upload(file, {
+        endpoint: `${supabaseUrl}/storage/v1/upload/resumable`,
+        retryDelays: [0, 1000, 3000, 5000, 10000],
+        headers: {
+          authorization: `Bearer ${token || anonKey}`,
+          "x-upsert": "true",
+        },
+        uploadDataDuringCreation: true,
+        removeFingerprintOnSuccess: true,
+        metadata: {
+          bucketName: "course-materials",
+          objectName: filePath,
+          contentType: file.type || "application/octet-stream",
+          cacheControl: "3600",
+        },
+        chunkSize: 6 * 1024 * 1024,
+        onError: (err) => {
+          setProgress((p) => ({ ...p, [key]: { ...p[key], status: "error", error: err.message } }));
+          reject(err);
+        },
+        onProgress: (loaded, total) => {
+          setProgress((p) => ({ ...p, [key]: { ...p[key], loaded, size: total } }));
+        },
+        onSuccess: () => {
+          setProgress((p) => ({ ...p, [key]: { ...p[key], status: "done", loaded: file.size } }));
+          resolve();
+        },
+      });
+      upload.start();
+    });
+
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
     if (files.length === 0 || !selectedEdition) return;
@@ -103,12 +151,22 @@ const AdminMaterials = ({ editions, materials, modules, onUpdated }: Props) => {
     const editionMats = materials.filter((m) => m.edition_id === selectedEdition && m.module_id === (selectedModule || null));
     let nextOrder = editionMats.length > 0 ? Math.max(...editionMats.map((m) => m.sort_order || 0)) + 1 : 0;
 
+    // Initialize progress state
+    const initial: Record<string, UploadProgressItem> = {};
+    files.forEach((f, i) => {
+      initial[`${i}_${f.name}`] = { name: f.name, size: f.size, loaded: 0, status: "uploading" };
+    });
+    setProgress((p) => ({ ...p, ...initial }));
+
     let successCount = 0;
-    for (const file of files) {
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      const key = `${i}_${file.name}`;
       const filePath = `${selectedEdition}/${Date.now()}_${file.name}`;
-      const { error: uploadError } = await supabase.storage.from("course-materials").upload(filePath, file);
-      if (uploadError) {
-        toast({ title: `Errore upload: ${file.name}`, description: uploadError.message, variant: "destructive" });
+      try {
+        await uploadOneTus(file, filePath, key);
+      } catch (err: any) {
+        toast({ title: `Errore upload: ${file.name}`, description: err.message, variant: "destructive" });
         continue;
       }
       const { error: dbError } = await supabase.from("course_materials").insert({
@@ -129,7 +187,16 @@ const AdminMaterials = ({ editions, materials, modules, onUpdated }: Props) => {
       onUpdated();
     }
     if (fileRef.current) fileRef.current.value = "";
+    // Auto-clear completed progress after a delay
+    setTimeout(() => {
+      setProgress((p) => {
+        const next = { ...p };
+        Object.keys(next).forEach((k) => { if (next[k].status === "done") delete next[k]; });
+        return next;
+      });
+    }, 4000);
   };
+
 
   const handleAssignModule = async (materialId: string, moduleId: string) => {
     const { error } = await supabase.from("course_materials")
@@ -212,7 +279,32 @@ const AdminMaterials = ({ editions, materials, modules, onUpdated }: Props) => {
                   </Button>
                 </div>
               </div>
-              <p className="font-body text-[11px] text-muted-foreground mt-1.5">Puoi selezionare più file contemporaneamente.</p>
+              <p className="font-body text-[11px] text-muted-foreground mt-1.5">Puoi selezionare più file contemporaneamente. Upload resumable — non chiudere la pagina finché non finisce.</p>
+
+              {Object.keys(progress).length > 0 && (
+                <div className="mt-4 space-y-2 border-t border-border pt-4">
+                  {Object.entries(progress).map(([key, item]) => {
+                    const pct = item.size > 0 ? Math.min(100, Math.round((item.loaded / item.size) * 100)) : 0;
+                    return (
+                      <div key={key} className="space-y-1">
+                        <div className="flex items-center justify-between gap-2 text-xs">
+                          <span className="font-body text-foreground truncate flex-1" title={item.name}>{item.name}</span>
+                          <span className={`font-body shrink-0 ${item.status === "error" ? "text-destructive" : item.status === "done" ? "text-primary" : "text-muted-foreground"}`}>
+                            {item.status === "error" ? "Errore" : item.status === "done" ? "✓ Completato" : `${pct}% · ${formatSize(item.loaded)} / ${formatSize(item.size)}`}
+                          </span>
+                        </div>
+                        <div className="h-1.5 bg-muted rounded-full overflow-hidden">
+                          <div
+                            className={`h-full transition-all ${item.status === "error" ? "bg-destructive" : "bg-primary"}`}
+                            style={{ width: `${pct}%` }}
+                          />
+                        </div>
+                        {item.error && <p className="font-body text-[10px] text-destructive">{item.error}</p>}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           </>
         )}
