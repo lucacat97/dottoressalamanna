@@ -51,7 +51,7 @@ interface AdminTabProps {
   onDeleteEdition: (id: string) => void;
 }
 
-const AdminTab = ({ editions, materials, onFetchData, onDeleteEdition }: AdminTabProps) => {
+const AdminTab = ({ editions, materials, modules, onFetchData, onDeleteEdition }: AdminTabProps) => {
   const [adminTab, setAdminTab] = useState<"editions" | "registrations" | "materials" | "library" | "plans" | "access" | "apikeys" | "invitations" | "feedback" | "knowledge">("editions");
   const [editingLandingId, setEditingLandingId] = useState<string | null>(null);
 
