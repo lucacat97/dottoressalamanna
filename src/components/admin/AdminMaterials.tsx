@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Upload, Trash2, FileText, FolderPlus, ChevronDown, ChevronRight, GripVertical, Pencil, Check, X } from "lucide-react";
+import { Upload, Trash2, FileText, FolderPlus, ChevronDown, ChevronRight, GripVertical, Pencil, Check, X, Link2, Image as ImageIcon, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
 import * as tus from "tus-js-client";
@@ -17,11 +17,13 @@ interface Material {
   id: string;
   edition_id: string;
   file_name: string;
-  file_path: string;
+  file_path: string | null;
   file_size: number | null;
   module_id: string | null;
   description: string | null;
   sort_order: number;
+  material_type?: "file" | "link" | "image" | null;
+  external_url?: string | null;
 }
 
 interface Module {
