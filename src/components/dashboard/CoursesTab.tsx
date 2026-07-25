@@ -47,6 +47,7 @@ const isVideo = (name: string) => ["mp4", "webm", "mov", "m4v", "ogv"].includes(
 const isImage = (name: string) => ["jpg", "jpeg", "png", "gif", "webp", "svg"].includes(extOf(name));
 const isPdf = (name: string) => extOf(name) === "pdf";
 const isAudio = (name: string) => ["mp3", "wav", "m4a", "ogg", "aac"].includes(extOf(name));
+const isOffice = (name: string) => ["ppt", "pptx", "doc", "docx", "xls", "xlsx"].includes(extOf(name));
 
 const getFileIcon = (name: string) => {
   if (isVideo(name)) return PlayCircle;
@@ -190,6 +191,18 @@ const MaterialViewer = ({ material, onClose }: { material: CourseMaterial; onClo
               title={material.file_name}
               className="w-full h-[80vh] bg-white"
             />
+          ) : isOffice(material.file_name) ? (
+            <iframe
+              src={`https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(url)}`}
+              title={material.file_name}
+              className="w-full h-[80vh] bg-white"
+            />
+          ) : (extOf(material.file_name) === "txt" || extOf(material.file_name) === "md") ? (
+            <iframe
+              src={url}
+              title={material.file_name}
+              className="w-full h-[80vh] bg-white"
+            />
           ) : (
             <div className="p-10 text-center">
               <Lock size={32} className="mx-auto mb-3 text-white/40" />
@@ -282,7 +295,7 @@ const EditionCard = ({
   const year = dateObj.getFullYear();
 
   const editionModules = modules.filter((m) => m.edition_id === edition.id).sort((a, b) => a.sort_order - b.sort_order);
-  const orphans = materials.filter((m) => !m.module_id);
+  const orphans = materials.filter((m) => m.edition_id === edition.id && !m.module_id);
   const videoCount = materials.filter((m) => isVideo(m.file_name)).length;
   const totalCount = materials.length;
 
