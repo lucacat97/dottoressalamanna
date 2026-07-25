@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Mail, Phone, Calendar, Trash2, ChevronDown, ChevronUp, CheckCircle, XCircle } from "lucide-react";
+import { Mail, Phone, Calendar, Trash2, ChevronDown, ChevronUp, CheckCircle, XCircle, UserPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
 
@@ -25,6 +25,44 @@ const AdminRegistrations = ({ editions }: { editions: Edition[] }) => {
   const [registrations, setRegistrations] = useState<Registration[]>([]);
   const [expandedEdition, setExpandedEdition] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [newReg, setNewReg] = useState<Record<string, { full_name: string; email: string; phone: string }>>({});
+  const [submitting, setSubmitting] = useState<string | null>(null);
+
+  const getForm = (editionId: string) =>
+    newReg[editionId] || { full_name: "", email: "", phone: "" };
+  const setForm = (editionId: string, patch: Partial<{ full_name: string; email: string; phone: string }>) =>
+    setNewReg((prev) => ({ ...prev, [editionId]: { ...getForm(editionId), ...patch } }));
+
+  const handleAdd = async (editionId: string) => {
+    const form = getForm(editionId);
+    const email = form.email.trim().toLowerCase();
+    const fullName = form.full_name.trim();
+    if (!email || !fullName) {
+      toast({ title: "Dati mancanti", description: "Inserisci nome e email.", variant: "destructive" });
+      return;
+    }
+    setSubmitting(editionId);
+    const { data, error } = await supabase
+      .from("course_registrations")
+      .insert({
+        edition_id: editionId,
+        full_name: fullName,
+        email,
+        phone: form.phone.trim() || null,
+        confirmed: true,
+        registered_by: "admin",
+      } as any)
+      .select()
+      .single();
+    setSubmitting(null);
+    if (error) {
+      toast({ title: "Errore", description: error.message, variant: "destructive" });
+    } else if (data) {
+      setRegistrations((prev) => [data as Registration, ...prev]);
+      setForm(editionId, { full_name: "", email: "", phone: "" });
+      toast({ title: "Iscritto aggiunto", description: `${fullName} è stato aggiunto al corso.` });
+    }
+  };
 
   const fetchRegistrations = async () => {
     const { data } = await supabase
@@ -104,6 +142,47 @@ const AdminRegistrations = ({ editions }: { editions: Edition[] }) => {
 
             {isExpanded && (
               <div className="border-t border-border p-4 space-y-3">
+                {/* Manual add form */}
+                <div className="bg-primary/5 border border-primary/20 rounded-md p-3">
+                  <p className="font-body text-xs uppercase tracking-wider text-muted-foreground mb-2 flex items-center gap-1">
+                    <UserPlus size={12} /> Aggiungi iscritto manualmente
+                  </p>
+                  <div className="grid grid-cols-1 sm:grid-cols-4 gap-2">
+                    <input
+                      type="text"
+                      value={getForm(edition.id).full_name}
+                      onChange={(e) => setForm(edition.id, { full_name: e.target.value })}
+                      placeholder="Nome e cognome"
+                      className="sm:col-span-1 px-3 py-2 rounded-md border border-input bg-background font-body text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                    />
+                    <input
+                      type="email"
+                      value={getForm(edition.id).email}
+                      onChange={(e) => setForm(edition.id, { email: e.target.value })}
+                      placeholder="Email"
+                      className="sm:col-span-1 px-3 py-2 rounded-md border border-input bg-background font-body text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                    />
+                    <input
+                      type="tel"
+                      value={getForm(edition.id).phone}
+                      onChange={(e) => setForm(edition.id, { phone: e.target.value })}
+                      placeholder="Telefono (opzionale)"
+                      className="sm:col-span-1 px-3 py-2 rounded-md border border-input bg-background font-body text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                    />
+                    <Button
+                      onClick={() => handleAdd(edition.id)}
+                      disabled={submitting === edition.id}
+                      className="bg-primary text-primary-foreground font-body"
+                    >
+                      <UserPlus size={14} className="mr-1" />
+                      {submitting === edition.id ? "Aggiungo..." : "Aggiungi"}
+                    </Button>
+                  </div>
+                  <p className="font-body text-xs text-muted-foreground mt-2">
+                    L'iscrizione verrà creata già confermata e l'utente potrà accedere ai materiali.
+                  </p>
+                </div>
+
                 {editionRegs.length === 0 ? (
                   <p className="font-body text-sm text-muted-foreground italic">Nessuna iscrizione ricevuta.</p>
                 ) : (
