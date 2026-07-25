@@ -363,27 +363,36 @@ export type Database = {
       course_materials: {
         Row: {
           created_at: string
+          description: string | null
           edition_id: string
           file_name: string
           file_path: string
           file_size: number | null
           id: string
+          module_id: string | null
+          sort_order: number
         }
         Insert: {
           created_at?: string
+          description?: string | null
           edition_id: string
           file_name: string
           file_path: string
           file_size?: number | null
           id?: string
+          module_id?: string | null
+          sort_order?: number
         }
         Update: {
           created_at?: string
+          description?: string | null
           edition_id?: string
           file_name?: string
           file_path?: string
           file_size?: number | null
           id?: string
+          module_id?: string | null
+          sort_order?: number
         }
         Relationships: [
           {
@@ -391,6 +400,13 @@ export type Database = {
             columns: ["edition_id"]
             isOneToOne: false
             referencedRelation: "course_editions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "course_materials_module_id_fkey"
+            columns: ["module_id"]
+            isOneToOne: false
+            referencedRelation: "course_modules"
             referencedColumns: ["id"]
           },
         ]
@@ -426,6 +442,44 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "course_media_edition_id_fkey"
+            columns: ["edition_id"]
+            isOneToOne: false
+            referencedRelation: "course_editions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      course_modules: {
+        Row: {
+          created_at: string
+          description: string | null
+          edition_id: string
+          id: string
+          sort_order: number
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          edition_id: string
+          id?: string
+          sort_order?: number
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          edition_id?: string
+          id?: string
+          sort_order?: number
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "course_modules_edition_id_fkey"
             columns: ["edition_id"]
             isOneToOne: false
             referencedRelation: "course_editions"
