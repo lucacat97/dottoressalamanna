@@ -25,6 +25,44 @@ const AdminRegistrations = ({ editions }: { editions: Edition[] }) => {
   const [registrations, setRegistrations] = useState<Registration[]>([]);
   const [expandedEdition, setExpandedEdition] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [newReg, setNewReg] = useState<Record<string, { full_name: string; email: string; phone: string }>>({});
+  const [submitting, setSubmitting] = useState<string | null>(null);
+
+  const getForm = (editionId: string) =>
+    newReg[editionId] || { full_name: "", email: "", phone: "" };
+  const setForm = (editionId: string, patch: Partial<{ full_name: string; email: string; phone: string }>) =>
+    setNewReg((prev) => ({ ...prev, [editionId]: { ...getForm(editionId), ...patch } }));
+
+  const handleAdd = async (editionId: string) => {
+    const form = getForm(editionId);
+    const email = form.email.trim().toLowerCase();
+    const fullName = form.full_name.trim();
+    if (!email || !fullName) {
+      toast({ title: "Dati mancanti", description: "Inserisci nome e email.", variant: "destructive" });
+      return;
+    }
+    setSubmitting(editionId);
+    const { data, error } = await supabase
+      .from("course_registrations")
+      .insert({
+        edition_id: editionId,
+        full_name: fullName,
+        email,
+        phone: form.phone.trim() || null,
+        confirmed: true,
+        registered_by: "admin",
+      } as any)
+      .select()
+      .single();
+    setSubmitting(null);
+    if (error) {
+      toast({ title: "Errore", description: error.message, variant: "destructive" });
+    } else if (data) {
+      setRegistrations((prev) => [data as Registration, ...prev]);
+      setForm(editionId, { full_name: "", email: "", phone: "" });
+      toast({ title: "Iscritto aggiunto", description: `${fullName} è stato aggiunto al corso.` });
+    }
+  };
 
   const fetchRegistrations = async () => {
     const { data } = await supabase
