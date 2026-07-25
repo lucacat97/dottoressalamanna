@@ -17,6 +17,7 @@ const AuthPage = () => {
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [resetEmail, setResetEmail] = useState("");
   const [resetSent, setResetSent] = useState(false);
+  const [newsletterConsent, setNewsletterConsent] = useState(false);
 
   // Invite flow state
   const [inviteState, setInviteState] = useState<"loading" | "valid" | "invalid" | "done" | null>(
