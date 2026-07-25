@@ -34,6 +34,17 @@ interface CourseMaterial {
   file_name: string;
   file_path: string;
   file_size: number | null;
+  module_id: string | null;
+  description: string | null;
+  sort_order: number;
+}
+
+interface CourseModule {
+  id: string;
+  edition_id: string;
+  title: string;
+  description: string | null;
+  sort_order: number;
 }
 
 type MainTab = "corsi" | "strumenti" | "libreria" | "documenti" | "abbonamento" | "admin";
