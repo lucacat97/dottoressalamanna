@@ -78,11 +78,23 @@ const formatSize = (bytes: number | null) => {
 const MaterialViewer = ({ material, onClose }: { material: CourseMaterial; onClose: () => void }) => {
   const [url, setUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const accent = getAccent(material.file_name);
+  const isLink = material.material_type === "link";
+  const isExtImage = material.material_type === "image";
+  const accent = isLink
+    ? { chip: "bg-amber-500/10 text-amber-700 border-amber-500/20", icon: "text-amber-700 bg-amber-50 dark:bg-amber-950/30", label: "Link" }
+    : isExtImage
+    ? { chip: "bg-blue-500/10 text-blue-600 border-blue-500/20", icon: "text-blue-600 bg-blue-50 dark:bg-blue-950/30", label: "Immagine" }
+    : getAccent(material.file_name);
 
   useEffect(() => {
     let cancelled = false;
     (async () => {
+      if (isLink || isExtImage) {
+        setUrl(material.external_url || null);
+        if (!material.external_url) setError("URL non disponibile.");
+        return;
+      }
+      if (!material.file_path) { setError("File non disponibile."); return; }
       const { data, error } = await supabase.storage
         .from("course-materials")
         .createSignedUrl(material.file_path, 3600);
@@ -93,9 +105,10 @@ const MaterialViewer = ({ material, onClose }: { material: CourseMaterial; onClo
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
     window.addEventListener("keydown", onKey);
     return () => { cancelled = true; window.removeEventListener("keydown", onKey); };
-  }, [material.file_path, onClose]);
+  }, [material.file_path, material.external_url, isLink, isExtImage, onClose]);
 
   const blockCtx = (e: React.MouseEvent) => e.preventDefault();
+  const HeaderIcon = isLink ? Link2 : isExtImage ? ImageIcon : getFileIcon(material.file_name);
 
   return (
     <div className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in" onClick={onClose}>
@@ -106,14 +119,24 @@ const MaterialViewer = ({ material, onClose }: { material: CourseMaterial; onClo
       >
         <header className="flex items-center gap-3 px-5 py-3 border-b border-border bg-muted/30">
           <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 ${accent.icon}`}>
-            {(() => { const I = getFileIcon(material.file_name); return <I size={18} />; })()}
+            <HeaderIcon size={18} />
           </div>
           <div className="min-w-0 flex-1">
             <p className="font-display text-sm font-semibold text-foreground truncate">{material.file_name}</p>
-            <p className="font-body text-[11px] text-muted-foreground flex items-center gap-1.5">
-              <Lock size={10} /> Fruibile solo online · non scaricabile
-            </p>
+            {material.description && (
+              <p className="font-body text-[11px] text-muted-foreground truncate">{material.description}</p>
+            )}
           </div>
+          {isLink && url && (
+            <a
+              href={url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-petrolio text-white font-body text-xs font-semibold hover:bg-petrolio/90 transition-colors"
+            >
+              <ExternalLink size={12} /> Apri
+            </a>
+          )}
           <button
             onClick={onClose}
             className="w-9 h-9 rounded-lg hover:bg-muted flex items-center justify-center transition-colors"
@@ -130,6 +153,21 @@ const MaterialViewer = ({ material, onClose }: { material: CourseMaterial; onClo
             <div className="flex flex-col items-center gap-3 p-8">
               <div className="w-8 h-8 border-2 border-white/20 border-t-white rounded-full animate-spin" />
               <p className="font-body text-xs text-white/60">Caricamento…</p>
+            </div>
+          ) : isExtImage ? (
+            <img src={url} alt={material.file_name} className="max-h-[80vh] max-w-full object-contain select-none pointer-events-none" draggable={false} />
+          ) : isLink ? (
+            <div className="p-10 text-center max-w-lg">
+              <Link2 size={40} className="mx-auto mb-4 text-white/60" />
+              <p className="font-body text-sm text-white/90 mb-2">Risorsa esterna</p>
+              <a
+                href={url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-body text-xs text-petrolio break-all underline hover:text-white transition-colors"
+              >
+                {url}
+              </a>
             </div>
           ) : isVideo(material.file_name) ? (
             <video
