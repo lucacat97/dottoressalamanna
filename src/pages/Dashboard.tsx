@@ -115,12 +115,14 @@ const Dashboard = () => {
 
   const fetchData = useCallback(async () => {
     if (!user) return;
-    const [editionsRes, materialsRes] = await Promise.all([
+    const [editionsRes, materialsRes, modulesRes] = await Promise.all([
       supabase.from("course_editions").select("*").order("date", { ascending: false }),
-      supabase.from("course_materials").select("*"),
+      supabase.from("course_materials").select("*").order("sort_order", { ascending: true }),
+      supabase.from("course_modules").select("*").order("sort_order", { ascending: true }),
     ]);
     if (editionsRes.data) setEditions(editionsRes.data);
-    if (materialsRes.data) setMaterials(materialsRes.data);
+    if (materialsRes.data) setMaterials(materialsRes.data as CourseMaterial[]);
+    if (modulesRes.data) setModules(modulesRes.data as CourseModule[]);
   }, [user]);
 
   useEffect(() => { fetchData(); }, [fetchData]);
