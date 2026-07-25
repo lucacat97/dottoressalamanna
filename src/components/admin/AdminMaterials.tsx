@@ -60,6 +60,7 @@ const AdminMaterials = ({ editions, materials, modules, onUpdated }: Props) => {
   const [editingModule, setEditingModule] = useState<string | null>(null);
   const [editTitle, setEditTitle] = useState("");
   const [editDescription, setEditDescription] = useState("");
+  const [progress, setProgress] = useState<Record<string, UploadProgressItem>>({});
   const fileRef = useRef<HTMLInputElement>(null);
 
   const toggleExpanded = (id: string) => setExpanded((p) => ({ ...p, [id]: !p[id] }));
