@@ -75,6 +75,71 @@ const formatSize = (bytes: number | null) => {
   return `${(bytes / 1073741824).toFixed(2)} GB`;
 };
 
+/* ---------------- Office preview (with fallback) ---------------- */
+const OfficePreview = ({ url, name }: { url: string; name: string }) => {
+  const [engine, setEngine] = useState<"ms" | "gdocs" | "failed">("ms");
+  const [loaded, setLoaded] = useState(false);
+
+  // If viewer doesn't load within 8s, try next engine.
+  useEffect(() => {
+    setLoaded(false);
+    const t = setTimeout(() => {
+      if (!loaded) {
+        setEngine((prev) => (prev === "ms" ? "gdocs" : prev === "gdocs" ? "failed" : "failed"));
+      }
+    }, 8000);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [engine]);
+
+  const src =
+    engine === "ms"
+      ? `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(url)}`
+      : engine === "gdocs"
+      ? `https://docs.google.com/gview?url=${encodeURIComponent(url)}&embedded=true`
+      : "";
+
+  return (
+    <div className="w-full h-[80vh] bg-white relative flex flex-col">
+      {engine !== "failed" ? (
+        <iframe
+          key={engine}
+          src={src}
+          title={name}
+          className="w-full flex-1 bg-white"
+          onLoad={() => setLoaded(true)}
+        />
+      ) : (
+        <div className="flex-1 flex flex-col items-center justify-center gap-4 p-8 text-center">
+          <FileText size={40} className="text-muted-foreground" />
+          <p className="font-body text-sm text-foreground">Anteprima non disponibile per questo file.</p>
+          <a
+            href={url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-md bg-petrolio text-white font-body text-sm font-semibold hover:bg-petrolio/90 transition-colors"
+          >
+            <ExternalLink size={14} /> Apri in nuova scheda
+          </a>
+        </div>
+      )}
+      <div className="px-4 py-2 border-t border-border bg-muted/30 flex items-center justify-between gap-3">
+        <p className="font-body text-[11px] text-muted-foreground">
+          Se la preview non si carica, apri il file in una nuova scheda.
+        </p>
+        <a
+          href={url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md border border-border bg-card font-body text-xs font-semibold text-foreground hover:bg-muted transition-colors"
+        >
+          <ExternalLink size={12} /> Apri
+        </a>
+      </div>
+    </div>
+  );
+};
+
 /* ---------------- In-app viewer (no download) ---------------- */
 const MaterialViewer = ({ material, onClose }: { material: CourseMaterial; onClose: () => void }) => {
   const [url, setUrl] = useState<string | null>(null);
@@ -192,11 +257,7 @@ const MaterialViewer = ({ material, onClose }: { material: CourseMaterial; onClo
               className="w-full h-[80vh] bg-white"
             />
           ) : isOffice(material.file_name) ? (
-            <iframe
-              src={`https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(url)}`}
-              title={material.file_name}
-              className="w-full h-[80vh] bg-white"
-            />
+            <OfficePreview url={url} name={material.file_name} />
           ) : (extOf(material.file_name) === "txt" || extOf(material.file_name) === "md") ? (
             <iframe
               src={url}
