@@ -142,6 +142,47 @@ const AdminRegistrations = ({ editions }: { editions: Edition[] }) => {
 
             {isExpanded && (
               <div className="border-t border-border p-4 space-y-3">
+                {/* Manual add form */}
+                <div className="bg-primary/5 border border-primary/20 rounded-md p-3">
+                  <p className="font-body text-xs uppercase tracking-wider text-muted-foreground mb-2 flex items-center gap-1">
+                    <UserPlus size={12} /> Aggiungi iscritto manualmente
+                  </p>
+                  <div className="grid grid-cols-1 sm:grid-cols-4 gap-2">
+                    <input
+                      type="text"
+                      value={getForm(edition.id).full_name}
+                      onChange={(e) => setForm(edition.id, { full_name: e.target.value })}
+                      placeholder="Nome e cognome"
+                      className="sm:col-span-1 px-3 py-2 rounded-md border border-input bg-background font-body text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                    />
+                    <input
+                      type="email"
+                      value={getForm(edition.id).email}
+                      onChange={(e) => setForm(edition.id, { email: e.target.value })}
+                      placeholder="Email"
+                      className="sm:col-span-1 px-3 py-2 rounded-md border border-input bg-background font-body text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                    />
+                    <input
+                      type="tel"
+                      value={getForm(edition.id).phone}
+                      onChange={(e) => setForm(edition.id, { phone: e.target.value })}
+                      placeholder="Telefono (opzionale)"
+                      className="sm:col-span-1 px-3 py-2 rounded-md border border-input bg-background font-body text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                    />
+                    <Button
+                      onClick={() => handleAdd(edition.id)}
+                      disabled={submitting === edition.id}
+                      className="bg-primary text-primary-foreground font-body"
+                    >
+                      <UserPlus size={14} className="mr-1" />
+                      {submitting === edition.id ? "Aggiungo..." : "Aggiungi"}
+                    </Button>
+                  </div>
+                  <p className="font-body text-xs text-muted-foreground mt-2">
+                    L'iscrizione verrà creata già confermata e l'utente potrà accedere ai materiali.
+                  </p>
+                </div>
+
                 {editionRegs.length === 0 ? (
                   <p className="font-body text-sm text-muted-foreground italic">Nessuna iscrizione ricevuta.</p>
                 ) : (
