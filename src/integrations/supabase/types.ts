@@ -365,10 +365,12 @@ export type Database = {
           created_at: string
           description: string | null
           edition_id: string
+          external_url: string | null
           file_name: string
-          file_path: string
+          file_path: string | null
           file_size: number | null
           id: string
+          material_type: string
           module_id: string | null
           sort_order: number
         }
@@ -376,10 +378,12 @@ export type Database = {
           created_at?: string
           description?: string | null
           edition_id: string
+          external_url?: string | null
           file_name: string
-          file_path: string
+          file_path?: string | null
           file_size?: number | null
           id?: string
+          material_type?: string
           module_id?: string | null
           sort_order?: number
         }
@@ -387,10 +391,12 @@ export type Database = {
           created_at?: string
           description?: string | null
           edition_id?: string
+          external_url?: string | null
           file_name?: string
-          file_path?: string
+          file_path?: string | null
           file_size?: number | null
           id?: string
+          material_type?: string
           module_id?: string | null
           sort_order?: number
         }
