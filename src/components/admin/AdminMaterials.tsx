@@ -403,9 +403,66 @@ const AdminMaterials = ({ editions, materials, modules, onUpdated }: Props) => {
                 </div>
               )}
             </div>
+
+            {/* Add link or external image */}
+            <div className="border-t border-border pt-4">
+              <label className="font-body text-xs uppercase tracking-wider text-muted-foreground font-semibold block mb-2">
+                Aggiungi link o immagine (con descrizione)
+              </label>
+              <div className="flex gap-2 mb-2">
+                <button
+                  type="button"
+                  onClick={() => setLinkType("link")}
+                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border text-xs font-body font-semibold transition-colors ${linkType === "link" ? "bg-primary text-primary-foreground border-primary" : "bg-background border-input text-foreground hover:bg-muted"}`}
+                >
+                  <Link2 size={13} /> Link
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setLinkType("image")}
+                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border text-xs font-body font-semibold transition-colors ${linkType === "image" ? "bg-primary text-primary-foreground border-primary" : "bg-background border-input text-foreground hover:bg-muted"}`}
+                >
+                  <ImageIcon size={13} /> Immagine (URL)
+                </button>
+              </div>
+              <div className="grid gap-2">
+                <input
+                  type="text"
+                  value={linkTitle}
+                  onChange={(e) => setLinkTitle(e.target.value)}
+                  placeholder="Titolo"
+                  className="w-full px-4 py-2.5 rounded-md border border-input bg-background font-body text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                />
+                <input
+                  type="url"
+                  value={linkUrl}
+                  onChange={(e) => setLinkUrl(e.target.value)}
+                  placeholder={linkType === "image" ? "https://... (URL immagine)" : "https://..."}
+                  className="w-full px-4 py-2.5 rounded-md border border-input bg-background font-body text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                />
+                <textarea
+                  value={linkDescription}
+                  onChange={(e) => setLinkDescription(e.target.value)}
+                  placeholder="Descrizione (opzionale)"
+                  rows={2}
+                  className="w-full px-4 py-2.5 rounded-md border border-input bg-background font-body text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring resize-none"
+                />
+                <div className="flex justify-end">
+                  <Button
+                    onClick={handleAddLink}
+                    disabled={addingLink || !linkTitle.trim() || !linkUrl.trim()}
+                    className="bg-primary text-primary-foreground"
+                  >
+                    <Plus size={16} className="mr-2" />
+                    {addingLink ? "Aggiunta..." : `Aggiungi ${linkType === "image" ? "immagine" : "link"}`}
+                  </Button>
+                </div>
+              </div>
+            </div>
           </>
         )}
       </div>
+
 
       {/* Materials tree by edition */}
       {editions.map((edition) => {
