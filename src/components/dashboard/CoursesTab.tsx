@@ -226,7 +226,7 @@ const EditionCard = ({
   );
 };
 
-const CoursesTab = ({ editions, materials, onDownload }: CoursesTabProps) => {
+const CoursesTab = ({ editions, materials, modules, onDownload }: CoursesTabProps) => {
   const [accessMap, setAccessMap] = useState<Record<string, boolean>>({});
   const [accessLoading, setAccessLoading] = useState(true);
 
