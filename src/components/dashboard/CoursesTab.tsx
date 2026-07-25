@@ -282,7 +282,7 @@ const EditionCard = ({
   const year = dateObj.getFullYear();
 
   const editionModules = modules.filter((m) => m.edition_id === edition.id).sort((a, b) => a.sort_order - b.sort_order);
-  const orphans = materials.filter((m) => !m.module_id);
+  const orphans = materials.filter((m) => m.edition_id === edition.id && !m.module_id);
   const videoCount = materials.filter((m) => isVideo(m.file_name)).length;
   const totalCount = materials.length;
 
