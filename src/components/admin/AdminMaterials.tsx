@@ -61,9 +61,67 @@ const AdminMaterials = ({ editions, materials, modules, onUpdated }: Props) => {
   const [editTitle, setEditTitle] = useState("");
   const [editDescription, setEditDescription] = useState("");
   const [progress, setProgress] = useState<Record<string, UploadProgressItem>>({});
+  const [draggedModuleId, setDraggedModuleId] = useState<string | null>(null);
+  const [dragOverModuleId, setDragOverModuleId] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const toggleExpanded = (id: string) => setExpanded((p) => ({ ...p, [id]: !p[id] }));
+
+  const handleModuleDragStart = (e: React.DragEvent<HTMLDivElement>, modId: string) => {
+    setDraggedModuleId(modId);
+    e.dataTransfer.effectAllowed = "move";
+  };
+
+  const handleModuleDragOver = (e: React.DragEvent<HTMLDivElement>, modId: string) => {
+    e.preventDefault();
+    if (modId === draggedModuleId) return;
+    setDragOverModuleId(modId);
+  };
+
+  const handleModuleDrop = async (e: React.DragEvent<HTMLDivElement>, targetId: string) => {
+    e.preventDefault();
+    setDragOverModuleId(null);
+    if (!draggedModuleId || draggedModuleId === targetId) {
+      setDraggedModuleId(null);
+      return;
+    }
+    const source = modules.find((m) => m.id === draggedModuleId);
+    const target = modules.find((m) => m.id === targetId);
+    if (!source || !target || source.edition_id !== target.edition_id) {
+      setDraggedModuleId(null);
+      return;
+    }
+    const editionModules = modules
+      .filter((m) => m.edition_id === source.edition_id)
+      .sort((a, b) => a.sort_order - b.sort_order);
+    const fromIndex = editionModules.findIndex((m) => m.id === draggedModuleId);
+    const toIndex = editionModules.findIndex((m) => m.id === targetId);
+    if (fromIndex === -1 || toIndex === -1) {
+      setDraggedModuleId(null);
+      return;
+    }
+    const reordered = [...editionModules];
+    const [moved] = reordered.splice(fromIndex, 1);
+    reordered.splice(toIndex, 0, moved);
+
+    const updates = reordered.map((m, i) =>
+      supabase.from("course_modules").update({ sort_order: i }).eq("id", m.id)
+    );
+    const results = await Promise.all(updates);
+    const firstError = results.find((r) => r.error)?.error;
+    if (firstError) {
+      toast({ title: "Errore", description: firstError.message, variant: "destructive" });
+    } else {
+      toast({ title: "Ordine moduli aggiornato" });
+      onUpdated();
+    }
+    setDraggedModuleId(null);
+  };
+
+  const handleModuleDragEnd = () => {
+    setDraggedModuleId(null);
+    setDragOverModuleId(null);
+  };
 
   const handleCreateModule = async () => {
     if (!selectedEdition || !newModuleTitle.trim()) return;
