@@ -73,9 +73,10 @@ const ConsultationRequestModal = ({
         .from("consultation-attachments")
         .upload(path, file, { upsert: false, contentType: file.type });
       if (upErr) throw new Error(`Upload fallito per ${file.name}: ${upErr.message}`);
-      const { data: signed, error: sErr } = await supabase.storage
-        .from("consultation-attachments")
-        .createSignedUrl(path, 60 * 60 * 24 * 30); // 30 days
+      const { data: signed, error: sErr } = await supabase.functions.invoke(
+        "sign-web-consultation-attachment",
+        { body: { path } },
+      );
       if (sErr || !signed?.signedUrl) throw new Error(`URL fallito per ${file.name}`);
       uploaded.push({ name: file.name, url: signed.signedUrl });
     }
