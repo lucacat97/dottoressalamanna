@@ -99,6 +99,12 @@ const AuthPage = () => {
           },
         });
         if (error) throw error;
+        if (newsletterConsent) {
+          await supabase.from("newsletter_consents").insert({
+            email: email.trim().toLowerCase(),
+            source: "signup",
+          });
+        }
         toast({
           title: "Registrazione completata",
           description: "Per favore, controlla la tua email per confermare l'account.",
