@@ -289,6 +289,7 @@ const CoursesTab = ({ editions, materials, modules, onDownload }: CoursesTabProp
                 key={edition.id}
                 edition={edition}
                 materials={materials.filter((m) => m.edition_id === edition.id)}
+                modules={modules}
                 hasAccess={accessMap[edition.id] ?? false}
                 accessLoading={accessLoading}
                 isPast={isPast}
