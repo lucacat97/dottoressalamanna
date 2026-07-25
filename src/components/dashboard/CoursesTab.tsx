@@ -192,11 +192,7 @@ const MaterialViewer = ({ material, onClose }: { material: CourseMaterial; onClo
               className="w-full h-[80vh] bg-white"
             />
           ) : isOffice(material.file_name) ? (
-            <iframe
-              src={`https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(url)}`}
-              title={material.file_name}
-              className="w-full h-[80vh] bg-white"
-            />
+            <OfficePreview url={url} name={material.file_name} />
           ) : (extOf(material.file_name) === "txt" || extOf(material.file_name) === "md") ? (
             <iframe
               src={url}
