@@ -23,3 +23,6 @@ verify_jwt = false
 
 [functions.cancel-stripe-subscription]
 verify_jwt = false
+
+[functions.sign-web-consultation-attachment]
+verify_jwt = false
