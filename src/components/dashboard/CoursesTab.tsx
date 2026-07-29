@@ -326,14 +326,7 @@ const MaterialViewer = ({ material, onClose }: { material: CourseMaterial; onClo
               </a>
             </div>
           ) : isVideo(material.file_name) ? (
-            <video
-              src={url}
-              controls
-              controlsList="nodownload noremoteplayback"
-              disablePictureInPicture
-              onContextMenu={blockCtx}
-              className="max-h-[80vh] w-full bg-black"
-            />
+            <ResumableVideo src={url} materialId={material.id} name={material.file_name} />
           ) : isAudio(material.file_name) ? (
             <div className="p-10 w-full max-w-lg">
               <audio src={url} controls controlsList="nodownload" className="w-full" />
