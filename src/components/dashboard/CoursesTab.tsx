@@ -252,7 +252,7 @@ const ResumableVideo = ({ src, materialId, name }: { src: string; materialId: st
         disablePictureInPicture
         onLoadedMetadata={onLoadedMetadata}
         onTimeUpdate={onTimeUpdate}
-        onPause={onTimeUpdate}
+        onPause={() => saveNow(true)}
         onEnded={onEnded}
         onContextMenu={(e) => e.preventDefault()}
         title={name}
