@@ -178,16 +178,30 @@ const ResumableVideo = ({ src, materialId, name }: { src: string; materialId: st
     if (saved && saved.t > 5) setResumeAt(saved.t);
   }, [userId, materialId]);
 
-  const onLoadedMetadata = () => {
+  const appliedRef = useRef(false);
+  const applyResume = () => {
     const v = videoRef.current;
-    if (!v || resumeAt == null) return;
-    // Only resume if not near the end
-    if (v.duration && resumeAt < v.duration - 10) {
-      v.currentTime = resumeAt;
+    if (!v || appliedRef.current || resumeAt == null) return;
+    // Wait for metadata (duration) before seeking
+    if (!v.duration || !isFinite(v.duration)) return;
+    if (resumeAt < v.duration - 10) {
+      try { v.currentTime = resumeAt; } catch { /* noop */ }
+      appliedRef.current = true;
       setShowBanner(true);
       setTimeout(() => setShowBanner(false), 4000);
+    } else {
+      appliedRef.current = true;
     }
   };
+
+  // Re-apply when resumeAt arrives after metadata is already loaded
+  useEffect(() => {
+    if (resumeAt == null) return;
+    const v = videoRef.current;
+    if (v && v.readyState >= 1) applyResume();
+  }, [resumeAt]);
+
+  const onLoadedMetadata = () => applyResume();
 
   const onTimeUpdate = () => {
     const v = videoRef.current;
