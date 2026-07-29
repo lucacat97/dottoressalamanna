@@ -1,7 +1,7 @@
 import { Calendar, MapPin, FileText, Play, Monitor, Brain, Image as ImageIcon, FileSpreadsheet, File, Lock, CheckCircle2, Clock, X, Eye, PlayCircle, BookOpen, Link2, ExternalLink } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 
 interface CourseEdition {
   id: string;
