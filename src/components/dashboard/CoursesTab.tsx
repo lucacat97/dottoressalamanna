@@ -140,6 +140,96 @@ const OfficePreview = ({ url, name }: { url: string; name: string }) => {
   );
 };
 
+/* ---------------- Video progress (localStorage) ---------------- */
+const progressKey = (userId: string, materialId: string) => `video-progress:${userId}:${materialId}`;
+const getSavedProgress = (userId: string, materialId: string): { t: number; d: number } | null => {
+  try {
+    const raw = localStorage.getItem(progressKey(userId, materialId));
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (typeof parsed?.t === "number") return parsed;
+  } catch { /* noop */ }
+  return null;
+};
+const formatTime = (s: number) => {
+  if (!isFinite(s) || s < 0) s = 0;
+  const h = Math.floor(s / 3600);
+  const m = Math.floor((s % 3600) / 60);
+  const sec = Math.floor(s % 60);
+  return h > 0
+    ? `${h}:${String(m).padStart(2, "0")}:${String(sec).padStart(2, "0")}`
+    : `${m}:${String(sec).padStart(2, "0")}`;
+};
+
+const ResumableVideo = ({ src, materialId, name }: { src: string; materialId: string; name: string }) => {
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
+  const [resumeAt, setResumeAt] = useState<number | null>(null);
+  const [showBanner, setShowBanner] = useState(false);
+  const lastSaveRef = useRef(0);
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => setUserId(data.user?.id ?? null));
+  }, []);
+
+  useEffect(() => {
+    if (!userId) return;
+    const saved = getSavedProgress(userId, materialId);
+    if (saved && saved.t > 5) setResumeAt(saved.t);
+  }, [userId, materialId]);
+
+  const onLoadedMetadata = () => {
+    const v = videoRef.current;
+    if (!v || resumeAt == null) return;
+    // Only resume if not near the end
+    if (v.duration && resumeAt < v.duration - 10) {
+      v.currentTime = resumeAt;
+      setShowBanner(true);
+      setTimeout(() => setShowBanner(false), 4000);
+    }
+  };
+
+  const onTimeUpdate = () => {
+    const v = videoRef.current;
+    if (!v || !userId) return;
+    const now = Date.now();
+    if (now - lastSaveRef.current < 3000) return;
+    lastSaveRef.current = now;
+    try {
+      localStorage.setItem(progressKey(userId, materialId), JSON.stringify({ t: v.currentTime, d: v.duration || 0 }));
+    } catch { /* quota */ }
+  };
+
+  const onEnded = () => {
+    if (!userId) return;
+    try { localStorage.removeItem(progressKey(userId, materialId)); } catch { /* noop */ }
+  };
+
+  return (
+    <div className="relative w-full h-full flex items-center justify-center">
+      {showBanner && resumeAt != null && (
+        <div className="absolute top-3 left-1/2 -translate-x-1/2 z-10 bg-petrolio text-white font-body text-xs font-semibold px-3 py-1.5 rounded-full shadow-lg animate-in fade-in slide-in-from-top-2">
+          Ripreso da {formatTime(resumeAt)}
+        </div>
+      )}
+      <video
+        ref={videoRef}
+        src={src}
+        controls
+        controlsList="nodownload noremoteplayback"
+        disablePictureInPicture
+        onLoadedMetadata={onLoadedMetadata}
+        onTimeUpdate={onTimeUpdate}
+        onPause={onTimeUpdate}
+        onEnded={onEnded}
+        onContextMenu={(e) => e.preventDefault()}
+        title={name}
+        className="max-h-[80vh] w-full bg-black"
+      />
+    </div>
+  );
+};
+
 /* ---------------- In-app viewer (no download) ---------------- */
 const MaterialViewer = ({ material, onClose }: { material: CourseMaterial; onClose: () => void }) => {
   const [url, setUrl] = useState<string | null>(null);
