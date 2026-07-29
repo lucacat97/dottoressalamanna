@@ -203,21 +203,39 @@ const ResumableVideo = ({ src, materialId, name }: { src: string; materialId: st
 
   const onLoadedMetadata = () => applyResume();
 
-  const onTimeUpdate = () => {
+  const saveNow = (force = false) => {
     const v = videoRef.current;
     if (!v || !userId) return;
+    if (!isFinite(v.currentTime) || v.currentTime < 1) return;
     const now = Date.now();
-    if (now - lastSaveRef.current < 3000) return;
+    if (!force && now - lastSaveRef.current < 3000) return;
     lastSaveRef.current = now;
     try {
       localStorage.setItem(progressKey(userId, materialId), JSON.stringify({ t: v.currentTime, d: v.duration || 0 }));
     } catch { /* quota */ }
   };
 
+  const onTimeUpdate = () => saveNow(false);
+
   const onEnded = () => {
     if (!userId) return;
     try { localStorage.removeItem(progressKey(userId, materialId)); } catch { /* noop */ }
   };
+
+  // Flush on unmount / tab hide / page unload — so closing the modal saves the position.
+  useEffect(() => {
+    const flush = () => saveNow(true);
+    window.addEventListener("pagehide", flush);
+    window.addEventListener("beforeunload", flush);
+    document.addEventListener("visibilitychange", flush);
+    return () => {
+      flush();
+      window.removeEventListener("pagehide", flush);
+      window.removeEventListener("beforeunload", flush);
+      document.removeEventListener("visibilitychange", flush);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userId, materialId]);
 
   return (
     <div className="relative w-full h-full flex items-center justify-center">
