@@ -273,11 +273,36 @@ const ResumableVideo = ({
 
   return (
     <div className="relative w-full h-full flex items-center justify-center">
-      {showBanner && resumeAt != null && (
+      {showBanner && resumeAt != null && countdown == null && (
         <div className="absolute top-3 left-1/2 -translate-x-1/2 z-10 bg-petrolio text-white font-body text-xs font-semibold px-3 py-1.5 rounded-full shadow-lg animate-in fade-in slide-in-from-top-2">
           Ripreso da {formatTime(resumeAt)}
         </div>
       )}
+      {countdown != null && onNext && (
+        <div className="absolute inset-0 z-20 bg-black/80 flex flex-col items-center justify-center gap-4 p-6 text-center animate-in fade-in">
+          <p className="font-body text-xs uppercase tracking-widest text-white/60">Prossimo video tra {countdown}s</p>
+          <p className="font-display text-lg font-semibold text-white max-w-md line-clamp-2">
+            {(nextName || "").replace(/\.[^.]+$/, "")}
+          </p>
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => { setCountdown(null); onNext(); }}
+              className="font-body text-sm font-semibold px-5 py-2 rounded-full bg-petrolio text-white hover:opacity-90 transition"
+            >
+              Riproduci ora
+            </button>
+            <button
+              type="button"
+              onClick={() => setCountdown(null)}
+              className="font-body text-sm px-5 py-2 rounded-full border border-white/30 text-white/80 hover:bg-white/10 transition"
+            >
+              Annulla
+            </button>
+          </div>
+        </div>
+      )}
+
       <video
         ref={videoRef}
         src={src}
