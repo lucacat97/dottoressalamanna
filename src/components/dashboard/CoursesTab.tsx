@@ -763,7 +763,14 @@ const CoursesTab = ({ editions, materials, modules }: CoursesTabProps) => {
         <TabsContent value="webinar">{renderList("webinar")}</TabsContent>
       </Tabs>
 
-      {viewing && <MaterialViewer material={viewing} onClose={() => setViewing(null)} />}
+      {viewing && (
+        <MaterialViewer
+          material={viewing}
+          onClose={() => setViewing(null)}
+          nextMaterial={nextVideo}
+          onNext={() => nextVideo && setViewing(nextVideo)}
+        />
+      )}
     </div>
   );
 };
