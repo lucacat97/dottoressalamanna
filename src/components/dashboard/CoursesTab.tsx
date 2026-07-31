@@ -161,12 +161,44 @@ const formatTime = (s: number) => {
     : `${m}:${String(sec).padStart(2, "0")}`;
 };
 
-const ResumableVideo = ({ src, materialId, name }: { src: string; materialId: string; name: string }) => {
+const ResumableVideo = ({
+  src,
+  materialId,
+  name,
+  nextName,
+  onNext,
+}: {
+  src: string;
+  materialId: string;
+  name: string;
+  nextName?: string | null;
+  onNext?: () => void;
+}) => {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
   const [resumeAt, setResumeAt] = useState<number | null>(null);
   const [showBanner, setShowBanner] = useState(false);
+  const [countdown, setCountdown] = useState<number | null>(null);
   const lastSaveRef = useRef(0);
+
+  // Auto-advance countdown
+  useEffect(() => {
+    if (countdown == null) return;
+    if (countdown <= 0) {
+      setCountdown(null);
+      onNext?.();
+      return;
+    }
+    const t = setTimeout(() => setCountdown((c) => (c == null ? null : c - 1)), 1000);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [countdown]);
+
+  // Reset state when switching video
+  useEffect(() => {
+    setCountdown(null);
+    setShowBanner(false);
+  }, [materialId]);
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => setUserId(data.user?.id ?? null));
