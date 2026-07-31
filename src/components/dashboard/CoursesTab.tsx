@@ -657,6 +657,32 @@ const CoursesTab = ({ editions, materials, modules }: CoursesTabProps) => {
   const [accessLoading, setAccessLoading] = useState(true);
   const [viewing, setViewing] = useState<CourseMaterial | null>(null);
 
+  // Playlist of videos in the current edition, in display order (module order, then sort_order)
+  const nextVideo = useMemo(() => {
+    if (!viewing || !isVideo(viewing.file_name) || viewing.material_type === "link" || viewing.material_type === "image") return null;
+    const moduleOrder = new Map<string, number>();
+    modules
+      .filter((m) => m.edition_id === viewing.edition_id)
+      .forEach((m, i) => moduleOrder.set(m.id, m.sort_order ?? i));
+    const playlist = materials
+      .filter(
+        (m) =>
+          m.edition_id === viewing.edition_id &&
+          m.material_type !== "link" &&
+          m.material_type !== "image" &&
+          isVideo(m.file_name)
+      )
+      .sort((a, b) => {
+        const ma = a.module_id ? moduleOrder.get(a.module_id) ?? 9998 : 9999;
+        const mb = b.module_id ? moduleOrder.get(b.module_id) ?? 9998 : 9999;
+        if (ma !== mb) return ma - mb;
+        return (a.sort_order ?? 0) - (b.sort_order ?? 0);
+      });
+    const idx = playlist.findIndex((m) => m.id === viewing.id);
+    return idx >= 0 && idx < playlist.length - 1 ? playlist[idx + 1] : null;
+  }, [viewing, materials, modules]);
+
+
   useEffect(() => {
     const checkAccess = async () => {
       const { data: { user } } = await supabase.auth.getUser();
