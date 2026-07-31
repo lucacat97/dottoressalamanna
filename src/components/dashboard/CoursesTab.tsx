@@ -322,7 +322,7 @@ const ResumableVideo = ({
 };
 
 /* ---------------- In-app viewer (no download) ---------------- */
-const MaterialViewer = ({ material, onClose }: { material: CourseMaterial; onClose: () => void }) => {
+const MaterialViewer = ({ material, onClose, nextMaterial, onNext }: { material: CourseMaterial; onClose: () => void; nextMaterial?: CourseMaterial | null; onNext?: () => void }) => {
   const [url, setUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const isLink = material.material_type === "link";
