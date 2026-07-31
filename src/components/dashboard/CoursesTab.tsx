@@ -417,7 +417,13 @@ const MaterialViewer = ({ material, onClose, nextMaterial, onNext }: { material:
               </a>
             </div>
           ) : isVideo(material.file_name) ? (
-            <ResumableVideo src={url} materialId={material.id} name={material.file_name} />
+            <ResumableVideo
+              src={url}
+              materialId={material.id}
+              name={material.file_name}
+              nextName={nextMaterial?.file_name ?? null}
+              onNext={nextMaterial && onNext ? onNext : undefined}
+            />
           ) : isAudio(material.file_name) ? (
             <div className="p-10 w-full max-w-lg">
               <audio src={url} controls controlsList="nodownload" className="w-full" />
