@@ -161,12 +161,44 @@ const formatTime = (s: number) => {
     : `${m}:${String(sec).padStart(2, "0")}`;
 };
 
-const ResumableVideo = ({ src, materialId, name }: { src: string; materialId: string; name: string }) => {
+const ResumableVideo = ({
+  src,
+  materialId,
+  name,
+  nextName,
+  onNext,
+}: {
+  src: string;
+  materialId: string;
+  name: string;
+  nextName?: string | null;
+  onNext?: () => void;
+}) => {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
   const [resumeAt, setResumeAt] = useState<number | null>(null);
   const [showBanner, setShowBanner] = useState(false);
+  const [countdown, setCountdown] = useState<number | null>(null);
   const lastSaveRef = useRef(0);
+
+  // Auto-advance countdown
+  useEffect(() => {
+    if (countdown == null) return;
+    if (countdown <= 0) {
+      setCountdown(null);
+      onNext?.();
+      return;
+    }
+    const t = setTimeout(() => setCountdown((c) => (c == null ? null : c - 1)), 1000);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [countdown]);
+
+  // Reset state when switching video
+  useEffect(() => {
+    setCountdown(null);
+    setShowBanner(false);
+  }, [materialId]);
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => setUserId(data.user?.id ?? null));
@@ -218,8 +250,10 @@ const ResumableVideo = ({ src, materialId, name }: { src: string; materialId: st
   const onTimeUpdate = () => saveNow(false);
 
   const onEnded = () => {
-    if (!userId) return;
-    try { localStorage.removeItem(progressKey(userId, materialId)); } catch { /* noop */ }
+    if (userId) {
+      try { localStorage.removeItem(progressKey(userId, materialId)); } catch { /* noop */ }
+    }
+    if (onNext) setCountdown(5);
   };
 
   // Flush on unmount / tab hide / page unload — so closing the modal saves the position.
@@ -239,11 +273,36 @@ const ResumableVideo = ({ src, materialId, name }: { src: string; materialId: st
 
   return (
     <div className="relative w-full h-full flex items-center justify-center">
-      {showBanner && resumeAt != null && (
+      {showBanner && resumeAt != null && countdown == null && (
         <div className="absolute top-3 left-1/2 -translate-x-1/2 z-10 bg-petrolio text-white font-body text-xs font-semibold px-3 py-1.5 rounded-full shadow-lg animate-in fade-in slide-in-from-top-2">
           Ripreso da {formatTime(resumeAt)}
         </div>
       )}
+      {countdown != null && onNext && (
+        <div className="absolute inset-0 z-20 bg-black/80 flex flex-col items-center justify-center gap-4 p-6 text-center animate-in fade-in">
+          <p className="font-body text-xs uppercase tracking-widest text-white/60">Prossimo video tra {countdown}s</p>
+          <p className="font-display text-lg font-semibold text-white max-w-md line-clamp-2">
+            {(nextName || "").replace(/\.[^.]+$/, "")}
+          </p>
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => { setCountdown(null); onNext(); }}
+              className="font-body text-sm font-semibold px-5 py-2 rounded-full bg-petrolio text-white hover:opacity-90 transition"
+            >
+              Riproduci ora
+            </button>
+            <button
+              type="button"
+              onClick={() => setCountdown(null)}
+              className="font-body text-sm px-5 py-2 rounded-full border border-white/30 text-white/80 hover:bg-white/10 transition"
+            >
+              Annulla
+            </button>
+          </div>
+        </div>
+      )}
+
       <video
         ref={videoRef}
         src={src}
@@ -263,7 +322,7 @@ const ResumableVideo = ({ src, materialId, name }: { src: string; materialId: st
 };
 
 /* ---------------- In-app viewer (no download) ---------------- */
-const MaterialViewer = ({ material, onClose }: { material: CourseMaterial; onClose: () => void }) => {
+const MaterialViewer = ({ material, onClose, nextMaterial, onNext }: { material: CourseMaterial; onClose: () => void; nextMaterial?: CourseMaterial | null; onNext?: () => void }) => {
   const [url, setUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const isLink = material.material_type === "link";
@@ -358,7 +417,13 @@ const MaterialViewer = ({ material, onClose }: { material: CourseMaterial; onClo
               </a>
             </div>
           ) : isVideo(material.file_name) ? (
-            <ResumableVideo src={url} materialId={material.id} name={material.file_name} />
+            <ResumableVideo
+              src={url}
+              materialId={material.id}
+              name={material.file_name}
+              nextName={nextMaterial?.file_name ?? null}
+              onNext={nextMaterial && onNext ? onNext : undefined}
+            />
           ) : isAudio(material.file_name) ? (
             <div className="p-10 w-full max-w-lg">
               <audio src={url} controls controlsList="nodownload" className="w-full" />
@@ -592,6 +657,32 @@ const CoursesTab = ({ editions, materials, modules }: CoursesTabProps) => {
   const [accessLoading, setAccessLoading] = useState(true);
   const [viewing, setViewing] = useState<CourseMaterial | null>(null);
 
+  // Playlist of videos in the current edition, in display order (module order, then sort_order)
+  const nextVideo = useMemo(() => {
+    if (!viewing || !isVideo(viewing.file_name) || viewing.material_type === "link" || viewing.material_type === "image") return null;
+    const moduleOrder = new Map<string, number>();
+    modules
+      .filter((m) => m.edition_id === viewing.edition_id)
+      .forEach((m, i) => moduleOrder.set(m.id, m.sort_order ?? i));
+    const playlist = materials
+      .filter(
+        (m) =>
+          m.edition_id === viewing.edition_id &&
+          m.material_type !== "link" &&
+          m.material_type !== "image" &&
+          isVideo(m.file_name)
+      )
+      .sort((a, b) => {
+        const ma = a.module_id ? moduleOrder.get(a.module_id) ?? 9998 : 9999;
+        const mb = b.module_id ? moduleOrder.get(b.module_id) ?? 9998 : 9999;
+        if (ma !== mb) return ma - mb;
+        return (a.sort_order ?? 0) - (b.sort_order ?? 0);
+      });
+    const idx = playlist.findIndex((m) => m.id === viewing.id);
+    return idx >= 0 && idx < playlist.length - 1 ? playlist[idx + 1] : null;
+  }, [viewing, materials, modules]);
+
+
   useEffect(() => {
     const checkAccess = async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -698,7 +789,14 @@ const CoursesTab = ({ editions, materials, modules }: CoursesTabProps) => {
         <TabsContent value="webinar">{renderList("webinar")}</TabsContent>
       </Tabs>
 
-      {viewing && <MaterialViewer material={viewing} onClose={() => setViewing(null)} />}
+      {viewing && (
+        <MaterialViewer
+          material={viewing}
+          onClose={() => setViewing(null)}
+          nextMaterial={nextVideo}
+          onNext={() => nextVideo && setViewing(nextVideo)}
+        />
+      )}
     </div>
   );
 };
