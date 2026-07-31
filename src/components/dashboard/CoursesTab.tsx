@@ -250,8 +250,10 @@ const ResumableVideo = ({
   const onTimeUpdate = () => saveNow(false);
 
   const onEnded = () => {
-    if (!userId) return;
-    try { localStorage.removeItem(progressKey(userId, materialId)); } catch { /* noop */ }
+    if (userId) {
+      try { localStorage.removeItem(progressKey(userId, materialId)); } catch { /* noop */ }
+    }
+    if (onNext) setCountdown(5);
   };
 
   // Flush on unmount / tab hide / page unload — so closing the modal saves the position.
