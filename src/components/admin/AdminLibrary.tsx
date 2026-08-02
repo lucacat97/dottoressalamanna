@@ -281,9 +281,51 @@ const MaterialForm = ({
   const [sortOrder, setSortOrder] = useState(existing?.sort_order ?? existingCountForSection(sections[0]?.id ?? ""));
   const [isPublished, setIsPublished] = useState(existing?.is_published ?? true);
   const [saving, setSaving] = useState(false);
+  const [upProgress, setUpProgress] = useState<{ loaded: number; total: number; status: "uploading" | "done" | "error"; error?: string } | null>(null);
 
   const togglePlan = (p: Plan) =>
     setPlans((prev) => (prev.includes(p) ? prev.filter((x) => x !== p) : [...prev, p]));
+
+  const uploadWithProgress = (f: File, filePath: string) =>
+    new Promise<void>(async (resolve, reject) => {
+      const { data: sess } = await supabase.auth.getSession();
+      const token = sess.session?.access_token;
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string;
+      const anonKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string;
+
+      setUpProgress({ loaded: 0, total: f.size, status: "uploading" });
+
+      const upload = new tus.Upload(f, {
+        endpoint: `${supabaseUrl}/storage/v1/upload/resumable`,
+        retryDelays: [0, 1000, 3000, 5000, 10000],
+        headers: {
+          authorization: `Bearer ${token || anonKey}`,
+          "x-upsert": "true",
+        },
+        uploadDataDuringCreation: true,
+        removeFingerprintOnSuccess: true,
+        metadata: {
+          bucketName: "learning-materials",
+          objectName: filePath,
+          contentType: f.type || "application/octet-stream",
+          cacheControl: "3600",
+        },
+        chunkSize: 6 * 1024 * 1024,
+        onError: (err) => {
+          setUpProgress((p) => (p ? { ...p, status: "error", error: err.message } : p));
+          reject(err);
+        },
+        onProgress: (loaded, total) => {
+          setUpProgress({ loaded, total: total || f.size, status: "uploading" });
+        },
+        onSuccess: () => {
+          setUpProgress({ loaded: f.size, total: f.size, status: "done" });
+          resolve();
+        },
+      });
+      upload.start();
+    });
+
 
   const handleSave = async () => {
     if (!title.trim() || !sectionId) {
