@@ -345,8 +345,7 @@ const MaterialForm = ({
       if ((contentType === "pdf" || contentType === "video_upload") && file) {
         const ext = file.name.split(".").pop() || "bin";
         const path = `${sectionId}/${Date.now()}-${slugify(title)}.${ext}`;
-        const { error: upErr } = await supabase.storage.from("learning-materials").upload(path, file, { upsert: false });
-        if (upErr) throw upErr;
+        await uploadWithProgress(file, path);
         file_path = path;
         file_size = file.size;
         file_mime = file.type;
