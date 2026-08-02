@@ -8,6 +8,14 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
 import { toast } from "@/hooks/use-toast";
 import { Plus, Trash2, GripVertical, Video, FileText, Link2, BookOpen, Pencil, Eye, EyeOff, Save, X } from "lucide-react";
+import * as tus from "tus-js-client";
+
+const formatBytes = (bytes: number) => {
+  if (!bytes) return "0 B";
+  const units = ["B", "KB", "MB", "GB"];
+  const i = Math.min(Math.floor(Math.log(bytes) / Math.log(1024)), units.length - 1);
+  return `${(bytes / Math.pow(1024, i)).toFixed(i === 0 ? 0 : 1)} ${units[i]}`;
+};
 
 type Plan = "base" | "pro" | "platinum";
 type ContentType = "video_link" | "video_upload" | "pdf" | "article";
