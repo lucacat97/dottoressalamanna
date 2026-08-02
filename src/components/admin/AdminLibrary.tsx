@@ -462,8 +462,37 @@ const MaterialForm = ({
             {existing?.file_path && (
               <p className="font-body text-[11px] text-muted-foreground truncate">Attuale: {existing.file_path}</p>
             )}
+            {file && !upProgress && (
+              <p className="font-body text-[11px] text-muted-foreground">
+                {file.name} · {formatBytes(file.size)}
+              </p>
+            )}
+            {upProgress && (
+              <div className="space-y-1">
+                <div className="flex items-center justify-between gap-2 font-body text-[11px]">
+                  <span className="truncate text-muted-foreground">{file?.name}</span>
+                  <span className={`shrink-0 ${upProgress.status === "error" ? "text-destructive" : upProgress.status === "done" ? "text-primary" : "text-muted-foreground"}`}>
+                    {upProgress.status === "error"
+                      ? `Errore: ${upProgress.error ?? ""}`
+                      : upProgress.status === "done"
+                      ? "✓ Caricamento completato"
+                      : `${Math.round((upProgress.loaded / (upProgress.total || 1)) * 100)}% · ${formatBytes(upProgress.loaded)} / ${formatBytes(upProgress.total)}`}
+                  </span>
+                </div>
+                <div className="h-2 w-full rounded-full bg-muted overflow-hidden">
+                  <div
+                    className={`h-full transition-all ${upProgress.status === "error" ? "bg-destructive" : "bg-primary"}`}
+                    style={{ width: `${Math.round((upProgress.loaded / (upProgress.total || 1)) * 100)}%` }}
+                  />
+                </div>
+                {upProgress.status === "uploading" && (
+                  <p className="font-body text-[10px] text-muted-foreground">Upload resumable — non chiudere la pagina finché non finisce.</p>
+                )}
+              </div>
+            )}
           </div>
         )}
+
 
         {contentType === "article" && (
           <div className="space-y-2">
