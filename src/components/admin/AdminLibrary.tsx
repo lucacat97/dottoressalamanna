@@ -8,6 +8,14 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
 import { toast } from "@/hooks/use-toast";
 import { Plus, Trash2, GripVertical, Video, FileText, Link2, BookOpen, Pencil, Eye, EyeOff, Save, X } from "lucide-react";
+import * as tus from "tus-js-client";
+
+const formatBytes = (bytes: number) => {
+  if (!bytes) return "0 B";
+  const units = ["B", "KB", "MB", "GB"];
+  const i = Math.min(Math.floor(Math.log(bytes) / Math.log(1024)), units.length - 1);
+  return `${(bytes / Math.pow(1024, i)).toFixed(i === 0 ? 0 : 1)} ${units[i]}`;
+};
 
 type Plan = "base" | "pro" | "platinum";
 type ContentType = "video_link" | "video_upload" | "pdf" | "article";
@@ -273,9 +281,51 @@ const MaterialForm = ({
   const [sortOrder, setSortOrder] = useState(existing?.sort_order ?? existingCountForSection(sections[0]?.id ?? ""));
   const [isPublished, setIsPublished] = useState(existing?.is_published ?? true);
   const [saving, setSaving] = useState(false);
+  const [upProgress, setUpProgress] = useState<{ loaded: number; total: number; status: "uploading" | "done" | "error"; error?: string } | null>(null);
 
   const togglePlan = (p: Plan) =>
     setPlans((prev) => (prev.includes(p) ? prev.filter((x) => x !== p) : [...prev, p]));
+
+  const uploadWithProgress = (f: File, filePath: string) =>
+    new Promise<void>(async (resolve, reject) => {
+      const { data: sess } = await supabase.auth.getSession();
+      const token = sess.session?.access_token;
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string;
+      const anonKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string;
+
+      setUpProgress({ loaded: 0, total: f.size, status: "uploading" });
+
+      const upload = new tus.Upload(f, {
+        endpoint: `${supabaseUrl}/storage/v1/upload/resumable`,
+        retryDelays: [0, 1000, 3000, 5000, 10000],
+        headers: {
+          authorization: `Bearer ${token || anonKey}`,
+          "x-upsert": "true",
+        },
+        uploadDataDuringCreation: true,
+        removeFingerprintOnSuccess: true,
+        metadata: {
+          bucketName: "learning-materials",
+          objectName: filePath,
+          contentType: f.type || "application/octet-stream",
+          cacheControl: "3600",
+        },
+        chunkSize: 6 * 1024 * 1024,
+        onError: (err) => {
+          setUpProgress((p) => (p ? { ...p, status: "error", error: err.message } : p));
+          reject(err);
+        },
+        onProgress: (loaded, total) => {
+          setUpProgress({ loaded, total: total || f.size, status: "uploading" });
+        },
+        onSuccess: () => {
+          setUpProgress({ loaded: f.size, total: f.size, status: "done" });
+          resolve();
+        },
+      });
+      upload.start();
+    });
+
 
   const handleSave = async () => {
     if (!title.trim() || !sectionId) {
@@ -295,8 +345,7 @@ const MaterialForm = ({
       if ((contentType === "pdf" || contentType === "video_upload") && file) {
         const ext = file.name.split(".").pop() || "bin";
         const path = `${sectionId}/${Date.now()}-${slugify(title)}.${ext}`;
-        const { error: upErr } = await supabase.storage.from("learning-materials").upload(path, file, { upsert: false });
-        if (upErr) throw upErr;
+        await uploadWithProgress(file, path);
         file_path = path;
         file_size = file.size;
         file_mime = file.type;
@@ -413,8 +462,37 @@ const MaterialForm = ({
             {existing?.file_path && (
               <p className="font-body text-[11px] text-muted-foreground truncate">Attuale: {existing.file_path}</p>
             )}
+            {file && !upProgress && (
+              <p className="font-body text-[11px] text-muted-foreground">
+                {file.name} · {formatBytes(file.size)}
+              </p>
+            )}
+            {upProgress && (
+              <div className="space-y-1">
+                <div className="flex items-center justify-between gap-2 font-body text-[11px]">
+                  <span className="truncate text-muted-foreground">{file?.name}</span>
+                  <span className={`shrink-0 ${upProgress.status === "error" ? "text-destructive" : upProgress.status === "done" ? "text-primary" : "text-muted-foreground"}`}>
+                    {upProgress.status === "error"
+                      ? `Errore: ${upProgress.error ?? ""}`
+                      : upProgress.status === "done"
+                      ? "✓ Caricamento completato"
+                      : `${Math.round((upProgress.loaded / (upProgress.total || 1)) * 100)}% · ${formatBytes(upProgress.loaded)} / ${formatBytes(upProgress.total)}`}
+                  </span>
+                </div>
+                <div className="h-2 w-full rounded-full bg-muted overflow-hidden">
+                  <div
+                    className={`h-full transition-all ${upProgress.status === "error" ? "bg-destructive" : "bg-primary"}`}
+                    style={{ width: `${Math.round((upProgress.loaded / (upProgress.total || 1)) * 100)}%` }}
+                  />
+                </div>
+                {upProgress.status === "uploading" && (
+                  <p className="font-body text-[10px] text-muted-foreground">Upload resumable — non chiudere la pagina finché non finisce.</p>
+                )}
+              </div>
+            )}
           </div>
         )}
+
 
         {contentType === "article" && (
           <div className="space-y-2">
