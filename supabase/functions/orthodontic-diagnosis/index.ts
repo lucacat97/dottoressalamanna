@@ -40,20 +40,20 @@ serve(async (req) => {
     }
     const userId = user.id;
 
-    // ── Server-side access check: admin OR active subscription ──
+    // ── Server-side access check: admin, abbonamento attivo o consulti una tantum ──
     const serviceClient = createClient(supabaseUrl, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
     const apiKeyId: string | null = null;
     {
-      const { data: isAdmin } = await serviceClient.rpc("has_role", { _user_id: userId, _role: "admin" });
-      const { data: hasSubLive } = await serviceClient.rpc("has_active_subscription", { user_uuid: userId, check_env: "live" });
-      const { data: hasSubSbx } = await serviceClient.rpc("has_active_subscription", { user_uuid: userId, check_env: "sandbox" });
-      if (!isAdmin && !hasSubLive && !hasSubSbx) {
+      const { data: allowance, error: allowanceError } = await serviceClient.rpc("consume_ai_consultation", { _user_id: userId });
+      if (allowanceError) console.error("consume_ai_consultation error:", allowanceError);
+      if (!allowance || (allowance as { allowed?: boolean }).allowed !== true) {
         return new Response(
-          JSON.stringify({ error: "Nessuna consulenza disponibile. Attiva un abbonamento MILA per generare consulenze." }),
+          JSON.stringify({ error: "Nessuna consulenza disponibile. Attiva un abbonamento MILA o richiedi consulti una tantum." }),
           { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
     }
+
 
 
     const body = await req.json();
