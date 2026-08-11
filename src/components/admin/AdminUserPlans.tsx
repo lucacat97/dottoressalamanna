@@ -23,14 +23,22 @@ const PLAN_META: Record<Plan, { label: string; icon: typeof UserIcon; className:
 
 const AdminUserPlans = () => {
   const [rows, setRows] = useState<Row[]>([]);
+  const [credits, setCredits] = useState<Record<string, number>>({});
+  const [draft, setDraft] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("");
 
   const load = async () => {
     setLoading(true);
-    const { data, error } = await supabase.rpc("admin_list_user_plans");
+    const [{ data, error }, { data: creditRows }] = await Promise.all([
+      supabase.rpc("admin_list_user_plans"),
+      (supabase.rpc as any)("admin_list_ai_credits"),
+    ]);
     if (error) toast({ title: "Errore", description: error.message, variant: "destructive" });
     else setRows((data ?? []) as Row[]);
+    const map: Record<string, number> = {};
+    ((creditRows ?? []) as { email: string; credits: number }[]).forEach((c) => { map[c.email] = c.credits; });
+    setCredits(map);
     setLoading(false);
   };
 
@@ -43,7 +51,18 @@ const AdminUserPlans = () => {
     load();
   };
 
+  const saveCredits = async (email: string) => {
+    const value = parseInt(draft[email] ?? "", 10);
+    if (Number.isNaN(value) || value < 0) return toast({ title: "Valore non valido", variant: "destructive" });
+    const { error } = await (supabase.rpc as any)("admin_set_ai_credits", { _email: email, _credits: value });
+    if (error) return toast({ title: "Errore", description: error.message, variant: "destructive" });
+    toast({ title: `${email}: ${value} consulti una tantum` });
+    setDraft((p) => ({ ...p, [email]: "" }));
+    load();
+  };
+
   const filtered = rows.filter((r) => r.email.toLowerCase().includes(filter.toLowerCase()));
+
 
   return (
     <div className="space-y-4">
