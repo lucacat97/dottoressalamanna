@@ -100,7 +100,21 @@ const AdminUserPlans = () => {
                     <p className="font-body text-sm text-foreground truncate">{r.email}</p>
                     <p className="font-body text-[11px] text-muted-foreground">
                       Piano corrente: <span className="font-semibold">{meta.label}</span>
+                      {" · "}Consulti una tantum: <span className="font-semibold text-gold">{credits[r.email] ?? 0}</span>
                     </p>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <Input
+                      type="number"
+                      min={0}
+                      placeholder="Consulti"
+                      value={draft[r.email] ?? ""}
+                      onChange={(e) => setDraft((p) => ({ ...p, [r.email]: e.target.value }))}
+                      className="w-24 font-body"
+                    />
+                    <Button size="sm" variant="outline" className="font-body" onClick={() => saveCredits(r.email)}>
+                      Assegna
+                    </Button>
                   </div>
                   <Select value={r.plan} onValueChange={(v) => setPlan(r.email, v as Plan)}>
                     <SelectTrigger className="w-36 font-body"><SelectValue /></SelectTrigger>
@@ -110,6 +124,7 @@ const AdminUserPlans = () => {
                       <SelectItem value="platinum">Platinum</SelectItem>
                     </SelectContent>
                   </Select>
+
                 </div>
               );
             })}
