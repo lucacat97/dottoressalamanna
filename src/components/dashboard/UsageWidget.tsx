@@ -77,6 +77,32 @@ const UsageWidget = () => {
         </div>
       </div>
 
+      {!loading && allowance && (
+        <div className="flex flex-wrap gap-2 mb-3">
+          {allowance.unlimited ? (
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-gold/15 font-body text-xs text-foreground">
+              <span className="text-muted-foreground">Consulenze disponibili</span>
+              <span className="font-semibold text-gold">Illimitate</span>
+            </span>
+          ) : (
+            <>
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-primary/10 font-body text-xs text-foreground">
+                <span className="text-muted-foreground">Residue questo mese</span>
+                <span className="font-semibold text-petrolio">{allowance.monthly_remaining ?? 0}/{allowance.monthly_limit ?? 0}</span>
+              </span>
+              {(allowance.oneoff_credits ?? 0) > 0 && (
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-gold/15 font-body text-xs text-foreground">
+                  <span className="text-muted-foreground">Consulti una tantum</span>
+                  <span className="font-semibold text-gold">{allowance.oneoff_credits}</span>
+                </span>
+              )}
+            </>
+          )}
+        </div>
+      )}
+
+
+
       {!loading && total > 0 && (
         <div className="flex flex-wrap gap-2 pt-3 border-t border-border">
           {Object.entries(counts).map(([tool, n]) => (
