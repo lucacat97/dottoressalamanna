@@ -973,6 +973,33 @@ export type Database = {
         }
         Relationships: []
       }
+      user_ai_credits: {
+        Row: {
+          created_at: string
+          credits: number
+          granted_by: string | null
+          note: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          credits?: number
+          granted_by?: string | null
+          note?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          credits?: number
+          granted_by?: string | null
+          note?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_plans: {
         Row: {
           assigned_at: string
@@ -1020,6 +1047,16 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_list_ai_credits: {
+        Args: never
+        Returns: {
+          credits: number
+          email: string
+          note: string
+          updated_at: string
+          user_id: string
+        }[]
+      }
       admin_list_user_plans: {
         Args: never
         Returns: {
@@ -1029,6 +1066,10 @@ export type Database = {
           user_id: string
         }[]
       }
+      admin_set_ai_credits: {
+        Args: { _credits: number; _email: string; _note?: string }
+        Returns: number
+      }
       admin_set_user_plan: {
         Args: {
           _email: string
@@ -1036,6 +1077,7 @@ export type Database = {
         }
         Returns: string
       }
+      consume_ai_consultation: { Args: { _user_id: string }; Returns: Json }
       delete_email: {
         Args: { message_id: number; queue_name: string }
         Returns: boolean
@@ -1053,6 +1095,7 @@ export type Database = {
           title: string
         }[]
       }
+      get_ai_allowance: { Args: { _user_id: string }; Returns: Json }
       get_api_key_monthly_usage: {
         Args: { _api_key_id: string; _tool_name: string }
         Returns: number

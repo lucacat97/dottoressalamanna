@@ -10,10 +10,19 @@ const TOOL_LABELS: Record<string, string> = {
   checkup: "Check-up posturale",
 };
 
+interface Allowance {
+  unlimited: boolean;
+  monthly_limit?: number;
+  monthly_remaining?: number;
+  oneoff_credits?: number;
+  total_remaining?: number;
+}
+
 const UsageWidget = () => {
   const [counts, setCounts] = useState<Record<string, number>>({});
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [allowance, setAllowance] = useState<Allowance | null>(null);
 
   useEffect(() => {
     (async () => {
@@ -36,9 +45,13 @@ const UsageWidget = () => {
       });
       setCounts(map);
       setTotal((data ?? []).length);
+
+      const { data: allow } = await (supabase.rpc as any)("get_ai_allowance", { _user_id: user.id });
+      if (allow) setAllowance(allow as Allowance);
       setLoading(false);
     })();
   }, []);
+
 
   const monthLabel = new Date().toLocaleDateString("it-IT", { month: "long", year: "numeric" });
 
@@ -63,6 +76,32 @@ const UsageWidget = () => {
           </p>
         </div>
       </div>
+
+      {!loading && allowance && (
+        <div className="flex flex-wrap gap-2 mb-3">
+          {allowance.unlimited ? (
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-gold/15 font-body text-xs text-foreground">
+              <span className="text-muted-foreground">Consulenze disponibili</span>
+              <span className="font-semibold text-gold">Illimitate</span>
+            </span>
+          ) : (
+            <>
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-primary/10 font-body text-xs text-foreground">
+                <span className="text-muted-foreground">Residue questo mese</span>
+                <span className="font-semibold text-petrolio">{allowance.monthly_remaining ?? 0}/{allowance.monthly_limit ?? 0}</span>
+              </span>
+              {(allowance.oneoff_credits ?? 0) > 0 && (
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-gold/15 font-body text-xs text-foreground">
+                  <span className="text-muted-foreground">Consulti una tantum</span>
+                  <span className="font-semibold text-gold">{allowance.oneoff_credits}</span>
+                </span>
+              )}
+            </>
+          )}
+        </div>
+      )}
+
+
 
       {!loading && total > 0 && (
         <div className="flex flex-wrap gap-2 pt-3 border-t border-border">
