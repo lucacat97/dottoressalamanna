@@ -1,0 +1,1 @@
+DELETE FROM public.course_materials WHERE id = '64f35fde-cd45-4d5d-a7ed-50bae869d9a1';
