@@ -249,22 +249,28 @@ const ResumableVideo = ({
 
   const saveNow = (force = false) => {
     const v = videoRef.current;
-    if (!v || !userId) return;
+    if (!v) return;
     if (!isFinite(v.currentTime) || v.currentTime < 1) return;
+    lastPosRef.current = v.currentTime;
     const now = Date.now();
     if (!force && now - lastSaveRef.current < 3000) return;
     lastSaveRef.current = now;
     try {
-      localStorage.setItem(progressKey(userId, materialId), JSON.stringify({ t: v.currentTime, d: v.duration || 0 }));
+      localStorage.setItem(
+        progressKey(userId ?? "anon", materialId),
+        JSON.stringify({ t: v.currentTime, d: v.duration || 0 })
+      );
     } catch { /* quota */ }
   };
 
   const onTimeUpdate = () => saveNow(false);
 
   const onEnded = () => {
-    if (userId) {
-      try { localStorage.removeItem(progressKey(userId, materialId)); } catch { /* noop */ }
-    }
+    lastPosRef.current = 0;
+    try {
+      localStorage.removeItem(progressKey(userId ?? "anon", materialId));
+      if (userId) localStorage.removeItem(progressKey("anon", materialId));
+    } catch { /* noop */ }
     if (onNext) setCountdown(5);
   };
 
@@ -282,6 +288,24 @@ const ResumableVideo = ({
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId, materialId]);
+
+  // Safety net: some mobile browsers unload the media element after a long pause
+  // and silently reset it to 0. Restore the position as soon as we notice.
+  useEffect(() => {
+    const id = setInterval(() => {
+      const v = videoRef.current;
+      if (!v) return;
+      if (v.currentTime > 1) {
+        lastPosRef.current = v.currentTime;
+        saveNow(false);
+      } else if (lastPosRef.current > 5 && v.duration && isFinite(v.duration)) {
+        try { v.currentTime = lastPosRef.current; } catch { /* noop */ }
+      }
+    }, 2000);
+    return () => clearInterval(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userId, materialId]);
+
 
   return (
     <div className="relative w-full h-full flex items-center justify-center">
