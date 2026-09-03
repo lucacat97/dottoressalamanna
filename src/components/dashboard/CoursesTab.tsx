@@ -346,9 +346,12 @@ const ResumableVideo = ({
         controlsList="nodownload noremoteplayback"
         disablePictureInPicture
         onLoadedMetadata={onLoadedMetadata}
+        onLoadedData={onLoadedMetadata}
+        onPlay={applyResume}
         onTimeUpdate={onTimeUpdate}
+        onSeeked={() => saveNow(true)}
         onPause={() => saveNow(true)}
-        onEnded={onEnded}
+
         onContextMenu={(e) => e.preventDefault()}
         title={name}
         className="max-h-[80vh] w-full bg-black"
