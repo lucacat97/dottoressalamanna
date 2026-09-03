@@ -142,12 +142,18 @@ const OfficePreview = ({ url, name }: { url: string; name: string }) => {
 
 /* ---------------- Video progress (localStorage) ---------------- */
 const progressKey = (userId: string, materialId: string) => `video-progress:${userId}:${materialId}`;
-const getSavedProgress = (userId: string, materialId: string): { t: number; d: number } | null => {
+/** Reads saved progress synchronously, whatever user key it was stored under
+ *  (so we never lose the position while waiting for the auth lookup). */
+const getSavedProgress = (materialId: string): { t: number; d: number } | null => {
   try {
-    const raw = localStorage.getItem(progressKey(userId, materialId));
-    if (!raw) return null;
-    const parsed = JSON.parse(raw);
-    if (typeof parsed?.t === "number") return parsed;
+    let best: { t: number; d: number } | null = null;
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (!k || !k.startsWith("video-progress:") || !k.endsWith(`:${materialId}`)) continue;
+      const parsed = JSON.parse(localStorage.getItem(k) || "null");
+      if (typeof parsed?.t === "number" && (!best || parsed.t > best.t)) best = parsed;
+    }
+    return best;
   } catch { /* noop */ }
   return null;
 };
@@ -176,10 +182,16 @@ const ResumableVideo = ({
 }) => {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
-  const [resumeAt, setResumeAt] = useState<number | null>(null);
+  const [resumeAt, setResumeAt] = useState<number | null>(() => {
+    const s = getSavedProgress(materialId);
+    return s && s.t > 5 ? s.t : null;
+  });
   const [showBanner, setShowBanner] = useState(false);
   const [countdown, setCountdown] = useState<number | null>(null);
   const lastSaveRef = useRef(0);
+  // Latest known playback position — survives element reloads (mobile Safari
+  // often drops the media element after a pause, restarting from 0).
+  const lastPosRef = useRef(0);
 
   // Auto-advance countdown
   useEffect(() => {
@@ -198,31 +210,29 @@ const ResumableVideo = ({
   useEffect(() => {
     setCountdown(null);
     setShowBanner(false);
+    lastPosRef.current = 0;
+    const s = getSavedProgress(materialId);
+    setResumeAt(s && s.t > 5 ? s.t : null);
   }, [materialId]);
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => setUserId(data.user?.id ?? null));
   }, []);
 
-  useEffect(() => {
-    if (!userId) return;
-    const saved = getSavedProgress(userId, materialId);
-    if (saved && saved.t > 5) setResumeAt(saved.t);
-  }, [userId, materialId]);
-
-  const appliedRef = useRef(false);
   const applyResume = () => {
     const v = videoRef.current;
-    if (!v || appliedRef.current || resumeAt == null) return;
+    if (!v) return;
     // Wait for metadata (duration) before seeking
     if (!v.duration || !isFinite(v.duration)) return;
-    if (resumeAt < v.duration - 10) {
-      try { v.currentTime = resumeAt; } catch { /* noop */ }
-      appliedRef.current = true;
+    // Prefer the live position (element reloaded mid-session), then the stored one.
+    const target = Math.max(lastPosRef.current, resumeAt ?? 0);
+    if (target < 5) return;
+    // Only seek if the element actually restarted from the beginning.
+    if (v.currentTime > 2) return;
+    if (target < v.duration - 5) {
+      try { v.currentTime = target; } catch { /* noop */ }
       setShowBanner(true);
       setTimeout(() => setShowBanner(false), 4000);
-    } else {
-      appliedRef.current = true;
     }
   };
 
@@ -231,28 +241,36 @@ const ResumableVideo = ({
     if (resumeAt == null) return;
     const v = videoRef.current;
     if (v && v.readyState >= 1) applyResume();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [resumeAt]);
 
   const onLoadedMetadata = () => applyResume();
 
+
   const saveNow = (force = false) => {
     const v = videoRef.current;
-    if (!v || !userId) return;
+    if (!v) return;
     if (!isFinite(v.currentTime) || v.currentTime < 1) return;
+    lastPosRef.current = v.currentTime;
     const now = Date.now();
     if (!force && now - lastSaveRef.current < 3000) return;
     lastSaveRef.current = now;
     try {
-      localStorage.setItem(progressKey(userId, materialId), JSON.stringify({ t: v.currentTime, d: v.duration || 0 }));
+      localStorage.setItem(
+        progressKey(userId ?? "anon", materialId),
+        JSON.stringify({ t: v.currentTime, d: v.duration || 0 })
+      );
     } catch { /* quota */ }
   };
 
   const onTimeUpdate = () => saveNow(false);
 
   const onEnded = () => {
-    if (userId) {
-      try { localStorage.removeItem(progressKey(userId, materialId)); } catch { /* noop */ }
-    }
+    lastPosRef.current = 0;
+    try {
+      localStorage.removeItem(progressKey(userId ?? "anon", materialId));
+      if (userId) localStorage.removeItem(progressKey("anon", materialId));
+    } catch { /* noop */ }
     if (onNext) setCountdown(5);
   };
 
@@ -270,6 +288,24 @@ const ResumableVideo = ({
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId, materialId]);
+
+  // Safety net: some mobile browsers unload the media element after a long pause
+  // and silently reset it to 0. Restore the position as soon as we notice.
+  useEffect(() => {
+    const id = setInterval(() => {
+      const v = videoRef.current;
+      if (!v) return;
+      if (v.currentTime > 1) {
+        lastPosRef.current = v.currentTime;
+        saveNow(false);
+      } else if (lastPosRef.current > 5 && v.duration && isFinite(v.duration)) {
+        try { v.currentTime = lastPosRef.current; } catch { /* noop */ }
+      }
+    }, 2000);
+    return () => clearInterval(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userId, materialId]);
+
 
   return (
     <div className="relative w-full h-full flex items-center justify-center">
@@ -310,7 +346,10 @@ const ResumableVideo = ({
         controlsList="nodownload noremoteplayback"
         disablePictureInPicture
         onLoadedMetadata={onLoadedMetadata}
+        onLoadedData={onLoadedMetadata}
+        onPlay={applyResume}
         onTimeUpdate={onTimeUpdate}
+        onSeeked={() => saveNow(true)}
         onPause={() => saveNow(true)}
         onEnded={onEnded}
         onContextMenu={(e) => e.preventDefault()}
