@@ -277,33 +277,20 @@ serve(async (req) => {
   const accountFolderId = (keyRecord?.id as string | undefined) ?? creditUserId!;
 
   try {
-    const body = await req.json();
-    const { tool, format, professional_first_name, professional_last_name, professional_email } = body;
+    const { tool, format, professional_first_name, professional_last_name } = body as Record<string, any>;
     const outputFormat = (format || "html").toLowerCase();
 
-    // ── Validate professional identity (required: name, surname, email) ──
     const profFirst = typeof professional_first_name === "string" ? professional_first_name.trim() : "";
     const profLast = typeof professional_last_name === "string" ? professional_last_name.trim() : "";
-    const profEmail = typeof professional_email === "string" ? professional_email.trim().toLowerCase() : "";
-    const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(profEmail);
+    const profEmail = profEmailRaw;
 
-    if (!emailValid) {
-      return new Response(
-        JSON.stringify({
-          error: "Campo obbligatorio mancante o non valido: 'professional_email'. La consulenza viene inviata via email a questo indirizzo.",
-        }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
-
-    // ── Verifica: l'email deve coincidere con quella associata alla chiave API (se registrata) ──
-    const keyClientEmail = typeof keyRecord.client_email === "string"
-      ? keyRecord.client_email.trim().toLowerCase()
+    // ── Verifica: se viene usata una chiave, l'email deve coincidere con quella registrata ──
+    const keyClientEmail = typeof keyRecord?.client_email === "string"
+      ? (keyRecord.client_email as string).trim().toLowerCase()
       : "";
-    if (keyClientEmail && keyClientEmail !== profEmail) {
+    if (keyRecord && keyClientEmail && keyClientEmail !== profEmail) {
       console.warn("[external-api] email mismatch", {
         api_key_id: keyRecord.id,
-        provided: profEmail,
         expected_fingerprint: keyClientEmail.slice(0, 3) + "***",
       });
       return new Response(
@@ -313,6 +300,7 @@ serve(async (req) => {
         { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
+
 
     if (!tool || !["diagnosis", "orthodontic", "mtc_sistemica", "mtc_organica"].includes(tool)) {
       return new Response(
