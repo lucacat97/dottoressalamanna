@@ -212,42 +212,69 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
-  // ── Auth: validate X-Api-Key against database ──
+  const supabaseAdmin = getServiceClient();
+
+  // ── Parse body first: l'autenticazione avviene sull'email del professionista ──
+  let body: Record<string, unknown>;
+  try {
+    body = await req.json();
+  } catch {
+    return new Response(JSON.stringify({ error: "Body JSON non valido." }), {
+      status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+
+  const profEmailRaw = typeof body.professional_email === "string" ? body.professional_email.trim().toLowerCase() : "";
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(profEmailRaw)) {
+    return new Response(
+      JSON.stringify({
+        error: "Campo obbligatorio mancante o non valido: 'professional_email'. L'accesso viene validato tramite questa email e la consulenza viene inviata a questo indirizzo.",
+      }),
+      { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+    );
+  }
+
+  // ── Chiave API opzionale (retrocompatibilità con i client esistenti) ──
   const rawApiKey =
     req.headers.get("x-api-key") ||
     req.headers.get("apikey") ||
     req.headers.get("authorization") ||
     "";
   const apiKey = normalizeApiKey(rawApiKey);
-  if (!apiKey) {
-    return new Response(JSON.stringify({ error: "Unauthorized. Provide a valid X-Api-Key header." }), {
-      status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+  let keyRecord: Record<string, unknown> | null = null;
+  if (apiKey) {
+    const keyHash = await hashKey(apiKey);
+    const { data } = await supabaseAdmin
+      .from("api_keys")
+      .select("*")
+      .eq("key_hash", keyHash)
+      .eq("is_active", true)
+      .maybeSingle();
+    keyRecord = data ?? null;
+    if (!keyRecord) {
+      console.warn("[external-api] api key non valida, fallback su validazione email", {
+        fingerprint: keyHash.slice(0, 12),
+      });
+    }
   }
 
-  const supabaseAdmin = getServiceClient();
-  const keyHash = await hashKey(apiKey);
+  // ── Validazione via email: l'account registrato sul sito autorizza la chiamata ──
+  const { data: resolvedUserId, error: lookupError } = await supabaseAdmin.rpc("get_user_id_by_email", {
+    _email: profEmailRaw,
+  });
+  if (lookupError) console.error("[external-api] lookup email error:", lookupError);
+  const creditUserId = typeof resolvedUserId === "string" ? resolvedUserId : null;
 
-  const { data: keyRecord, error: keyError } = await supabaseAdmin
-    .from("api_keys")
-    .select("*")
-    .eq("key_hash", keyHash)
-    .eq("is_active", true)
-    .maybeSingle();
-
-  if (keyError || !keyRecord) {
-    console.warn("[external-api] invalid api key", {
-      fingerprint: keyHash.slice(0, 12),
-      length: apiKey.length,
-      hasXApiKey: Boolean(req.headers.get("x-api-key")),
-      hasApiKeyHeader: Boolean(req.headers.get("apikey")),
-      hasAuthorization: Boolean(req.headers.get("authorization")),
-      dbError: keyError?.message,
-    });
-    return new Response(JSON.stringify({ error: "Unauthorized. Invalid or revoked API key." }), {
-      status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+  if (!creditUserId && !keyRecord) {
+    return new Response(
+      JSON.stringify({
+        error: "Accesso non autorizzato: l'email fornita non corrisponde a nessun account registrato. Registrati sul sito con questa email o contatta l'amministratore.",
+      }),
+      { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+    );
   }
+
+  const accountFolderId = (keyRecord?.id as string | undefined) ?? creditUserId!;
 
   try {
     const body = await req.json();
