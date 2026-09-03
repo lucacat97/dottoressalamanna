@@ -351,7 +351,7 @@ const ResumableVideo = ({
         onTimeUpdate={onTimeUpdate}
         onSeeked={() => saveNow(true)}
         onPause={() => saveNow(true)}
-
+        onEnded={onEnded}
         onContextMenu={(e) => e.preventDefault()}
         title={name}
         className="max-h-[80vh] w-full bg-black"
