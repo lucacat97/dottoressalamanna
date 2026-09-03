@@ -318,42 +318,53 @@ serve(async (req) => {
       );
     }
 
-    // ── Check tool permission ──
-    const allowedTools: string[] = keyRecord.tools || [];
-    if (!allowedTools.includes(tool)) {
-      return new Response(
-        JSON.stringify({ error: `Accesso negato allo strumento '${tool}'. Strumenti abilitati: ${allowedTools.join(", ")}` }),
-        { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+    // ── Se l'account registrato esiste, il credito è condiviso con il sito ──
+    if (creditUserId) {
+      const { data: allowance, error: allowanceError } = await supabaseAdmin.rpc("consume_ai_consultation", {
+        _user_id: creditUserId,
+      });
+      if (allowanceError) console.error("[external-api] consume_ai_consultation error:", allowanceError);
+      const allowed = (allowance as { allowed?: boolean } | null)?.allowed;
+      if (allowed === false) {
+        return new Response(
+          JSON.stringify({
+            error: "Consulenze esaurite per questo account. Le consulenze sono condivise tra sito e API: acquista nuovi consulti o attiva un abbonamento.",
+          }),
+          { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+    } else if (keyRecord) {
+      // ── Fallback legacy: chiave API con limiti mensili per strumento ──
+      const allowedTools: string[] = (keyRecord.tools as string[]) || [];
+      if (!allowedTools.includes(tool)) {
+        return new Response(
+          JSON.stringify({ error: `Accesso negato allo strumento '${tool}'. Strumenti abilitati: ${allowedTools.join(", ")}` }),
+          { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+      const monthStart = new Date();
+      monthStart.setUTCDate(1);
+      monthStart.setUTCHours(0, 0, 0, 0);
+      const { count: usageCount, error: countError } = await supabaseAdmin
+        .from("api_usage_log")
+        .select("id", { count: "exact", head: true })
+        .eq("api_key_id", keyRecord.id)
+        .eq("tool_name", tool)
+        .gte("created_at", monthStart.toISOString());
+
+      if (countError) console.error("[external-api] usage count error:", countError);
+
+      const toolLimits = keyRecord.tool_limits as Record<string, number> | null;
+      const effectiveLimit = toolLimits?.[tool] ?? (keyRecord.monthly_limit as number);
+
+      if (typeof usageCount === "number" && usageCount >= effectiveLimit) {
+        return new Response(
+          JSON.stringify({ error: `Limite mensile raggiunto (${effectiveLimit} chiamate/mese per ${tool}). Contatta l'amministratore.` }),
+          { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
     }
 
-    // ── Check rate limit (per-tool if tool_limits exists) ──
-    // Count directly via service role: the RPC `get_api_key_monthly_usage`
-    // requires admin auth.uid() and would return NULL when called from an
-    // edge function (no user context), silently bypassing the limit.
-    const monthStart = new Date();
-    monthStart.setUTCDate(1);
-    monthStart.setUTCHours(0, 0, 0, 0);
-    const { count: usageCount, error: countError } = await supabaseAdmin
-      .from("api_usage_log")
-      .select("id", { count: "exact", head: true })
-      .eq("api_key_id", keyRecord.id)
-      .eq("tool_name", tool)
-      .gte("created_at", monthStart.toISOString());
-
-    if (countError) {
-      console.error("[external-api] usage count error:", countError);
-    }
-
-    const toolLimits = keyRecord.tool_limits as Record<string, number> | null;
-    const effectiveLimit = toolLimits?.[tool] ?? keyRecord.monthly_limit;
-
-    if (typeof usageCount === "number" && usageCount >= effectiveLimit) {
-      return new Response(
-        JSON.stringify({ error: `Limite mensile raggiunto (${effectiveLimit} chiamate/mese per ${tool}). Contatta l'amministratore.` }),
-        { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
 
     let markdown: string;
 
