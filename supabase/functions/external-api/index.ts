@@ -447,8 +447,13 @@ ${classe_dentale ? `- Classe dentale/funzionale confermata: ${classe_dentale}` :
     }
 
     // ── Log usage ──
-    await supabaseAdmin.from("api_usage_log").insert({ api_key_id: keyRecord.id, tool_name: tool });
-    await supabaseAdmin.from("api_keys").update({ last_used_at: new Date().toISOString() }).eq("id", keyRecord.id);
+    if (creditUserId) {
+      await supabaseAdmin.from("ai_usage_log").insert({ user_id: creditUserId, tool_name: tool });
+    }
+    if (keyRecord) {
+      await supabaseAdmin.from("api_usage_log").insert({ api_key_id: keyRecord.id as string, tool_name: tool });
+      await supabaseAdmin.from("api_keys").update({ last_used_at: new Date().toISOString() }).eq("id", keyRecord.id as string);
+    }
 
     // ── Disclaimer obbligatorio in intestazione ad OGNI consulenza ──
     // Aggiunto a monte se il modello non lo ha già incluso (controllo case-insensitive su una keyphrase univoca).
