@@ -517,7 +517,7 @@ ${classe_dentale ? `- Classe dentale/funzionale confermata: ${classe_dentale}` :
     try {
       const safeType = consultationType.replace(/[^\w\-]+/g, "_");
       const fileName = `consulenza_${safeType}_${new Date().toISOString().slice(0,10)}_${crypto.randomUUID().slice(0,8)}.doc`;
-      const filePath = `${keyRecord.id}/${fileName}`;
+      const filePath = `${accountFolderId}/${fileName}`;
       const { error: uploadError } = await supabaseAdmin.storage
         .from("consultation-attachments")
         .upload(filePath, new Blob([wordHtml], { type: "application/msword" }), {
@@ -540,7 +540,7 @@ ${classe_dentale ? `- Classe dentale/funzionale confermata: ${classe_dentale}` :
             file_path: filePath,
             file_name: fileName,
             recipient_email: profEmail,
-            api_key_id: keyRecord.id,
+            api_key_id: (keyRecord?.id as string | undefined) ?? null,
             consultation_type: consultationType,
             max_downloads: 5,
             expires_at: expiresAt,
@@ -572,7 +572,7 @@ ${classe_dentale ? `- Classe dentale/funzionale confermata: ${classe_dentale}` :
         body: JSON.stringify({
           templateName: "consultation-delivery",
           recipientEmail: profEmail,
-          idempotencyKey: `consultation-${tool}-${keyRecord.id}-${crypto.randomUUID()}`,
+          idempotencyKey: `consultation-${tool}-${accountFolderId}-${crypto.randomUUID()}`,
           templateData: {
             professionalFirstName: profFirst,
             professionalLastName: profLast,
