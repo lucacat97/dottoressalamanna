@@ -1112,6 +1112,7 @@ export type Database = {
           feedback: string
         }[]
       }
+      get_user_id_by_email: { Args: { _email: string }; Returns: string }
       get_user_plan: {
         Args: { _user_id: string }
         Returns: Database["public"]["Enums"]["subscription_plan"]

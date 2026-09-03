@@ -212,71 +212,85 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
-  // ── Auth: validate X-Api-Key against database ──
+  const supabaseAdmin = getServiceClient();
+
+  // ── Parse body first: l'autenticazione avviene sull'email del professionista ──
+  let body: Record<string, unknown>;
+  try {
+    body = await req.json();
+  } catch {
+    return new Response(JSON.stringify({ error: "Body JSON non valido." }), {
+      status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+
+  const profEmailRaw = typeof body.professional_email === "string" ? body.professional_email.trim().toLowerCase() : "";
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(profEmailRaw)) {
+    return new Response(
+      JSON.stringify({
+        error: "Campo obbligatorio mancante o non valido: 'professional_email'. L'accesso viene validato tramite questa email e la consulenza viene inviata a questo indirizzo.",
+      }),
+      { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+    );
+  }
+
+  // ── Chiave API opzionale (retrocompatibilità con i client esistenti) ──
   const rawApiKey =
     req.headers.get("x-api-key") ||
     req.headers.get("apikey") ||
     req.headers.get("authorization") ||
     "";
   const apiKey = normalizeApiKey(rawApiKey);
-  if (!apiKey) {
-    return new Response(JSON.stringify({ error: "Unauthorized. Provide a valid X-Api-Key header." }), {
-      status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+  let keyRecord: Record<string, unknown> | null = null;
+  if (apiKey) {
+    const keyHash = await hashKey(apiKey);
+    const { data } = await supabaseAdmin
+      .from("api_keys")
+      .select("*")
+      .eq("key_hash", keyHash)
+      .eq("is_active", true)
+      .maybeSingle();
+    keyRecord = data ?? null;
+    if (!keyRecord) {
+      console.warn("[external-api] api key non valida, fallback su validazione email", {
+        fingerprint: keyHash.slice(0, 12),
+      });
+    }
   }
 
-  const supabaseAdmin = getServiceClient();
-  const keyHash = await hashKey(apiKey);
+  // ── Validazione via email: l'account registrato sul sito autorizza la chiamata ──
+  const { data: resolvedUserId, error: lookupError } = await supabaseAdmin.rpc("get_user_id_by_email", {
+    _email: profEmailRaw,
+  });
+  if (lookupError) console.error("[external-api] lookup email error:", lookupError);
+  const creditUserId = typeof resolvedUserId === "string" ? resolvedUserId : null;
 
-  const { data: keyRecord, error: keyError } = await supabaseAdmin
-    .from("api_keys")
-    .select("*")
-    .eq("key_hash", keyHash)
-    .eq("is_active", true)
-    .maybeSingle();
-
-  if (keyError || !keyRecord) {
-    console.warn("[external-api] invalid api key", {
-      fingerprint: keyHash.slice(0, 12),
-      length: apiKey.length,
-      hasXApiKey: Boolean(req.headers.get("x-api-key")),
-      hasApiKeyHeader: Boolean(req.headers.get("apikey")),
-      hasAuthorization: Boolean(req.headers.get("authorization")),
-      dbError: keyError?.message,
-    });
-    return new Response(JSON.stringify({ error: "Unauthorized. Invalid or revoked API key." }), {
-      status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+  if (!creditUserId && !keyRecord) {
+    return new Response(
+      JSON.stringify({
+        error: "Accesso non autorizzato: l'email fornita non corrisponde a nessun account registrato. Registrati sul sito con questa email o contatta l'amministratore.",
+      }),
+      { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+    );
   }
+
+  const accountFolderId = (keyRecord?.id as string | undefined) ?? creditUserId!;
 
   try {
-    const body = await req.json();
-    const { tool, format, professional_first_name, professional_last_name, professional_email } = body;
+    const { tool, format, professional_first_name, professional_last_name } = body as Record<string, any>;
     const outputFormat = (format || "html").toLowerCase();
 
-    // ── Validate professional identity (required: name, surname, email) ──
     const profFirst = typeof professional_first_name === "string" ? professional_first_name.trim() : "";
     const profLast = typeof professional_last_name === "string" ? professional_last_name.trim() : "";
-    const profEmail = typeof professional_email === "string" ? professional_email.trim().toLowerCase() : "";
-    const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(profEmail);
+    const profEmail = profEmailRaw;
 
-    if (!emailValid) {
-      return new Response(
-        JSON.stringify({
-          error: "Campo obbligatorio mancante o non valido: 'professional_email'. La consulenza viene inviata via email a questo indirizzo.",
-        }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
-
-    // ── Verifica: l'email deve coincidere con quella associata alla chiave API (se registrata) ──
-    const keyClientEmail = typeof keyRecord.client_email === "string"
-      ? keyRecord.client_email.trim().toLowerCase()
+    // ── Verifica: se viene usata una chiave, l'email deve coincidere con quella registrata ──
+    const keyClientEmail = typeof keyRecord?.client_email === "string"
+      ? (keyRecord.client_email as string).trim().toLowerCase()
       : "";
-    if (keyClientEmail && keyClientEmail !== profEmail) {
+    if (keyRecord && keyClientEmail && keyClientEmail !== profEmail) {
       console.warn("[external-api] email mismatch", {
         api_key_id: keyRecord.id,
-        provided: profEmail,
         expected_fingerprint: keyClientEmail.slice(0, 3) + "***",
       });
       return new Response(
@@ -286,6 +300,7 @@ serve(async (req) => {
         { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
+
 
     if (!tool || !["diagnosis", "orthodontic", "mtc_sistemica", "mtc_organica"].includes(tool)) {
       return new Response(
@@ -303,42 +318,53 @@ serve(async (req) => {
       );
     }
 
-    // ── Check tool permission ──
-    const allowedTools: string[] = keyRecord.tools || [];
-    if (!allowedTools.includes(tool)) {
-      return new Response(
-        JSON.stringify({ error: `Accesso negato allo strumento '${tool}'. Strumenti abilitati: ${allowedTools.join(", ")}` }),
-        { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+    // ── Se l'account registrato esiste, il credito è condiviso con il sito ──
+    if (creditUserId) {
+      const { data: allowance, error: allowanceError } = await supabaseAdmin.rpc("consume_ai_consultation", {
+        _user_id: creditUserId,
+      });
+      if (allowanceError) console.error("[external-api] consume_ai_consultation error:", allowanceError);
+      const allowed = (allowance as { allowed?: boolean } | null)?.allowed;
+      if (allowed === false) {
+        return new Response(
+          JSON.stringify({
+            error: "Consulenze esaurite per questo account. Le consulenze sono condivise tra sito e API: acquista nuovi consulti o attiva un abbonamento.",
+          }),
+          { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+    } else if (keyRecord) {
+      // ── Fallback legacy: chiave API con limiti mensili per strumento ──
+      const allowedTools: string[] = (keyRecord.tools as string[]) || [];
+      if (!allowedTools.includes(tool)) {
+        return new Response(
+          JSON.stringify({ error: `Accesso negato allo strumento '${tool}'. Strumenti abilitati: ${allowedTools.join(", ")}` }),
+          { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+      const monthStart = new Date();
+      monthStart.setUTCDate(1);
+      monthStart.setUTCHours(0, 0, 0, 0);
+      const { count: usageCount, error: countError } = await supabaseAdmin
+        .from("api_usage_log")
+        .select("id", { count: "exact", head: true })
+        .eq("api_key_id", keyRecord.id)
+        .eq("tool_name", tool)
+        .gte("created_at", monthStart.toISOString());
+
+      if (countError) console.error("[external-api] usage count error:", countError);
+
+      const toolLimits = keyRecord.tool_limits as Record<string, number> | null;
+      const effectiveLimit = toolLimits?.[tool] ?? (keyRecord.monthly_limit as number);
+
+      if (typeof usageCount === "number" && usageCount >= effectiveLimit) {
+        return new Response(
+          JSON.stringify({ error: `Limite mensile raggiunto (${effectiveLimit} chiamate/mese per ${tool}). Contatta l'amministratore.` }),
+          { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
     }
 
-    // ── Check rate limit (per-tool if tool_limits exists) ──
-    // Count directly via service role: the RPC `get_api_key_monthly_usage`
-    // requires admin auth.uid() and would return NULL when called from an
-    // edge function (no user context), silently bypassing the limit.
-    const monthStart = new Date();
-    monthStart.setUTCDate(1);
-    monthStart.setUTCHours(0, 0, 0, 0);
-    const { count: usageCount, error: countError } = await supabaseAdmin
-      .from("api_usage_log")
-      .select("id", { count: "exact", head: true })
-      .eq("api_key_id", keyRecord.id)
-      .eq("tool_name", tool)
-      .gte("created_at", monthStart.toISOString());
-
-    if (countError) {
-      console.error("[external-api] usage count error:", countError);
-    }
-
-    const toolLimits = keyRecord.tool_limits as Record<string, number> | null;
-    const effectiveLimit = toolLimits?.[tool] ?? keyRecord.monthly_limit;
-
-    if (typeof usageCount === "number" && usageCount >= effectiveLimit) {
-      return new Response(
-        JSON.stringify({ error: `Limite mensile raggiunto (${effectiveLimit} chiamate/mese per ${tool}). Contatta l'amministratore.` }),
-        { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
 
     let markdown: string;
 
@@ -421,8 +447,13 @@ ${classe_dentale ? `- Classe dentale/funzionale confermata: ${classe_dentale}` :
     }
 
     // ── Log usage ──
-    await supabaseAdmin.from("api_usage_log").insert({ api_key_id: keyRecord.id, tool_name: tool });
-    await supabaseAdmin.from("api_keys").update({ last_used_at: new Date().toISOString() }).eq("id", keyRecord.id);
+    if (creditUserId) {
+      await supabaseAdmin.from("ai_usage_log").insert({ user_id: creditUserId, tool_name: tool });
+    }
+    if (keyRecord) {
+      await supabaseAdmin.from("api_usage_log").insert({ api_key_id: keyRecord.id as string, tool_name: tool });
+      await supabaseAdmin.from("api_keys").update({ last_used_at: new Date().toISOString() }).eq("id", keyRecord.id as string);
+    }
 
     // ── Disclaimer obbligatorio in intestazione ad OGNI consulenza ──
     // Aggiunto a monte se il modello non lo ha già incluso (controllo case-insensitive su una keyphrase univoca).
@@ -486,7 +517,7 @@ ${classe_dentale ? `- Classe dentale/funzionale confermata: ${classe_dentale}` :
     try {
       const safeType = consultationType.replace(/[^\w\-]+/g, "_");
       const fileName = `consulenza_${safeType}_${new Date().toISOString().slice(0,10)}_${crypto.randomUUID().slice(0,8)}.doc`;
-      const filePath = `${keyRecord.id}/${fileName}`;
+      const filePath = `${accountFolderId}/${fileName}`;
       const { error: uploadError } = await supabaseAdmin.storage
         .from("consultation-attachments")
         .upload(filePath, new Blob([wordHtml], { type: "application/msword" }), {
@@ -509,7 +540,7 @@ ${classe_dentale ? `- Classe dentale/funzionale confermata: ${classe_dentale}` :
             file_path: filePath,
             file_name: fileName,
             recipient_email: profEmail,
-            api_key_id: keyRecord.id,
+            api_key_id: (keyRecord?.id as string | undefined) ?? null,
             consultation_type: consultationType,
             max_downloads: 5,
             expires_at: expiresAt,
@@ -541,7 +572,7 @@ ${classe_dentale ? `- Classe dentale/funzionale confermata: ${classe_dentale}` :
         body: JSON.stringify({
           templateName: "consultation-delivery",
           recipientEmail: profEmail,
-          idempotencyKey: `consultation-${tool}-${keyRecord.id}-${crypto.randomUUID()}`,
+          idempotencyKey: `consultation-${tool}-${accountFolderId}-${crypto.randomUUID()}`,
           templateData: {
             professionalFirstName: profFirst,
             professionalLastName: profLast,
