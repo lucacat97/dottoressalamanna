@@ -207,7 +207,45 @@ async function callAI(systemPrompt: string, userMessage: string, opts?: { scope?
   throw lastError || new Error("AI gateway: errore sconosciuto");
 }
 
+// ── Estrazione testo da PDF lato server (Gemini: legge testo, etichette e caselle spuntate) ──
+async function extractTextFromPdf(pdfBase64: string, filename = "documento.pdf"): Promise<string> {
+  const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+  if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
+  const clean = pdfBase64.replace(/^data:[^;]+;base64,/, "").replace(/\s/g, "");
+  if (clean.length < 100) throw new Error("PDF vuoto o non valido");
+
+  const resp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    method: "POST",
+    headers: { Authorization: `Bearer ${LOVABLE_API_KEY}`, "Content-Type": "application/json" },
+    body: JSON.stringify({
+      model: "google/gemini-2.5-flash",
+      messages: [{
+        role: "user",
+        content: [
+          {
+            type: "text",
+            text:
+              "Trascrivi integralmente il contenuto di questo modulo clinico (check-up ortodontico posturale, cartella o cefalometria). " +
+              "È un PDF compilabile: per OGNI domanda riporta la risposta effettivamente selezionata o scritta, nel formato 'Domanda: Risposta'. " +
+              "Includi caselle spuntate, valori numerici, unità di misura, date, note manoscritte e tabelle. " +
+              "Ignora le opzioni NON selezionate. Non commentare, non riassumere, non interpretare.",
+          },
+          { type: "file", file: { filename, file_data: `data:application/pdf;base64,${clean}` } },
+        ],
+      }],
+    }),
+  });
+
+  if (!resp.ok) {
+    const errText = await resp.text().catch(() => "");
+    throw new Error(`PDF parsing ${resp.status}: ${errText.slice(0, 300)}`);
+  }
+  const data = await resp.json();
+  return (data?.choices?.[0]?.message?.content ?? "").trim();
+}
+
 serve(async (req) => {
+
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
