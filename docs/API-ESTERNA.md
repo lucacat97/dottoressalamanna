@@ -183,3 +183,52 @@ la chiamata `orthodontic`.
 - CORS aperto: la chiamata può partire direttamente dal browser.
 - Ogni chiamata andata a buon fine consuma una consulenza dal pool dell'account.
 - Nome e cognome del paziente sono facoltativi; se non servono, non inviarli (privacy).
+
+---
+
+## 4. Caso concreto: il PDF "Check-up ortodontico posturale compilabile"
+
+Il modulo è un PDF **AcroForm di 8 pagine con ~584 campi** (`id_*`, `q1_2_0`, ...): le risposte
+non finiscono nel layer di testo, stanno nei campi del form, e i nomi dei campi sono tecnici
+(non contengono la domanda). Quindi la semplice estrazione testo restituisce solo le domande
+vuote.
+
+Due strade per il pulsante "Carica PDF → interroga MILA":
+
+### A) Via OCR (consigliata, funziona sempre)
+
+Rasterizza le pagine e mandale a `pdf-ocr`: l'AI legge etichette **e** caselle spuntate, sia
+che il PDF sia stato compilato a video sia che sia stato stampato e scansionato. Poi il testo
+ottenuto va in `documentText` di `tool: "diagnosis"`.
+
+```js
+const pdf = await pdfjsLib.getDocument({ data: await file.arrayBuffer() }).promise;
+const images = [];
+for (let i = 1; i <= Math.min(pdf.numPages, 15); i++) {
+  const page = await pdf.getPage(i);
+  const viewport = page.getViewport({ scale: 2 });
+  const canvas = Object.assign(document.createElement("canvas"),
+    { width: viewport.width, height: viewport.height });
+  await page.render({ canvasContext: canvas.getContext("2d"), viewport }).promise;
+  images.push(canvas.toDataURL("image/jpeg", 0.85));
+}
+const { text } = await (await fetch(OCR_URL, {
+  method: "POST", headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ images }),
+})).json();
+
+// poi: POST external-api con { tool: "diagnosis", documentText: text, professional_* }
+```
+
+Nota: l'OCR processa **max 15 pagine** per chiamata (il modulo ne ha 8, quindi rientra).
+
+### B) Leggendo i campi del form (più preciso, richiede mappatura)
+
+Con pdf-lib/pypdf leggi `getFields()` e componi tu il testo `Domanda: Risposta`. Serve però una
+tabella di corrispondenza `q1_2_0 → "Tipo di parto: Cesareo"`, da costruire una volta sola sul
+modello del modulo. Conviene solo se il PDF è sempre lo stesso identico file.
+
+### Se invece vuoi passare per la cefalometria
+
+La cefalometria (`tool: "orthodontic"`) resta a valori numerici: da questo modulo non si ricava
+automaticamente, servono i dati del tracciato.
