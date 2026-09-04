@@ -215,14 +215,41 @@ serve(async (req) => {
   const supabaseAdmin = getServiceClient();
 
   // ── Parse body first: l'autenticazione avviene sull'email del professionista ──
+  // Accetta sia JSON sia multipart/form-data (upload diretto del PDF dal browser).
   let body: Record<string, unknown>;
-  try {
-    body = await req.json();
-  } catch {
-    return new Response(JSON.stringify({ error: "Body JSON non valido." }), {
-      status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+  const contentType = req.headers.get("content-type") || "";
+  if (contentType.includes("multipart/form-data")) {
+    try {
+      const form = await req.formData();
+      body = {};
+      for (const [k, v] of form.entries()) {
+        if (v instanceof File) {
+          const buf = new Uint8Array(await v.arrayBuffer());
+          let bin = "";
+          for (let i = 0; i < buf.length; i += 8192) {
+            bin += String.fromCharCode(...buf.subarray(i, i + 8192));
+          }
+          body["pdf_base64"] = btoa(bin);
+          body["pdf_filename"] = v.name;
+        } else {
+          body[k] = v;
+        }
+      }
+    } catch {
+      return new Response(JSON.stringify({ error: "Form data non valido." }), {
+        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+  } else {
+    try {
+      body = await req.json();
+    } catch {
+      return new Response(JSON.stringify({ error: "Body JSON non valido." }), {
+        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
   }
+
 
   const profEmailRaw = typeof body.professional_email === "string" ? body.professional_email.trim().toLowerCase() : "";
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(profEmailRaw)) {
