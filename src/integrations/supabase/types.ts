@@ -778,6 +778,98 @@ export type Database = {
         }
         Relationships: []
       }
+      mila_consultations: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          document_storage_path: string | null
+          email_sent: boolean | null
+          error_code: string | null
+          error_message: string | null
+          filename: string | null
+          id: string
+          mind_patient_id: string | null
+          professional_email: string
+          request_id: string | null
+          source: string
+          status: string
+          token_id: string | null
+          tool: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          document_storage_path?: string | null
+          email_sent?: boolean | null
+          error_code?: string | null
+          error_message?: string | null
+          filename?: string | null
+          id?: string
+          mind_patient_id?: string | null
+          professional_email: string
+          request_id?: string | null
+          source?: string
+          status?: string
+          token_id?: string | null
+          tool: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          document_storage_path?: string | null
+          email_sent?: boolean | null
+          error_code?: string | null
+          error_message?: string | null
+          filename?: string | null
+          id?: string
+          mind_patient_id?: string | null
+          professional_email?: string
+          request_id?: string | null
+          source?: string
+          status?: string
+          token_id?: string | null
+          tool?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mila_consultations_token_id_fkey"
+            columns: ["token_id"]
+            isOneToOne: false
+            referencedRelation: "mind_extension_tokens"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      mind_extension_tokens: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean
+          label: string
+          last_used_at: string | null
+          notes: string | null
+          token_hash: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          label: string
+          last_used_at?: string | null
+          notes?: string | null
+          token_hash: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          label?: string
+          last_used_at?: string | null
+          notes?: string | null
+          token_hash?: string
+        }
+        Relationships: []
+      }
       newsletter_consents: {
         Row: {
           consented_at: string
