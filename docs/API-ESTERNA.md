@@ -45,9 +45,8 @@ disponibile.
 
 ## 1. Check-Up Posturale / Consulenza sul caso (`diagnosis`) — parte da un PDF
 
-Questo è lo strumento che accetta un documento clinico. **L'API riceve testo, non un file
-binario**: il PDF va convertito in testo lato tuo (o via OCR, vedi sotto) e passato in
-`documentText`.
+Questo è lo strumento che accetta un documento clinico. Puoi inviare **direttamente il PDF**
+(vedi sezione 4, consigliato) oppure il testo già estratto in `documentText`.
 
 ```json
 {
