@@ -434,13 +434,29 @@ serve(async (req) => {
     let markdown: string;
 
     if (tool === "diagnosis") {
-      const { documentText, clinicalNotes, terapie, reasonForVisit } = body;
-      if (!documentText || typeof documentText !== "string" || documentText.trim().length < 20) {
+      const { clinicalNotes, terapie, reasonForVisit, pdf_base64, pdf_filename } = body as Record<string, any>;
+      let documentText = typeof body.documentText === "string" ? body.documentText : "";
+
+      // ── Se arriva un PDF, il parsing viene fatto qui lato server ──
+      if ((!documentText || documentText.trim().length < 20) && typeof pdf_base64 === "string" && pdf_base64.length > 100) {
+        try {
+          documentText = await extractTextFromPdf(pdf_base64, typeof pdf_filename === "string" ? pdf_filename : "documento.pdf");
+        } catch (pdfErr) {
+          console.error("[external-api] pdf parse error:", pdfErr);
+          return new Response(
+            JSON.stringify({ error: "Non è stato possibile leggere il PDF inviato. Verifica che il file sia un PDF valido e non protetto da password." }),
+            { status: 422, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          );
+        }
+      }
+
+      if (!documentText || documentText.trim().length < 20) {
         return new Response(
-          JSON.stringify({ error: "Campo 'documentText' obbligatorio (min 20 caratteri)." }),
+          JSON.stringify({ error: "Fornisci il documento clinico: carica il PDF (campo 'file' in multipart/form-data oppure 'pdf_base64' in JSON) o passa 'documentText' (min 20 caratteri)." }),
           { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
+
       const reasonSection = reasonForVisit && typeof reasonForVisit === "string" && reasonForVisit.trim().length > 0
         ? `\n\n--- MOTIVO DELLA VISITA (fornito dal professionista) ---\n${reasonForVisit.trim()}\n--- FINE MOTIVO ---\nIncludi OBBLIGATORIAMENTE questo motivo della visita all'inizio della consulenza, nella sezione "# Motivo della visita", subito dopo i dati anagrafici e prima dell'Introduzione.`
         : "";
