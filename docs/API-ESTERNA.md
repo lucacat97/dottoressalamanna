@@ -45,9 +45,8 @@ disponibile.
 
 ## 1. Check-Up Posturale / Consulenza sul caso (`diagnosis`) — parte da un PDF
 
-Questo è lo strumento che accetta un documento clinico. **L'API riceve testo, non un file
-binario**: il PDF va convertito in testo lato tuo (o via OCR, vedi sotto) e passato in
-`documentText`.
+Questo è lo strumento che accetta un documento clinico. Puoi inviare **direttamente il PDF**
+(vedi sezione 4, consigliato) oppure il testo già estratto in `documentText`.
 
 ```json
 {
@@ -186,47 +185,59 @@ la chiamata `orthodontic`.
 
 ---
 
-## 4. Caso concreto: il PDF "Check-up ortodontico posturale compilabile"
+## 4. Upload diretto del PDF (parsing lato server) — consigliato
 
-Il modulo è un PDF **AcroForm di 8 pagine con ~584 campi** (`id_*`, `q1_2_0`, ...): le risposte
-non finiscono nel layer di testo, stanno nei campi del form, e i nomi dei campi sono tecnici
-(non contengono la domanda). Quindi la semplice estrazione testo restituisce solo le domande
-vuote.
+Dal 4 settembre 2026 l'endpoint accetta **il PDF stesso**: nessuna estrazione testo lato tuo,
+nessun OCR da orchestrare. Il parsing (testo, etichette, caselle spuntate dei moduli
+compilabili come il "Check-up ortodontico posturale") e tutta la logica avvengono qui.
 
-Due strade per il pulsante "Carica PDF → interroga MILA":
+### multipart/form-data (pulsante "Carica PDF")
 
-### A) Via OCR (consigliata, funziona sempre)
-
-Rasterizza le pagine e mandale a `pdf-ocr`: l'AI legge etichette **e** caselle spuntate, sia
-che il PDF sia stato compilato a video sia che sia stato stampato e scansionato. Poi il testo
-ottenuto va in `documentText` di `tool: "diagnosis"`.
-
-```js
-const pdf = await pdfjsLib.getDocument({ data: await file.arrayBuffer() }).promise;
-const images = [];
-for (let i = 1; i <= Math.min(pdf.numPages, 15); i++) {
-  const page = await pdf.getPage(i);
-  const viewport = page.getViewport({ scale: 2 });
-  const canvas = Object.assign(document.createElement("canvas"),
-    { width: viewport.width, height: viewport.height });
-  await page.render({ canvasContext: canvas.getContext("2d"), viewport }).promise;
-  images.push(canvas.toDataURL("image/jpeg", 0.85));
+```html
+<input type="file" id="pdf" accept="application/pdf" />
+<button onclick="invia()">Genera consulenza</button>
+<script>
+const API = "https://pjgpducvkdrtigorpzrm.supabase.co/functions/v1/external-api";
+async function invia() {
+  const fd = new FormData();
+  fd.append("tool", "diagnosis");
+  fd.append("professional_email", "mario.rossi@example.com");
+  fd.append("professional_first_name", "Mario");
+  fd.append("professional_last_name", "Rossi");
+  fd.append("file", document.getElementById("pdf").files[0]);
+  // opzionali: fd.append("reasonForVisit", "..."); fd.append("clinicalNotes", "...");
+  const res = await fetch(API, { method: "POST", body: fd });
+  const data = await res.json();
+  if (!res.ok) return alert(data.error);
+  window.open(data.download_url, "_blank");
 }
-const { text } = await (await fetch(OCR_URL, {
-  method: "POST", headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({ images }),
-})).json();
-
-// poi: POST external-api con { tool: "diagnosis", documentText: text, professional_* }
+</script>
 ```
 
-Nota: l'OCR processa **max 15 pagine** per chiamata (il modulo ne ha 8, quindi rientra).
+### JSON con PDF in base64
 
-### B) Leggendo i campi del form (più preciso, richiede mappatura)
+```json
+{
+  "tool": "diagnosis",
+  "professional_email": "mario.rossi@example.com",
+  "professional_first_name": "Mario",
+  "professional_last_name": "Rossi",
+  "pdf_base64": "JVBERi0xLj...",
+  "pdf_filename": "check-up.pdf"
+}
+```
 
-Con pdf-lib/pypdf leggi `getFields()` e componi tu il testo `Domanda: Risposta`. Serve però una
-tabella di corrispondenza `q1_2_0 → "Tipo di parto: Cesareo"`, da costruire una volta sola sul
-modello del modulo. Conviene solo se il PDF è sempre lo stesso identico file.
+`pdf_base64` accetta anche il formato `data:application/pdf;base64,...`.
+`documentText` resta supportato per i client che estraggono il testo da soli; se invii entrambi
+vince `documentText`.
+
+Errore dedicato: **422** se il PDF non è leggibile (file corrotto o protetto da password).
+
+### Note sul modulo compilabile
+
+Il "Check-up ortodontico posturale compilabile" è un AcroForm di 8 pagine con ~584 campi: il
+parsing lato server legge sia le etichette stampate sia le risposte selezionate, quindi puoi
+inviare il file così com'è, compilato a video oppure stampato e scansionato.
 
 ### Se invece vuoi passare per la cefalometria
 

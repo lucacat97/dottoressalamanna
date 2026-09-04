@@ -207,7 +207,45 @@ async function callAI(systemPrompt: string, userMessage: string, opts?: { scope?
   throw lastError || new Error("AI gateway: errore sconosciuto");
 }
 
+// ── Estrazione testo da PDF lato server (Gemini: legge testo, etichette e caselle spuntate) ──
+async function extractTextFromPdf(pdfBase64: string, filename = "documento.pdf"): Promise<string> {
+  const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+  if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
+  const clean = pdfBase64.replace(/^data:[^;]+;base64,/, "").replace(/\s/g, "");
+  if (clean.length < 100) throw new Error("PDF vuoto o non valido");
+
+  const resp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    method: "POST",
+    headers: { Authorization: `Bearer ${LOVABLE_API_KEY}`, "Content-Type": "application/json" },
+    body: JSON.stringify({
+      model: "google/gemini-2.5-flash",
+      messages: [{
+        role: "user",
+        content: [
+          {
+            type: "text",
+            text:
+              "Trascrivi integralmente il contenuto di questo modulo clinico (check-up ortodontico posturale, cartella o cefalometria). " +
+              "È un PDF compilabile: per OGNI domanda riporta la risposta effettivamente selezionata o scritta, nel formato 'Domanda: Risposta'. " +
+              "Includi caselle spuntate, valori numerici, unità di misura, date, note manoscritte e tabelle. " +
+              "Ignora le opzioni NON selezionate. Non commentare, non riassumere, non interpretare.",
+          },
+          { type: "file", file: { filename, file_data: `data:application/pdf;base64,${clean}` } },
+        ],
+      }],
+    }),
+  });
+
+  if (!resp.ok) {
+    const errText = await resp.text().catch(() => "");
+    throw new Error(`PDF parsing ${resp.status}: ${errText.slice(0, 300)}`);
+  }
+  const data = await resp.json();
+  return (data?.choices?.[0]?.message?.content ?? "").trim();
+}
+
 serve(async (req) => {
+
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
@@ -215,14 +253,41 @@ serve(async (req) => {
   const supabaseAdmin = getServiceClient();
 
   // ── Parse body first: l'autenticazione avviene sull'email del professionista ──
+  // Accetta sia JSON sia multipart/form-data (upload diretto del PDF dal browser).
   let body: Record<string, unknown>;
-  try {
-    body = await req.json();
-  } catch {
-    return new Response(JSON.stringify({ error: "Body JSON non valido." }), {
-      status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+  const contentType = req.headers.get("content-type") || "";
+  if (contentType.includes("multipart/form-data")) {
+    try {
+      const form = await req.formData();
+      body = {};
+      for (const [k, v] of form.entries()) {
+        if (v instanceof File) {
+          const buf = new Uint8Array(await v.arrayBuffer());
+          let bin = "";
+          for (let i = 0; i < buf.length; i += 8192) {
+            bin += String.fromCharCode(...buf.subarray(i, i + 8192));
+          }
+          body["pdf_base64"] = btoa(bin);
+          body["pdf_filename"] = v.name;
+        } else {
+          body[k] = v;
+        }
+      }
+    } catch {
+      return new Response(JSON.stringify({ error: "Form data non valido." }), {
+        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+  } else {
+    try {
+      body = await req.json();
+    } catch {
+      return new Response(JSON.stringify({ error: "Body JSON non valido." }), {
+        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
   }
+
 
   const profEmailRaw = typeof body.professional_email === "string" ? body.professional_email.trim().toLowerCase() : "";
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(profEmailRaw)) {
@@ -369,13 +434,29 @@ serve(async (req) => {
     let markdown: string;
 
     if (tool === "diagnosis") {
-      const { documentText, clinicalNotes, terapie, reasonForVisit } = body;
-      if (!documentText || typeof documentText !== "string" || documentText.trim().length < 20) {
+      const { clinicalNotes, terapie, reasonForVisit, pdf_base64, pdf_filename } = body as Record<string, any>;
+      let documentText = typeof body.documentText === "string" ? body.documentText : "";
+
+      // ── Se arriva un PDF, il parsing viene fatto qui lato server ──
+      if ((!documentText || documentText.trim().length < 20) && typeof pdf_base64 === "string" && pdf_base64.length > 100) {
+        try {
+          documentText = await extractTextFromPdf(pdf_base64, typeof pdf_filename === "string" ? pdf_filename : "documento.pdf");
+        } catch (pdfErr) {
+          console.error("[external-api] pdf parse error:", pdfErr);
+          return new Response(
+            JSON.stringify({ error: "Non è stato possibile leggere il PDF inviato. Verifica che il file sia un PDF valido e non protetto da password." }),
+            { status: 422, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          );
+        }
+      }
+
+      if (!documentText || documentText.trim().length < 20) {
         return new Response(
-          JSON.stringify({ error: "Campo 'documentText' obbligatorio (min 20 caratteri)." }),
+          JSON.stringify({ error: "Fornisci il documento clinico: carica il PDF (campo 'file' in multipart/form-data oppure 'pdf_base64' in JSON) o passa 'documentText' (min 20 caratteri)." }),
           { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
+
       const reasonSection = reasonForVisit && typeof reasonForVisit === "string" && reasonForVisit.trim().length > 0
         ? `\n\n--- MOTIVO DELLA VISITA (fornito dal professionista) ---\n${reasonForVisit.trim()}\n--- FINE MOTIVO ---\nIncludi OBBLIGATORIAMENTE questo motivo della visita all'inizio della consulenza, nella sezione "# Motivo della visita", subito dopo i dati anagrafici e prima dell'Introduzione.`
         : "";
