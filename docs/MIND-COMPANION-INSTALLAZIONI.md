@@ -38,7 +38,7 @@ Nel database viene salvato soltanto l'hash. L'email deve essere quella dell'acco
 ## 3. Configurare l'estensione
 
 ```js
-const API_URL = "https://pjgpducvkdrtigorpzrm.supabase.co/functions/v1/mind-companion-consultation";
+const API_URL = "https://<BACKEND_HOST>/functions/v1/mind-companion-consultation";
 const INSTALL_TOKEN = "INCOLLA_QUI_INSTALL_TOKEN";
 
 async function inviaCheckUpAMila(pdfFile, dati = {}) {
@@ -81,3 +81,7 @@ Per riattivarlo, usare lo stesso statement con `active = true`.
 - Gli altri codici e il contenuto della risposta provengono da MILA.
 
 Il PDF massimo accettato è 20 MB. Nei tentativi successivi riutilizzare lo stesso `request_id`.
+
+## Configurazione server
+
+Il backend richiede i segreti `MILA_UPSTREAM_URL` e `MILA_UPSTREAM_TOKEN`. Durante la transizione può usare il token server già protetto `EXTERNAL_API_KEY` come ripiego; nessuno di questi valori viene mai inviato all'estensione o restituito nelle risposte.

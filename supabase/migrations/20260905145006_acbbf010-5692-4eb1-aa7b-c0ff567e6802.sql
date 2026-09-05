@@ -1,0 +1,1 @@
+REVOKE ALL ON TABLE public.mind_companion_installations FROM PUBLIC, anon, authenticated;
