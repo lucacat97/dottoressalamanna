@@ -81,3 +81,7 @@ Per riattivarlo, usare lo stesso statement con `active = true`.
 - Gli altri codici e il contenuto della risposta provengono da MILA.
 
 Il PDF massimo accettato è 20 MB. Nei tentativi successivi riutilizzare lo stesso `request_id`.
+
+## Configurazione server
+
+Il backend richiede i segreti `MILA_UPSTREAM_URL` e `MILA_UPSTREAM_TOKEN`. Durante la transizione può usare il token server già protetto `EXTERNAL_API_KEY` come ripiego; nessuno di questi valori viene mai inviato all'estensione o restituito nelle risposte.
