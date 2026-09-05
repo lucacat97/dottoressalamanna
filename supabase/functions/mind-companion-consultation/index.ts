@@ -60,7 +60,7 @@ Deno.serve(async (req) => {
   const backendUrl = Deno.env.get("SUPABASE_URL");
   const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
   const upstreamUrl = Deno.env.get("MILA_UPSTREAM_URL");
-  const upstreamToken = Deno.env.get("MILA_UPSTREAM_TOKEN");
+  const upstreamToken = Deno.env.get("MILA_UPSTREAM_TOKEN") ?? Deno.env.get("EXTERNAL_API_KEY");
   if (!backendUrl || !serviceRoleKey || !upstreamUrl || !upstreamToken) {
     return jsonError("Servizio temporaneamente non configurato.", "service_unavailable", 503);
   }

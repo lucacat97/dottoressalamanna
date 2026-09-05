@@ -38,7 +38,7 @@ Nel database viene salvato soltanto l'hash. L'email deve essere quella dell'acco
 ## 3. Configurare l'estensione
 
 ```js
-const API_URL = "https://pjgpducvkdrtigorpzrm.supabase.co/functions/v1/mind-companion-consultation";
+const API_URL = "https://<BACKEND_HOST>/functions/v1/mind-companion-consultation";
 const INSTALL_TOKEN = "INCOLLA_QUI_INSTALL_TOKEN";
 
 async function inviaCheckUpAMila(pdfFile, dati = {}) {
