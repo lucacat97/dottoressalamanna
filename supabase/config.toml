@@ -30,3 +30,6 @@ verify_jwt = false
 [functions.mind-mila-consultation]
 verify_jwt = false
 
+[functions.mind-companion-consultation]
+verify_jwt = false
+
