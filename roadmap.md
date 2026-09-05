@@ -4,4 +4,4 @@
 - [x] Creare proxy `mind-companion-consultation`
 - [x] Documentare registrazione, revoca e chiamata dall'estensione
 - [x] Configurare l’indirizzo server MILA e usare il token master server già protetto
-- [x] Distribuire e collaudare il nuovo indirizzo
+- [x] Distribuire e collaudare il nuovo indirizzo- [ ] Attivazione estensione con Activation Code monouso (scambio codice → token per PC)
