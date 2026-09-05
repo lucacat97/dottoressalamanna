@@ -840,8 +840,57 @@ export type Database = {
           },
         ]
       }
+      mind_activation_codes: {
+        Row: {
+          active: boolean
+          code_hash: string
+          created_at: string
+          expires_at: string | null
+          id: string
+          max_activations: number
+          note: string | null
+          professional_email: string
+          professional_first_name: string
+          professional_last_name: string
+          studio_label: string
+          updated_at: string
+          used_activations: number
+        }
+        Insert: {
+          active?: boolean
+          code_hash: string
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          max_activations?: number
+          note?: string | null
+          professional_email: string
+          professional_first_name: string
+          professional_last_name: string
+          studio_label: string
+          updated_at?: string
+          used_activations?: number
+        }
+        Update: {
+          active?: boolean
+          code_hash?: string
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          max_activations?: number
+          note?: string | null
+          professional_email?: string
+          professional_first_name?: string
+          professional_last_name?: string
+          studio_label?: string
+          updated_at?: string
+          used_activations?: number
+        }
+        Relationships: []
+      }
       mind_companion_installations: {
         Row: {
+          activation_code_id: string | null
           active: boolean
           created_at: string
           device_label: string
@@ -853,6 +902,7 @@ export type Database = {
           token_hash: string
         }
         Insert: {
+          activation_code_id?: string | null
           active?: boolean
           created_at?: string
           device_label: string
@@ -864,6 +914,7 @@ export type Database = {
           token_hash: string
         }
         Update: {
+          activation_code_id?: string | null
           active?: boolean
           created_at?: string
           device_label?: string
@@ -874,7 +925,15 @@ export type Database = {
           professional_last_name?: string
           token_hash?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "mind_companion_installations_activation_code_id_fkey"
+            columns: ["activation_code_id"]
+            isOneToOne: false
+            referencedRelation: "mind_activation_codes"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       mind_extension_tokens: {
         Row: {
