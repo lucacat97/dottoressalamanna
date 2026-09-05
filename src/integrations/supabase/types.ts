@@ -840,6 +840,42 @@ export type Database = {
           },
         ]
       }
+      mind_companion_installations: {
+        Row: {
+          active: boolean
+          created_at: string
+          device_label: string
+          id: string
+          last_seen_at: string | null
+          professional_email: string
+          professional_first_name: string
+          professional_last_name: string
+          token_hash: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          device_label: string
+          id?: string
+          last_seen_at?: string | null
+          professional_email: string
+          professional_first_name: string
+          professional_last_name: string
+          token_hash: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          device_label?: string
+          id?: string
+          last_seen_at?: string | null
+          professional_email?: string
+          professional_first_name?: string
+          professional_last_name?: string
+          token_hash?: string
+        }
+        Relationships: []
+      }
       mind_extension_tokens: {
         Row: {
           created_at: string
