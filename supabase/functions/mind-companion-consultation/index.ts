@@ -96,6 +96,54 @@ Deno.serve(async (req) => {
   }
 
   const contentType = req.headers.get("content-type") ?? "";
+  const isJson = contentType.toLowerCase().includes("application/json");
+
+  // --- Cefalometria: JSON con valori numerici ---
+  if (isJson) {
+    let body: Record<string, unknown>;
+    try {
+      body = await req.json();
+    } catch {
+      return jsonError("Dati JSON non validi.", "invalid_payload", 400);
+    }
+    if (body.tool !== "orthodontic") {
+      return jsonError("Con JSON è supportato solo tool 'orthodontic'.", "invalid_payload", 400);
+    }
+    delete body.tool;
+    const forwardedJson = {
+      ...body,
+      tool: "orthodontic",
+      professional_first_name: installation.professional_first_name,
+      professional_last_name: installation.professional_last_name,
+      professional_email: installation.professional_email,
+      source: typeof body.source === "string" && body.source ? body.source : "mind_chrome_extension",
+    };
+
+    await admin
+      .from("mind_companion_installations")
+      .update({ last_seen_at: new Date().toISOString() })
+      .eq("id", installation.id);
+
+    try {
+      const upstream = await fetch(parsedUpstreamUrl, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${upstreamToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(forwardedJson),
+      });
+      const upstreamContentType = upstream.headers.get("content-type") ?? "application/octet-stream";
+      return new Response(upstream.body, {
+        status: upstream.status,
+        headers: responseHeaders(upstreamContentType),
+      });
+    } catch {
+      console.error("[mind-companion-consultation] upstream request failed");
+      return jsonError("MILA non è temporaneamente raggiungibile.", "upstream_unavailable", 502);
+    }
+  }
+
   if (!contentType.toLowerCase().includes("multipart/form-data")) {
     return jsonError("Invia la richiesta come multipart/form-data.", "invalid_content_type", 415);
   }
