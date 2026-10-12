@@ -4,6 +4,7 @@ import { StripeEmbeddedCheckoutView } from "./StripeEmbeddedCheckout";
 import { isPaymentsConfigured, getStripeEnvironment } from "@/lib/stripe";
 import { PaymentTestModeBanner } from "./PaymentTestModeBanner";
 import { supabase } from "@/integrations/supabase/client";
+import { MILA_CONSULT_PRICE_EUR } from "@/lib/mila-pricing";
 
 interface Subscription {
   id: string;
@@ -43,6 +44,7 @@ const PLANS = [
       "Aggiornamenti continui dei protocolli",
       "Community esclusiva",
       "Download di documenti e checklist",
+      `Consulti MILA: ${MILA_CONSULT_PRICE_EUR.basic}€ a consulto`,
     ],
     highlight: false,
   },
@@ -55,6 +57,7 @@ const PLANS = [
     features: [
       "Tutto il piano Basic",
       "Fino a 5 consulti AI/mese",
+      `Consulti MILA extra: ${MILA_CONSULT_PRICE_EUR.proExtra}€ a consulto`,
       "Ricerca intelligente nei protocolli",
       "Accesso anticipato a nuovi contenuti",
     ],
