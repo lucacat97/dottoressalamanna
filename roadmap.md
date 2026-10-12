@@ -1,8 +1,8 @@
 # Roadmap
 
-- [ ] Impostare 6 consulti condivisi utilizzabili via API per studiodentac@gmail.com
-- [ ] Indicare 10€ a consulto nel piano Basic e 10€ per gli extra nel piano Pro
-- [ ] Verificare saldo e offerte aggiornate
+- [x] Impostare 6 consulti condivisi utilizzabili via API per studiodentac@gmail.com
+- [x] Indicare 10€ a consulto nel piano Basic e 10€ per gli extra nel piano Pro
+- [x] Verificare saldo e offerte aggiornate
 
 - [x] Creare archivio protetto delle installazioni MIND per PC
 - [x] Creare proxy `mind-companion-consultation`
