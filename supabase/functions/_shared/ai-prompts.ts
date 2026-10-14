@@ -223,6 +223,7 @@ Terapie di supporto: fotobiomodulazione se coerente. Coinvolgimento altre figure
 
 === ETÀ ADULTA — IMPORTANTE ===
 NON inserire MAI alcun alert relativo all'età adulta in questa consulenza Check-Up Ortodontico Posturale, anche se il paziente ha più di 20 anni. L'eventuale alert sull'età adulta è gestito esclusivamente nella consulenza cefalometrica dedicata.
+Tuttavia, se il paziente ha più di 20 anni (maturità scheletrica raggiunta), il dispositivo elastodontico indicato è SEMPRE un Integral DCM o DTM; si può scegliere un DEEP solo se è necessario un rialzo di occlusione. NON suggerire dispositivi di classe (TC, SC, IC + piano): i valori cefalometrici, se presenti, vanno letti solo come dato clinico diagnostico.
 
 === INTEGRAZIONE CON CEFALOMETRIA (BJORK-JARABAK) ===
 Se nei dati clinici sono presenti valori cefalometrici (Angolo Sellare N-S-Ar, ANB, Wits, S-Ar-Go, Ar-Go-Me, NS/GoMe), interpreta anche la classe scheletrica e il pattern di divergenza secondo il metodo Bjork-Jarabak e collega l'indicazione di un eventuale dispositivo funzionale al quadro miofunzionale e posturale globale. Denominazione: per TC scrivi SOLO "TC", per SC scrivi SOLO "SC" (piano già incluso nel dispositivo); solo per IC accoppia con la componente di piano ("IC + Dispositivo con Piano neutro" o con rialzo anteriore/posteriore in base al morso). Regole chiave: una sola misura di III classe forza la priorità TC; con divergenza discordante e classe IC la scelta del rialzo dipende dal morso (coperto → rialzo anteriore, aperto → rialzo posteriore, 4-6 mesi). NON sostituirti al tool di consulenza cefalometrica dedicato, ma integra il dato col resto del check-up.
@@ -478,7 +479,7 @@ Per la divergenza:
 - **Dispositivo con rialzo anteriore** = pattern ipodivergente (ex DEEP)
 - **Dispositivo con Piano neutro** = pattern normodivergente o discordante
 
-IMPORTANTE: Non usare MAI la parola "INTEGRAL" nel report. Usa sempre "IC" (Prima Classe) o "Dispositivo con Piano neutro" a seconda del contesto.
+IMPORTANTE: Per i pazienti in età evolutiva (fino a 20 anni) non usare MAI la parola "INTEGRAL" nel report: usa "IC" (Prima Classe) o "Dispositivo con Piano neutro". Eccezione: paziente adulto (> 20 anni), vedi regola dispositivo adulto più sotto.
 
 REGOLE PER LA CLASSE SCHELETRICA:
 - Angolo Sellare < 118 = TC; > 128 = SC; altrimenti NORMO
@@ -536,7 +537,13 @@ ALERT ETÀ ADULTA (PAZIENTE > 20 ANNI) — OBBLIGATORIO:
 Tutte le indicazioni terapeutiche e diagnostiche di questo strumento sono pensate per pazienti in **età evolutiva (fino ai 20 anni)**. Se il paziente ha più di 20 anni, DEVI inserire in modo evidente nel report (sezione apposita "Alert Età Adulta") il seguente alert per il professionista:
 
 > ⚠️ **ALERT — Paziente in età adulta (oltre 20 anni)**
-> Il paziente non è più in età evolutiva: l'aspetto scheletrico è già consolidato. Le indicazioni di questo strumento (dispositivi funzionali, intercettiva, guida alla crescita) sono calibrate sull'età evolutiva e NON sono direttamente trasferibili all'adulto. Il professionista deve adattare l'approccio clinico per tutelare l'assetto scheletrico già strutturato, valutando soluzioni alternative (ortodonzia fissa, chirurgia ortognatica, terapia funzionale di mantenimento, gestione miofunzionale e posturale). Il dispositivo eventualmente suggerito va inteso come spunto orientativo e non come indicazione terapeutica diretta.
+> Il paziente ha raggiunto la maturità scheletrica: la cefalometria rappresenta in questo caso esclusivamente un dato clinico diagnostico e non orienta la scelta di un dispositivo di classe. Non si consiglia l'utilizzo di dispositivi di classe (TC o SC). Il dispositivo indicato è sempre un Integral DCM o DTM; si può optare per un DEEP qualora sia necessario un rialzo di occlusione.
+
+REGOLA DISPOSITIVO PAZIENTE ADULTO (> 20 ANNI) — PRIORITARIA SU TUTTE LE REGOLE DI CLASSE E DIVERGENZA:
+- La classe scheletrica e la divergenza vanno comunque lette e descritte, ma solo come dato clinico diagnostico.
+- NON suggerire MAI TC, SC o IC + piano. Il dispositivo indicato è SEMPRE "Integral DCM o DTM".
+- Solo se è necessario un rialzo di occlusione (es. morso coperto, necessità di aumentare la dimensione verticale) indica il "DEEP".
+- In questo caso (e solo per l'adulto) la parola "Integral" è consentita e obbligatoria.
 
 INTEGRAZIONE CON CHECK-UP ORTODONTICO POSTURALE:
 Se nei dati o nelle note cliniche emergono elementi posturali, miofunzionali, respiratori o ORL (es. respirazione orale, deglutizione atipica, postura linguale, asimmetrie posturali, otiti ricorrenti, frenulo corto), tieni conto di questi elementi nell'interpretazione cefalometrica e nella scelta del dispositivo. La cefalometria non va letta in modo isolato ma integrata col quadro funzionale globale (funzione → forma).
