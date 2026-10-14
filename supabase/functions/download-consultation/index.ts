@@ -91,13 +91,17 @@ serve(async (req) => {
       })
       .eq("id", record.id);
 
-    const safeName = (record.file_name || "consulenza.doc").replace(/[^a-zA-Z0-9._-]+/g, "_");
+    const safeName = (record.file_name || "consulenza.docx").replace(/[^a-zA-Z0-9._-]+/g, "_");
+    const isDocx = safeName.toLowerCase().endsWith(".docx");
+    const contentType = isDocx
+      ? "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+      : "application/msword";
     const arrayBuffer = await file.arrayBuffer();
     return new Response(arrayBuffer, {
       status: 200,
       headers: {
         ...corsHeaders,
-        "Content-Type": "application/msword",
+        "Content-Type": contentType,
         "Content-Disposition": `attachment; filename="${safeName}"`,
         "Cache-Control": "no-store, no-cache, must-revalidate, private",
         "X-Content-Type-Options": "nosniff",
