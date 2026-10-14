@@ -1,19 +1,23 @@
 // Genera un vero file .docx (OOXML) a partire dal markdown della consulenza.
 // Sostituisce la vecchia tecnica "HTML-as-Word" (.doc HTML) che Pages/macOS non apre.
 import {
-  AlignmentType,
   BorderStyle,
   Document,
   HeadingLevel,
   Packer,
   Paragraph,
   ShadingType,
+  Table,
+  TableCell,
+  TableRow,
   TextRun,
+  WidthType,
 } from "npm:docx@9.5.1";
 
 const TEAL = "2A6F6F";
 const AMBER_BG = "FFF8E1";
 const AMBER_BORDER = "F0B400";
+const TABLE_WIDTH = 9638; // A4 con margini 2cm
 
 type Inline = { text: string; bold?: boolean; italics?: boolean };
 
@@ -92,24 +96,87 @@ function bulletParagraph(text: string, ordered: boolean, index: number): Paragra
   });
 }
 
+// ── Tabelle markdown (| a | b |) ──
+function isTableLine(line: string): boolean {
+  return /^\|.*\|$/.test(line.trim());
+}
+function isSeparatorRow(line: string): boolean {
+  return /^\|[\s:|-]+\|$/.test(line.trim());
+}
+function splitRow(line: string): string[] {
+  return line.trim().slice(1, -1).split("|").map((c) => c.trim());
+}
+
+const cellBorder = { style: BorderStyle.SINGLE, size: 4, color: "CCCCCC" };
+const cellBorders = { top: cellBorder, bottom: cellBorder, left: cellBorder, right: cellBorder };
+
+function buildTable(tableLines: string[]): Table {
+  const rows = tableLines.filter((l) => !isSeparatorRow(l)).map(splitRow);
+  const colCount = Math.max(...rows.map((r) => r.length), 1);
+  const colWidth = Math.floor(TABLE_WIDTH / colCount);
+  const columnWidths = Array.from({ length: colCount }, (_, i) =>
+    i === colCount - 1 ? TABLE_WIDTH - colWidth * (colCount - 1) : colWidth
+  );
+
+  return new Table({
+    width: { size: TABLE_WIDTH, type: WidthType.DXA },
+    columnWidths,
+    rows: rows.map(
+      (cells, rIdx) =>
+        new TableRow({
+          tableHeader: rIdx === 0,
+          children: Array.from({ length: colCount }, (_, cIdx) => {
+            const isHeader = rIdx === 0;
+            return new TableCell({
+              borders: cellBorders,
+              width: { size: columnWidths[cIdx], type: WidthType.DXA },
+              margins: { top: 60, bottom: 60, left: 100, right: 100 },
+              shading: isHeader ? { type: ShadingType.CLEAR, fill: "F0F7F7" } : undefined,
+              children: [
+                new Paragraph({
+                  spacing: { before: 20, after: 20 },
+                  children: runs(cells[cIdx] ?? "", isHeader),
+                }),
+              ],
+            });
+          }),
+        })
+    ),
+  });
+}
+
 /**
  * Converte il markdown della consulenza in un buffer .docx reale.
  * Gestisce: #/##/###/####, paragrafi, **grassetto**, *corsivo*,
- * liste puntate e numerate, blockquote (disclaimer), --- (separatore).
+ * liste puntate e numerate, tabelle, blockquote (disclaimer), --- (separatore).
  */
 export async function markdownToDocx(markdown: string, title: string): Promise<Uint8Array> {
-  const children: Paragraph[] = [];
+  const children: (Paragraph | Table)[] = [];
   const lines = markdown.replace(/\r\n/g, "\n").split("\n");
   let orderedIndex = 0;
+  let i = 0;
 
-  for (const raw of lines) {
-    const line = raw.trimEnd();
-    const trimmed = line.trim();
+  while (i < lines.length) {
+    const trimmed = lines[i].trim();
 
     if (!trimmed) {
       orderedIndex = 0;
+      i++;
       continue;
     }
+
+    // Blocco tabella: righe consecutive che iniziano e finiscono con |
+    if (isTableLine(trimmed)) {
+      const tableLines: string[] = [];
+      while (i < lines.length && isTableLine(lines[i].trim())) {
+        tableLines.push(lines[i]);
+        i++;
+      }
+      if (tableLines.length >= 2) children.push(buildTable(tableLines));
+      else children.push(...tableLines.map((l) => new Paragraph({ children: runs(l.trim()) })));
+      continue;
+    }
+
     if (/^---+$/.test(trimmed)) {
       children.push(
         new Paragraph({
@@ -118,23 +185,27 @@ export async function markdownToDocx(markdown: string, title: string): Promise<U
           children: [],
         })
       );
+      i++;
       continue;
     }
 
     const h = trimmed.match(/^(#{1,4})\s+(.+)$/);
     if (h) {
       children.push(heading(h[2].replace(/\*\*/g, ""), h[1].length as 1 | 2 | 3 | 4));
+      i++;
       continue;
     }
 
     if (trimmed.startsWith(">")) {
       children.push(blockquoteParagraph(trimmed.replace(/^>\s*/, "")));
+      i++;
       continue;
     }
 
     const bullet = trimmed.match(/^[-*]\s+(.+)$/);
     if (bullet) {
       children.push(bulletParagraph(bullet[1], false, 0));
+      i++;
       continue;
     }
 
@@ -142,6 +213,7 @@ export async function markdownToDocx(markdown: string, title: string): Promise<U
     if (ordered) {
       orderedIndex += 1;
       children.push(bulletParagraph(ordered[2], true, orderedIndex));
+      i++;
       continue;
     }
 
@@ -149,6 +221,7 @@ export async function markdownToDocx(markdown: string, title: string): Promise<U
     children.push(
       new Paragraph({ spacing: { before: 60, after: 120, line: 340 }, children: runs(trimmed) })
     );
+    i++;
   }
 
   const doc = new Document({
