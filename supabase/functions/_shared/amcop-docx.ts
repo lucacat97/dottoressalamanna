@@ -332,9 +332,28 @@ export async function buildAmcopDocx(markdown: string, data: AmcopDocxData): Pro
     const p = imagePara(data.deviceImage, data.deviceImageAlt ?? "Dispositivo AMCOP", 300);
     if (p) rightChildren.push(p);
   }
-  if (data.rangeImage) {
-    const p = imagePara(data.rangeImage, "Gamma dispositivi AMCOP", Math.min(420, COL_RIGHT - 160));
-    if (p) rightChildren.push(p);
+  const rangeImgs = (data.rangeImages ?? []).filter((b): b is Uint8Array => !!b);
+  if (rangeImgs.length > 0) {
+    const cellW = Math.floor((COL_RIGHT - 160) / rangeImgs.length);
+    rightChildren.push(
+      new Table({
+        width: { size: COL_RIGHT - 160, type: WidthType.DXA },
+        columnWidths: rangeImgs.map((_, i) => (i === rangeImgs.length - 1 ? COL_RIGHT - 160 - cellW * (rangeImgs.length - 1) : cellW)),
+        rows: [
+          new TableRow({
+            children: rangeImgs.map((bytes) => {
+              const p = imagePara(bytes, "Dispositivo AMCOP", 62);
+              return new TableCell({
+                borders: noBorders,
+                width: { size: cellW, type: WidthType.DXA },
+                verticalAlign: VerticalAlign.CENTER,
+                children: [p ?? new Paragraph({ children: [] })],
+              });
+            }),
+          }),
+        ],
+      })
+    );
     rightChildren.push(
       new Paragraph({
         alignment: AlignmentType.CENTER,
