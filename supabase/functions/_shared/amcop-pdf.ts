@@ -192,11 +192,17 @@ export async function buildAmcopPdf(markdown: string, data: AmcopPdfData): Promi
       cur.page.drawImage(logo, { x: MARGIN, y: topY - lh, width: Math.min(lw, 120), height: lh });
     } catch { /* logo opzionale */ }
   }
-  cur.page.drawText("Consulenza Cefalometrica", { x: MARGIN + 130, y: topY - 20, size: 19, font: bold, color: rgb(0x1a / 255, 0x1a / 255, 0x2e / 255) });
-  cur.page.drawText(sanitize(`Analisi Cefalometrica - ${data.patientName}`), { x: MARGIN + 130, y: topY - 38, size: 11, font, color: GREY });
   // Badge a destra
   const badgeW = 150;
   const badgeX = PAGE_W - MARGIN - badgeW;
+  // Titolo: riduci la dimensione finché non si sovrappone al badge
+  const titleX = MARGIN + 130;
+  const titleMaxW = badgeX - 10 - titleX;
+  let titleSize = 19;
+  const titleTxt = "Consulenza Cefalometrica";
+  while (titleSize > 11 && bold.widthOfTextAtSize(titleTxt, titleSize) > titleMaxW) titleSize -= 1;
+  cur.page.drawText(titleTxt, { x: titleX, y: topY - 20, size: titleSize, font: bold, color: rgb(0x1a / 255, 0x1a / 255, 0x2e / 255) });
+  cur.page.drawText(sanitize(`Analisi Cefalometrica - ${data.patientName}`), { x: titleX, y: topY - 38, size: 11, font, color: GREY });
   cur.page.drawRectangle({ x: badgeX, y: topY - 52, width: badgeW, height: 52, color: LIGHT });
   cur.page.drawText("Metodo AMCOP", { x: badgeX + 12, y: topY - 22, size: 11, font: bold, color: TEAL_DARK });
   cur.page.drawText(sanitize("Funzione - Crescita - Postura"), { x: badgeX + 12, y: topY - 38, size: 9, font, color: TEAL_DARK });
@@ -344,7 +350,7 @@ export async function buildAmcopPdf(markdown: string, data: AmcopPdfData): Promi
     for (const l of bodyLines(s9.body)) {
       const ord = l.match(/^(\d+)\.\s+(.+)$/);
       const num9 = ord ? Number(ord[1]) : ++m9;
-      const text = ord ? ord[1] : l;
+      const text = ord ? ord[2] : l;
       cur.wrapText(`${num9}. ${text}`, 9.5, { indent: 10 });
     }
   }
