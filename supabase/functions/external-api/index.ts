@@ -5,6 +5,7 @@ import courseKnowledge from "./course-knowledge.json" with { type: "json" };
 import { markdownToDocx, DOCX_MIME } from "../_shared/docx-generator.ts";
 import { AMCOP_ORTHO_ADDENDUM, AMCOP_DEVICES, AMCOP_STORAGE_BUCKET, AMCOP_LOGO_STORAGE_PATH, applyAmcopTemplate } from "../_shared/amcop.ts";
 import { buildAmcopDocx } from "../_shared/amcop-docx.ts";
+import { buildAmcopPdf, PDF_MIME } from "../_shared/amcop-pdf.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
