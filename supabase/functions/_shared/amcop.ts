@@ -107,7 +107,7 @@ STRUTTURA DI OUTPUT (sostituisce quella precedente, stesso ordine, niente sezion
 ## 5. Alert III Classe Evolutiva
 ## 6. Alert Età Adulta
 ## 7. Significato dell'Angolo Goniaco
-## 8. Indicazioni Terapeutiche  → elenco numerato di 3 punti, sul modello: 1. Controllo mensile con istruzione alla corretta deglutizione. 2. Terapia miofunzionale (es. con frutta omogeneizzata) con dispositivo indossato per il primo mese. 3. Dopo circa 5 mesi rivalutare ed eventualmente sostituire il dispositivo con un altro di classe o con un INTEGRAL (nell'adulto: rivalutare il passaggio INTEGRAL DCM / DTM). Adatta i punti al caso.
+## 8. Indicazioni Terapeutiche  → elenco numerato di 3-4 punti, sul modello: 1. Controllo mensile con istruzione alla corretta deglutizione. 2. Terapia miofunzionale (es. con frutta omogeneizzata) con dispositivo indossato per il primo mese. 3. Dopo circa 5 mesi rivalutare ed eventualmente sostituire il dispositivo con un altro di classe o con un INTEGRAL (nell'adulto: rivalutare il passaggio INTEGRAL DCM / DTM). Adatta i punti al caso. Se il dispositivo è stato scelto per la CLASSE ma sono presenti valori di divergenza (ipo/iper), aggiungi un punto: controllare l'evoluzione della divergenza ogni 4 mesi clinicamente e ogni 12 mesi con Rx telecranio.
 NON scrivere la sezione "Istruzioni d'uso": viene aggiunta automaticamente dalla brochure AMCOP.
 
 Come ULTIMA riga in assoluto scrivi un marcatore tecnico nel formato esatto:
