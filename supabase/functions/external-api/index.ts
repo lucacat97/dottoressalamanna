@@ -586,17 +586,15 @@ ${classe_dentale ? `- Classe dentale/funzionale confermata: ${classe_dentale}` :
           return new Uint8Array(await data.arrayBuffer());
         } catch { return null; }
       };
-      const rangeOrder = ["DEEP", "OPEN", "SC", "TC", "DTM"] as const;
-      const gallery = [...rangeOrder.map(k => ({ label: k, storagePath: AMCOP_DEVICES[k].storagePath })), ...AMCOP_DCM_VARIANTS];
-      const [devImg, logo, ...rangeImgs] = await Promise.all([
-        amcop.device.key === "INTEGRAL" ? Promise.resolve(null) : storageImage(amcop.device.storagePath),
+      // Solo la foto del dispositivo consigliato: nessuna galleria della gamma.
+      const [devImg, logo] = await Promise.all([
+        storageImage(amcop.device.storagePath),
         storageImage(AMCOP_LOGO_STORAGE_PATH),
-        ...gallery.map(d => storageImage(d.storagePath)),
       ]);
       amcopImages = devImg ? { [amcop.device.imageUrl]: devImg } : {};
       amcopLogo = logo;
-      amcopRangeImages = rangeImgs;
-      amcopRangeLabels = gallery.map(d => d.label);
+      amcopRangeImages = [];
+      amcopRangeLabels = [];
       amcopDeviceAlt = amcop.device.name;
     } else if (tool === "mtc_sistemica") {
       const { sex, painPoints } = body;

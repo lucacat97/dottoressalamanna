@@ -120,7 +120,7 @@ export async function buildAmcopPdf(markdown: string, data: AmcopPdfData): Promi
   doc.setTitle(`Consulenza Cefalometrica — ${data.patientName}`);
   doc.setCreator("Metodo MILA");
   const font = await doc.embedFont(StandardFonts.Helvetica);
-  const bold = await doc.embedFont(StandardFonts.HelveticaBold);
+  const bold = await doc.embedFont(StandardFonts.TimesRomanBold);
   let page = doc.addPage([PAGE_W, PAGE_H]);
   const margin = 16;
   const width = PAGE_W - margin * 2;
@@ -213,7 +213,7 @@ export async function buildAmcopPdf(markdown: string, data: AmcopPdfData): Promi
     field.enableMultiline();
     field.setText(sanitize(disclaimer));
     field.addToPage(page, { x: margin + 4, y: top - dh + 2, width: width - 8, height: dh - 4, borderWidth: 0, backgroundColor: AMBER_BG, textColor: GREY, font });
-    field.setFontSize(6.8);
+    field.setFontSize(7.6);
     top -= dh + 7;
   }
   function valueTable(body: string, x: number, y: number, w: number, size: number, draw: boolean): number {
@@ -258,10 +258,10 @@ export async function buildAmcopPdf(markdown: string, data: AmcopPdfData): Promi
     });
     return h + bodyH + 6;
   }
-  let bodySize = 8.2;
+  let bodySize = 9.2;
   const leftHeight = (size: number) => [1, 5, 6, 7, 8].reduce((h, n) => h + section(n, margin, top, leftW, size, false), 0);
   // Prefer one A4 page like the reference, but never discard text to force a fit.
-  while (bodySize > 7.4 && leftHeight(bodySize) > 520) bodySize -= 0.2;
+  while (bodySize > 8.4 && leftHeight(bodySize) > 520) bodySize -= 0.2;
   const columnPages = [page];
   let leftPageIndex = 0;
   let ly = top;
@@ -299,7 +299,7 @@ export async function buildAmcopPdf(markdown: string, data: AmcopPdfData): Promi
     const titleH = text(`**${name}**`, 0, 0, textW, 17, TEAL_DARK, false);
     const detailsH = text(content, 0, 0, textW, bodySize, GREY, false);
     const photoH = Math.max(132, titleH + detailsH + 16);
-    const rangeH = 116;
+    const rangeH = (data.rangeImages ?? []).length ? 116 : 0;
     const panelH = photoH + rangeH + 17;
     if (ry - bh - panelH < 35) nextRightPage();
     band(`4. ${s4.title}`, rightX, ry, rightW);
@@ -317,7 +317,7 @@ export async function buildAmcopPdf(markdown: string, data: AmcopPdfData): Promi
       await image(bytes[i], xx, yy, cellW - 3, 36);
       text(labels[i] ?? "", xx + 1, yy - 37, cellW - 2, 6.2, TEAL_DARK);
     }
-    text("**GAMMA AMCOP — forme DCM da definire dopo scansione**", rightX + 7, ry - photoH - rangeH + 10, rightW - 14, 6.4, TEAL_DARK);
+    if (rangeH) text("**GAMMA AMCOP — forme DCM da definire dopo scansione**", rightX + 7, ry - photoH - rangeH + 10, rightW - 14, 6.4, TEAL_DARK);
     ry -= panelH + 6;
   }
   const lastIndex = Math.max(leftPageIndex, rightPageIndex);
@@ -328,7 +328,7 @@ export async function buildAmcopPdf(markdown: string, data: AmcopPdfData): Promi
   const halfW = width / 2;
   const rowHeights: number[] = [];
   for (let i = 0; i < items.length; i += 2) {
-    rowHeights.push(Math.max(...items.slice(i, i + 2).map(l => text(l.replace(/^\d+\.\s*/, ""), 0, 0, halfW - 35, 7.5, GREY, false) + 12), 36));
+    rowHeights.push(Math.max(...items.slice(i, i + 2).map(l => text(l.replace(/^\d+\.\s*/, ""), 0, 0, halfW - 35, 8.5, GREY, false) + 12), 36));
   }
   const needed = rowHeights.reduce((a, b) => a + b, 0) + 22;
   if (bottomTop - needed < 35) { page = doc.addPage([PAGE_W, PAGE_H]); bottomTop = PAGE_H - margin; }
@@ -343,7 +343,7 @@ export async function buildAmcopPdf(markdown: string, data: AmcopPdfData): Promi
         page.drawRectangle({ x: xx, y: yy - rh, width: halfW, height: rh, color: LIGHT, borderColor: GRID, borderWidth: 0.3 });
         page.drawCircle({ x: xx + 12, y: yy - 13, size: 7, color: TEAL });
         page.drawText(String(i + 1), { x: xx + 10, y: yy - 16, size: 8, font: bold, color: WHITE });
-        text(items[i].replace(/^\d+\.\s*/, ""), xx + 26, yy - 5, halfW - 33, 7.5, GREY, true, true);
+        text(items[i].replace(/^\d+\.\s*/, ""), xx + 26, yy - 5, halfW - 33, 8.5, GREY, true, true);
       }
       yy -= rh;
     });

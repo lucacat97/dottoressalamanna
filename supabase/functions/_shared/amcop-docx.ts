@@ -72,7 +72,7 @@ function sectionBand(title: string): Paragraph {
 function bodyParagraph(text: string, spacingAfter = 100): Paragraph {
   return new Paragraph({
     spacing: { before: 20, after: spacingAfter, line: 300 },
-    children: runs(text, { size: 20 }),
+    children: runs(text, { size: 22 }),
   });
 }
 
@@ -82,7 +82,7 @@ function numberedItem(index: number, text: string): Paragraph {
     indent: { left: 360, hanging: 360 },
     children: [
       new TextRun({ text: `${index}  `, bold: true, color: TEAL, size: 20 }),
-      ...runs(text, { size: 20 }),
+      ...runs(text, { size: 22 }),
     ],
   });
 }
@@ -444,7 +444,7 @@ export async function buildAmcopDocx(markdown: string, data: AmcopDocxData): Pro
   const doc = new Document({
     title: `Consulenza Cefalometrica — ${data.patientName}`,
     creator: "Metodo MILA",
-    styles: { default: { document: { run: { font: "Calibri", size: 20, color: "222222" } } } },
+    styles: { default: { document: { run: { font: "Georgia", size: 21, color: "222222" } } } },
     sections: [
       {
         properties: {
