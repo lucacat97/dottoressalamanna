@@ -20,6 +20,8 @@ import {
 const TEAL = "1F6E8C"; // bande sezione
 const TEAL_DARK = "155263";
 const LIGHT = "EAF3F8"; // sfondo badge intestazione
+const AMBER_BG = "FFF8E1";
+const AMBER_BORDER = "F0B400";
 const GRID = "C9D8E0";
 const PAGE_W = 11906; // A4
 const MARGIN = 850;
@@ -435,7 +437,7 @@ export async function buildAmcopDocx(markdown: string, data: AmcopDocxData): Pro
         properties: {
           page: { size: { width: PAGE_W, height: 16838 }, margin: { top: MARGIN, right: MARGIN, bottom: MARGIN, left: MARGIN } },
         },
-        children: [header, twoColumns, ...bottomChildren],
+        children: [header, ...disclaimerBlock, twoColumns, ...bottomChildren],
       },
     ],
   });
