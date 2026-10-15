@@ -8,6 +8,8 @@ import { buildAmcopDocx } from "../_shared/amcop-docx.ts";
 import { buildAmcopPdf, PDF_MIME } from "../_shared/amcop-pdf.ts";
 import { z } from "npm:zod@3.25.76";
 import { createPatientRedactor, patientInitials, redactClinicalValue } from "../_shared/patient-privacy.ts";
+import { retrievalResponse } from "./retrieval-response.ts";
+import { type CephalometryInput } from "../_shared/amcop-retrieval.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -408,6 +410,33 @@ serve(async (req) => {
       );
     }
 
+    // Experimental no-AI mode, selected explicitly to preserve existing clients.
+    let retrievalInput: CephalometryInput | null = null;
+    if (body.processing_mode !== undefined && body.processing_mode !== "retrieval_rules") {
+      return new Response(JSON.stringify({ error: "processing_mode non valido: usare retrieval_rules oppure omettere il campo." }), {
+        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    if (body.processing_mode === "retrieval_rules") {
+      if (tool !== "orthodontic") return new Response(JSON.stringify({ error: "Modalità senza AI disponibile solo per la cefalometria." }), {
+        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+      const numeric = z.preprocess(v => typeof v === "string" && v.trim() !== "" ? Number(v) : v, z.number().finite());
+      const positive = z.preprocess(v => typeof v === "string" && v.trim() !== "" ? Number(v) : v, z.number().finite().positive());
+      const confirmed = z.preprocess(v => v === "true" ? true : v === "false" ? false : v, z.boolean());
+      const parsed = z.object({
+        age: positive.refine(v => v <= 120), sex: z.enum(["M", "F"]),
+        angolo_sellare: numeric, anb: numeric, wits: numeric, angolo_articolare: numeric, angolo_goniaco: numeric,
+        rapporto_ns_gome: positive.optional(), ns_mm: positive.optional(), gome_mm: positive.optional(),
+        crossbite: confirmed.optional(), bite: z.enum(["deep", "open", "neutral"]).optional(),
+        needs_occlusal_raise: confirmed.optional(), tmj_or_dental_changes: confirmed.optional(),
+      }).safeParse(body);
+      if (!parsed.success) return new Response(JSON.stringify({ error: "Valori cefalometrici non validi.", fields: parsed.error.flatten().fieldErrors }), {
+        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+      retrievalInput = parsed.data;
+    }
+
     // ── Se l'account registrato esiste, il credito è condiviso con il sito ──
     if (creditUserId) {
       const { data: allowance, error: allowanceError } = await supabaseAdmin.rpc("consume_ai_consultation", {
@@ -455,6 +484,23 @@ serve(async (req) => {
       }
     }
 
+
+    if (retrievalInput) {
+      const result = await retrievalResponse(retrievalInput, async path => {
+        const { data, error } = await supabaseAdmin.storage.from(AMCOP_STORAGE_BUCKET).download(path);
+        return error || !data ? null : new Uint8Array(await data.arrayBuffer());
+      });
+      // Billing metadata only. Exit before clinical archives, download tokens,
+      // email, OCR, AI requests and knowledge/feedback loading.
+      if (creditUserId) await supabaseAdmin.from("ai_usage_log").insert({ user_id: creditUserId, tool_name: tool });
+      if (keyRecord) {
+        await supabaseAdmin.from("api_usage_log").insert({ api_key_id: keyRecord.id as string, tool_name: tool });
+        await supabaseAdmin.from("api_keys").update({ last_used_at: new Date().toISOString() }).eq("id", keyRecord.id as string);
+      }
+      return new Response(JSON.stringify({ ...result,
+        ignored_fields: ["nome", "cognome", "clinicalNotes", "classe_dentale", "pdf_base64", "documentText"].filter(k => body[k] != null && body[k] !== ""),
+      }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json", "Cache-Control": "no-store" } });
+    }
 
     let markdown: string;
     let amcopImages: Record<string, Uint8Array> | null = null;

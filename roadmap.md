@@ -1,8 +1,11 @@
 # Roadmap
 
+- [x] Creare e collaudare una modalità cefalometrica API sperimentale senza AI, con recupero AMCOP e PDF restituito direttamente senza archiviazione clinica
+- [x] Consegnare un PDF fittizio di prova e documentare limiti e attivazione della modalità
+- [x] Verificare che ogni singolo valore cefalometrico continui a essere interpretato e che il flusso attuale resti invariato
 - [x] Ridurre nome e cognome paziente alle iniziali nell'API e verificare il flusso
 - [x] Revisionare il PDF architetturale con cifratura in transito, minimizzazione e conservazione effettiva
-- [ ] Assenza totale di conservazione: richiede decisione sui download/email e verifica delle politiche dei fornitori
+- [ ] Assenza totale di conservazione su tutti i percorsi: bloccata dalla verifica delle politiche infrastrutturali e dei fornitori; la prova cefalometrica senza AI non archivia documenti clinici né invia email, ma conserva metadati di utilizzo account
 
 - [x] Rendere il PDF cefalometrico API fedele al template AMCOP a due colonne verticali
 - [x] Aggiornare immagini e indicazioni AMCOP senza determinare le forme DCM
