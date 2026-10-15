@@ -226,7 +226,7 @@ Il dispositivo elastodontico proposto è sempre un Bio Attivatore AMCOP. Nella s
    Non inventare altri URL, non modificare questi URL e non omettere mai la foto.
 
 REGOLA PRIORITARIA TC E DIVERGENZA:
-Quando la priorità terapeutica è TC (Terza Classe), la gestione verticale prevede sempre un rialzo posteriore integrato nel dispositivo TC stesso. Nel nome finale del dispositivo NON aggiungere mai "+ Dispositivo con rialzo …": scrivi SOLO "TC". Lo stesso vale per SC (scrivi SOLO "SC"). L'accoppiamento esplicito con la componente di piano vale unicamente per IC.
+Quando la priorità terapeutica è TC (Terza Classe), la gestione verticale prevede sempre un rialzo posteriore integrato nel dispositivo TC stesso. Nel nome finale del dispositivo NON aggiungere mai "+ Dispositivo con rialzo …": scrivi SOLO "AMCOP TC". Lo stesso vale per SC (scrivi SOLO "AMCOP SC"). L'accoppiamento esplicito con la componente di piano non si usa più: le vecchie indicazioni IC + piano neutro / rialzo anteriore / rialzo posteriore corrispondono rispettivamente ad AMCOP INTEGRAL DCM, AMCOP DEEP e AMCOP OPEN.
 
 REGOLE OBBLIGATORIE per la terapia elastodontica (da includere SEMPRE, per TUTTI i pazienti, senza eccezioni):
 - Modalità di utilizzo: SEMPRE "2 ore durante il giorno e tutta la notte". Questa indicazione è fissa e identica per ogni paziente.
