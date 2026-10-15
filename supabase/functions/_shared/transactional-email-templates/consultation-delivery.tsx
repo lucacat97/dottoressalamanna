@@ -56,8 +56,16 @@ const ConsultationDeliveryEmail = ({
               <Button href={downloadUrl} style={button}>
                 Scarica la consulenza completa (Word)
               </Button>
+              {downloadUrlPdf ? (
+                <>
+                  {' '}
+                  <Button href={downloadUrlPdf} style={button}>
+                    Scarica in PDF
+                  </Button>
+                </>
+              ) : null}
               <Text style={smallNote}>
-                Per motivi di sicurezza, il link è personale, valido <strong>5 giorni</strong> e consente al massimo <strong>5 download</strong>. Apra il file con Microsoft Word, Pages o Google Docs.
+                Per motivi di sicurezza, i link sono personali, validi <strong>5 giorni</strong> e consentono al massimo <strong>5 download</strong> ciascuno. Il file Word si apre con Microsoft Word, Pages o Google Docs; il PDF si apre con qualsiasi lettore.
               </Text>
             </Section>
           ) : (
