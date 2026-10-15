@@ -25,7 +25,7 @@ export async function buildMarkdownPdf(markdown: string, title: string, disclaim
   doc.setTitle(title);
   doc.setCreator("Metodo MILA");
   const font = await doc.embedFont(StandardFonts.Helvetica);
-  const bold = await doc.embedFont(StandardFonts.HelveticaBold);
+  const bold = await doc.embedFont(StandardFonts.TimesRomanBold);
   const form = doc.getForm();
   let page = doc.addPage([W, H]);
   let y = H - M;
@@ -57,7 +57,7 @@ export async function buildMarkdownPdf(markdown: string, title: string, disclaim
     y -= size * 1.3; page.drawText(line.trim(), { x: M, y, size, font: bold, color: TEAL });
     y -= 4;
   };
-  const field = (t: string, size = 10, indent = 0, bg?: typeof AMBER_BG) => {
+  const field = (t: string, size = 11, indent = 0, bg?: typeof AMBER_BG) => {
     const w = width - indent - 6;
     const h = wrapCount(t, font, size, w - 4) * size * 1.25 + 6;
     ensure(h + 4);
