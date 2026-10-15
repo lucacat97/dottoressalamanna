@@ -158,7 +158,7 @@ Ar-Go-Me ${input.angolo_goniaco}°: ${divergenceNames[result.vertical[1]]}. La m
 
 ## 8. Indicazioni Terapeutiche
 
-${monitoring} La scelta finale e il programma terapeutico restano al professionista. La forma DCM F, S, C o ØS non è determinabile senza scansione delle arcate. Le istruzioni seguenti sono una sintesi dei materiali del produttore, non un programma personalizzato. Le note libere non vengono interpretate da questa modalità.
+${monitoring} La scelta finale e il programma terapeutico restano al professionista. La forma DCM F, S, C o ØS non è determinabile senza scansione delle arcate.
 
 [[AMCOP_DEVICE:${result.device}]]`;
   return { markdown, result, passages, engine: "amcop-retrieval-rules-v1" as const };
