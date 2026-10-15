@@ -6,6 +6,7 @@
 - [x] Ridurre nome e cognome paziente alle iniziali nell'API e verificare il flusso
 - [x] Revisionare il PDF architetturale con cifratura in transito, minimizzazione e conservazione effettiva
 - [ ] Assenza totale di conservazione su tutti i percorsi: bloccata dalla verifica delle politiche infrastrutturali e dei fornitori; la prova cefalometrica senza AI non archivia documenti clinici né invia email, ma conserva metadati di utilizzo account
+- [x] Verificare che cefalometria e check-up API consegnino entrambi Word e PDF
 
 - [x] Rendere il PDF cefalometrico API fedele al template AMCOP a due colonne verticali
 - [x] Aggiornare immagini e indicazioni AMCOP senza determinare le forme DCM
