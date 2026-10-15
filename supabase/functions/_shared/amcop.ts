@@ -16,7 +16,13 @@ export interface AmcopDevice {
   description: string;
   imageUrl: string;
   pageUrl: string;
+  /** Percorso nel bucket storage privato "amcop-assets" (copia locale dell'immagine). */
+  storagePath: string;
 }
+
+/** Bucket storage con le copie locali delle immagini AMCOP (il sito amcop.it può essere irraggiungibile). */
+export const AMCOP_STORAGE_BUCKET = "amcop-assets";
+export const AMCOP_LOGO_STORAGE_PATH = "logo.png";
 
 export const AMCOP_DEVICES: Record<AmcopDeviceKey, AmcopDevice> = {
   TC: {
