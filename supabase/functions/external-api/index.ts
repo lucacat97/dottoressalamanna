@@ -439,6 +439,7 @@ serve(async (req) => {
     let amcopLogo: Uint8Array | null = null;
     let amcopRangeImage: Uint8Array | null = null;
     let amcopDeviceAlt = "";
+    let amcopPatientName = "Paziente";
 
     if (tool === "diagnosis") {
       const { clinicalNotes, terapie, reasonForVisit, pdf_base64, pdf_filename } = body as Record<string, any>;
@@ -488,6 +489,7 @@ serve(async (req) => {
       }
       const ratio = rapporto_ns_gome ?? (ns_mm && gome_mm ? (gome_mm / ns_mm) : null);
       const patientName = nome && cognome ? `${nome} ${cognome}` : (nome || cognome || "Paziente");
+      amcopPatientName = patientName;
       const notesSection = clinicalNotes && typeof clinicalNotes === "string" && clinicalNotes.trim().length > 0
         ? `\n\n--- CONSIDERAZIONI CLINICHE DEL PROFESSIONISTA ---\n${clinicalNotes.trim()}\n--- FINE CONSIDERAZIONI ---\nTieni conto di queste considerazioni nell'analisi.`
         : "";
@@ -601,7 +603,7 @@ ${classe_dentale ? `- Classe dentale/funzionale confermata: ${classe_dentale}` :
     if (tool === "orthodontic") {
       try {
         docxBytes = await buildAmcopDocx(markdown, {
-          patientName,
+          patientName: amcopPatientName,
           date: new Date().toLocaleDateString("it-IT", { day: "numeric", month: "long", year: "numeric" }),
           logo: amcopLogo,
           deviceImage: amcopImages ? Object.values(amcopImages)[0] : null,
