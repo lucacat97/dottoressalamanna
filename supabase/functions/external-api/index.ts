@@ -3,7 +3,8 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
 import metodologia from "./metodologia.json" with { type: "json" };
 import courseKnowledge from "./course-knowledge.json" with { type: "json" };
 import { markdownToDocx, DOCX_MIME } from "../_shared/docx-generator.ts";
-import { AMCOP_ORTHO_ADDENDUM, AMCOP_LOGO_URL, applyAmcopTemplate, fetchImageBytes } from "../_shared/amcop.ts";
+import { AMCOP_ORTHO_ADDENDUM, AMCOP_LOGO_URL, AMCOP_RANGE_URL, applyAmcopTemplate, fetchImageBytes } from "../_shared/amcop.ts";
+import { buildAmcopDocx } from "../_shared/amcop-docx.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
