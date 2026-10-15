@@ -153,8 +153,19 @@ export async function buildAmcopPdf(markdown: string, data: AmcopPdfData): Promi
     if (line.words.length) lines.push(line);
     return lines;
   }
-  function text(src: string, x: number, top: number, w: number, size = 8.2, color = GREY, draw = true): number {
+  let fieldN = 0;
+  function text(src: string, x: number, top: number, w: number, size = 8.2, color = GREY, draw = true, edit = false): number {
     const lines = wrap(src, w, size);
+    if (draw && edit) {
+      // Editable form field: the professional can modify the content in any PDF reader.
+      const h = lines.length * size * 1.22 + 3;
+      const field = doc.getForm().createTextField(`campo_${++fieldN}`);
+      field.enableMultiline();
+      field.setText(lines.map(l => l.words.map(w2 => w2.text).join(" ")).join(" "));
+      field.addToPage(page, { x: x - 2, y: top - h, width: w + 4, height: h + 1, borderWidth: 0, textColor: color, font });
+      field.setFontSize(size);
+      return lines.length * size * 1.22;
+    }
     if (draw) lines.forEach((line, i) => {
       let dx = x;
       for (const word of line.words) {
