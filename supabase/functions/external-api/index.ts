@@ -3,7 +3,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
 import metodologia from "./metodologia.json" with { type: "json" };
 import courseKnowledge from "./course-knowledge.json" with { type: "json" };
 import { markdownToDocx, DOCX_MIME } from "../_shared/docx-generator.ts";
-import { AMCOP_ORTHO_ADDENDUM, AMCOP_DEVICES, AMCOP_STORAGE_BUCKET, AMCOP_LOGO_STORAGE_PATH, applyAmcopTemplate } from "../_shared/amcop.ts";
+import { AMCOP_ORTHO_ADDENDUM, AMCOP_DEVICES, AMCOP_DCM_VARIANTS, AMCOP_STORAGE_BUCKET, AMCOP_LOGO_STORAGE_PATH, applyAmcopTemplate } from "../_shared/amcop.ts";
 import { buildAmcopDocx } from "../_shared/amcop-docx.ts";
 import { buildAmcopPdf, PDF_MIME } from "../_shared/amcop-pdf.ts";
 
@@ -439,6 +439,7 @@ serve(async (req) => {
     let amcopImages: Record<string, Uint8Array> | null = null;
     let amcopLogo: Uint8Array | null = null;
     let amcopRangeImages: (Uint8Array | null)[] = [];
+    let amcopRangeLabels: string[] = [];
     let amcopDeviceAlt = "";
     let amcopPatientName = "Paziente";
 
@@ -517,15 +518,17 @@ ${classe_dentale ? `- Classe dentale/funzionale confermata: ${classe_dentale}` :
           return new Uint8Array(await data.arrayBuffer());
         } catch { return null; }
       };
-      const rangeOrder = ["TC", "SC", "INTEGRAL", "DEEP", "OPEN", "DTM"] as const;
+      const rangeOrder = ["DEEP", "OPEN", "SC", "TC", "DTM"] as const;
+      const gallery = [...rangeOrder.map(k => ({ label: k, storagePath: AMCOP_DEVICES[k].storagePath })), ...AMCOP_DCM_VARIANTS];
       const [devImg, logo, ...rangeImgs] = await Promise.all([
-        storageImage(amcop.device.storagePath),
+        amcop.device.key === "INTEGRAL" ? Promise.resolve(null) : storageImage(amcop.device.storagePath),
         storageImage(AMCOP_LOGO_STORAGE_PATH),
-        ...rangeOrder.map((k) => storageImage(AMCOP_DEVICES[k].storagePath)),
+        ...gallery.map(d => storageImage(d.storagePath)),
       ]);
       amcopImages = devImg ? { [amcop.device.imageUrl]: devImg } : {};
       amcopLogo = logo;
       amcopRangeImages = rangeImgs;
+      amcopRangeLabels = gallery.map(d => d.label);
       amcopDeviceAlt = amcop.device.name;
     } else if (tool === "mtc_sistemica") {
       const { sex, painPoints } = body;
@@ -619,6 +622,7 @@ ${classe_dentale ? `- Classe dentale/funzionale confermata: ${classe_dentale}` :
           deviceImage: amcopImages ? Object.values(amcopImages)[0] : null,
           deviceImageAlt: amcopDeviceAlt,
           rangeImages: amcopRangeImages,
+          rangeCaption: "GAMMA AMCOP — forme DCM da definire dopo scansione",
         });
       } catch (e) {
         console.error("[external-api] buildAmcopDocx error, fallback al layout semplice:", e);
@@ -689,6 +693,7 @@ ${classe_dentale ? `- Classe dentale/funzionale confermata: ${classe_dentale}` :
           deviceImage: amcopImages ? Object.values(amcopImages)[0] : null,
           deviceImageAlt: amcopDeviceAlt,
           rangeImages: amcopRangeImages,
+          rangeLabels: amcopRangeLabels,
         });
         if (pdfBytes) {
           const safeType = consultationType.replace(/[^\w\-]+/g, "_");

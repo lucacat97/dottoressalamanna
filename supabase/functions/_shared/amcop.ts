@@ -24,6 +24,22 @@ export interface AmcopDevice {
 export const AMCOP_STORAGE_BUCKET = "amcop-assets";
 export const AMCOP_LOGO_STORAGE_PATH = "logo.png";
 
+// Le varianti descrivono solo la gamma fotografica, NON una scelta di forma.
+export const AMCOP_DCM_VARIANTS = [
+  { label: "DCM F", imageUrl: `${BASE}/images/attivatori/giallo.jpg`, storagePath: "dcm-f.jpg" },
+  { label: "DCM S", imageUrl: `${BASE}/images/attivatori/blu.jpg`, storagePath: "dcm-s.jpg" },
+  { label: "DCM C", imageUrl: `${BASE}/images/attivatori/viola.jpg`, storagePath: "dcm-c.jpg" },
+  { label: "DCM ØS", imageUrl: `${BASE}/images/attivatori/rosso.jpg`, storagePath: "dcm-os.jpg" },
+] as const;
+
+export const AMCOP_INDICATIONS = {
+  DEEP: "hypodivergence", OPEN: "hyperdivergence", SC: "class_II", TC: "class_III",
+  DTM: "dental_changes_and_TMJ", INTEGRAL: "all_indications",
+} as const;
+
+/** Nessuna forma DCM viene dedotta dalla sola cefalometria. */
+export function getAmcopDcmForm(): null { return null; }
+
 export const AMCOP_DEVICES: Record<AmcopDeviceKey, AmcopDevice> = {
   TC: {
     key: "TC",
@@ -47,10 +63,10 @@ export const AMCOP_DEVICES: Record<AmcopDeviceKey, AmcopDevice> = {
   },
   INTEGRAL: {
     key: "INTEGRAL",
-    name: "AMCOP INTEGRAL DCM",
-    subtitle: "Bio Attivatore DCM — Prima Classe (piano neutro)",
+    name: "AMCOP DCM",
+    subtitle: "Bio Attivatore DCM — tutte le indicazioni; forma da definire",
     description:
-      "Indicato per rapporti molari e canini nella norma e per le disarmonie scheletriche trasversali o verticali: il piano occlusale, con curve di Spee e di Wilson funzionali, stabilizza l'equilibrio della bocca e accompagna un corretto accrescimento mandibolare.",
+      "DCM è utilizzabile in tutte le indicazioni. La forma F, S, C o ØS non è determinabile dai soli valori cefalometrici e resta da definire dopo l'acquisizione della scansione delle arcate.",
     imageUrl: `${BASE}/images/attivatori/giallo.jpg`,
     pageUrl: `${BASE}/giallo.html`,
     storagePath: "integral.jpg",
@@ -61,14 +77,14 @@ export const AMCOP_DEVICES: Record<AmcopDeviceKey, AmcopDevice> = {
     subtitle: "Bio Attivatore Prima Classe — rialzo anteriore",
     description:
       "Indicato nei morsi profondi (deep bite): presenta flange simili al DCM con un rialzo del piano occlusale nella zona frontale, utile quando è necessario un rialzo di occlusione.",
-    imageUrl: `${BASE}/images/attivatori/confrontodeep.jpg`,
+    imageUrl: `${BASE}/images/attivatori/deep.jpg`,
     pageUrl: `${BASE}/deep.html`,
     storagePath: "deep.jpg",
   },
   OPEN: {
     key: "OPEN",
     name: "AMCOP OPEN",
-    subtitle: "Bio Attivatore Prima Classe — morso aperto",
+    subtitle: "Bio Attivatore — iperdivergenza",
     description:
       "Indicato per arcate con malocclusione di carattere scheletrico di tipo morso aperto anteriore, per il controllo della componente verticale.",
     imageUrl: `${BASE}/images/attivatori/open.jpg`,
@@ -78,10 +94,10 @@ export const AMCOP_DEVICES: Record<AmcopDeviceKey, AmcopDevice> = {
   DTM: {
     key: "DTM",
     name: "AMCOP DTM",
-    subtitle: "Bio Attivatore a flange basse — ATM e bruxismo",
+    subtitle: "Bio Attivatore — modifiche dentali e problemi ATM",
     description:
-      "Meno invasivo e più confortevole grazie alle flange ridotte, ideato per disfunzioni delle ATM e scompensi tensionali neuromuscolari (bruxismo); utilizzabile anche in fase di contenzione.",
-    imageUrl: `${BASE}/images/attivatori/confronto.jpg`,
+      "Indicato per modifiche prevalentemente dentali e per problemi delle articolazioni temporo-mandibolari (ATM), con flange ridotte per un maggiore comfort.",
+    imageUrl: `${BASE}/images/attivatori/dtm.jpg`,
     pageUrl: `${BASE}/dtm.html`,
     storagePath: "dtm.jpg",
   },
@@ -109,7 +125,10 @@ MAPPATURA DISPOSITIVI:
 - Paziente > 20 anni → **AMCOP INTEGRAL DCM** oppure **AMCOP DTM**; **AMCOP DEEP** solo se serve un rialzo di occlusione. Mai TC/SC nell'adulto.
 La parola "INTEGRAL" è ammessa in questo template.
 
+PRECISAZIONI PRIORITARIE SUL CATALOGO: DEEP = ipodivergenza; OPEN = iperdivergenza; SC = seconda classe; TC = terza classe; DTM = modifiche prevalentemente dentali e problemi ATM; DCM = tutte le indicazioni. Mantieni la priorità alla classe significativa e l'eccezione adulta già descritte. Quando consigli DCM usa il nome "AMCOP DCM". Le varianti DCM F (giallo), DCM S (blu), DCM C (viola), DCM ØS (rosso) sono solo una gamma illustrativa: NON puoi stabilire o consigliare la forma senza scansione delle arcate. Scrivi che la forma resta da definire dopo la scansione; non inventare dati di scansione. Nell'adulto la cefalometria ha valore clinico interpretativo, non giustifica dispositivi di classe.
+
 STRUTTURA DI OUTPUT (sostituisce quella precedente, stesso ordine, niente sezioni extra):
+Il template è una scheda clinica compatta: evita ripetizioni, mantieni i paragrafi di ogni riquadro sintetici (massimo 70 parole), senza omettere valori, alert o motivazioni cliniche. Le indicazioni terapeutiche hanno frasi brevi e complete.
 ## Disclaimer (testo esatto già indicato)
 ## Consulenza Cefalometrica — [Nome Cognome]
 ## 1. Tabella dei Valori, Norme e Interpretazioni  (stessa tabella di prima; nella colonna Norma aggiungi tra parentesi il range, es. "123° ± 5° (range 118–128°)")
@@ -143,9 +162,18 @@ const MARKER_RE = /\[\[AMCOP_DEVICE:\s*([A-Z]+)\s*\]\]/i;
 export function detectAmcopDevice(markdown: string, age?: number): AmcopDeviceKey {
   const m = markdown.match(MARKER_RE);
   const fromMarker = m?.[1]?.toUpperCase();
+  if (age !== undefined && age > 20) {
+    if (fromMarker === "DEEP" || fromMarker === "DTM") return fromMarker;
+    if (fromMarker) return "INTEGRAL";
+  }
   if (fromMarker && fromMarker in AMCOP_DEVICES) return fromMarker as AmcopDeviceKey;
   const sec = markdown.match(/##\s*4\.[^\n]*\n([\s\S]*?)(?=\n##\s|$)/)?.[1] ?? "";
   const s = sec.toUpperCase();
+  if (age !== undefined && age > 20) {
+    if (/\bDEEP\b/.test(s)) return "DEEP";
+    if (/\bDTM\b/.test(s) && !/INTEGRAL|\bDCM\b/.test(s)) return "DTM";
+    return "INTEGRAL";
+  }
   if (/AMCOP\s+TC\b/.test(s)) return "TC";
   if (/AMCOP\s+SC\b/.test(s)) return "SC";
   if (/\bDEEP\b/.test(s)) return "DEEP";
@@ -163,10 +191,12 @@ export function detectAmcopDevice(markdown: string, age?: number): AmcopDeviceKe
 export function applyAmcopTemplate(markdown: string, age?: number): { markdown: string; device: AmcopDevice } {
   const device = AMCOP_DEVICES[detectAmcopDevice(markdown, age)];
   let md = markdown.replace(MARKER_RE, "").trimEnd();
+  // Blocca una selezione di forma non supportata dai dati disponibili.
+  md = md.replace(/\b(?:AMCOP\s+)?(?:INTEGRAL\s+)?DCM\s+(?:ØS|OS|F|S|C)\b/gi, "AMCOP DCM (forma da definire)");
   // Elimina eventuale sezione istruzioni scritta comunque dal modello
   md = md.replace(/\n##\s*9\.[\s\S]*$/, "").trimEnd();
 
-  const imageBlock = `\n\n![${device.name}](${device.imageUrl})\n\n*${device.description}*\n\nScheda dispositivo: ${device.pageUrl}\n`;
+  const imageBlock = `${device.key === "INTEGRAL" ? "" : `\n\n![${device.name}](${device.imageUrl})`}\n\n*${device.description}*\n\nScheda dispositivo: ${device.pageUrl}\n`;
   const sec4 = md.match(/(##\s*4\.[^\n]*\n[\s\S]*?)(?=\n##\s|$)/);
   if (sec4) {
     md = md.replace(sec4[1], sec4[1].trimEnd() + imageBlock);
