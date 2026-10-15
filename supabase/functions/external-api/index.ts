@@ -554,7 +554,8 @@ ${classe_dentale ? `- Classe dentale/funzionale confermata: ${classe_dentale}` :
     }
 
     // Build response based on format
-    const htmlBody = mdToHtml(markdown);
+    const htmlBody = mdToHtml(markdown).replace(/!\[([^\]]*)\]\((https:\/\/[^)\s]+)\)/g,
+      '<img src="$2" alt="$1" style="max-width:420px;width:100%;height:auto;display:block;margin:12px 0;border-radius:8px;" />');
     const fullHtml = wrapInHtmlDocument(htmlBody);
 
     // ── Send the consulenza by email to the professional via send-transactional-email ──
