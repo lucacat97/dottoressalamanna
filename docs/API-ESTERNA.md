@@ -125,6 +125,16 @@ POST https://pjgpducvkdrtigorpzrm.supabase.co/functions/v1/pdf-ocr
 
 ## 2. Cefalometria (`orthodontic`) — richiede valori numerici
 
+### Prova senza AI: `processing_mode: "retrieval_rules"`
+
+Aggiungere questo campo alla richiesta cefalometrica per recuperare le schede AMCOP pertinenti e comporre una consulenza con regole deterministiche, senza LLM né embeddings. Il percorso esistente rimane invariato quando il campo è omesso. Le soglie sono le regole MILA già codificate, non linee guida indipendenti del produttore. Le fonti recuperate sono restituite in `sources`.
+
+Questa modalità accetta solo valori numerici e conferme strutturate: `crossbite` (boolean), `bite` (`deep`/`open`/`neutral`), `needs_occlusal_raise` (boolean), `tmj_or_dental_changes` (boolean). Non interpreta `clinicalNotes`, `classe_dentale` o PDF e non inserisce nome/cognome nel documento. I campi ignorati sono elencati in `ignored_fields`.
+
+La risposta contiene `ai_used: false`, `decision`, `markdown` e `documents.pdf` / `documents.docx` con `filename`, `mime_type`, `base64`. Decodificare i file nel client: non ci sono `download_url` né invio email MILA. I documenti e i valori non vengono scritti negli archivi applicativi; restano contatori e metadati di utilizzo dell'account, e le politiche dei log infrastrutturali richiedono verifica separata. Non è una promessa di assenza totale di conservazione o di anonimizzazione irreversibile.
+
+Le consulenze continuano a consumare lo stesso saldo. Il rapporto calcolato in questa modalità è matematicamente **NS / GoMe** (il vecchio percorso API utilizzava il rapporto inverso). Per confronti clinici verificare quale convenzione è usata dal gestionale; il valore esplicito `rapporto_ns_gome` prevale sul calcolo.
+
 Lo strumento cefalometrico **non accetta un PDF**: lavora sui valori del tracciato. Se parti da
 un PDF di cefalometria, estrai i valori (manualmente, con il tuo parser, oppure lasciando
 compilare i campi all'operatore) e inviali così:
