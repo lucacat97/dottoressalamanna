@@ -92,63 +92,6 @@ function tableRows(body: string): string[][] {
     .map((l) => l.slice(1, -1).split("|").map((c) => c.trim()));
 }
 
-// ── Cursor di pagina con gestione automatica delle nuove pagine ──
-class Cursor {
-  page: PDFPage;
-  y: number;
-  constructor(private doc: PDFDocument, private font: PDFFont, private bold: PDFFont) {
-    this.page = doc.addPage([PAGE_W, PAGE_H]);
-    this.y = PAGE_H - MARGIN;
-  }
-  ensure(needed: number) {
-    if (this.y - needed < MARGIN) {
-      this.page = this.doc.addPage([PAGE_W, PAGE_H]);
-      this.y = PAGE_H - MARGIN;
-    }
-  }
-  /** Disegna testo con parti in grassetto, con ritorno a capo automatico. */
-  wrapText(src: string, size: number, opts: { color?: typeof INK; indent?: number; lineH?: number } = {}): number {
-    const color = opts.color ?? INK;
-    const indent = opts.indent ?? 0;
-    const lineH = opts.lineH ?? size * 1.45;
-    const maxW = CONTENT_W - indent;
-    const parts = parseInline(sanitize(src));
-    // Spezza in "parole" mantenendo lo stile
-    const words: { t: string; bold: boolean }[] = [];
-    for (const p of parts) {
-      for (const w of p.text.split(/(\s+)/)) {
-        if (w) words.push({ t: w, bold: !!p.bold });
-      }
-    }
-    let x = MARGIN + indent;
-    let lines = 0;
-    const flushLine = () => { lines++; this.y -= lineH; x = MARGIN + indent; };
-    for (const w of words) {
-      const f = w.bold ? this.bold : this.font;
-      const wWidth = f.widthOfTextAtSize(w.t, size);
-      if (x + wWidth > MARGIN + indent + maxW && x > MARGIN + indent) {
-        this.ensure(lineH);
-        flushLine();
-        if (/^\s+$/.test(w.t)) continue;
-      }
-      this.page.drawText(w.t, { x, y: this.y, size, font: f, color: w.bold ? TEAL_DARK : color });
-      x += wWidth;
-    }
-    this.ensure(lineH);
-    flushLine();
-    return lines;
-  }
-  band(title: string) {
-    const h = 20;
-    this.ensure(h + 30);
-    this.y -= 8;
-    this.page.drawRectangle({ x: MARGIN, y: this.y - h + 5, width: CONTENT_W, height: h, color: TEAL });
-    this.page.drawText(sanitize(title), { x: MARGIN + 8, y: this.y - h + 10, size: 11, font: this.bold, color: WHITE });
-    this.y -= h + 4;
-  }
-  gap(n: number) { this.y -= n; }
-}
-
 async function embedImage(doc: PDFDocument, bytes: Uint8Array) {
   if (bytes[0] === 0x89 && bytes[1] === 0x50) return doc.embedPng(bytes);
   return doc.embedJpg(bytes);
@@ -162,6 +105,7 @@ export interface AmcopPdfData {
   deviceImageAlt?: string;
   rangeImages?: (Uint8Array | null)[];
   rangeCaption?: string;
+  rangeLabels?: string[];
 }
 
 /**
@@ -170,198 +114,197 @@ export interface AmcopPdfData {
  */
 export async function buildAmcopPdf(markdown: string, data: AmcopPdfData): Promise<Uint8Array | null> {
   const sections = parseSections(markdown);
-  const byNum = new Map(sections.map((s) => [s.num, s]));
-  if (!byNum.has(1) || !byNum.has(2) || !byNum.has(3) || !byNum.has(4) || !byNum.has(8)) return null;
-
+  const byNum = new Map(sections.map(s => [s.num, s]));
+  if (![1, 2, 3, 4, 8].every(n => byNum.has(n))) return null;
   const doc = await PDFDocument.create();
   doc.setTitle(`Consulenza Cefalometrica — ${data.patientName}`);
   doc.setCreator("Metodo MILA");
   const font = await doc.embedFont(StandardFonts.Helvetica);
   const bold = await doc.embedFont(StandardFonts.HelveticaBold);
-  const cur = new Cursor(doc, font, bold);
-
-  // ── Intestazione: logo + titolo + badge ──
-  const headerH = 64;
-  cur.ensure(headerH + 10);
-  const topY = cur.y;
-  if (data.logo) {
-    try {
-      const logo = await embedImage(doc, data.logo);
-      const lh = 44;
-      const lw = (logo.width / logo.height) * lh;
-      cur.page.drawImage(logo, { x: MARGIN, y: topY - lh, width: Math.min(lw, 120), height: lh });
-    } catch { /* logo opzionale */ }
+  let page = doc.addPage([PAGE_W, PAGE_H]);
+  const margin = 16;
+  const width = PAGE_W - margin * 2;
+  const gap = 10;
+  const leftW = (width - gap) * 0.52;
+  const rightW = width - gap - leftW;
+  const rightX = margin + leftW + gap;
+  type Line = { words: { text: string; bold: boolean }[] };
+  function wrap(src: string, w: number, size: number): Line[] {
+    const lines: Line[] = [];
+    let line: Line = { words: [] };
+    let used = 0;
+    for (const part of parseInline(sanitize(src.replace(/<br\s*\/?\s*>/gi, " ")))) {
+      for (const raw of part.text.split(/\s+/).filter(Boolean)) {
+        // Split unusually long tokens so they cannot cross a column boundary.
+        let token = "";
+        const tokens: string[] = [];
+        for (const ch of raw) {
+          if ((part.bold ? bold : font).widthOfTextAtSize(token + ch, size) > w && token) { tokens.push(token); token = ""; }
+          token += ch;
+        }
+        if (token) tokens.push(token);
+        for (const text of tokens) {
+          const tw = (part.bold ? bold : font).widthOfTextAtSize(text + " ", size);
+          if (used + tw > w && line.words.length) { lines.push(line); line = { words: [] }; used = 0; }
+          line.words.push({ text, bold: !!part.bold }); used += tw;
+        }
+      }
+    }
+    if (line.words.length) lines.push(line);
+    return lines;
   }
-  // Badge a destra
-  const badgeW = 150;
-  const badgeX = PAGE_W - MARGIN - badgeW;
-  // Titolo: riduci la dimensione finché non si sovrappone al badge
-  const titleX = MARGIN + 130;
-  const titleMaxW = badgeX - 10 - titleX;
-  let titleSize = 19;
-  const titleTxt = "Consulenza Cefalometrica";
-  while (titleSize > 11 && bold.widthOfTextAtSize(titleTxt, titleSize) > titleMaxW) titleSize -= 1;
-  cur.page.drawText(titleTxt, { x: titleX, y: topY - 20, size: titleSize, font: bold, color: rgb(0x1a / 255, 0x1a / 255, 0x2e / 255) });
-  cur.page.drawText(sanitize(`Analisi Cefalometrica - ${data.patientName}`), { x: titleX, y: topY - 38, size: 11, font, color: GREY });
-  cur.page.drawRectangle({ x: badgeX, y: topY - 52, width: badgeW, height: 52, color: LIGHT });
-  cur.page.drawText("Metodo AMCOP", { x: badgeX + 12, y: topY - 22, size: 11, font: bold, color: TEAL_DARK });
-  cur.page.drawText(sanitize("Funzione - Crescita - Postura"), { x: badgeX + 12, y: topY - 38, size: 9, font, color: TEAL_DARK });
-  cur.y = topY - headerH;
-
-  // ── Disclaimer ──
+  function text(src: string, x: number, top: number, w: number, size = 8.2, color = GREY, draw = true): number {
+    const lines = wrap(src, w, size);
+    if (draw) lines.forEach((line, i) => {
+      let dx = x;
+      for (const word of line.words) {
+        const f = word.bold ? bold : font;
+        page.drawText(word.text, { x: dx, y: top - size - i * size * 1.22, size, font: f, color });
+        dx += f.widthOfTextAtSize(word.text + " ", size);
+      }
+    });
+    return lines.length * size * 1.22;
+  }
+  function band(label: string, x: number, top: number, w: number, draw = true): number {
+    const size = 8.5;
+    const h = Math.max(17, wrap(label, w - 12, size).length * size * 1.22 + 7);
+    if (draw) {
+      page.drawRectangle({ x, y: top - h, width: w, height: h, color: TEAL });
+      text(label, x + 6, top - 3, w - 12, size, WHITE);
+    }
+    return h;
+  }
+  async function image(bytes: Uint8Array | null | undefined, x: number, top: number, w: number, h: number) {
+    if (!bytes) return;
+    try {
+      const img = await embedImage(doc, bytes);
+      const scale = Math.min(w / img.width, h / img.height);
+      const iw = img.width * scale, ih = img.height * scale;
+      page.drawImage(img, { x: x + (w - iw) / 2, y: top - (h + ih) / 2, width: iw, height: ih });
+    } catch { /* Optional media never breaks the clinical document. */ }
+  }
+  await image(data.logo, margin, PAGE_H - 8, 140, 40);
+  text("**Consulenza Cefalometrica**", margin + 151, PAGE_H - 10, 285, 14, TEAL_DARK);
+  text(`Analisi Cefalometrica — **${data.patientName}**`, margin + 151, PAGE_H - 31, 285, 8.8);
+  page.drawRectangle({ x: PAGE_W - margin - 121, y: PAGE_H - 44, width: 121, height: 33, color: LIGHT });
+  text("**Metodo AMCOP**", PAGE_W - margin - 109, PAGE_H - 15, 105, 9, TEAL_DARK);
+  text("Funzione · Crescita · Postura", PAGE_W - margin - 116, PAGE_H - 30, 116, 7);
+  let top = PAGE_H - 55;
   const disclaimer = extractDisclaimer(markdown);
   if (disclaimer) {
-    const size = 8.5;
-    const lineH = size * 1.4;
-    // stima righe
-    const approxCharsPerLine = Math.floor(CONTENT_W / (size * 0.5));
-    const lines = Math.max(1, Math.ceil(disclaimer.length / approxCharsPerLine));
-    const boxH = lines * lineH + 16;
-    cur.ensure(boxH + 10);
-    cur.page.drawRectangle({ x: MARGIN, y: cur.y - boxH, width: CONTENT_W, height: boxH, color: AMBER_BG });
-    cur.page.drawRectangle({ x: MARGIN, y: cur.y - boxH, width: 3, height: boxH, color: AMBER_BORDER });
-    cur.y -= 10;
-    const savedY = cur.y;
-    cur.wrapText(disclaimer, size, { indent: 10, lineH });
-    cur.y = Math.min(cur.y, savedY - boxH + 6);
-    cur.gap(6);
+    const dh = text(disclaimer, margin + 7, top - 4, width - 14, 6.8, GREY, false) + 8;
+    page.drawRectangle({ x: margin, y: top - dh, width, height: dh, color: AMBER_BG });
+    page.drawRectangle({ x: margin, y: top - dh, width: 2, height: dh, color: AMBER_BORDER });
+    text(disclaimer, margin + 7, top - 4, width - 14, 6.8);
+    top -= dh + 7;
   }
-
-  // ── Sezione 1: tabella valori ──
-  const s1 = byNum.get(1)!;
-  cur.band(`1. ${s1.title.replace(/\*\*/g, "")}`);
-  const rows = tableRows(s1.body);
-  if (rows.length >= 2) {
-    const cols = Math.max(...rows.map((r) => r.length));
-    const weights = cols === 4 ? [0.30, 0.16, 0.28, 0.26] : Array.from({ length: cols }, () => 1 / cols);
-    const colWs = weights.map((w) => w * CONTENT_W);
-    const cellSize = 8;
-    const cellPad = 5;
-    for (let r = 0; r < rows.length; r++) {
-      // calcola altezza riga (wrap nelle celle)
-      const cellLines: string[][] = [];
-      let rowLines = 1;
-      for (let c = 0; c < cols; c++) {
-        const txt = sanitize((rows[r][c] ?? "").replace(/\*\*/g, ""));
-        const f = r === 0 ? bold : font;
-        const maxW = colWs[c] - cellPad * 2;
-        const words = txt.split(/\s+/).filter(Boolean);
-        const linesArr: string[] = [];
-        let line = "";
-        for (const w of words) {
-          const test = line ? `${line} ${w}` : w;
-          if (f.widthOfTextAtSize(test, cellSize) > maxW && line) {
-            linesArr.push(line);
-            line = w;
-          } else line = test;
+  function valueTable(body: string, x: number, y: number, w: number, size: number, draw: boolean): number {
+    const rows = tableRows(body);
+    const weights = [0.25, 0.19, 0.29, 0.27];
+    let total = 0;
+    rows.forEach((row, r) => {
+      const sizes = row.slice(0, 4).map((cell, c) => text(cell, 0, 0, w * weights[c] - 8, size, GREY, false));
+      const rh = Math.max(21, ...sizes.map(h => h + 9));
+      let dx = x;
+      for (let c = 0; c < 4; c++) {
+        const cw = w * weights[c];
+        if (draw) {
+          page.drawRectangle({ x: dx, y: y - total - rh, width: cw, height: rh, color: r === 0 ? LIGHT : WHITE, borderColor: GRID, borderWidth: 0.4 });
+          text(r === 0 ? `**${row[c] ?? ""}**` : row[c] ?? "", dx + 4, y - total - 4, cw - 8, size, INK);
         }
-        if (line) linesArr.push(line);
-        cellLines.push(linesArr.length ? linesArr : [""]);
-        rowLines = Math.max(rowLines, linesArr.length);
+        dx += cw;
       }
-      const rowH = rowLines * (cellSize + 3) + cellPad * 2;
-      cur.ensure(rowH + 4);
-      let x = MARGIN;
-      for (let c = 0; c < cols; c++) {
-        if (r === 0) {
-          cur.page.drawRectangle({ x, y: cur.y - rowH, width: colWs[c], height: rowH, color: LIGHT });
-        }
-        cur.page.drawRectangle({ x, y: cur.y - rowH, width: colWs[c], height: rowH, borderColor: GRID, borderWidth: 0.5 });
-        const f = r === 0 ? bold : font;
-        cellLines[c].forEach((ln, li) => {
-          cur.page.drawText(ln, { x: x + cellPad, y: cur.y - cellPad - cellSize - li * (cellSize + 3), size: cellSize, font: f, color: INK });
-        });
-        x += colWs[c];
-      }
-      cur.y -= rowH;
-    }
-    cur.gap(6);
+      total += rh;
+    });
+    return total;
   }
-  for (const l of bodyLines(s1.body)) cur.wrapText(l, 9.5);
-
-  // ── Sezioni 2 e 3 ──
-  for (const num of [2, 3]) {
-    const s = byNum.get(num)!;
-    cur.band(`${num}. ${s.title.replace(/\*\*/g, "")}`);
-    for (const l of bodyLines(s.body)) cur.wrapText(l, 9.5);
-  }
-
-  // ── Sezione 4: dispositivo consigliato + foto + gamma ──
-  const s4 = byNum.get(4)!;
-  cur.band(`4. ${s4.title.replace(/\*\*/g, "")}`);
-  for (const l of bodyLines(s4.body)) cur.wrapText(l, 9.5);
-  if (data.deviceImage) {
-    try {
-      const img = await embedImage(doc, data.deviceImage);
-      const maxW = 240;
-      const scale = Math.min(maxW / img.width, 160 / img.height, 1);
-      const w = img.width * scale;
-      const h = img.height * scale;
-      cur.ensure(h + 12);
-      cur.page.drawImage(img, { x: MARGIN + (CONTENT_W - w) / 2, y: cur.y - h, width: w, height: h });
-      cur.y -= h + 8;
-    } catch { /* immagine opzionale */ }
-  }
-  const rangeImgs = (data.rangeImages ?? []).filter((b): b is Uint8Array => !!b);
-  if (rangeImgs.length > 0) {
-    const cellW = CONTENT_W / rangeImgs.length;
-    const imgH = 56;
-    cur.ensure(imgH + 26);
-    for (let i = 0; i < rangeImgs.length; i++) {
-      try {
-        const img = await embedImage(doc, rangeImgs[i]);
-        const scale = Math.min((cellW - 8) / img.width, imgH / img.height, 1);
-        const w = img.width * scale;
-        const h = img.height * scale;
-        cur.page.drawImage(img, { x: MARGIN + i * cellW + (cellW - w) / 2, y: cur.y - h, width: w, height: h });
-      } catch { /* salta immagine */ }
-    }
-    cur.y -= imgH + 4;
-    const caption = sanitize(data.rangeCaption ?? "GAMMA DISPOSITIVI AMCOP - Bio Attivatori DCM");
-    const capW = bold.widthOfTextAtSize(caption, 8);
-    cur.page.drawText(caption, { x: MARGIN + (CONTENT_W - capW) / 2, y: cur.y - 8, size: 8, font: bold, color: TEAL_DARK });
-    cur.y -= 16;
-  }
-
-  // ── Sezioni 5, 6, 7 ──
-  for (const num of [5, 6, 7]) {
+  function section(num: number, x: number, y: number, w: number, size: number, draw: boolean): number {
     const s = byNum.get(num);
-    if (!s) continue;
-    cur.band(`${num}. ${s.title.replace(/\*\*/g, "")}`);
-    for (const l of bodyLines(s.body)) cur.wrapText(l, 9.5);
-  }
-
-  // ── Sezione 8: indicazioni terapeutiche numerate ──
-  const s8 = byNum.get(8)!;
-  cur.band(`8. ${s8.title.replace(/\*\*/g, "")}`);
-  let n = 0;
-  for (const l of bodyLines(s8.body)) {
-    const ord = l.match(/^(\d+)\.\s+(.+)$/);
-    const num8 = ord ? Number(ord[1]) : ++n;
-    const text = ord ? ord[2] : l;
-    cur.wrapText(`${num8}. ${text}`, 9.5, { indent: 10 });
-  }
-
-  // ── Sezione 9: istruzioni d'uso ──
-  const s9 = byNum.get(9);
-  if (s9) {
-    cur.band(`9. ${s9.title.replace(/\*\*/g, "")}`);
-    let m9 = 0;
-    for (const l of bodyLines(s9.body)) {
-      const ord = l.match(/^(\d+)\.\s+(.+)$/);
-      const num9 = ord ? Number(ord[1]) : ++m9;
-      const text = ord ? ord[2] : l;
-      cur.wrapText(`${num9}. ${text}`, 9.5, { indent: 10 });
+    if (!s) return 0;
+    let h = band(`${num}. ${s.title.replace(/\*\*/g, "")}`, x, y, w, draw);
+    if (num === 1) {
+      h += valueTable(s.body, x, y - h, w, size - 0.5, draw);
+      return h + 6;
     }
+    const lines = bodyLines(s.body);
+    const bodyH = lines.reduce((sum, line, i) => sum + text(line.replace(/^\d+\.\s*/, ""), 0, 0, w - (num === 8 ? 32 : 14), size, GREY, false) + 4, 10);
+    if (draw) page.drawRectangle({ x, y: y - h - bodyH, width: w, height: bodyH, color: LIGHT });
+    let yy = y - h - 5;
+    lines.forEach((line, i) => {
+      const content = num === 8 ? line.replace(/^\d+\.\s*/, "") : line;
+      if (draw && num === 8) {
+        page.drawCircle({ x: x + 12, y: yy - 6, size: 6.5, color: TEAL });
+        page.drawText(String(i + 1), { x: x + 10, y: yy - 9, size: 7, font: bold, color: WHITE });
+      }
+      yy -= text(content, x + (num === 8 ? 25 : 7), yy, w - (num === 8 ? 32 : 14), size, GREY, draw) + 4;
+    });
+    return h + bodyH + 6;
   }
-
-  // ── Nota finale ──
-  cur.ensure(30);
-  cur.gap(14);
-  cur.page.drawLine({ start: { x: MARGIN, y: cur.y }, end: { x: PAGE_W - MARGIN, y: cur.y }, thickness: 0.7, color: GRID });
-  cur.gap(10);
-  cur.page.drawText(sanitize(`Consulenza generata il ${data.date} - Metodo AMCOP - Funzione - Crescita - Postura`), { x: MARGIN, y: cur.y, size: 8, font, color: GREY });
-
+  let bodySize = 8.2;
+  const leftHeight = (size: number) => [1, 5, 6, 7, 8].reduce((h, n) => h + section(n, margin, top, leftW, size, false), 0);
+  // Prefer one A4 page like the reference, but never discard text to force a fit.
+  while (bodySize > 7.4 && leftHeight(bodySize) > 520) bodySize -= 0.2;
+  let ly = top;
+  for (const n of [1, 5, 6, 7, 8]) ly -= section(n, margin, ly, leftW, bodySize, true);
+  let ry = top;
+  for (const n of [2, 3]) ry -= section(n, rightX, ry, rightW, bodySize, true);
+  const s4 = byNum.get(4);
+  if (s4) {
+    const bh = band(`4. ${s4.title}`, rightX, ry, rightW);
+    ry -= bh;
+    const clean = bodyLines(s4.body).filter(l => !l.startsWith("*" ) || l.startsWith("**"));
+    const name = data.deviceImageAlt ?? "AMCOP DCM";
+    const textW = data.deviceImage ? rightW * 0.47 : rightW - 14;
+    const content = clean.filter(l => l.replace(/\*/g, "").trim() !== name).join(" ");
+    const titleH = text(`**${name}**`, 0, 0, textW, 17, TEAL_DARK, false);
+    const detailsH = text(content, 0, 0, textW, bodySize, GREY, false);
+    const photoH = Math.max(132, titleH + detailsH + 16);
+    const rangeH = 116;
+    const panelH = photoH + rangeH + 17;
+    page.drawRectangle({ x: rightX, y: ry - panelH, width: rightW, height: panelH, color: AMBER_BG, borderColor: GRID, borderWidth: 0.4 });
+    text(`**${name}**`, rightX + 7, ry - 7, textW, 17, TEAL_DARK);
+    text(content, rightX + 7, ry - titleH - 11, textW, bodySize);
+    if (data.deviceImage) await image(data.deviceImage, rightX + textW + 11, ry - 5, rightW - textW - 16, photoH - 10);
+    const bytes = data.rangeImages ?? [];
+    const labels = data.rangeLabels ?? [];
+    const cellW = (rightW - 12) / 5;
+    for (let i = 0; i < bytes.length; i++) {
+      const row = Math.floor(i / 5), col = i % 5;
+      const xx = rightX + 6 + col * cellW, yy = ry - photoH - row * 49;
+      await image(bytes[i], xx, yy, cellW - 3, 36);
+      text(labels[i] ?? "", xx + 1, yy - 37, cellW - 2, 6.2, TEAL_DARK);
+    }
+    text("**GAMMA AMCOP — forme DCM da definire dopo scansione**", rightX + 7, ry - photoH - rangeH + 10, rightW - 14, 6.4, TEAL_DARK);
+    ry -= panelH + 6;
+  }
+  let bottomTop = Math.min(ly, ry) - 3;
+  const s9 = byNum.get(9);
+  const items = s9 ? bodyLines(s9.body) : [];
+  const halfW = width / 2;
+  const rowHeights: number[] = [];
+  for (let i = 0; i < items.length; i += 2) {
+    rowHeights.push(Math.max(...items.slice(i, i + 2).map(l => text(l.replace(/^\d+\.\s*/, ""), 0, 0, halfW - 35, 7.5, GREY, false) + 12), 36));
+  }
+  const needed = rowHeights.reduce((a, b) => a + b, 0) + 22;
+  if (bottomTop - needed < 35) { page = doc.addPage([PAGE_W, PAGE_H]); bottomTop = PAGE_H - margin; }
+  if (s9) {
+    bottomTop -= band(`9. ${s9.title}`, margin, bottomTop, width);
+    let yy = bottomTop;
+    rowHeights.forEach((rh, row) => {
+      for (let col = 0; col < 2; col++) {
+        const i = row * 2 + col;
+        if (!items[i]) continue;
+        const xx = margin + col * halfW;
+        page.drawRectangle({ x: xx, y: yy - rh, width: halfW, height: rh, color: LIGHT, borderColor: GRID, borderWidth: 0.3 });
+        page.drawCircle({ x: xx + 12, y: yy - 13, size: 7, color: TEAL });
+        page.drawText(String(i + 1), { x: xx + 10, y: yy - 16, size: 8, font: bold, color: WHITE });
+        text(items[i].replace(/^\d+\.\s*/, ""), xx + 26, yy - 5, halfW - 33, 7.5);
+      }
+      yy -= rh;
+    });
+    bottomTop = yy;
+  }
+  text(`Consulenza generata il ${data.date} — Metodo AMCOP · Funzione · Crescita · Postura`, margin, bottomTop - 7, width, 6.5);
   return new Uint8Array(await doc.save());
 }
 
