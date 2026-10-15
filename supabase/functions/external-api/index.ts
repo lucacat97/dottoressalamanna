@@ -437,6 +437,8 @@ serve(async (req) => {
     let markdown: string;
     let amcopImages: Record<string, Uint8Array> | null = null;
     let amcopLogo: Uint8Array | null = null;
+    let amcopRangeImage: Uint8Array | null = null;
+    let amcopDeviceAlt = "";
 
     if (tool === "diagnosis") {
       const { clinicalNotes, terapie, reasonForVisit, pdf_base64, pdf_filename } = body as Record<string, any>;
@@ -594,11 +596,30 @@ ${classe_dentale ? `- Classe dentale/funzionale confermata: ${classe_dentale}` :
     const introHtml = mdToHtml(introMarkdown);
 
     // ── Genera documento Word reale (.docx) — compatibile con Word, Pages e Google Docs ──
-    const docxBytes = await markdownToDocx(markdown, consultationType, tool === "orthodontic" ? {
-      images: amcopImages ?? {},
-      headerLogo: amcopLogo,
-      headerTagline: "Consulenza Cefalometrica — Metodo AMCOP · Funzione · Crescita · Postura",
-    } : {});
+    // Per la cefalometria: layout grafico "Metodo AMCOP" a due colonne; fallback al layout semplice.
+    let docxBytes: Uint8Array | null = null;
+    if (tool === "orthodontic") {
+      try {
+        docxBytes = await buildAmcopDocx(markdown, {
+          patientName,
+          date: new Date().toLocaleDateString("it-IT", { day: "numeric", month: "long", year: "numeric" }),
+          logo: amcopLogo,
+          deviceImage: amcopImages ? Object.values(amcopImages)[0] : null,
+          deviceImageAlt: amcopDeviceAlt,
+          rangeImage: amcopRangeImage,
+        });
+      } catch (e) {
+        console.error("[external-api] buildAmcopDocx error, fallback al layout semplice:", e);
+        docxBytes = null;
+      }
+    }
+    if (!docxBytes) {
+      docxBytes = await markdownToDocx(markdown, consultationType, tool === "orthodontic" ? {
+        images: amcopImages ?? {},
+        headerLogo: amcopLogo,
+        headerTagline: "Consulenza Cefalometrica — Metodo AMCOP · Funzione · Crescita · Postura",
+      } : {});
+    }
 
     // ── Upload del documento Word su storage privato + token monouso ──
     let downloadUrl = "";
