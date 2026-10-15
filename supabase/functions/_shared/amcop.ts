@@ -33,6 +33,7 @@ export const AMCOP_DEVICES: Record<AmcopDeviceKey, AmcopDevice> = {
       "Indicato nelle dismorfosi di III classe per il trattamento delle pseudoprognazie mandibolari: riposiziona le arcate in un rapporto incisivo regolare con un piano di scivolamento anteriore e un'azione frenante sulla crescita mandibolare.",
     imageUrl: `${BASE}/images/attivatori/verde.jpg`,
     pageUrl: `${BASE}/verde.html`,
+    storagePath: "tc.jpg",
   },
   SC: {
     key: "SC",
@@ -42,6 +43,7 @@ export const AMCOP_DEVICES: Record<AmcopDeviceKey, AmcopDevice> = {
       "Indicato nelle dismorfosi di II classe per il trattamento delle retrognazie mandibolari: il piano di scivolamento anteriore posiziona gli incisivi testa a testa, favorendo l'allungamento della base ossea mandibolare e il ricondizionamento delle ATM.",
     imageUrl: `${BASE}/images/attivatori/arancio.jpg`,
     pageUrl: `${BASE}/arancio.html`,
+    storagePath: "sc.jpg",
   },
   INTEGRAL: {
     key: "INTEGRAL",
@@ -51,6 +53,7 @@ export const AMCOP_DEVICES: Record<AmcopDeviceKey, AmcopDevice> = {
       "Indicato per rapporti molari e canini nella norma e per le disarmonie scheletriche trasversali o verticali: il piano occlusale, con curve di Spee e di Wilson funzionali, stabilizza l'equilibrio della bocca e accompagna un corretto accrescimento mandibolare.",
     imageUrl: `${BASE}/images/attivatori/giallo.jpg`,
     pageUrl: `${BASE}/giallo.html`,
+    storagePath: "integral.jpg",
   },
   DEEP: {
     key: "DEEP",
@@ -60,6 +63,7 @@ export const AMCOP_DEVICES: Record<AmcopDeviceKey, AmcopDevice> = {
       "Indicato nei morsi profondi (deep bite): presenta flange simili al DCM con un rialzo del piano occlusale nella zona frontale, utile quando è necessario un rialzo di occlusione.",
     imageUrl: `${BASE}/images/attivatori/confrontodeep.jpg`,
     pageUrl: `${BASE}/deep.html`,
+    storagePath: "deep.jpg",
   },
   OPEN: {
     key: "OPEN",
@@ -69,6 +73,7 @@ export const AMCOP_DEVICES: Record<AmcopDeviceKey, AmcopDevice> = {
       "Indicato per arcate con malocclusione di carattere scheletrico di tipo morso aperto anteriore, per il controllo della componente verticale.",
     imageUrl: `${BASE}/images/attivatori/open.jpg`,
     pageUrl: `${BASE}/open.html`,
+    storagePath: "open.jpg",
   },
   DTM: {
     key: "DTM",
@@ -78,6 +83,7 @@ export const AMCOP_DEVICES: Record<AmcopDeviceKey, AmcopDevice> = {
       "Meno invasivo e più confortevole grazie alle flange ridotte, ideato per disfunzioni delle ATM e scompensi tensionali neuromuscolari (bruxismo); utilizzabile anche in fase di contenzione.",
     imageUrl: `${BASE}/images/attivatori/confronto.jpg`,
     pageUrl: `${BASE}/dtm.html`,
+    storagePath: "dtm.jpg",
   },
 };
 
