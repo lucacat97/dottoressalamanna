@@ -3,6 +3,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
 import metodologia from "./metodologia.json" with { type: "json" };
 import courseKnowledge from "./course-knowledge.json" with { type: "json" };
 import { markdownToDocx, DOCX_MIME } from "../_shared/docx-generator.ts";
+import { AMCOP_ORTHO_ADDENDUM, AMCOP_LOGO_URL, applyAmcopTemplate, fetchImageBytes } from "../_shared/amcop.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -433,6 +434,8 @@ serve(async (req) => {
 
 
     let markdown: string;
+    let amcopImages: Record<string, Uint8Array> | null = null;
+    let amcopLogo: Uint8Array | null = null;
 
     if (tool === "diagnosis") {
       const { clinicalNotes, terapie, reasonForVisit, pdf_base64, pdf_filename } = body as Record<string, any>;
@@ -496,7 +499,13 @@ serve(async (req) => {
 - Angolo Goniaco (Ar-Go-Me): ${angolo_goniaco}°
 ${ratio ? `- Rapporto NS/GoMe: ${ratio}` : ""}
 ${classe_dentale ? `- Classe dentale/funzionale confermata: ${classe_dentale}` : ""}${notesSection}`;
-      markdown = await callAI(ORTHODONTIC_SYSTEM_PROMPT, userMsg, { scope: "orthodontic", toolName: "orthodontic-diagnosis", serviceClient: supabaseAdmin });
+      markdown = await callAI(ORTHODONTIC_SYSTEM_PROMPT + AMCOP_ORTHO_ADDENDUM, userMsg, { scope: "orthodontic", toolName: "orthodontic-diagnosis", serviceClient: supabaseAdmin });
+      // ── Template Metodo AMCOP: foto dispositivo + istruzioni d'uso brochure ──
+      const amcop = applyAmcopTemplate(markdown, Number(age));
+      markdown = amcop.markdown;
+      const [devImg, logo] = await Promise.all([fetchImageBytes(amcop.device.imageUrl), fetchImageBytes(AMCOP_LOGO_URL)]);
+      amcopImages = devImg ? { [amcop.device.imageUrl]: devImg } : {};
+      amcopLogo = logo;
     } else if (tool === "mtc_sistemica") {
       const { sex, painPoints } = body;
       if (!painPoints || !Array.isArray(painPoints) || painPoints.length === 0) {
@@ -577,7 +586,11 @@ ${classe_dentale ? `- Classe dentale/funzionale confermata: ${classe_dentale}` :
     const introHtml = mdToHtml(introMarkdown);
 
     // ── Genera documento Word reale (.docx) — compatibile con Word, Pages e Google Docs ──
-    const docxBytes = await markdownToDocx(markdown, consultationType);
+    const docxBytes = await markdownToDocx(markdown, consultationType, tool === "orthodontic" ? {
+      images: amcopImages ?? {},
+      headerLogo: amcopLogo,
+      headerTagline: "Consulenza Cefalometrica — Metodo AMCOP · Funzione · Crescita · Postura",
+    } : {});
 
     // ── Upload del documento Word su storage privato + token monouso ──
     let downloadUrl = "";
