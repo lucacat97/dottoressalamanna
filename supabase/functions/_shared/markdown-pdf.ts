@@ -82,7 +82,7 @@ export async function buildMarkdownPdf(markdown: string, title: string, disclaim
     } catch { /* immagini facoltative */ }
   };
 
-  heading(clean(title), 18);
+  heading(clean(title), 20);
   field(`${clean(disclaimer)} ${EXPERIMENTAL_NOTE}`, 8.5, 0, AMBER_BG);
 
   let para: string[] = [];
@@ -93,7 +93,7 @@ export async function buildMarkdownPdf(markdown: string, title: string, disclaim
     const img = l.match(/!\[[^\]]*\]\(([^)\s]+)\)/);
     if (img) { flush(); if (/^https:\/\//.test(img[1])) await image(img[1]); continue; }
     const h = l.match(/^(#{1,4})\s+(.*)$/);
-    if (h) { flush(); heading(clean(h[2]), h[1].length <= 1 ? 16 : h[1].length === 2 ? 13 : 11); continue; }
+    if (h) { flush(); heading(clean(h[2]), h[1].length <= 1 ? 17 : h[1].length === 2 ? 14 : 12); continue; }
     if (/^\|[\s:|-]+\|$/.test(l) || /^-{3,}$/.test(l)) { flush(); continue; }
     if (l.startsWith("|")) { flush(); field(clean(l.slice(1, -1).split("|").map(c => c.trim()).join("  |  ")), 9.5); continue; }
     if (/^([-*+]|\d+\.)\s+/.test(l)) { flush(); field(`- ${clean(l.replace(/^([-*+]|\d+\.)\s+/, ""))}`, 10, 10); continue; }
