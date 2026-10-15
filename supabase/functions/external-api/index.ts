@@ -437,7 +437,7 @@ serve(async (req) => {
     let markdown: string;
     let amcopImages: Record<string, Uint8Array> | null = null;
     let amcopLogo: Uint8Array | null = null;
-    let amcopRangeImage: Uint8Array | null = null;
+    let amcopRangeImages: (Uint8Array | null)[] = [];
     let amcopDeviceAlt = "";
     let amcopPatientName = "Paziente";
 
@@ -609,7 +609,7 @@ ${classe_dentale ? `- Classe dentale/funzionale confermata: ${classe_dentale}` :
           logo: amcopLogo,
           deviceImage: amcopImages ? Object.values(amcopImages)[0] : null,
           deviceImageAlt: amcopDeviceAlt,
-          rangeImage: amcopRangeImage,
+          rangeImages: amcopRangeImages,
         });
       } catch (e) {
         console.error("[external-api] buildAmcopDocx error, fallback al layout semplice:", e);
