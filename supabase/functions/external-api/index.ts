@@ -6,6 +6,7 @@ import { markdownToDocx, DOCX_MIME } from "../_shared/docx-generator.ts";
 import { AMCOP_ORTHO_ADDENDUM, AMCOP_DEVICES, AMCOP_DCM_VARIANTS, AMCOP_STORAGE_BUCKET, AMCOP_LOGO_STORAGE_PATH, applyAmcopTemplate } from "../_shared/amcop.ts";
 import { buildAmcopDocx } from "../_shared/amcop-docx.ts";
 import { buildAmcopPdf, PDF_MIME } from "../_shared/amcop-pdf.ts";
+import { buildMarkdownPdf } from "../_shared/markdown-pdf.ts";
 import { z } from "npm:zod@3.25.76";
 import { createPatientRedactor, patientInitials, redactClinicalValue } from "../_shared/patient-privacy.ts";
 import { retrievalResponse } from "./retrieval-response.ts";
@@ -754,9 +755,11 @@ ${classe_dentale ? `- Classe dentale/funzionale confermata: ${classe_dentale}` :
 
     // ── Per la cefalometria genera anche il PDF (stesso stile AMCOP): chi usa Pages lo apre senza problemi ──
     let downloadUrlPdf = "";
-    if (tool === "orthodontic") {
+    if (tool === "orthodontic" || tool === "diagnosis") {
       try {
-        const pdfBytes = await buildAmcopPdf(markdown, {
+        const pdfBytes = tool === "diagnosis"
+          ? await buildMarkdownPdf(markdown, consultationType, "La consulenza è uno strumento di supporto al ragionamento clinico e non costituisce diagnosi medica: la responsabilità diagnostica e terapeutica resta interamente in capo al professionista sanitario.")
+          : await buildAmcopPdf(markdown, {
           patientName: amcopPatientName,
           date: new Date().toLocaleDateString("it-IT", { day: "numeric", month: "long", year: "numeric" }),
           logo: amcopLogo,
