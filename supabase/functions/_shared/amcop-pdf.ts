@@ -153,8 +153,19 @@ export async function buildAmcopPdf(markdown: string, data: AmcopPdfData): Promi
     if (line.words.length) lines.push(line);
     return lines;
   }
-  function text(src: string, x: number, top: number, w: number, size = 8.2, color = GREY, draw = true): number {
+  let fieldN = 0;
+  function text(src: string, x: number, top: number, w: number, size = 8.2, color = GREY, draw = true, edit = false): number {
     const lines = wrap(src, w, size);
+    if (draw && edit) {
+      // Editable form field: the professional can modify the content in any PDF reader.
+      const h = lines.length * size * 1.22 + 3;
+      const field = doc.getForm().createTextField(`campo_${++fieldN}`);
+      field.enableMultiline();
+      field.setText(lines.map(l => l.words.map(w2 => w2.text).join(" ")).join(" "));
+      field.addToPage(page, { x: x - 2, y: top - h, width: w + 4, height: h + 1, borderWidth: 0, textColor: color, font });
+      field.setFontSize(size);
+      return lines.length * size * 1.22;
+    }
     if (draw) lines.forEach((line, i) => {
       let dx = x;
       for (const word of line.words) {
@@ -217,7 +228,7 @@ export async function buildAmcopPdf(markdown: string, data: AmcopPdfData): Promi
         const cw = w * weights[c];
         if (draw) {
           page.drawRectangle({ x: dx, y: y - total - rh, width: cw, height: rh, color: r === 0 ? LIGHT : WHITE, borderColor: GRID, borderWidth: 0.4 });
-          text(r === 0 ? `**${row[c] ?? ""}**` : row[c] ?? "", dx + 4, y - total - 4, cw - 8, size, INK);
+          text(r === 0 ? `**${row[c] ?? ""}**` : row[c] ?? "", dx + 4, y - total - 4, cw - 8, size, INK, true, r > 0);
         }
         dx += cw;
       }
@@ -243,7 +254,7 @@ export async function buildAmcopPdf(markdown: string, data: AmcopPdfData): Promi
         page.drawCircle({ x: x + 12, y: yy - 6, size: 6.5, color: TEAL });
         page.drawText(String(i + 1), { x: x + 10, y: yy - 9, size: 7, font: bold, color: WHITE });
       }
-      yy -= text(content, x + (num === 8 ? 25 : 7), yy, w - (num === 8 ? 32 : 14), size, GREY, draw) + 4;
+      yy -= text(content, x + (num === 8 ? 25 : 7), yy, w - (num === 8 ? 32 : 14), size, GREY, draw, true) + 4;
     });
     return h + bodyH + 6;
   }
@@ -295,7 +306,7 @@ export async function buildAmcopPdf(markdown: string, data: AmcopPdfData): Promi
     ry -= bh;
     page.drawRectangle({ x: rightX, y: ry - panelH, width: rightW, height: panelH, color: AMBER_BG, borderColor: GRID, borderWidth: 0.4 });
     text(`**${name}**`, rightX + 7, ry - 7, textW, 17, TEAL_DARK);
-    text(content, rightX + 7, ry - titleH - 11, textW, bodySize);
+    text(content, rightX + 7, ry - titleH - 11, textW, bodySize, GREY, true, true);
     if (data.deviceImage) await image(data.deviceImage, rightX + textW + 11, ry - 5, rightW - textW - 16, photoH - 10);
     const bytes = data.rangeImages ?? [];
     const labels = data.rangeLabels ?? [];
@@ -332,7 +343,7 @@ export async function buildAmcopPdf(markdown: string, data: AmcopPdfData): Promi
         page.drawRectangle({ x: xx, y: yy - rh, width: halfW, height: rh, color: LIGHT, borderColor: GRID, borderWidth: 0.3 });
         page.drawCircle({ x: xx + 12, y: yy - 13, size: 7, color: TEAL });
         page.drawText(String(i + 1), { x: xx + 10, y: yy - 16, size: 8, font: bold, color: WHITE });
-        text(items[i].replace(/^\d+\.\s*/, ""), xx + 26, yy - 5, halfW - 33, 7.5);
+        text(items[i].replace(/^\d+\.\s*/, ""), xx + 26, yy - 5, halfW - 33, 7.5, GREY, true, true);
       }
       yy -= rh;
     });

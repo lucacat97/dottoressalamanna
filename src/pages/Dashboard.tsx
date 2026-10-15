@@ -13,7 +13,6 @@ import DocumentsTab from "@/components/dashboard/DocumentsTab";
 import ContractFab from "@/components/dashboard/ContractFab";
 import PecAvatarFab from "@/components/PecAvatarFab";
 import WhatsAppFab from "@/components/WhatsAppFab";
-import SubscribeSection from "@/components/SubscribeSection";
 import PlanBadge from "@/components/dashboard/PlanBadge";
 import CreditsBadge from "@/components/dashboard/CreditsBadge";
 
@@ -59,7 +58,7 @@ const Dashboard = () => {
   const [modules, setModules] = useState<CourseModule[]>([]);
   const [searchParams, setSearchParams] = useSearchParams();
   const tabParam = searchParams.get("tab");
-  const validTabs: MainTab[] = ["abbonamento", "strumenti", "corsi", "libreria", "documenti", "admin"];
+  const validTabs: MainTab[] = ["strumenti", "corsi", "libreria", "documenti", "admin"];
   const defaultTab: MainTab = "strumenti";
   const activeTab: MainTab = validTabs.includes(tabParam as MainTab) ? (tabParam as MainTab) : defaultTab;
   const setActiveTab = (tab: MainTab) => setSearchParams({ tab });
@@ -170,7 +169,6 @@ const Dashboard = () => {
   const displayName = user?.user_metadata?.full_name || user?.email || "";
 
   const tabs: { key: MainTab; label: string; icon: typeof BookOpen; adminOnly?: boolean }[] = [
-    { key: "abbonamento", label: "Abbonamento", icon: CreditCard },
     { key: "strumenti", label: "MILA e Strumenti", icon: Wrench },
     { key: "libreria", label: "Libreria", icon: Library },
     { key: "corsi", label: "Corsi", icon: BookOpen },
@@ -219,7 +217,7 @@ const Dashboard = () => {
 
             <div className="flex items-center gap-3">
               {user && <CreditsBadge userId={user.id} onClick={() => setActiveTab("strumenti")} />}
-              {user && <PlanBadge userId={user.id} onClick={() => setActiveTab("abbonamento")} />}
+              {user && <PlanBadge userId={user.id} onClick={() => setActiveTab("strumenti")} />}
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
                   {isAdmin ? <Shield size={16} className="text-gold" /> : <User size={16} className="text-petrolio" />}
@@ -287,9 +285,6 @@ const Dashboard = () => {
           <DocumentsTab />
         )}
 
-        {activeTab === "abbonamento" && (
-          <SubscribeSection />
-        )}
 
 
         {activeTab === "admin" && isAdmin && (
