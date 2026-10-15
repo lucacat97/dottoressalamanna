@@ -1,5 +1,9 @@
 # Roadmap
 
+- [ ] Rendere il PDF cefalometrico API fedele al template AMCOP a due colonne verticali
+- [ ] Aggiornare immagini e indicazioni AMCOP senza determinare le forme DCM
+- [ ] Collaudare PDF e distribuzione API (scansione esclusa, rinviata dall'utente)
+
 - [x] Impostare 6 consulti condivisi utilizzabili via API per studiodentac@gmail.com
 - [x] Indicare 10€ a consulto nel piano Basic e 10€ per gli extra nel piano Pro
 - [x] Verificare saldo e offerte aggiornate
