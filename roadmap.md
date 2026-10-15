@@ -1,5 +1,9 @@
 # Roadmap
 
+- [ ] Ridurre nome e cognome paziente alle iniziali nell'API e verificare il flusso
+- [ ] Revisionare il PDF architetturale con cifratura in transito, minimizzazione e conservazione effettiva
+- [ ] Assenza totale di conservazione: richiede decisione sui download/email e verifica delle politiche dei fornitori
+
 - [ ] Rendere il PDF cefalometrico API fedele al template AMCOP a due colonne verticali
 - [ ] Aggiornare immagini e indicazioni AMCOP senza determinare le forme DCM
 - [ ] Collaudare PDF e distribuzione API (scansione esclusa, rinviata dall'utente)
