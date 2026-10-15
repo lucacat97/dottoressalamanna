@@ -3,7 +3,8 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
 import metodologia from "./metodologia.json" with { type: "json" };
 import courseKnowledge from "./course-knowledge.json" with { type: "json" };
 import { markdownToDocx, DOCX_MIME } from "../_shared/docx-generator.ts";
-import { AMCOP_ORTHO_ADDENDUM, AMCOP_LOGO_URL, applyAmcopTemplate, fetchImageBytes } from "../_shared/amcop.ts";
+import { AMCOP_ORTHO_ADDENDUM, AMCOP_DEVICES, AMCOP_STORAGE_BUCKET, AMCOP_LOGO_STORAGE_PATH, applyAmcopTemplate } from "../_shared/amcop.ts";
+import { buildAmcopDocx } from "../_shared/amcop-docx.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -436,6 +437,9 @@ serve(async (req) => {
     let markdown: string;
     let amcopImages: Record<string, Uint8Array> | null = null;
     let amcopLogo: Uint8Array | null = null;
+    let amcopRangeImages: (Uint8Array | null)[] = [];
+    let amcopDeviceAlt = "";
+    let amcopPatientName = "Paziente";
 
     if (tool === "diagnosis") {
       const { clinicalNotes, terapie, reasonForVisit, pdf_base64, pdf_filename } = body as Record<string, any>;
@@ -485,6 +489,7 @@ serve(async (req) => {
       }
       const ratio = rapporto_ns_gome ?? (ns_mm && gome_mm ? (gome_mm / ns_mm) : null);
       const patientName = nome && cognome ? `${nome} ${cognome}` : (nome || cognome || "Paziente");
+      amcopPatientName = patientName;
       const notesSection = clinicalNotes && typeof clinicalNotes === "string" && clinicalNotes.trim().length > 0
         ? `\n\n--- CONSIDERAZIONI CLINICHE DEL PROFESSIONISTA ---\n${clinicalNotes.trim()}\n--- FINE CONSIDERAZIONI ---\nTieni conto di queste considerazioni nell'analisi.`
         : "";
@@ -503,9 +508,24 @@ ${classe_dentale ? `- Classe dentale/funzionale confermata: ${classe_dentale}` :
       // ── Template Metodo AMCOP: foto dispositivo + istruzioni d'uso brochure ──
       const amcop = applyAmcopTemplate(markdown, Number(age));
       markdown = amcop.markdown;
-      const [devImg, logo] = await Promise.all([fetchImageBytes(amcop.device.imageUrl), fetchImageBytes(AMCOP_LOGO_URL)]);
+      // Immagini AMCOP lette dal bucket storage privato (copie locali: il sito amcop.it può essere irraggiungibile)
+      const storageImage = async (path: string): Promise<Uint8Array | null> => {
+        try {
+          const { data, error } = await supabaseAdmin.storage.from(AMCOP_STORAGE_BUCKET).download(path);
+          if (error || !data) return null;
+          return new Uint8Array(await data.arrayBuffer());
+        } catch { return null; }
+      };
+      const rangeOrder = ["TC", "SC", "INTEGRAL", "DEEP", "OPEN", "DTM"] as const;
+      const [devImg, logo, ...rangeImgs] = await Promise.all([
+        storageImage(amcop.device.storagePath),
+        storageImage(AMCOP_LOGO_STORAGE_PATH),
+        ...rangeOrder.map((k) => storageImage(AMCOP_DEVICES[k].storagePath)),
+      ]);
       amcopImages = devImg ? { [amcop.device.imageUrl]: devImg } : {};
       amcopLogo = logo;
+      amcopRangeImages = rangeImgs;
+      amcopDeviceAlt = amcop.device.name;
     } else if (tool === "mtc_sistemica") {
       const { sex, painPoints } = body;
       if (!painPoints || !Array.isArray(painPoints) || painPoints.length === 0) {
@@ -587,11 +607,30 @@ ${classe_dentale ? `- Classe dentale/funzionale confermata: ${classe_dentale}` :
     const introHtml = mdToHtml(introMarkdown);
 
     // ── Genera documento Word reale (.docx) — compatibile con Word, Pages e Google Docs ──
-    const docxBytes = await markdownToDocx(markdown, consultationType, tool === "orthodontic" ? {
-      images: amcopImages ?? {},
-      headerLogo: amcopLogo,
-      headerTagline: "Consulenza Cefalometrica — Metodo AMCOP · Funzione · Crescita · Postura",
-    } : {});
+    // Per la cefalometria: layout grafico "Metodo AMCOP" a due colonne; fallback al layout semplice.
+    let docxBytes: Uint8Array | null = null;
+    if (tool === "orthodontic") {
+      try {
+        docxBytes = await buildAmcopDocx(markdown, {
+          patientName: amcopPatientName,
+          date: new Date().toLocaleDateString("it-IT", { day: "numeric", month: "long", year: "numeric" }),
+          logo: amcopLogo,
+          deviceImage: amcopImages ? Object.values(amcopImages)[0] : null,
+          deviceImageAlt: amcopDeviceAlt,
+          rangeImages: amcopRangeImages,
+        });
+      } catch (e) {
+        console.error("[external-api] buildAmcopDocx error, fallback al layout semplice:", e);
+        docxBytes = null;
+      }
+    }
+    if (!docxBytes) {
+      docxBytes = await markdownToDocx(markdown, consultationType, tool === "orthodontic" ? {
+        images: amcopImages ?? {},
+        headerLogo: amcopLogo,
+        headerTagline: "Consulenza Cefalometrica — Metodo AMCOP · Funzione · Crescita · Postura",
+      } : {});
+    }
 
     // ── Upload del documento Word su storage privato + token monouso ──
     let downloadUrl = "";
