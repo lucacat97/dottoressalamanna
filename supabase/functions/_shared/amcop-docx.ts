@@ -153,12 +153,18 @@ function sectionTitle(s: Section): string {
   return `${s.num}. ${s.title.replace(/\*\*/g, "")}`;
 }
 
-// Righe di testo "semplici" di una sezione (senza tabelle/immagini)
+// Righe di testo "semplici" di una sezione (senza tabelle/immagini/link tecnici)
 function bodyLines(body: string): string[] {
   return body
     .split("\n")
     .map((l) => l.trim())
-    .filter((l) => l && !l.startsWith("|") && !l.startsWith("!["));
+    .filter((l) => l && !l.startsWith("|") && !l.startsWith("![") && !/^Scheda dispositivo/i.test(l));
+}
+
+/** Estrae il disclaimer (blockquote) presente prima delle sezioni numerate. */
+function extractDisclaimer(markdown: string): string | null {
+  const m = markdown.match(/^>\s*(.+)$/m);
+  return m ? m[1].trim() : null;
 }
 
 // ── Tabella valori (sezione 1) ──
@@ -216,7 +222,8 @@ export interface AmcopDocxData {
   logo?: Uint8Array | null;
   deviceImage?: Uint8Array | null;
   deviceImageAlt?: string;
-  rangeImage?: Uint8Array | null;
+  /** Immagini della gamma dispositivi (striscia colori), nell'ordine desiderato. */
+  rangeImages?: (Uint8Array | null)[];
   rangeCaption?: string;
 }
 
