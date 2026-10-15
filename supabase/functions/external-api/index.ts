@@ -3,7 +3,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
 import metodologia from "./metodologia.json" with { type: "json" };
 import courseKnowledge from "./course-knowledge.json" with { type: "json" };
 import { markdownToDocx, DOCX_MIME } from "../_shared/docx-generator.ts";
-import { AMCOP_ORTHO_ADDENDUM, AMCOP_LOGO_URL, AMCOP_RANGE_URL, applyAmcopTemplate, fetchImageBytes } from "../_shared/amcop.ts";
+import { AMCOP_ORTHO_ADDENDUM, AMCOP_LOGO_URL, AMCOP_DEVICES, applyAmcopTemplate, fetchImageBytes } from "../_shared/amcop.ts";
 import { buildAmcopDocx } from "../_shared/amcop-docx.ts";
 
 const corsHeaders = {
@@ -508,14 +508,15 @@ ${classe_dentale ? `- Classe dentale/funzionale confermata: ${classe_dentale}` :
       // ── Template Metodo AMCOP: foto dispositivo + istruzioni d'uso brochure ──
       const amcop = applyAmcopTemplate(markdown, Number(age));
       markdown = amcop.markdown;
-      const [devImg, logo, rangeImg] = await Promise.all([
+      const rangeOrder = ["TC", "SC", "INTEGRAL", "DEEP", "OPEN", "DTM"] as const;
+      const [devImg, logo, ...rangeImgs] = await Promise.all([
         fetchImageBytes(amcop.device.imageUrl),
         fetchImageBytes(AMCOP_LOGO_URL),
-        fetchImageBytes(AMCOP_RANGE_URL),
+        ...rangeOrder.map((k) => fetchImageBytes(AMCOP_DEVICES[k].imageUrl)),
       ]);
       amcopImages = devImg ? { [amcop.device.imageUrl]: devImg } : {};
       amcopLogo = logo;
-      amcopRangeImage = rangeImg;
+      amcopRangeImages = rangeImgs;
       amcopDeviceAlt = amcop.device.name;
     } else if (tool === "mtc_sistemica") {
       const { sex, painPoints } = body;
