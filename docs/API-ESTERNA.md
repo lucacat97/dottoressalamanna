@@ -181,7 +181,10 @@ la chiamata `orthodontic`.
 
 - CORS aperto: la chiamata può partire direttamente dal browser.
 - Ogni chiamata andata a buon fine consuma una consulenza dal pool dell'account.
-- Nome e cognome del paziente sono facoltativi; se non servono, non inviarli (privacy).
+- Nome e cognome del paziente (`nome`, `cognome`) sono facoltativi: inviare preferibilmente solo iniziali o ometterli. Il server valida questi campi (massimo 100 caratteri, lettere e separatori), li riduce alle iniziali e sostituisce i nominativi forniti nei campi clinici e nell'output prima di produrre documenti ed email. Non ripristina i nomi completi. I dati del professionista sono distinti e restano necessari per il recapito.
+- HTTPS/TLS protegge i dati in transito; il server li decifra per elaborarli. Non è cifratura end-to-end verso il modello.
+- Le iniziali non anonimizzano i dati sanitari e non garantiscono da sole conformità GDPR. Nomi non forniti nei campi strutturati e altri identificativi non sono automaticamente rimossi: minimizzare PDF e testo libero **prima dell'invio**. Il PDF originale passa al servizio AI di lettura, anche se la trascrizione successiva viene filtrata per i nominativi forniti.
+- Il percorso API non salva il PDF di input nell'archivio applicativo, ma conserva i documenti della consulenza, le autorizzazioni al download, i contatori e dati dell'invio email. I link scadono dopo 5 giorni: ciò non dimostra cancellazione dei file. Conservazione dei fornitori e log va verificata separatamente; non dichiarare “nessun dato salvato”.
 
 ---
 

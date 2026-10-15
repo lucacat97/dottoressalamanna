@@ -6,6 +6,8 @@ import { markdownToDocx, DOCX_MIME } from "../_shared/docx-generator.ts";
 import { AMCOP_ORTHO_ADDENDUM, AMCOP_DEVICES, AMCOP_DCM_VARIANTS, AMCOP_STORAGE_BUCKET, AMCOP_LOGO_STORAGE_PATH, applyAmcopTemplate } from "../_shared/amcop.ts";
 import { buildAmcopDocx } from "../_shared/amcop-docx.ts";
 import { buildAmcopPdf, PDF_MIME } from "../_shared/amcop-pdf.ts";
+import { z } from "npm:zod@3.25.76";
+import { createPatientRedactor, patientInitials, redactClinicalValue } from "../_shared/patient-privacy.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -293,6 +295,25 @@ serve(async (req) => {
   }
 
 
+  const identitySchema = z.object({
+    nome: z.string().trim().max(100).regex(/^[\p{L}\p{M}\s.'’\-]*$/u).optional(),
+    cognome: z.string().trim().max(100).regex(/^[\p{L}\p{M}\s.'’\-]*$/u).optional(),
+  });
+  const identity = identitySchema.safeParse(body);
+  if (!identity.success) {
+    return new Response(JSON.stringify({ error: "Nome e cognome paziente non validi (massimo 100 caratteri, solo lettere e separatori)." }), {
+      status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+  const redactPatient = createPatientRedactor(identity.data.nome, identity.data.cognome);
+  body.nome = patientInitials(identity.data.nome ?? "");
+  body.cognome = patientInitials(identity.data.cognome ?? "");
+  for (const field of ["documentText", "reasonForVisit", "clinicalNotes", "terapie", "classe_dentale", "painPoints", "symptoms"]) {
+    if (body[field] !== undefined) body[field] = redactClinicalValue(body[field], redactPatient);
+  }
+  // The original PDF is not anonymized here: callers must remove identifiers before upload.
+  body.pdf_filename = "documento.pdf";
+
   const profEmailRaw = typeof body.professional_email === "string" ? body.professional_email.trim().toLowerCase() : "";
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(profEmailRaw)) {
     return new Response(
@@ -450,7 +471,7 @@ serve(async (req) => {
       // ── Se arriva un PDF, il parsing viene fatto qui lato server ──
       if ((!documentText || documentText.trim().length < 20) && typeof pdf_base64 === "string" && pdf_base64.length > 100) {
         try {
-          documentText = await extractTextFromPdf(pdf_base64, typeof pdf_filename === "string" ? pdf_filename : "documento.pdf");
+          documentText = redactPatient(await extractTextFromPdf(pdf_base64, typeof pdf_filename === "string" ? pdf_filename : "documento.pdf"));
         } catch (pdfErr) {
           console.error("[external-api] pdf parse error:", pdfErr);
           return new Response(
@@ -560,6 +581,9 @@ ${classe_dentale ? `- Classe dentale/funzionale confermata: ${classe_dentale}` :
         { scope: "mtc", toolName: "mtc_organica", serviceClient: supabaseAdmin }
       );
     }
+
+    // Defensive pass before documents, email introduction and storage: never restore full names.
+    markdown = redactPatient(markdown);
 
     // ── Log usage ──
     if (creditUserId) {
