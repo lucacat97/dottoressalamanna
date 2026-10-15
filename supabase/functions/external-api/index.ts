@@ -504,9 +504,15 @@ ${classe_dentale ? `- Classe dentale/funzionale confermata: ${classe_dentale}` :
       // ── Template Metodo AMCOP: foto dispositivo + istruzioni d'uso brochure ──
       const amcop = applyAmcopTemplate(markdown, Number(age));
       markdown = amcop.markdown;
-      const [devImg, logo] = await Promise.all([fetchImageBytes(amcop.device.imageUrl), fetchImageBytes(AMCOP_LOGO_URL)]);
+      const [devImg, logo, rangeImg] = await Promise.all([
+        fetchImageBytes(amcop.device.imageUrl),
+        fetchImageBytes(AMCOP_LOGO_URL),
+        fetchImageBytes(AMCOP_RANGE_URL),
+      ]);
       amcopImages = devImg ? { [amcop.device.imageUrl]: devImg } : {};
       amcopLogo = logo;
+      amcopRangeImage = rangeImg;
+      amcopDeviceAlt = amcop.device.name;
     } else if (tool === "mtc_sistemica") {
       const { sex, painPoints } = body;
       if (!painPoints || !Array.isArray(painPoints) || painPoints.length === 0) {
