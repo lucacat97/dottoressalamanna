@@ -750,6 +750,7 @@ ${classe_dentale ? `- Classe dentale/funzionale confermata: ${classe_dentale}` :
             consultationType,
             introHtml,
             downloadUrl,
+            downloadUrlPdf,
           },
         }),
       });
@@ -773,6 +774,7 @@ ${classe_dentale ? `- Classe dentale/funzionale confermata: ${classe_dentale}` :
       professional: { first_name: profFirst, last_name: profLast, email: profEmail },
       email_delivery: emailDelivery,
       download_url: downloadUrl,
+      download_url_pdf: downloadUrlPdf || undefined,
     }), {
       status: 200,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
