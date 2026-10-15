@@ -678,6 +678,56 @@ ${classe_dentale ? `- Classe dentale/funzionale confermata: ${classe_dentale}` :
       console.error("[external-api] storage exception:", storageErr);
     }
 
+    // ── Per la cefalometria genera anche il PDF (stesso stile AMCOP): chi usa Pages lo apre senza problemi ──
+    let downloadUrlPdf = "";
+    if (tool === "orthodontic") {
+      try {
+        const pdfBytes = await buildAmcopPdf(markdown, {
+          patientName: amcopPatientName,
+          date: new Date().toLocaleDateString("it-IT", { day: "numeric", month: "long", year: "numeric" }),
+          logo: amcopLogo,
+          deviceImage: amcopImages ? Object.values(amcopImages)[0] : null,
+          deviceImageAlt: amcopDeviceAlt,
+          rangeImages: amcopRangeImages,
+        });
+        if (pdfBytes) {
+          const safeType = consultationType.replace(/[^\w\-]+/g, "_");
+          const pdfName = `consulenza_${safeType}_${new Date().toISOString().slice(0,10)}_${crypto.randomUUID().slice(0,8)}.pdf`;
+          const pdfPath = `${accountFolderId}/${pdfName}`;
+          const { error: pdfUploadError } = await supabaseAdmin.storage
+            .from("consultation-attachments")
+            .upload(pdfPath, new Blob([pdfBytes], { type: PDF_MIME }), { contentType: PDF_MIME, upsert: false });
+          if (pdfUploadError) {
+            console.error("[external-api] pdf storage upload error:", pdfUploadError);
+          } else {
+            const tokenBytes = new Uint8Array(32);
+            crypto.getRandomValues(tokenBytes);
+            const pdfToken = Array.from(tokenBytes).map(b => b.toString(16).padStart(2, "0")).join("");
+            const { error: pdfTokenError } = await supabaseAdmin
+              .from("consultation_downloads")
+              .insert({
+                token: pdfToken,
+                file_path: pdfPath,
+                file_name: pdfName,
+                recipient_email: profEmail,
+                api_key_id: (keyRecord?.id as string | undefined) ?? null,
+                consultation_type: consultationType,
+                max_downloads: 5,
+                expires_at: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString(),
+              });
+            if (pdfTokenError) {
+              console.error("[external-api] pdf token insert error:", pdfTokenError);
+            } else {
+              const supaUrl = Deno.env.get("SUPABASE_URL")!.replace(/\/$/, "");
+              downloadUrlPdf = `${supaUrl}/functions/v1/download-consultation?token=${pdfToken}`;
+            }
+          }
+        }
+      } catch (pdfErr) {
+        console.error("[external-api] pdf generation exception:", pdfErr);
+      }
+    }
+
     // ── Invio email al professionista (corpo: solo introduzione + link al documento Word) ──
     let emailDelivery: { sent: boolean; error?: string } = { sent: false };
     try {
