@@ -3,7 +3,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
 import metodologia from "./metodologia.json" with { type: "json" };
 import courseKnowledge from "./course-knowledge.json" with { type: "json" };
 import { markdownToDocx, DOCX_MIME } from "../_shared/docx-generator.ts";
-import { AMCOP_ORTHO_ADDENDUM, AMCOP_LOGO_URL, AMCOP_DEVICES, applyAmcopTemplate, fetchImageBytes } from "../_shared/amcop.ts";
+import { AMCOP_ORTHO_ADDENDUM, AMCOP_DEVICES, AMCOP_STORAGE_BUCKET, AMCOP_LOGO_STORAGE_PATH, applyAmcopTemplate } from "../_shared/amcop.ts";
 import { buildAmcopDocx } from "../_shared/amcop-docx.ts";
 
 const corsHeaders = {
@@ -508,11 +508,19 @@ ${classe_dentale ? `- Classe dentale/funzionale confermata: ${classe_dentale}` :
       // ── Template Metodo AMCOP: foto dispositivo + istruzioni d'uso brochure ──
       const amcop = applyAmcopTemplate(markdown, Number(age));
       markdown = amcop.markdown;
+      // Immagini AMCOP lette dal bucket storage privato (copie locali: il sito amcop.it può essere irraggiungibile)
+      const storageImage = async (path: string): Promise<Uint8Array | null> => {
+        try {
+          const { data, error } = await supabaseAdmin.storage.from(AMCOP_STORAGE_BUCKET).download(path);
+          if (error || !data) return null;
+          return new Uint8Array(await data.arrayBuffer());
+        } catch { return null; }
+      };
       const rangeOrder = ["TC", "SC", "INTEGRAL", "DEEP", "OPEN", "DTM"] as const;
       const [devImg, logo, ...rangeImgs] = await Promise.all([
-        fetchImageBytes(amcop.device.imageUrl),
-        fetchImageBytes(AMCOP_LOGO_URL),
-        ...rangeOrder.map((k) => fetchImageBytes(AMCOP_DEVICES[k].imageUrl)),
+        storageImage(amcop.device.storagePath),
+        storageImage(AMCOP_LOGO_STORAGE_PATH),
+        ...rangeOrder.map((k) => storageImage(AMCOP_DEVICES[k].storagePath)),
       ]);
       amcopImages = devImg ? { [amcop.device.imageUrl]: devImg } : {};
       amcopLogo = logo;
