@@ -212,8 +212,8 @@ export async function buildAmcopPdf(markdown: string, data: AmcopPdfData): Promi
     const field = doc.getForm().createTextField("disclaimer");
     field.enableMultiline();
     field.setText(sanitize(disclaimer));
-    field.setFontSize(6.8);
     field.addToPage(page, { x: margin + 4, y: top - dh + 2, width: width - 8, height: dh - 4, borderWidth: 0, backgroundColor: AMBER_BG, textColor: GREY, font });
+    field.setFontSize(6.8);
     top -= dh + 7;
   }
   function valueTable(body: string, x: number, y: number, w: number, size: number, draw: boolean): number {
