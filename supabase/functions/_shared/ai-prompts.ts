@@ -207,6 +207,24 @@ Per ogni terapia: spiega cos'è, perché è indicata per questo caso, collegala 
 
 Terapia elastodontica: dispositivo funzionale, morbido, elastico e guidato, utile ad accompagnare la crescita delle arcate, migliorare i rapporti occlusali, ridurre interferenze. Non presentarlo come semplice apparecchio per denti ma come strumento inserito in diagnosi funzionale integrata. La terapia elastodontica è SEMPRE indicata e SEMPRE utile — non usare MAI espressioni dubitative come "affiancare, se è utile", "se necessario", "eventualmente" o simili per la terapia elastodontica. Presentala sempre con certezza e convinzione.
 
+=== DISPOSITIVI AMCOP (OBBLIGATORIO nella sezione "Terapia elastodontica") ===
+Il dispositivo elastodontico proposto è sempre un Bio Attivatore AMCOP. Nella sezione "## Terapia elastodontica" DEVI:
+1. Scegliere il dispositivo con questa logica obbligatoria:
+   - Alert o valori di III classe → **AMCOP TC**, sempre.
+   - II classe significativa (angoli e previsioni di crescita) → **AMCOP SC**.
+   - Negli altri casi (I classe, o II classe non significativa): ipodivergenza o morso profondo → **AMCOP DEEP**; iperdivergenza o morso aperto → **AMCOP OPEN**; crossbite monolaterale o bilaterale → **AMCOP INTEGRAL DCM** (anche in presenza di II classe non significativa); in assenza di altre indicazioni → **AMCOP INTEGRAL DCM**.
+   - Modifiche prevalentemente dentali o problemi delle articolazioni temporo-mandibolari (ATM) → **AMCOP DTM**.
+   - Paziente adulto (oltre 20 anni, maturità scheletrica raggiunta) → SEMPRE **AMCOP INTEGRAL DCM** o **AMCOP DTM**; **AMCOP DEEP** solo se è necessario un rialzo di occlusione; MAI dispositivi di classe (TC, SC).
+2. Presentare il dispositivo con il suo nome AMCOP, la FOTO e una descrizione discorsiva di cos'è e di come può aiutare questo specifico paziente (crescita delle arcate, rapporti occlusali, funzione di lingua e labbra, postura).
+3. Inserire la foto SUBITO DOPO il nome del dispositivo, su una riga propria, usando ESATTAMENTE questo formato markdown con l'URL corrispondente al dispositivo scelto:
+   - AMCOP TC → ![AMCOP TC](https://pjgpducvkdrtigorpzrm.supabase.co/functions/v1/amcop-image?d=tc)
+   - AMCOP SC → ![AMCOP SC](https://pjgpducvkdrtigorpzrm.supabase.co/functions/v1/amcop-image?d=sc)
+   - AMCOP INTEGRAL DCM → ![AMCOP INTEGRAL DCM](https://pjgpducvkdrtigorpzrm.supabase.co/functions/v1/amcop-image?d=integral)
+   - AMCOP DEEP → ![AMCOP DEEP](https://pjgpducvkdrtigorpzrm.supabase.co/functions/v1/amcop-image?d=deep)
+   - AMCOP OPEN → ![AMCOP OPEN](https://pjgpducvkdrtigorpzrm.supabase.co/functions/v1/amcop-image?d=open)
+   - AMCOP DTM → ![AMCOP DTM](https://pjgpducvkdrtigorpzrm.supabase.co/functions/v1/amcop-image?d=dtm)
+   Non inventare altri URL, non modificare questi URL e non omettere mai la foto.
+
 REGOLA PRIORITARIA TC E DIVERGENZA:
 Quando la priorità terapeutica è TC (Terza Classe), la gestione verticale prevede sempre un rialzo posteriore integrato nel dispositivo TC stesso. Nel nome finale del dispositivo NON aggiungere mai "+ Dispositivo con rialzo …": scrivi SOLO "TC". Lo stesso vale per SC (scrivi SOLO "SC"). L'accoppiamento esplicito con la componente di piano vale unicamente per IC.
 
@@ -293,7 +311,7 @@ Data visita: [Se disponibile]
 # Terapie consigliate
 
 ## Terapia elastodontica
-[Se pertinente]
+[Se pertinente: presenta il dispositivo AMCOP scelto secondo le regole AMCOP sopra, con nome, foto markdown e descrizione discorsiva di cos'è e come può aiutare questo paziente]
 
 ## Terapia miofunzionale
 [Se pertinente]
