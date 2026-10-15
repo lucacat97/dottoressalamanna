@@ -82,12 +82,18 @@ export const AMCOP_RANGE_URL = `${BASE}/images/attivatori/2classe.jpg`;
 export const AMCOP_ORTHO_ADDENDUM = `
 
 === TEMPLATE METODO AMCOP (PRIORITARIO SULLE ISTRUZIONI DI OUTPUT PRECEDENTI) ===
-Questa consulenza segue il template "Consulenza Cefalometrica — Metodo AMCOP (Funzione · Crescita · Postura)". Mantieni tutte le regole cliniche (classe, divergenza, alert, età adulta) ma usa i dispositivi Bio Attivatori AMCOP con questa mappatura OBBLIGATORIA:
-- TC → **AMCOP TC** (Bio Attivatore DCM Terza Classe)
-- SC → **AMCOP SC** (Bio Attivatore DCM Seconda Classe)
-- IC + Piano neutro → **AMCOP INTEGRAL DCM** (Prima Classe, piano neutro)
-- IC + rialzo anteriore (morso coperto) → **AMCOP DEEP**
-- IC + rialzo posteriore (morso aperto) → **AMCOP OPEN**
+Questa consulenza segue il template "Consulenza Cefalometrica — Metodo AMCOP (Funzione · Crescita · Postura)". Mantieni tutte le regole cliniche (classe, divergenza, alert, età adulta) ma usa i dispositivi Bio Attivatori AMCOP con questa logica di scelta OBBLIGATORIA.
+
+REGOLA DI PRIORITÀ: i due dati decisionali sono la CLASSE (I, II, III) e la DIVERGENZA (ipo/iper). Quando la classe è significativa, la scelta di classe ha SEMPRE la priorità e i valori di divergenza NON cambiano il dispositivo: vanno riportati nelle Indicazioni Terapeutiche con la raccomandazione di controllare l'evoluzione della divergenza ogni 4 mesi clinicamente e ogni 12 mesi con Rx telecranio.
+
+MAPPATURA DISPOSITIVI:
+- Alert o valori di III classe → **AMCOP TC** (Bio Attivatore DCM Terza Classe), sempre.
+- Angoli e previsioni di crescita di II classe significativi → **AMCOP SC** (Bio Attivatore DCM Seconda Classe).
+- In tutti gli altri casi (I classe, o II classe non significativa):
+  - Ipodivergenza (morso coperto) → **AMCOP DEEP**
+  - Iperdivergenza (morso aperto) → **AMCOP OPEN**
+  - Crossbite monolaterale o bilaterale → **AMCOP INTEGRAL DCM**, anche in presenza di II classe non significativa
+  - Piano neutro senza crossbite → **AMCOP INTEGRAL DCM**
 - Paziente > 20 anni → **AMCOP INTEGRAL DCM** oppure **AMCOP DTM**; **AMCOP DEEP** solo se serve un rialzo di occlusione. Mai TC/SC nell'adulto.
 La parola "INTEGRAL" è ammessa in questo template.
 
@@ -101,7 +107,7 @@ STRUTTURA DI OUTPUT (sostituisce quella precedente, stesso ordine, niente sezion
 ## 5. Alert III Classe Evolutiva
 ## 6. Alert Età Adulta
 ## 7. Significato dell'Angolo Goniaco
-## 8. Indicazioni Terapeutiche  → elenco numerato di 3 punti, sul modello: 1. Controllo mensile con istruzione alla corretta deglutizione. 2. Terapia miofunzionale (es. con frutta omogeneizzata) con dispositivo indossato per il primo mese. 3. Dopo circa 5 mesi rivalutare ed eventualmente sostituire il dispositivo con un altro di classe o con un INTEGRAL (nell'adulto: rivalutare il passaggio INTEGRAL DCM / DTM). Adatta i punti al caso.
+## 8. Indicazioni Terapeutiche  → elenco numerato di 3-4 punti, sul modello: 1. Controllo mensile con istruzione alla corretta deglutizione. 2. Terapia miofunzionale (es. con frutta omogeneizzata) con dispositivo indossato per il primo mese. 3. Dopo circa 5 mesi rivalutare ed eventualmente sostituire il dispositivo con un altro di classe o con un INTEGRAL (nell'adulto: rivalutare il passaggio INTEGRAL DCM / DTM). Adatta i punti al caso. Se il dispositivo è stato scelto per la CLASSE ma sono presenti valori di divergenza (ipo/iper), aggiungi un punto: controllare l'evoluzione della divergenza ogni 4 mesi clinicamente e ogni 12 mesi con Rx telecranio.
 NON scrivere la sezione "Istruzioni d'uso": viene aggiunta automaticamente dalla brochure AMCOP.
 
 Come ULTIMA riga in assoluto scrivi un marcatore tecnico nel formato esatto:
