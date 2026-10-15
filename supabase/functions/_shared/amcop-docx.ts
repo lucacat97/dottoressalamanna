@@ -428,6 +428,19 @@ export async function buildAmcopDocx(markdown: string, data: AmcopDocxData): Pro
     })
   );
 
+  // ── Disclaimer legale sotto l'intestazione (obbligatorio) ──
+  const disclaimerText = extractDisclaimer(markdown);
+  const disclaimerBlock: Paragraph[] = disclaimerText
+    ? [
+        new Paragraph({
+          spacing: { before: 140, after: 160 },
+          shading: { type: ShadingType.CLEAR, fill: AMBER_BG },
+          border: { left: { style: BorderStyle.SINGLE, size: 24, color: AMBER_BORDER, space: 8 } },
+          children: runs(disclaimerText, { size: 18 }),
+        }),
+      ]
+    : [];
+
   const doc = new Document({
     title: `Consulenza Cefalometrica — ${data.patientName}`,
     creator: "Metodo MILA",
