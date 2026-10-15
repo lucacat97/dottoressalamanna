@@ -128,6 +128,7 @@ La parola "INTEGRAL" è ammessa in questo template.
 PRECISAZIONI PRIORITARIE SUL CATALOGO: DEEP = ipodivergenza; OPEN = iperdivergenza; SC = seconda classe; TC = terza classe; DTM = modifiche prevalentemente dentali e problemi ATM; DCM = tutte le indicazioni. Mantieni la priorità alla classe significativa e l'eccezione adulta già descritte. Quando consigli DCM usa il nome "AMCOP DCM". Le varianti DCM F (giallo), DCM S (blu), DCM C (viola), DCM ØS (rosso) sono solo una gamma illustrativa: NON puoi stabilire o consigliare la forma senza scansione delle arcate. Scrivi che la forma resta da definire dopo la scansione; non inventare dati di scansione. Nell'adulto la cefalometria ha valore clinico interpretativo, non giustifica dispositivi di classe.
 
 STRUTTURA DI OUTPUT (sostituisce quella precedente, stesso ordine, niente sezioni extra):
+Il template è una scheda clinica compatta: evita ripetizioni, mantieni i paragrafi di ogni riquadro sintetici (massimo 70 parole), senza omettere valori, alert o motivazioni cliniche. Le indicazioni terapeutiche hanno frasi brevi e complete.
 ## Disclaimer (testo esatto già indicato)
 ## Consulenza Cefalometrica — [Nome Cognome]
 ## 1. Tabella dei Valori, Norme e Interpretazioni  (stessa tabella di prima; nella colonna Norma aggiungi tra parentesi il range, es. "123° ± 5° (range 118–128°)")

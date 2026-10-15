@@ -32,7 +32,7 @@ function sanitize(s: string): string {
     .replace(/≤/g, "<=")
     .replace(/×/g, "x")
     .replace(/→/g, "->")
-    .replace(/[^\x20-\x7E\xC0-\xFF\n]/g, "");
+    .replace(/[^\x20-\x7E\xA0-\xFF\n]/g, "");
 }
 
 type Inline = { text: string; bold?: boolean };
@@ -244,14 +244,36 @@ export async function buildAmcopPdf(markdown: string, data: AmcopPdfData): Promi
   const leftHeight = (size: number) => [1, 5, 6, 7, 8].reduce((h, n) => h + section(n, margin, top, leftW, size, false), 0);
   // Prefer one A4 page like the reference, but never discard text to force a fit.
   while (bodySize > 7.4 && leftHeight(bodySize) > 520) bodySize -= 0.2;
+  const columnPages = [page];
+  let leftPageIndex = 0;
   let ly = top;
-  for (const n of [1, 5, 6, 7, 8]) ly -= section(n, margin, ly, leftW, bodySize, true);
+  for (const n of [1, 5, 6, 7, 8]) {
+    const h = section(n, margin, ly, leftW, bodySize, false);
+    if (ly - h < 35) {
+      leftPageIndex++;
+      page = doc.addPage([PAGE_W, PAGE_H]);
+      columnPages.push(page);
+      ly = PAGE_H - margin;
+    }
+    ly -= section(n, margin, ly, leftW, bodySize, true);
+  }
+  let rightPageIndex = 0;
+  page = columnPages[0];
   let ry = top;
-  for (const n of [2, 3]) ry -= section(n, rightX, ry, rightW, bodySize, true);
+  const nextRightPage = () => {
+    rightPageIndex++;
+    const existing = columnPages[rightPageIndex];
+    page = existing ?? doc.addPage([PAGE_W, PAGE_H]);
+    if (!existing) columnPages.push(page);
+    ry = PAGE_H - margin;
+  };
+  for (const n of [2, 3]) {
+    if (ry - section(n, rightX, ry, rightW, bodySize, false) < 35) nextRightPage();
+    ry -= section(n, rightX, ry, rightW, bodySize, true);
+  }
   const s4 = byNum.get(4);
   if (s4) {
-    const bh = band(`4. ${s4.title}`, rightX, ry, rightW);
-    ry -= bh;
+    const bh = band(`4. ${s4.title}`, rightX, ry, rightW, false);
     const clean = bodyLines(s4.body).filter(l => !l.startsWith("*" ) || l.startsWith("**"));
     const name = data.deviceImageAlt ?? "AMCOP DCM";
     const textW = data.deviceImage ? rightW * 0.47 : rightW - 14;
@@ -261,6 +283,9 @@ export async function buildAmcopPdf(markdown: string, data: AmcopPdfData): Promi
     const photoH = Math.max(132, titleH + detailsH + 16);
     const rangeH = 116;
     const panelH = photoH + rangeH + 17;
+    if (ry - bh - panelH < 35) nextRightPage();
+    band(`4. ${s4.title}`, rightX, ry, rightW);
+    ry -= bh;
     page.drawRectangle({ x: rightX, y: ry - panelH, width: rightW, height: panelH, color: AMBER_BG, borderColor: GRID, borderWidth: 0.4 });
     text(`**${name}**`, rightX + 7, ry - 7, textW, 17, TEAL_DARK);
     text(content, rightX + 7, ry - titleH - 11, textW, bodySize);
@@ -277,7 +302,9 @@ export async function buildAmcopPdf(markdown: string, data: AmcopPdfData): Promi
     text("**GAMMA AMCOP — forme DCM da definire dopo scansione**", rightX + 7, ry - photoH - rangeH + 10, rightW - 14, 6.4, TEAL_DARK);
     ry -= panelH + 6;
   }
-  let bottomTop = Math.min(ly, ry) - 3;
+  const lastIndex = Math.max(leftPageIndex, rightPageIndex);
+  page = columnPages[lastIndex];
+  let bottomTop = Math.min(leftPageIndex === lastIndex ? ly : PAGE_H - margin, rightPageIndex === lastIndex ? ry : PAGE_H - margin) - 3;
   const s9 = byNum.get(9);
   const items = s9 ? bodyLines(s9.body) : [];
   const halfW = width / 2;
