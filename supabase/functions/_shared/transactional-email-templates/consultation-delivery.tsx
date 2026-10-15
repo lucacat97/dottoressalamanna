@@ -12,6 +12,7 @@ interface ConsultationDeliveryProps {
   consultationType?: string
   introHtml?: string
   downloadUrl?: string
+  downloadUrlPdf?: string
 }
 
 const ConsultationDeliveryEmail = ({
@@ -20,6 +21,7 @@ const ConsultationDeliveryEmail = ({
   consultationType,
   introHtml,
   downloadUrl,
+  downloadUrlPdf,
 }: ConsultationDeliveryProps) => {
   const greeting = professionalFirstName || professionalLastName
     ? `Gentile Dott./Dott.ssa ${[professionalFirstName, professionalLastName].filter(Boolean).join(' ')}`
