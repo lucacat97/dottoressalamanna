@@ -308,29 +308,14 @@ const SubscribeSection = () => {
                   ))}
                 </ul>
                 <button
-                  disabled={!configured}
-                  onClick={() => setCheckout({ priceId: price.priceId, label: `${plan.name} — ${price.amount}/${interval === "monthly" ? "mese" : "anno"}` })}
-                  className={`w-full py-3 rounded-md font-body font-semibold text-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
-                    plan.highlight
-                      ? "bg-gold text-primary hover:bg-gold-light"
-                      : "bg-primary text-primary-foreground hover:bg-accent"
-                  }`}
+                  disabled
+                  className="w-full py-3 rounded-md font-body font-semibold text-sm opacity-50 cursor-not-allowed bg-muted text-muted-foreground"
                 >
-                  {configured ? "Abbonati ora" : "Pagamenti in configurazione"}
+                  Acquisto non disponibile sul sito
                 </button>
               </div>
             );
           })}
-        </div>
-
-        <div className="mt-8 flex justify-center">
-          <button
-            disabled={!configured}
-            onClick={() => setCheckout({ priceId: "mila_test_monthly", label: "MILA Test — €0,10/mese" })}
-            className="text-xs font-body text-muted-foreground underline hover:text-foreground disabled:opacity-40 disabled:cursor-not-allowed"
-          >
-            Piano di test €0,10/mese (verifica pagamento reale)
-          </button>
         </div>
 
         <p className="text-center font-body text-xs text-muted-foreground mt-8 max-w-2xl mx-auto">

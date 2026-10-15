@@ -190,12 +190,19 @@ export async function buildAmcopPdf(markdown: string, data: AmcopPdfData): Promi
   text("**Metodo AMCOP**", PAGE_W - margin - 109, PAGE_H - 15, 105, 9, TEAL_DARK);
   text("Funzione · Crescita · Postura", PAGE_W - margin - 116, PAGE_H - 30, 116, 7);
   let top = PAGE_H - 55;
-  const disclaimer = extractDisclaimer(markdown);
-  if (disclaimer) {
-    const dh = text(disclaimer, margin + 7, top - 4, width - 14, 6.8, GREY, false) + 8;
+  const baseDisclaimer = (extractDisclaimer(markdown) ?? "La consulenza è uno strumento di supporto al ragionamento clinico e non costituisce diagnosi medica: la responsabilità diagnostica e terapeutica resta interamente in capo al professionista sanitario.")
+    .replace(/\*\*/g, "");
+  const disclaimer = `${baseDisclaimer} Questa funzionalità è stata pensata in maniera sperimentale e viene fornita come test.`;
+  {
+    // Editable form field so the professional can modify the disclaimer.
+    const dh = text(disclaimer, margin + 7, top - 4, width - 14, 6.8, GREY, false) + 14;
     page.drawRectangle({ x: margin, y: top - dh, width, height: dh, color: AMBER_BG });
     page.drawRectangle({ x: margin, y: top - dh, width: 2, height: dh, color: AMBER_BORDER });
-    text(disclaimer, margin + 7, top - 4, width - 14, 6.8);
+    const field = doc.getForm().createTextField("disclaimer");
+    field.enableMultiline();
+    field.setText(sanitize(disclaimer));
+    field.setFontSize(6.8);
+    field.addToPage(page, { x: margin + 4, y: top - dh + 2, width: width - 8, height: dh - 4, borderWidth: 0, backgroundColor: AMBER_BG, textColor: GREY, font });
     top -= dh + 7;
   }
   function valueTable(body: string, x: number, y: number, w: number, size: number, draw: boolean): number {
