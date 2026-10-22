@@ -11,6 +11,7 @@ const MONTHLY_LIMIT = 30;
 const TOOL_NAME = "orthodontic-diagnosis";
 
 import { ORTHODONTIC_SYSTEM_PROMPT as SYSTEM_PROMPT } from "../_shared/ai-prompts.ts";
+import { AMCOP_ORTHO_ADDENDUM, applyAmcopTemplate } from "../_shared/amcop.ts";
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -106,7 +107,7 @@ ${classe_dentale ? `- Classe dentale/funzionale: ${classe_dentale}` : ""}`;
       body: JSON.stringify({
         model: "openai/gpt-5-mini",
         messages: [
-          { role: "system", content: SYSTEM_PROMPT + knowledgeSection + feedbackSection },
+          { role: "system", content: SYSTEM_PROMPT + AMCOP_ORTHO_ADDENDUM + knowledgeSection + feedbackSection },
           { role: "user", content: userMessage },
         ],
         stream: true,
