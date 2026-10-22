@@ -49,44 +49,23 @@ const mdToHtml = (markdown: string) => {
   return html;
 };
 
-const generateHtmlDocument = (markdown: string, title: string) => {
-  const branding = getBranding();
-  const header = generateHtmlHeader(branding);
-  const body = mdToHtml(markdown);
-  return `<!DOCTYPE html><html><head><meta charset="utf-8"><title>${title}</title><style>
-    body { font-family: 'Segoe UI', Arial, sans-serif; font-size: 12px; color: #222; max-width: 800px; margin: 0 auto; padding: 40px; line-height: 1.6; }
-    table { page-break-inside: avoid; } h1 { page-break-after: avoid; }
-    @media print { body { padding: 20px; } }
-  </style></head><body>${header}${body}</body></html>`;
-};
-
-const downloadAsWord = (markdown: string, filename: string, title: string) => {
-  const html = generateHtmlDocument(markdown, title);
-  const blob = new Blob(
-    [`<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
-    <head><meta charset="utf-8"><title>${title}</title>
-    <!--[if gte mso 9]><xml><w:WordDocument><w:View>Print</w:View></w:WordDocument></xml><![endif]-->
-    </head><body>${html.match(/<body>([\s\S]*)<\/body>/)?.[1] || ""}</body></html>`],
-    { type: "application/msword" }
-  );
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = `${filename}.doc`;
-  a.click();
-  URL.revokeObjectURL(url);
-};
-
-const downloadAsPdf = (markdown: string, title: string) => {
-  const html = generateHtmlDocument(markdown, title);
-  const printWindow = window.open("", "_blank");
-  if (!printWindow) {
-    toast({ title: "Errore", description: "Abilita i popup per scaricare il PDF.", variant: "destructive" });
-    return;
+// Scarica Word/PDF generati dal server con lo stesso template dell'API.
+const downloadDocument = async (
+  markdown: string,
+  tool: "orthodontic" | "diagnosis",
+  patientName: string,
+  format: "docx" | "pdf",
+  filename: string
+) => {
+  try {
+    await downloadConsultationDocument({ markdown, patientName, tool, format, filename });
+  } catch (e) {
+    toast({
+      title: "Errore",
+      description: e instanceof Error ? e.message : "Generazione del documento non riuscita.",
+      variant: "destructive",
+    });
   }
-  printWindow.document.write(html);
-  printWindow.document.close();
-  printWindow.onload = () => { setTimeout(() => printWindow.print(), 500); };
 };
 
 // ---------- PDF text extraction (with OCR fallback) ----------
