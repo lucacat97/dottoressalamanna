@@ -11,6 +11,7 @@ const MONTHLY_LIMIT = 30;
 const TOOL_NAME = "orthodontic-diagnosis";
 
 import { ORTHODONTIC_SYSTEM_PROMPT as SYSTEM_PROMPT } from "../_shared/ai-prompts.ts";
+import { AMCOP_ORTHO_ADDENDUM, applyAmcopTemplate } from "../_shared/amcop.ts";
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -106,7 +107,7 @@ ${classe_dentale ? `- Classe dentale/funzionale: ${classe_dentale}` : ""}`;
       body: JSON.stringify({
         model: "openai/gpt-5-mini",
         messages: [
-          { role: "system", content: SYSTEM_PROMPT + knowledgeSection + feedbackSection },
+          { role: "system", content: SYSTEM_PROMPT + AMCOP_ORTHO_ADDENDUM + knowledgeSection + feedbackSection },
           { role: "user", content: userMessage },
         ],
         stream: true,
@@ -141,7 +142,41 @@ ${classe_dentale ? `- Classe dentale/funzionale: ${classe_dentale}` : ""}`;
       await serviceClient.from("api_keys").update({ last_used_at: new Date().toISOString() }).eq("id", apiKeyId);
     }
 
-    return new Response(response.body, {
+    // ── Buffer dello stream AI e applicazione del template Metodo AMCOP ──
+    // (stessa logica dell'API esterna: foto dispositivo + istruzioni d'uso brochure)
+    const reader = response.body!.getReader();
+    const decoder = new TextDecoder();
+    let sseBuffer = "";
+    let markdown = "";
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      sseBuffer += decoder.decode(value, { stream: true });
+      let idx: number;
+      while ((idx = sseBuffer.indexOf("\n")) !== -1) {
+        let line = sseBuffer.slice(0, idx);
+        sseBuffer = sseBuffer.slice(idx + 1);
+        if (line.endsWith("\r")) line = line.slice(0, -1);
+        if (!line.startsWith("data: ")) continue;
+        const payload = line.slice(6).trim();
+        if (payload === "[DONE]") continue;
+        try {
+          const delta = JSON.parse(payload).choices?.[0]?.delta?.content;
+          if (delta) markdown += delta;
+        } catch { /* linea non JSON (keep-alive): ignorata */ }
+      }
+    }
+
+    const amcop = applyAmcopTemplate(markdown, Number(age));
+    markdown = amcop.markdown;
+    // Foto del dispositivo servita dal bucket privato via funzione amcop-image (mai fetch live da amcop.it)
+    markdown = markdown.replace(
+      amcop.device.imageUrl,
+      `${supabaseUrl}/functions/v1/amcop-image?d=${amcop.device.key.toLowerCase()}`
+    );
+
+    const sseOut = `data: ${JSON.stringify({ choices: [{ delta: { content: markdown } }] })}\n\ndata: [DONE]\n\n`;
+    return new Response(new TextEncoder().encode(sseOut), {
       headers: { ...corsHeaders, "Content-Type": "text/event-stream" },
     });
   } catch (e) {
