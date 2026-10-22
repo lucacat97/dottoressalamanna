@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { getBranding, generateHtmlHeader } from "./BrandingSettings";
+import { downloadConsultationDocument } from "@/lib/consultation-download";
 import RetroFeedback from "./RetroFeedback";
 import ConsultationProgress from "./ConsultationProgress";
 
@@ -42,44 +42,17 @@ const mdToHtml = (markdown: string) => {
   return html;
 };
 
-const generateHtmlDocument = (markdown: string) => {
-  const branding = getBranding();
-  const header = generateHtmlHeader(branding);
-  const body = mdToHtml(markdown);
-  return `<!DOCTYPE html><html><head><meta charset="utf-8"><style>
-    body { font-family: 'Segoe UI', Arial, sans-serif; font-size: 12px; color: #222; max-width: 800px; margin: 0 auto; padding: 40px; line-height: 1.6; }
-    table { page-break-inside: avoid; } h1 { page-break-after: avoid; }
-    @media print { body { padding: 20px; } }
-  </style></head><body>${header}${body}</body></html>`;
-};
-
-const downloadAsWord = (markdown: string, filename: string) => {
-  const html = generateHtmlDocument(markdown);
-  const blob = new Blob(
-    [`<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
-    <head><meta charset="utf-8"><title>Consulenza Ortodontica</title>
-    <!--[if gte mso 9]><xml><w:WordDocument><w:View>Print</w:View></w:WordDocument></xml><![endif]-->
-    </head><body>${html.match(/<body>([\s\S]*)<\/body>/)?.[1] || ""}</body></html>`],
-    { type: "application/msword" }
-  );
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = `${filename}.doc`;
-  a.click();
-  URL.revokeObjectURL(url);
-};
-
-const downloadAsPdf = (markdown: string) => {
-  const html = generateHtmlDocument(markdown);
-  const printWindow = window.open("", "_blank");
-  if (!printWindow) {
-    toast({ title: "Errore", description: "Abilita i popup per scaricare il PDF.", variant: "destructive" });
-    return;
+// Scarica Word/PDF generati dal server con lo stesso template AMCOP dell'API.
+const downloadDocument = async (markdown: string, patientName: string, format: "docx" | "pdf", filename: string) => {
+  try {
+    await downloadConsultationDocument({ markdown, patientName, tool: "orthodontic", format, filename });
+  } catch (e) {
+    toast({
+      title: "Errore",
+      description: e instanceof Error ? e.message : "Generazione del documento non riuscita.",
+      variant: "destructive",
+    });
   }
-  printWindow.document.write(html);
-  printWindow.document.close();
-  printWindow.onload = () => { setTimeout(() => printWindow.print(), 500); };
 };
 
 interface FormData {
@@ -358,13 +331,13 @@ const OrthodonticTool = () => {
             </div>
           </div>
           <div className="flex flex-wrap gap-2">
-            <Button variant="default" onClick={() => downloadAsWord(result, `Cefalometria_${form.cognome}_${form.nome}`)} className="font-body gap-2">
+            <Button variant="default" onClick={() => downloadDocument(result, `${form.nome} ${form.cognome}`.trim(), "docx", `Cefalometria_${form.cognome}_${form.nome}`)} className="font-body gap-2">
               <FileDown size={14} />
               Scarica Word
             </Button>
-            <Button variant="outline" onClick={() => downloadAsPdf(result)} className="font-body gap-2">
+            <Button variant="outline" onClick={() => downloadDocument(result, `${form.nome} ${form.cognome}`.trim(), "pdf", `Cefalometria_${form.cognome}_${form.nome}`)} className="font-body gap-2">
               <Download size={14} />
-              Stampa / Salva PDF
+              Scarica PDF
             </Button>
             <Button variant="ghost" onClick={handleReset} className="font-body gap-2">
               <RotateCcw size={14} />
