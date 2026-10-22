@@ -10,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { extractPdfTextWithFallback } from "@/lib/pdf-extract";
-import { getBranding, generateHtmlHeader } from "./BrandingSettings";
+import { downloadConsultationDocument } from "@/lib/consultation-download";
 import RetroFeedback from "./RetroFeedback";
 import ConsultationProgress from "./ConsultationProgress";
 
