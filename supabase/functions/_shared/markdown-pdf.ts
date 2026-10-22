@@ -101,5 +101,7 @@ export async function buildMarkdownPdf(markdown: string, title: string, disclaim
     para.push(l);
   }
   flush();
-  return new Uint8Array(await doc.save());
+  // useObjectStreams: false -> PDF 1.4 "classico", apribile anche da
+  // visualizzatori datati (anteprime email/mobile) che rifiutano i file 1.7 compressi.
+  return new Uint8Array(await doc.save({ useObjectStreams: false }));
 }
