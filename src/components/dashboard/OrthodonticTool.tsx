@@ -331,13 +331,13 @@ const OrthodonticTool = () => {
             </div>
           </div>
           <div className="flex flex-wrap gap-2">
-            <Button variant="default" onClick={() => downloadAsWord(result, `Cefalometria_${form.cognome}_${form.nome}`)} className="font-body gap-2">
+            <Button variant="default" onClick={() => downloadDocument(result, `${form.nome} ${form.cognome}`.trim(), "docx", `Cefalometria_${form.cognome}_${form.nome}`)} className="font-body gap-2">
               <FileDown size={14} />
               Scarica Word
             </Button>
-            <Button variant="outline" onClick={() => downloadAsPdf(result)} className="font-body gap-2">
+            <Button variant="outline" onClick={() => downloadDocument(result, `${form.nome} ${form.cognome}`.trim(), "pdf", `Cefalometria_${form.cognome}_${form.nome}`)} className="font-body gap-2">
               <Download size={14} />
-              Stampa / Salva PDF
+              Scarica PDF
             </Button>
             <Button variant="ghost" onClick={handleReset} className="font-body gap-2">
               <RotateCcw size={14} />

@@ -733,13 +733,13 @@ const MilaMethodTool = () => {
                 </div>
               </div>
               <div className="flex flex-wrap gap-2">
-                <Button variant="default" onClick={() => downloadAsWord(diagnosisResult, `Consulenza_Clinico_${clinicalFile?.name?.replace(/\.pdf$/i, "") || "paziente"}`, "Consulenza Clinica")} className="font-body gap-2">
+                <Button variant="default" onClick={() => downloadDocument(diagnosisResult, "diagnosis", "Paziente", "docx", `Consulenza_Clinico_${clinicalFile?.name?.replace(/\.pdf$/i, "") || "paziente"}`)} className="font-body gap-2">
                   <FileDown size={14} />
                   Word (editabile)
                 </Button>
-                <Button variant="outline" onClick={() => downloadAsPdf(diagnosisResult, "Consulenza Clinica")} className="font-body gap-2">
+                <Button variant="outline" onClick={() => downloadDocument(diagnosisResult, "diagnosis", "Paziente", "pdf", `Consulenza_Clinico_${clinicalFile?.name?.replace(/\.pdf$/i, "") || "paziente"}`)} className="font-body gap-2">
                   <Download size={14} />
-                  Stampa / PDF
+                  Scarica PDF
                 </Button>
               </div>
               <RetroFeedback toolName={DIAGNOSIS_TOOL} />
@@ -756,13 +756,13 @@ const MilaMethodTool = () => {
                 </div>
               </div>
               <div className="flex flex-wrap gap-2">
-                <Button variant="default" onClick={() => downloadAsWord(orthoResult, `Cefalometria_${orthoForm.cognome}_${orthoForm.nome}`, "Consulenza Cefalometrica")} className="font-body gap-2">
+                <Button variant="default" onClick={() => downloadDocument(orthoResult, "orthodontic", `${orthoForm.nome} ${orthoForm.cognome}`.trim(), "docx", `Cefalometria_${orthoForm.cognome}_${orthoForm.nome}`)} className="font-body gap-2">
                   <FileDown size={14} />
                   Word (editabile)
                 </Button>
-                <Button variant="outline" onClick={() => downloadAsPdf(orthoResult, "Consulenza Cefalometrica")} className="font-body gap-2">
+                <Button variant="outline" onClick={() => downloadDocument(orthoResult, "orthodontic", `${orthoForm.nome} ${orthoForm.cognome}`.trim(), "pdf", `Cefalometria_${orthoForm.cognome}_${orthoForm.nome}`)} className="font-body gap-2">
                   <Download size={14} />
-                  Stampa / PDF
+                  Scarica PDF
                 </Button>
               </div>
               <RetroFeedback toolName={ORTHO_TOOL} />
