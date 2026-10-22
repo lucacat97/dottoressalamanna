@@ -350,7 +350,9 @@ export async function buildAmcopPdf(markdown: string, data: AmcopPdfData): Promi
     bottomTop = yy;
   }
   text(`Consulenza generata il ${data.date} — Metodo AMCOP · Funzione · Crescita · Postura`, margin, bottomTop - 7, width, 6.5);
-  return new Uint8Array(await doc.save());
+  // useObjectStreams: false -> PDF 1.4 "classico", apribile anche da
+  // visualizzatori datati (anteprime email/mobile) che rifiutano i file 1.7 compressi.
+  return new Uint8Array(await doc.save({ useObjectStreams: false }));
 }
 
 export const PDF_MIME = "application/pdf";
