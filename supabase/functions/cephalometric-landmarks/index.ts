@@ -1,6 +1,7 @@
 // Proposta automatica dei punti cefalometrici con un modello visivo generico.
 // I punti sono una PROPOSTA da verificare: il professionista li corregge prima del calcolo definitivo.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { EXAMPLES } from "./examples.ts";
 
 const cors = {
   "Access-Control-Allow-Origin": "*",
@@ -56,7 +57,15 @@ Deno.serve(async (req) => {
       headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
       body: JSON.stringify({
         model: "google/gemini-3.8-flash",
-        messages: [{ role: "user", content: [{ type: "text", text: prompt }, { type: "image_url", image_url: { url: image } }] }],
+        messages: [{ role: "user", content: [
+          { type: "text", text: prompt },
+          ...(mode === "full" ? EXAMPLES.flatMap((ex, i) => [
+            { type: "text", text: `ESEMPIO DI RIFERIMENTO ${i + 1}: teleradiografia marcata a mano da un ortodontista (le scritte rosse indicano i punti). Coordinate corrette 0-1000: ${JSON.stringify(ex.points)}. Usa questi esempi per capire dove si collocano esattamente i punti secondo la convenzione dello studio.` },
+            { type: "image_url", image_url: { url: ex.image } },
+          ]) : []),
+          { type: "text", text: mode === "full" ? "ORA LA RADIOGRAFIA DA ANALIZZARE (senza marcature). Applica la stessa convenzione degli esempi:" : "Immagine:" },
+          { type: "image_url", image_url: { url: image } },
+        ] }],
         tools: [{ type: "function", function: { name: "landmarks", description: "Coordinate 0-1000 dei punti", parameters: { type: "object", properties, required, additionalProperties: false } } }],
         tool_choice: { type: "function", function: { name: "landmarks" } },
       }),
