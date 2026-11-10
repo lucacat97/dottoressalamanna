@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { LANDMARKS } from "./geometry";
+import { LANDMARKS, type Points } from "./geometry";
 
 const point = z.object({ x: z.number().finite().nonnegative(), y: z.number().finite().nonnegative() });
 export const analysisSchema = z.object({
@@ -15,7 +15,10 @@ export const analysisSchema = z.object({
     if (p.x > value.width || p.y > value.height) ctx.addIssue({ code: "custom", message: "Punto esterno all’immagine" });
   }
 });
-export type Analysis = z.infer<typeof analysisSchema>;
+export interface Analysis {
+  version: 1; image: string; width: number; height: number; points: Points;
+  calibration: number | null; age: string; sex: "M" | "F"; report: string; reportSignature: string;
+}
 
 export function downloadBlob(blob: Blob, filename: string) {
   const url = URL.createObjectURL(blob);

@@ -38,7 +38,7 @@ export async function exportTrace(analysis: Analysis, format: "png" | "pdf") {
   let y = 210;
   for (const [key, label] of Object.entries(MEASURE_LABELS)) {
     const value = measures[key as keyof typeof MEASURE_LABELS];
-    page.drawText(`${label.replaceAll("−", "-").replaceAll("–", "-")} : ${formattedMeasure(key, value).replace("—", "non disponibile")}`, { x: 30, y, size: 11, font }); y -= 20;
+    page.drawText(`${label.replace(/[−–]/g, "-")} : ${formattedMeasure(key, value).replace("—", "non disponibile")}`, { x: 30, y, size: 11, font }); y -= 20;
   }
   page.drawText("Verifica del professionista necessaria. Non costituisce diagnosi medica.", { x: 30, y: 45, size: 9, font, color: rgb(0.3, 0.3, 0.3) });
   const bytes = await doc.save({ useObjectStreams: false });

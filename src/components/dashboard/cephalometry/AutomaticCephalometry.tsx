@@ -86,7 +86,12 @@ export default function AutomaticCephalometry() {
       await setSource(parsed.image);
       const img = new Image(); img.src = parsed.image; await img.decode();
       if (img.width !== parsed.width || img.height !== parsed.height) throw new Error("Dimensioni del fascicolo non coerenti");
-      setPoints(parsed.points); setCalibration(parsed.calibration?.toString() ?? ""); setAge(parsed.age); setSex(parsed.sex);
+      const restored: Points = {};
+      for (const id of LANDMARKS) {
+        const p = parsed.points[id];
+        if (p && typeof p.x === "number" && typeof p.y === "number") restored[id] = { x: p.x, y: p.y };
+      }
+      setPoints(restored); setCalibration(parsed.calibration?.toString() ?? ""); setAge(parsed.age); setSex(parsed.sex);
       setReport(parsed.report); setReportSignature(parsed.reportSignature); setPdfBytes(null); setPageCount(0);
     } catch (e) { fail(e); }
   };
