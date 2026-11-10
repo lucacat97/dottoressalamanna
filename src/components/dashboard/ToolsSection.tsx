@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Brain, Sparkles, ArrowLeft, ArrowRight, Leaf, Lock, ClipboardList } from "lucide-react";
+import { Brain, Sparkles, ArrowLeft, ArrowRight, Leaf, Lock, ClipboardList, Crosshair } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
@@ -7,6 +7,7 @@ import MilaMethodTool from "./MilaMethodTool";
 import BrandingSettings from "./BrandingSettings";
 import MTCHub from "./mtc/MTCHub";
 import CheckupTool from "./checkup/CheckupTool";
+import AutomaticCephalometry from "./cephalometry/AutomaticCephalometry";
 import UsageWidget from "./UsageWidget";
 import milaHero from "@/assets/mila-tool-hero.jpg";
 
@@ -23,6 +24,16 @@ interface ToolCard {
 }
 
 const tools: ToolCard[] = [
+  {
+    id: "cephalometry",
+    title: "Cefalometria Automatica",
+    subtitle: "Tracciato sperimentale · modello in preparazione",
+    description: "Teleradiografia, punti anatomici e misure geometriche verificate dal professionista.",
+    icon: Crosshair,
+    gradient: "from-primary via-accent to-primary",
+    accentColor: "text-primary",
+    apiToolKeys: ["orthodontic"],
+  },
   {
     id: "checkup",
     title: "Cartella digitale compilabile",
@@ -91,6 +102,7 @@ const ToolsSection = () => {
 
         {activeTool === "mila" && <MilaMethodTool onOpenCheckup={() => setActiveTool("checkup")} />}
         {activeTool === "mtc" && <MTCHub />}
+        {activeTool === "cephalometry" && <AutomaticCephalometry />}
         {activeTool === "checkup" && <CheckupTool onSendToMila={() => setActiveTool("mila")} />}
       </div>
     );
@@ -121,7 +133,8 @@ const ToolsSection = () => {
           <div className="space-y-6">
             {/* MILA — Hero card */}
             {(() => {
-              const mila = tools.find((t) => t.id === "mila")!;
+              const mila = tools.find((t) => t.id === "mila");
+              if (!mila) return null;
               const allowed = isToolAllowed(mila);
               const card = (
                 <button
