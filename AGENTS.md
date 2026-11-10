@@ -1,5 +1,7 @@
 # Architecture rules
 
+- Keep the digital questionnaire in the existing CheckupTool and expose it from both the tools list and MILA clinical input; this preserves the full question schema, saved records and MILA import without duplicate forms.
+
 - Keep displayed MILA per-consultation rates in `src/lib/mila-pricing.ts` and test their numeric values; this prevents offer copy from drifting between plans.
 - AMCOP device catalogue, mapping and brochure instructions live in `supabase/functions/_shared/amcop.ts`; both the external API cephalometry and the site's `orthodontic-diagnosis` function append its prompt addendum and post-process output with `applyAmcopTemplate`, so device data has one source. The site function buffers the AI stream, applies the template, rewrites the device photo to the `amcop-image` URL, and re-emits one SSE chunk.
 - AMCOP document layouts live in `supabase/functions/_shared/amcop-docx.ts` (Word, fallback `markdownToDocx`) and `amcop-pdf.ts` (PDF with independently measured vertical columns); device/logo images are local copies in private `amcop-assets`, never fetched live from amcop.it, so documents remain available and PDF layout is preserved across readers. In markdown consultations (check-up), device photos are embedded via the `amcop-image` edge function, which 302-redirects a device key to a short-lived signed URL (public buckets are blocked by workspace policy).
