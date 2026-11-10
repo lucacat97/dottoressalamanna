@@ -29,6 +29,7 @@ export default function AutomaticCephalometry() {
   const [reportSignature, setReportSignature] = useState("");
   const [pdfBytes, setPdfBytes] = useState<Uint8Array | null>(null);
   const [pdfPage, setPdfPage] = useState(1);
+  const [tab, setTab] = useState("trace");
   const [pageCount, setPageCount] = useState(0);
   const imageInput = useRef<HTMLInputElement>(null), importInput = useRef<HTMLInputElement>(null);
   const drag = useRef<Landmark | null>(null);
@@ -113,7 +114,7 @@ export default function AutomaticCephalometry() {
           angolo_articolare: measures.angolo_articolare, angolo_goniaco: measures.angolo_goniaco, rapporto_ns_gome: measures.rapporto_ns_gome }),
       });
       if (!response.ok || !response.body) { const error = await response.json().catch(() => ({})); throw new Error(error.error ?? "Generazione non disponibile"); }
-      const result = await readMilaStream(response.body); setReport(result); setReportSignature(signature);
+      const result = await readMilaStream(response.body); setReport(result); setReportSignature(signature); setTab("report");
       toast({ title: "Consulenza MILA disponibile" });
     } catch (e) { fail(e); } finally { setBusy(false); }
   };
@@ -179,7 +180,7 @@ export default function AutomaticCephalometry() {
       {pageCount > 1 && <div><Label htmlFor="cef-page">Pagina PDF</Label><select id="cef-page" value={pdfPage} disabled={busy} className="block h-10 border border-input rounded-md bg-background px-3 text-base" onChange={async e => { if (!pdfBytes) return; const n = Number(e.target.value); setPdfPage(n); setBusy(true); try { await renderPdf(pdfBytes, n); } catch (err) { fail(err); } finally { setBusy(false); } }}>{Array.from({ length: pageCount }, (_, i) => <option key={i + 1}>{i + 1}</option>)}</select></div>}
       {busy && <Loader2 className="animate-spin text-primary" aria-label="Operazione in corso" />}
     </div>
-    {image ? <Tabs defaultValue="trace">
+    {image ? <Tabs value={tab} onValueChange={setTab}>
       <TabsList><TabsTrigger value="trace">Tracciato cefalometrico</TabsTrigger><TabsTrigger value="report">Consulenza MILA{stale ? " · da aggiornare" : ""}</TabsTrigger></TabsList>
       <TabsContent value="trace" className="space-y-5">
         <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_300px] gap-5">
@@ -223,10 +224,11 @@ export default function AutomaticCephalometry() {
         </div>
         <div className="flex items-start gap-3"><Checkbox id="cef-confirm" checked={confirmed} disabled={busy || !ready} onCheckedChange={v => setConfirmed(v === true)} /><Label htmlFor="cef-confirm" className="text-sm leading-relaxed">Ho verificato punti, scala, piano occlusale posteriore→anteriore e misure. Lo strumento non costituisce diagnosi medica; la responsabilità resta al professionista.</Label></div>
         <Button disabled={!ready || !confirmed || busy} onClick={() => void generate()} className="whitespace-normal h-auto min-h-10 py-2">Conferma tracciato e genera consulenza MILA</Button>
+        {report && !stale && <Button variant="outline" disabled={busy} onClick={() => void downloadReport("pdf")} className="ml-3"><Download size={16} className="mr-2" />Scarica consulenza cefalometrica PDF</Button>}
       </TabsContent>
       <TabsContent value="report" className="space-y-4">
         {stale && <p role="alert" className="text-destructive font-semibold">Tracciato modificato: aggiorna la consulenza prima di scaricarla.</p>}
-        {report ? <><div className="flex flex-wrap gap-3"><Button disabled={busy || stale} onClick={() => void downloadReport("pdf")}><Download size={16} className="mr-2" />PDF</Button><Button variant="outline" disabled={busy || stale} onClick={() => void downloadReport("docx")}><Download size={16} className="mr-2" />Word</Button></div><div className="prose prose-sm dark:prose-invert max-w-none"><ReactMarkdown remarkPlugins={[remarkGfm]}>{report}</ReactMarkdown></div></> : <p className="text-muted-foreground py-8">Nessuna consulenza generata.</p>}
+        {report ? <><div className="flex flex-wrap gap-3"><Button disabled={busy || stale} onClick={() => void downloadReport("pdf")}><Download size={16} className="mr-2" />Scarica consulenza PDF</Button><Button variant="outline" disabled={busy || stale} onClick={() => void downloadReport("docx")}><Download size={16} className="mr-2" />Word</Button></div><div className="prose prose-sm dark:prose-invert max-w-none"><ReactMarkdown remarkPlugins={[remarkGfm]}>{report}</ReactMarkdown></div></> : <p className="text-muted-foreground py-8">Nessuna consulenza generata.</p>}
       </TabsContent>
     </Tabs> : <div className="py-16 border-y border-border text-center"><Crosshair size={40} className="mx-auto text-primary mb-4" /><h3 className="font-display text-xl">Teleradiografia</h3><p className="text-sm text-muted-foreground mt-2">PNG, JPEG, WebP o PDF · massimo 20 MB</p></div>}
   </div>;
