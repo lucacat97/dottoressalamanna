@@ -1,5 +1,9 @@
 # Roadmap
 
+- [ ] Cefalometria Automatica: editor dei punti, calcoli geometrici, calibrazione e download del tracciato
+- [ ] Collegare le misure confermate alla consulenza MILA e conservare fascicoli sul dispositivo
+- [ ] Riconoscitore dedicato: bloccato da radiografie annotate autorizzate, convenzioni cliniche e risorse di addestramento; non simulare il riconoscimento
+
 - [x] Creare e collaudare una modalità cefalometrica API sperimentale senza AI, con recupero AMCOP e PDF restituito direttamente senza archiviazione clinica
 - [x] Consegnare un PDF fittizio di prova e documentare limiti e attivazione della modalità
 - [x] Verificare che ogni singolo valore cefalometrico continui a essere interpretato e che il flusso attuale resti invariato
