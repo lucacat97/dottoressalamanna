@@ -44,7 +44,7 @@ Deno.serve(async (req) => {
       method: "POST",
       headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
       body: JSON.stringify({
-        model: "google/gemini-2.5-pro",
+        model: "google/gemini-3.8-flash",
         messages: [{ role: "user", content: [{ type: "text", text: PROMPT }, { type: "image_url", image_url: { url: image } }] }],
         tools: [{ type: "function", function: { name: "landmarks", description: "Coordinate 0-1000 dei punti", parameters: { type: "object", properties, required: [...KEYS], additionalProperties: false } } }],
         tool_choice: { type: "function", function: { name: "landmarks" } },
@@ -62,7 +62,7 @@ Deno.serve(async (req) => {
       if (p && Number.isFinite(p.x) && Number.isFinite(p.y))
         points[k] = { x: Math.min(1000, Math.max(0, p.x)) / 1000, y: Math.min(1000, Math.max(0, p.y)) / 1000 };
     }
-    return json({ points, model: "google/gemini-2.5-pro" });
+    return json({ points, model: "google/gemini-3.8-flash" });
   } catch (e) {
     console.error("[cephalometric-landmarks]", e);
     return json({ error: e instanceof Error ? e.message : "Errore" }, 500);

@@ -1,6 +1,6 @@
 # Architecture rules
 
-- Keep cephalometric landmark recognition separate from deterministic geometry in `src/lib/cephalometry`; never substitute an LLM or invented coordinates for an unavailable dedicated model.
+- Keep cephalometric landmark proposal (edge function `cephalometric-landmarks`, generic vision model, user-authorized) separate from deterministic geometry in `src/lib/cephalometry`; proposed points are always professional-verified before measures are confirmed.
 - Automatic cephalometry uses device-exported analysis files, not a new remote clinical archive; only confirmed numerical measurements are sent to the existing MILA function and any input change invalidates its report.
 
 - Keep the digital questionnaire in the existing CheckupTool and expose it from both the tools list and MILA clinical input; this preserves the full question schema, saved records and MILA import without duplicate forms.
