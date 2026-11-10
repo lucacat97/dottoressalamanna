@@ -122,17 +122,33 @@ export default function AutomaticCephalometry() {
     try { await downloadConsultationDocument({ markdown: report, tool: "orthodontic", patientName: "Paziente", format, filename: `MILA_consulenza.${format}` }); }
     catch (e) { fail(e); } finally { setBusy(false); }
   };
+  const autoDetect = async () => {
+    setBusy(true);
+    try {
+      const img = new Image(); img.src = image; await img.decode();
+      const scale = Math.min(1, 1600 / Math.max(img.width, img.height));
+      const c = document.createElement("canvas"); c.width = Math.round(img.width * scale); c.height = Math.round(img.height * scale);
+      c.getContext("2d")!.drawImage(img, 0, 0, c.width, c.height);
+      const { data, error } = await supabase.functions.invoke("cephalometric-landmarks", { body: { image: c.toDataURL("image/jpeg", 0.9) } });
+      if (error || data?.error) throw new Error(data?.error ?? error?.message ?? "Riconoscimento non riuscito");
+      const next: Points = { ...points };
+      for (const [k, p] of Object.entries(data.points as Record<string, { x: number; y: number }>)) next[k as Landmark] = { x: p.x * size.width, y: p.y * size.height };
+      changed(next);
+      toast({ title: "Punti proposti", description: "Verifica e trascina i punti dove serve prima di confermare." });
+    } catch (e) { fail(e); } finally { setBusy(false); }
+  };
   const exportImage = async (format: "png" | "pdf") => { setBusy(true); try { await exportTrace(analysis, format); } catch (e) { fail(e); } finally { setBusy(false); } };
 
   return <div className="space-y-6">
     <div role="status" className="border-l-4 border-gold bg-muted p-4 flex items-start gap-3">
       <AlertTriangle className="text-gold shrink-0" size={20} />
-      <div><p className="font-semibold text-foreground">Prototipo sperimentale · tracciato manuale</p><p className="text-sm text-muted-foreground">Riconoscimento automatico non disponibile: modello dedicato non ancora addestrato né validato.</p></div>
+      <div><p className="font-semibold text-foreground">Prototipo sperimentale · riconoscimento automatico da verificare</p><p className="text-sm text-muted-foreground">I punti proposti da un modello AI generico possono essere imprecisi di alcuni millimetri: controllali e correggili sempre prima di confermare.</p></div>
     </div>
     <div className="flex flex-wrap items-end gap-4">
       <input ref={imageInput} type="file" accept="image/png,image/jpeg,image/webp,application/pdf" className="hidden" onChange={e => void loadFile(e.target.files?.[0])} />
       <input ref={importInput} type="file" accept=".json" className="hidden" onChange={e => void importFile(e.target.files?.[0])} />
       <Button onClick={() => imageInput.current?.click()} disabled={busy}><Upload size={16} className="mr-2" />Carica teleradiografia</Button>
+      {image && <Button variant="secondary" onClick={() => void autoDetect()} disabled={busy}><Crosshair size={16} className="mr-2" />Riconosci punti automaticamente</Button>}
       <Button variant="outline" onClick={() => importInput.current?.click()} disabled={busy}>Apri fascicolo</Button>
       <div className="w-24"><Label htmlFor="cef-age">Età</Label><Input id="cef-age" type="number" min="1" max="120" value={age} onChange={e => { setAge(e.target.value); setConfirmed(false); }} className="text-base" disabled={busy} /></div>
       <div><Label htmlFor="cef-sex">Sesso</Label><select id="cef-sex" value={sex} disabled={busy} onChange={e => { setSex(e.target.value as "M" | "F"); setConfirmed(false); }} className="block h-10 rounded-md border border-input bg-background px-3 text-base"><option value="F">F</option><option value="M">M</option></select></div>
