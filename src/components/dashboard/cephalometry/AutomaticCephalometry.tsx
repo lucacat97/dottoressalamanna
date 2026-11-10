@@ -129,10 +129,34 @@ export default function AutomaticCephalometry() {
       const scale = Math.min(1, 1600 / Math.max(img.width, img.height));
       const c = document.createElement("canvas"); c.width = Math.round(img.width * scale); c.height = Math.round(img.height * scale);
       c.getContext("2d")!.drawImage(img, 0, 0, c.width, c.height);
-      const { data, error } = await supabase.functions.invoke("cephalometric-landmarks", { body: { image: c.toDataURL("image/jpeg", 0.9) } });
-      if (error || data?.error) throw new Error(data?.error ?? error?.message ?? "Riconoscimento non riuscito");
+      const call = async (body: Record<string, unknown>) => {
+        const { data, error } = await supabase.functions.invoke("cephalometric-landmarks", { body });
+        if (error || data?.error) throw new Error(data?.error ?? error?.message ?? "Riconoscimento non riuscito");
+        return data as { points: Record<string, { x: number; y: number }>; distance_mm?: number | null };
+      };
+      const [data, ruler] = await Promise.all([
+        call({ image: c.toDataURL("image/jpeg", 0.9) }),
+        call({ image: c.toDataURL("image/jpeg", 0.9), mode: "ruler" }).catch(() => null),
+      ]);
       const next: Points = { ...points };
-      for (const [k, p] of Object.entries(data.points as Record<string, { x: number; y: number }>)) next[k as Landmark] = { x: p.x * size.width, y: p.y * size.height };
+      for (const [k, p] of Object.entries(data.points)) next[k as Landmark] = { x: p.x * size.width, y: p.y * size.height };
+      // Secondo passaggio sul Punto A: ritaglio ingrandito attorno alla prima stima.
+      if (next.A) {
+        const half = Math.round(Math.max(size.width, size.height) * 0.09);
+        const x0 = Math.max(0, Math.round(next.A.x - half)), y0 = Math.max(0, Math.round(next.A.y - half));
+        const w = Math.min(size.width - x0, half * 2), h = Math.min(size.height - y0, half * 2);
+        const crop = document.createElement("canvas"); const up = 1024 / Math.max(w, h);
+        crop.width = Math.round(w * up); crop.height = Math.round(h * up);
+        crop.getContext("2d")!.drawImage(img, x0, y0, w, h, 0, 0, crop.width, crop.height);
+        const refined = await call({ image: crop.toDataURL("image/jpeg", 0.92), mode: "refineA" }).catch(() => null);
+        const a = refined?.points?.A;
+        if (a) next.A = { x: x0 + a.x * w, y: y0 + a.y * h };
+      }
+      if (ruler?.distance_mm && ruler.points.C1 && ruler.points.C2) {
+        next.C1 = { x: ruler.points.C1.x * size.width, y: ruler.points.C1.y * size.height };
+        next.C2 = { x: ruler.points.C2.x * size.width, y: ruler.points.C2.y * size.height };
+        setCalibration(String(ruler.distance_mm));
+      } else toast({ title: "Scala non trovata", description: "Nessun righello leggibile: inserisci C1–C2 e la distanza a mano." });
       changed(next);
       toast({ title: "Punti proposti", description: "Verifica e trascina i punti dove serve prima di confermare." });
     } catch (e) { fail(e); } finally { setBusy(false); }
