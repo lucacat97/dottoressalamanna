@@ -1,38 +1,40 @@
-# Piano: estensione Chrome MILA/MIND Companion
+# Cefalometria Automatica MILA
 
 ## Obiettivo
-Creare un pacchetto Chrome Extension che permetta di caricare un PDF clinico e ricevere una consulenza MILA direttamente dal browser, usando il nuovo endpoint sicuro `mind-companion-consultation` (token per installazione).
+Una sezione «Cefalometria Automatica» in «MILA e Strumenti»: caricare una teleradiografia, riconoscere automaticamente i punti anatomici, calcolare gli angoli, verificare il tracciato e ottenere due risultati distinti: tracciato cefalometrico e consulenza MILA.
 
-## Cosa costruire
+Il riconoscitore sarà un modello dedicato sviluppato per il progetto, non un LLM che stima coordinate o angoli. L’attuale funzionamento di MILA resta invariato.
 
-1. **Cartella `extension/`** con i file necessari:
-   - `manifest.json` (Manifest V3)
-   - `popup.html` + `popup.js` + `popup.css` — interfaccia per caricare PDF e inserire note
-   - `background.js` — service worker per salvare/recuperare il token di installazione
-   - `options.html` + `options.js` — pagina per configurare il token dell'estensione
-   - `icon.png` — icona dell'estensione
+## 1. Preparare il riconoscitore
+- Definire con Annarita i punti e le convenzioni: S, N, Ar, Go, Me, A, B e i riferimenti necessari per il piano occlusale e Wits.
+- Preparare radiografie utilizzabili legalmente per addestramento, con identificativi rimossi anche dall’immagine e punti annotati da professionisti. Verificare licenze e autorizzazioni prima dell’uso.
+- Realizzare un modello di localizzazione dei punti con indicazione dell’incertezza; addestramento su risorse di calcolo dedicate, non nelle funzioni del sito.
+- Separare i casi di addestramento, validazione e test per paziente. Misurare errore dei punti in millimetri sui casi calibrati, errore degli angoli e prestazioni sui diversi tipi di immagini.
+- Stabilire con Annarita criteri di accettazione prima dell’impiego clinico. Un primo prototipo non sarà presentato come validato o certificato.
 
-2. **Flusso utente**
-   - L'utente installa l'estensione in Chrome (modalità sviluppatore → carica cartella decompressa)
-   - Inserisce il token di installazione nelle opzioni (es. `mind_...`)
-   - Clicca l'icona, trascina o seleziona un PDF
-   - Aggiunge eventuali note cliniche opzionali
-   - Clicca "Invia a MILA"
-   - L'estensione chiama `POST .../functions/v1/mind-companion-consultation` con `Authorization: Bearer <token>` e `multipart/form-data`
-   - Mostra il link al documento Word generato e conferma l'invio email
+**Dipendenza:** non sono ancora disponibili nel progetto un modello addestrato né un insieme di radiografie annotate. Senza questi si può costruire l’interfaccia e il calcolo geometrico, ma non dichiarare operativo il riconoscimento automatico.
 
-3. **Pacchetto distribuibile**
-   - Comprimere la cartella `extension/` in `public/mind-companion-extension.zip`
-   - Aggiungere nella UI del sito un pulsante di download sicuro (fetch + blob)
-   - Aggiornare `docs/MIND-COMPANION-INSTALLAZIONI.md` con le istruzioni di installazione passo-passo
+## 2. Costruire il percorso nella piattaforma
+- Caricamento di immagine o PDF, età e sesso; selezione della pagina se il PDF contiene più pagine.
+- Visualizzazione della radiografia con punti, etichette e linee; spostamento e aggiunta dei punti, zoom e ricalcolo immediato.
+- Calcolo deterministico di angolo sellare, ANB, articolare, goniaco e rapporto NS/GoMe; Wits con piano occlusale definito e calibrazione attendibile.
+- Se manca la scala, richiedere due riferimenti e la distanza reale prima di produrre misure in millimetri. Non inventare distanze o punti mancanti.
+- Quando il modello sarà disponibile, collegare il riconoscimento automatico alla stessa interfaccia di verifica. Evidenziare punti incerti ed errori di analisi.
 
-## Sicurezza
-- Il token viene salvato in `chrome.storage.local`, mai nel codice sorgente pubblicato
-- Nessuna chiave API o credenziale professionista richiesta lato utente: nome/cognome/email sono associati al token nel database
-- Il PDF viene inviato solo all'endpoint autorizzato
+## 3. Collegare i due risultati
+- Conferma esplicita del professionista prima di inviare le misure a MILA.
+- Usare il flusso cefalometrico e i documenti AMCOP già esistenti, senza modificare le regole terapeutiche.
+- Due schede: «Tracciato cefalometrico», scaricabile come PDF e immagine, e «Consulenza MILA», scaricabile come Word/PDF.
+- Se cambiano punti, calibrazione o dati dopo la generazione, marcare la consulenza come da aggiornare.
 
-## Nota sulle due versioni
-- **MIND Companion (nuovo)**: token diverso per ogni PC/installazione, endpoint `mind-companion-consultation`
-- **MIND Extension (vecchio)**: unico token fisso, endpoint `mind-mila-consultation`
+## 4. Riapertura e tutela dei dati
+Il documento richiede uno storico completo, mentre il vincolo precedente richiede che i dati paziente non restino sui server. Per questa fase, conservare e riaprire l’analisi sul dispositivo del professionista, con esportazione/importazione di un fascicolo contenente immagine, punti, calibrazione, misure e risultati. Nessun nuovo archivio clinico remoto o sincronizzazione MIND in questa fase. Non promettere anonimizzazione o assenza di conservazione nei flussi MILA già esistenti senza verifica.
 
-Questo piano realizza la versione nuova (per-PC). Se serve anche la vecchia, si può duplicare la cartella con un token hardcoded.
+## Dettagli tecnici
+- Moduli separati per localizzazione dei punti, geometria, editor del tracciato ed esportazione.
+- Inferenza del modello dedicato nel browser se formato e prestazioni lo permettono; altrimenti valutare un servizio di inferenza protetto e le relative condizioni di trattamento prima dell’invio di radiografie.
+- Test numerici su coordinate note per angoli, rapporto, calibrazione e Wits; gestione esplicita di punti coincidenti, mancanti o piano occlusale indefinito.
+- Verifica del caricamento, modifica, ricalcolo, conferma, download e riapertura su computer e telefono.
+
+## Prima consegna
+Interfaccia del tracciato e calcoli verificabili, pronta per collegare il nostro modello. Il riconoscimento automatico diventa utilizzabile soltanto dopo addestramento e valutazione: niente punti simulati o generati da un LLM presentati come riconoscimento reale.
