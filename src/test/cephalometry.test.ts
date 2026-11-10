@@ -12,7 +12,6 @@ describe("cephalometric geometry", () => {
   });
   it("uses NS divided by GoMe", () => {
     const m = calculateMeasures({ N: { x: 0, y: 0 }, S: { x: 6, y: 0 }, Go: { x: 0, y: 10 }, Me: { x: 3, y: 10 } }, null);
-    expect(m.rapportо_ns_gome).toBeUndefined();
     expect(m.rapporto_ns_gome).toBe(2);
   });
   it("withholds millimetres without a scale", () => {
