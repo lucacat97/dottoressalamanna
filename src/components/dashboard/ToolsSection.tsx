@@ -25,8 +25,8 @@ interface ToolCard {
 const tools: ToolCard[] = [
   {
     id: "checkup",
-    title: "Check Up Ortodontico Posturale",
-    subtitle: "Questionario clinico-posturale",
+    title: "Cartella digitale compilabile",
+    subtitle: "Check Up Ortodontico Posturale",
     description: "Compila il check up del paziente sezione per sezione, salva in automatico le bozze, esporta in PDF Q/R o invia direttamente al Metodo MILA per la consulenza.",
     icon: ClipboardList,
     gradient: "from-amber-500/80 via-orange-500/60 to-rose-500/40",
@@ -89,7 +89,7 @@ const ToolsSection = () => {
           </div>
         )}
 
-        {activeTool === "mila" && <MilaMethodTool />}
+        {activeTool === "mila" && <MilaMethodTool onOpenCheckup={() => setActiveTool("checkup")} />}
         {activeTool === "mtc" && <MTCHub />}
         {activeTool === "checkup" && <CheckupTool onSendToMila={() => setActiveTool("mila")} />}
       </div>

@@ -161,7 +161,7 @@ const initialOrtho: OrthoForm = {
 type ClinicalMode = "pdf" | "manual";
 type CefMode = "pdf" | "manual";
 
-const MilaMethodTool = () => {
+const MilaMethodTool = ({ onOpenCheckup }: { onOpenCheckup?: () => void }) => {
   const [accepted, setAccepted] = useState(false);
 
   // Clinical (cartella) state
@@ -503,6 +503,13 @@ const MilaMethodTool = () => {
             <ClipboardList size={18} className="text-petrolio" />
             <h3 className="font-display text-base font-semibold text-foreground">Cartella clinica / posturale</h3>
           </div>
+
+          {onOpenCheckup && (
+            <Button variant="outline" onClick={onOpenCheckup} className="w-full gap-2 whitespace-normal h-auto min-h-10 py-2">
+              <ClipboardList size={16} className="shrink-0" />
+              Compila cartella digitale
+            </Button>
+          )}
 
           <div className="flex gap-2">
             <button
