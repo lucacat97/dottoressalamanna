@@ -92,4 +92,14 @@ describe("Gonion costruito", () => {
     expect(G).not.toBeNull();
     expect(Math.hypot(G!.x - 100, G!.y - 340)).toBeLessThan(6);
   });
+  it("non si ferma su un bordo interno (es. ombra faringea) e corregge un Go del modello spostato in avanti", () => {
+    const w = 500, h = 500, gray = new Float32Array(w * h).fill(20);
+    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+      if ((x >= 100 && x <= 140 && y >= 50 && y <= 340) || (y >= 300 && y <= 340 && x >= 100 && x <= 400)) gray[y * w + x] = 120;
+      if (x >= 150 && x <= 400 && y >= 150 && y < 300) gray[y * w + x] = 255; // osso molto chiaro più all'interno
+    }
+    const G = constructGonion(gray, w, h, { x: 100, y: 60 }, { x: 112, y: 250 }, { x: 400, y: 340 });
+    expect(G).not.toBeNull();
+    expect(Math.hypot(G!.x - 100, G!.y - 340)).toBeLessThan(8);
+  });
 });
