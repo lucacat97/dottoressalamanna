@@ -27,8 +27,8 @@ export function downloadBlob(blob: Blob, filename: string) {
   setTimeout(() => URL.revokeObjectURL(url), 30000);
 }
 
-/** No generic vision/LLM fallback: connect only a clinically evaluated dedicated model. */
-export const LANDMARK_MODEL_STATUS = "not_trained" as const;
+/** Dedicated public HRNet model (CEPHA29), run locally; points always verified by the professional. */
+export const LANDMARK_MODEL_STATUS = "public_model_unvalidated" as const;
 
 export async function readMilaStream(body: ReadableStream<Uint8Array>) {
   const reader = body.getReader(), decoder = new TextDecoder();
