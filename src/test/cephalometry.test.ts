@@ -35,3 +35,35 @@ describe("cephalometric geometry", () => {
     expect(analysisSchema.safeParse({ version: 1, image: "https://external/image", width: 100, height: 100, points: {}, calibration: null, age: "9", sex: "F", report: "", reportSignature: "" }).success).toBe(false);
   });
 });
+import { calculateJarabak } from "@/lib/cephalometry/geometry";
+import { decodeHeatmaps, toAnalysisPoints, CHANNELS } from "@/lib/cephalometry/landmark-model";
+
+describe("Jarabak analysis", () => {
+  const p = { S: { x: 0, y: 0 }, N: { x: 10, y: 0 }, Ar: { x: 0, y: 5 }, Go: { x: 0, y: 10 }, Me: { x: 10, y: 15 } };
+  it("sums saddle, articular and gonial angles", () => {
+    const j = calculateJarabak(p, null);
+    expect(j.somma_angoli).toBeCloseTo(90 + 180 + (180 - Math.atan(2) * 180 / Math.PI), 6);
+  });
+  it("expresses S-Go / N-Me as a percentage", () => {
+    expect(calculateJarabak(p, null).rapporto_altezze).toBeCloseTo(10 / 15 * 100, 6);
+  });
+  it("gives millimetres only with a calibrated scale", () => {
+    expect(calculateJarabak(p, null).altezza_ramo).toBeNull();
+    expect(calculateJarabak(p, 0.5).altezza_ramo).toBeCloseTo(2.5, 6);
+  });
+});
+
+describe("dedicated landmark model decoding", () => {
+  it("maps heatmap peaks to original pixels (stride 4 on a 768 input)", () => {
+    const h = 192, w = 192, data = new Float32Array(CHANNELS.length * h * w);
+    CHANNELS.forEach((_, c) => { data[c * h * w + 96 * w + 48] = 1; });
+    const pts = toAnalysisPoints(decodeHeatmaps(data, CHANNELS.length, h, w), 1536, 768);
+    expect(pts.S).toEqual({ x: 48 * 4 * 2, y: 96 * 4 });
+  });
+  it("builds the occlusal plane from molar and incisor midpoints", () => {
+    const cells = CHANNELS.map(name => ({ UMT: { x: 10, y: 10 }, LMT: { x: 10, y: 20 }, UIT: { x: 50, y: 10 }, LIT: { x: 50, y: 14 } } as Record<string, { x: number; y: number }>)[name] ?? { x: 0, y: 0 });
+    const pts = toAnalysisPoints(cells, 768, 768);
+    expect(pts.OP1).toEqual({ x: 40, y: 60 });
+    expect(pts.OP2).toEqual({ x: 200, y: 48 });
+  });
+});

@@ -27,7 +27,7 @@ const tools: ToolCard[] = [
   {
     id: "cephalometry",
     title: "Cefalometria Automatica",
-    subtitle: "Tracciato sperimentale · modello in preparazione",
+    subtitle: "Riconoscimento automatico dei punti · analisi di Jarabak",
     description: "Teleradiografia, punti anatomici e misure geometriche verificate dal professionista.",
     icon: Crosshair,
     gradient: "from-primary via-accent to-primary",

@@ -7,7 +7,7 @@ export const POINT_LABELS: Record<Landmark, string> = {
   A: "Punto A", B: "Punto B", OP1: "Piano occlusale · posteriore", OP2: "Piano occlusale · anteriore",
   C1: "Scala · primo riferimento", C2: "Scala · secondo riferimento",
 };
-export const SEGMENTS: [Landmark, Landmark][] = [["N", "S"], ["S", "Ar"], ["Ar", "Go"], ["Go", "Me"], ["N", "A"], ["N", "B"], ["OP1", "OP2"], ["C1", "C2"]];
+export const SEGMENTS: [Landmark, Landmark][] = [["N", "S"], ["S", "Ar"], ["Ar", "Go"], ["Go", "Me"], ["S", "Go"], ["N", "Me"], ["N", "Go"], ["N", "A"], ["N", "B"], ["OP1", "OP2"], ["C1", "C2"]];
 export function distance(a: Point, b: Point) { return Math.hypot(a.x - b.x, a.y - b.y); }
 export function angle(a?: Point, vertex?: Point, b?: Point): number | null {
   if (!a || !vertex || !b) return null;
@@ -47,4 +47,34 @@ export function formattedMeasure(key: string, value: number | null) {
 }
 export function analysisSignature(points: Points, calibration: number | null, age: string, sex: string) {
   return JSON.stringify([LANDMARKS.map(k => points[k] ?? null), calibration, age, sex]);
+}
+/** Analisi di Jarabak: calcolo geometrico deterministico sui punti confermati. */
+export function calculateJarabak(p: Points, mmPerPx: number | null) {
+  const len = (a?: Point, b?: Point) => a && b ? distance(a, b) : null;
+  const mm = (v: number | null) => v !== null && mmPerPx ? v * mmPerPx : null;
+  const ratio = (a: number | null, b: number | null) => a !== null && b !== null && b > 1e-8 ? a / b * 100 : null;
+  const sellare = angle(p.N, p.S, p.Ar), articolare = angle(p.S, p.Ar, p.Go), goniaco = angle(p.Ar, p.Go, p.Me);
+  const sGo = len(p.S, p.Go), nMe = len(p.N, p.Me), sAr = len(p.S, p.Ar), arGo = len(p.Ar, p.Go);
+  return {
+    somma_angoli: sellare !== null && articolare !== null && goniaco !== null ? sellare + articolare + goniaco : null,
+    goniaco_superiore: angle(p.Ar, p.Go, p.N), goniaco_inferiore: angle(p.N, p.Go, p.Me),
+    rapporto_altezze: ratio(sGo, nMe), rapporto_sar_argo: ratio(sAr, arGo),
+    base_cranica_anteriore: mm(len(p.S, p.N)), base_cranica_posteriore: mm(sAr), altezza_ramo: mm(arGo),
+    corpo_mandibolare: mm(len(p.Go, p.Me)), altezza_posteriore: mm(sGo), altezza_anteriore: mm(nMe),
+  };
+}
+export type JarabakMeasures = ReturnType<typeof calculateJarabak>;
+export const JARABAK_LABELS: Record<keyof JarabakMeasures, string> = {
+  somma_angoli: "Somma angoli (N–S–Ar + S–Ar–Go + Ar–Go–Me)", goniaco_superiore: "Goniaco superiore (Ar–Go–N)",
+  goniaco_inferiore: "Goniaco inferiore (N–Go–Me)", rapporto_altezze: "Rapporto S–Go / N–Me",
+  rapporto_sar_argo: "Rapporto S–Ar / Ar–Go", base_cranica_anteriore: "Base cranica anteriore (S–N)",
+  base_cranica_posteriore: "Base cranica posteriore (S–Ar)", altezza_ramo: "Altezza del ramo (Ar–Go)",
+  corpo_mandibolare: "Corpo mandibolare (Go–Me)", altezza_posteriore: "Altezza facciale posteriore (S–Go)",
+  altezza_anteriore: "Altezza facciale anteriore (N–Me)",
+};
+export function formattedJarabak(key: keyof JarabakMeasures, value: number | null) {
+  if (value === null) return key.startsWith("rapporto") || key.includes("angol") || key.includes("goniaco") ? "—" : "— (serve scala)";
+  if (key.startsWith("rapporto")) return `${value.toFixed(1)}%`;
+  if (key === "somma_angoli" || key.startsWith("goniaco")) return `${value.toFixed(2)}°`;
+  return `${value.toFixed(1)} mm`;
 }
