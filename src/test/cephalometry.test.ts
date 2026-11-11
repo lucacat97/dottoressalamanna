@@ -42,7 +42,7 @@ describe("Jarabak analysis", () => {
   const p = { S: { x: 0, y: 0 }, N: { x: 10, y: 0 }, Ar: { x: 0, y: 5 }, Go: { x: 0, y: 10 }, Me: { x: 10, y: 15 } };
   it("sums saddle, articular and gonial angles", () => {
     const j = calculateJarabak(p, null);
-    expect(j.somma_angoli).toBeCloseTo(90 + 180 + 135, 6);
+    expect(j.somma_angoli).toBeCloseTo(90 + 180 + (180 - Math.atan(2) * 180 / Math.PI), 6);
   });
   it("expresses S-Go / N-Me as a percentage", () => {
     expect(calculateJarabak(p, null).rapporto_altezze).toBeCloseTo(10 / 15 * 100, 6);
