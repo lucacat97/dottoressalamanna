@@ -1,6 +1,6 @@
 import { INPUT_SIZE, HEATMAP_STRIDE, CHANNELS, toAnalysisPoints } from "./landmark-model";
 import type { Points } from "./geometry";
-import { constructGonion } from "./gonion";
+import { constructGonion, grayBlur } from "./gonion";
 
 let worker: Worker | null = null;
 
@@ -58,21 +58,23 @@ export async function detectLandmarks(image: string, width: number, height: numb
   const combined = combineCells(runs);
   const points = toAnalysisPoints(combined, width, height);
   // Go: vertice dell'angolo mandibolare costruito con le tangenti (il modello tende a metterlo più in alto sul ramo)
+  let goBuilt = false;
   try {
     const k = Math.min(1, 1024 / Math.max(iw, ih)), gw = Math.round(iw * k), gh = Math.round(ih * k);
     const g = document.createElement("canvas"); g.width = gw; g.height = gh;
     const gc = g.getContext("2d", { willReadFrequently: true });
     if (gc && points.Ar && points.Go && points.Me) {
-      gc.filter = "grayscale(1) blur(2px)"; gc.drawImage(img, 0, 0, gw, gh);
-      const d = gc.getImageData(0, 0, gw, gh).data, gray = new Float32Array(gw * gh);
-      for (let i = 0; i < gray.length; i++) gray[i] = d[i * 4];
+      gc.drawImage(img, 0, 0, gw, gh);
+      const gray = grayBlur(gc.getImageData(0, 0, gw, gh).data, gw, gh);
       const sx = gw / width, sy = gh / height, to = (p: { x: number; y: number }) => ({ x: p.x * sx, y: p.y * sy });
       const G = constructGonion(gray, gw, gh, to(points.Ar), to(points.Go), to(points.Me));
-      if (G) points.Go = { x: G.x / sx, y: G.y / sy };
+      if (G) { points.Go = { x: G.x / sx, y: G.y / sy }; goBuilt = true; }
     }
   } catch { /* resta il Go del modello */ }
   // soglia: 1,5 celle (~0,8% del lato) di disaccordo tra le letture
   const names: Record<string, string> = { S: "S", N: "N", Ar: "Ar", Go: "Go", Me: "Me", A: "A", B: "B" };
   const uncertain = Object.keys(names).filter(k => combined[CHANNELS.indexOf(k)].spread > 1.5);
+  // se il vertice non si è potuto costruire, Go va controllato a mano
+  if (!goBuilt && !uncertain.includes("Go")) uncertain.push("Go");
   return { points, uncertain };
 }
