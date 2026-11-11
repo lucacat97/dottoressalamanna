@@ -80,3 +80,16 @@ describe("combinazione letture multiple", () => {
     expect(out[0].spread).toBe(0);
   });
 });
+
+import { constructGonion } from "@/lib/cephalometry/gonion";
+describe("Gonion costruito", () => {
+  it("scende dal Go alto del modello al vertice dell'angolo mandibolare", () => {
+    // mandibola a L chiara: ramo verticale x 100-140, corpo orizzontale y 300-340 fino a x 400; vertice esterno (100,340)
+    const w = 500, h = 500, gray = new Float32Array(w * h).fill(20);
+    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++)
+      if ((x >= 100 && x <= 140 && y >= 50 && y <= 340) || (y >= 300 && y <= 340 && x >= 100 && x <= 400)) gray[y * w + x] = 200;
+    const G = constructGonion(gray, w, h, { x: 100, y: 60 }, { x: 100, y: 240 }, { x: 400, y: 340 });
+    expect(G).not.toBeNull();
+    expect(Math.hypot(G!.x - 100, G!.y - 340)).toBeLessThan(6);
+  });
+});
