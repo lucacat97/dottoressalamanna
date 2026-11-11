@@ -18,18 +18,19 @@ export function toTensor(rgba: Uint8ClampedArray, size = INPUT_SIZE) {
   return out;
 }
 
-/** Argmax per canale con raffinamento sub-pixel di ¼ di cella verso il vicino più alto. */
+/** Argmax per canale, poi baricentro pesato (soft-argmax) in una finestra 5×5 attorno al picco per precisione sub-pixel. */
 export function decodeHeatmaps(data: ArrayLike<number>, channels: number, h: number, w: number) {
   const result: { x: number; y: number; score: number }[] = [];
   for (let c = 0; c < channels; c++) {
     const base = c * h * w; let best = 0, score = -Infinity;
     for (let i = 0; i < h * w; i++) if (data[base + i] > score) { score = data[base + i]; best = i; }
-    let x = best % w, y = Math.floor(best / w);
-    const at = (xx: number, yy: number) => data[base + yy * w + xx];
-    const dx = x > 0 && x < w - 1 ? Math.sign(at(x + 1, y) - at(x - 1, y)) * 0.25 : 0;
-    const dy = y > 0 && y < h - 1 ? Math.sign(at(x, y + 1) - at(x, y - 1)) * 0.25 : 0;
-    x += dx; y += dy;
-    result.push({ x, y, score });
+    const bx = best % w, by = Math.floor(best / w);
+    let sw = 0, sx = 0, sy = 0;
+    for (let yy = Math.max(0, by - 2); yy <= Math.min(h - 1, by + 2); yy++)
+      for (let xx = Math.max(0, bx - 2); xx <= Math.min(w - 1, bx + 2); xx++) {
+        const v = Math.max(0, data[base + yy * w + xx]); sw += v; sx += v * xx; sy += v * yy;
+      }
+    result.push(sw > 0 ? { x: sx / sw, y: sy / sw, score } : { x: bx, y: by, score });
   }
   return result;
 }
