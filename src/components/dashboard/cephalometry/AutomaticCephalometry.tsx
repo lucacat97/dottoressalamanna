@@ -139,14 +139,16 @@ export default function AutomaticCephalometry() {
         return data as { points: Record<string, { x: number; y: number }>; distance_mm?: number | null };
       })().catch(() => null);
       const [detected, ruler] = await Promise.all([detectLandmarks(image, size.width, size.height), rulerCall]);
-      const next: Points = { ...points, ...detected };
+      const next: Points = { ...points, ...detected.points };
       if (ruler?.distance_mm && ruler.points.C1 && ruler.points.C2) {
         next.C1 = { x: ruler.points.C1.x * size.width, y: ruler.points.C1.y * size.height };
         next.C2 = { x: ruler.points.C2.x * size.width, y: ruler.points.C2.y * size.height };
         setCalibration(String(ruler.distance_mm));
       } else toast({ title: "Scala non trovata", description: "Nessun righello leggibile: inserisci C1–C2 e la distanza a mano." });
       changed(next);
-      toast({ title: "Punti proposti", description: "Verifica e trascina i punti dove serve prima di confermare." });
+      toast(detected.uncertain.length
+        ? { title: `Controlla con attenzione: ${detected.uncertain.join(", ")}`, description: "Su questi punti le letture del riconoscitore non concordano: verificali sulla radiografia prima di confermare.", variant: "destructive" }
+        : { title: "Punti proposti", description: "Verifica e trascina i punti dove serve prima di confermare." });
     } catch (e) { fail(e); } finally { setBusy(false); }
   };
   const exportImage = async (format: "png" | "pdf") => { setBusy(true); try { await exportTrace(analysis, format); } catch (e) { fail(e); } finally { setBusy(false); } };

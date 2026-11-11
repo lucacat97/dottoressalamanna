@@ -67,3 +67,16 @@ describe("dedicated landmark model decoding", () => {
     expect(pts.OP2).toEqual({ x: 200, y: 48 });
   });
 });
+
+import { combineCells } from "@/lib/cephalometry/landmark-detect";
+describe("combinazione letture multiple", () => {
+  it("usa la mediana e ignora una lettura isolata sbagliata di Go", () => {
+    const base = CHANNELS.map(() => ({ x: 10, y: 10 }));
+    const go = CHANNELS.indexOf("Go");
+    const wrong = base.map((p, i) => (i === go ? { x: 40, y: 40 } : p));
+    const out = combineCells([base, base, wrong]);
+    expect(out[go].x).toBe(10);
+    expect(out[go].spread).toBeGreaterThan(1.5);
+    expect(out[0].spread).toBe(0);
+  });
+});
