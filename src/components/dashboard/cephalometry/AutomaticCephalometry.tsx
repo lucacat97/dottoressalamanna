@@ -10,7 +10,9 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { downloadConsultationDocument } from "@/lib/consultation-download";
-import { LANDMARKS, POINT_LABELS, SEGMENTS, MEASURE_LABELS, formattedMeasure, calculateMeasures, analysisSignature, type Points, type Landmark } from "@/lib/cephalometry/geometry";
+import { LANDMARKS, POINT_LABELS, SEGMENTS, MEASURE_LABELS, JARABAK_LABELS, formattedMeasure, formattedJarabak, calculateMeasures, calculateJarabak, analysisSignature, type Points, type Landmark, type JarabakMeasures } from "@/lib/cephalometry/geometry";
+import { detectLandmarks } from "@/lib/cephalometry/landmark-detect";
+import { MODEL_ATTRIBUTION } from "@/lib/cephalometry/landmark-model";
 import { analysisSchema, downloadBlob, readMilaStream, type Analysis } from "@/lib/cephalometry/analysis";
 import { exportTrace } from "@/lib/cephalometry/export";
 
@@ -35,6 +37,7 @@ export default function AutomaticCephalometry() {
   const drag = useRef<Landmark | null>(null);
   const mm = Number(calibration) > 0 ? Number(calibration) : null;
   const measures = useMemo(() => calculateMeasures(points, mm), [points, mm]);
+  const jarabak = useMemo(() => calculateJarabak(points, measures.mmPerPx), [points, measures.mmPerPx]);
   const signature = analysisSignature(points, mm, age, sex);
   const stale = Boolean(report && reportSignature !== signature);
   const ready = image && Number(age) > 0 && Number(age) <= 120 && Object.keys(MEASURE_LABELS).every(key => measures[key as keyof typeof MEASURE_LABELS] !== null);
@@ -126,33 +129,17 @@ export default function AutomaticCephalometry() {
   const autoDetect = async () => {
     setBusy(true);
     try {
-      const img = new Image(); img.src = image; await img.decode();
-      const scale = Math.min(1, 1600 / Math.max(img.width, img.height));
-      const c = document.createElement("canvas"); c.width = Math.round(img.width * scale); c.height = Math.round(img.height * scale);
-      c.getContext("2d")!.drawImage(img, 0, 0, c.width, c.height);
-      const call = async (body: Record<string, unknown>) => {
-        const { data, error } = await supabase.functions.invoke("cephalometric-landmarks", { body });
-        if (error || data?.error) throw new Error(data?.error ?? error?.message ?? "Riconoscimento non riuscito");
+      const rulerCall = (async () => {
+        const img = new Image(); img.src = image; await img.decode();
+        const scale = Math.min(1, 1600 / Math.max(img.width, img.height));
+        const c = document.createElement("canvas"); c.width = Math.round(img.width * scale); c.height = Math.round(img.height * scale);
+        c.getContext("2d")!.drawImage(img, 0, 0, c.width, c.height);
+        const { data, error } = await supabase.functions.invoke("cephalometric-landmarks", { body: { image: c.toDataURL("image/jpeg", 0.9), mode: "ruler" } });
+        if (error || data?.error) return null;
         return data as { points: Record<string, { x: number; y: number }>; distance_mm?: number | null };
-      };
-      const [data, ruler] = await Promise.all([
-        call({ image: c.toDataURL("image/jpeg", 0.9) }),
-        call({ image: c.toDataURL("image/jpeg", 0.9), mode: "ruler" }).catch(() => null),
-      ]);
-      const next: Points = { ...points };
-      for (const [k, p] of Object.entries(data.points)) next[k as Landmark] = { x: p.x * size.width, y: p.y * size.height };
-      // Secondo passaggio sul Punto A: ritaglio ingrandito attorno alla prima stima.
-      if (next.A) {
-        const half = Math.round(Math.max(size.width, size.height) * 0.09);
-        const x0 = Math.max(0, Math.round(next.A.x - half)), y0 = Math.max(0, Math.round(next.A.y - half));
-        const w = Math.min(size.width - x0, half * 2), h = Math.min(size.height - y0, half * 2);
-        const crop = document.createElement("canvas"); const up = 1024 / Math.max(w, h);
-        crop.width = Math.round(w * up); crop.height = Math.round(h * up);
-        crop.getContext("2d")!.drawImage(img, x0, y0, w, h, 0, 0, crop.width, crop.height);
-        const refined = await call({ image: crop.toDataURL("image/jpeg", 0.92), mode: "refineA" }).catch(() => null);
-        const a = refined?.points?.A;
-        if (a) next.A = { x: x0 + a.x * w, y: y0 + a.y * h };
-      }
+      })().catch(() => null);
+      const [detected, ruler] = await Promise.all([detectLandmarks(image, size.width, size.height), rulerCall]);
+      const next: Points = { ...points, ...detected };
       if (ruler?.distance_mm && ruler.points.C1 && ruler.points.C2) {
         next.C1 = { x: ruler.points.C1.x * size.width, y: ruler.points.C1.y * size.height };
         next.C2 = { x: ruler.points.C2.x * size.width, y: ruler.points.C2.y * size.height };
@@ -167,7 +154,7 @@ export default function AutomaticCephalometry() {
   return <div className="space-y-6">
     <div role="status" className="border-l-4 border-gold bg-muted p-4 flex items-start gap-3">
       <AlertTriangle className="text-gold shrink-0" size={20} />
-      <div><p className="font-semibold text-foreground">Prototipo sperimentale · riconoscimento automatico da verificare</p><p className="text-sm text-muted-foreground">I punti proposti da un modello AI generico possono essere imprecisi di alcuni millimetri: controllali e correggili sempre prima di confermare.</p></div>
+      <div><p className="font-semibold text-foreground">Prototipo sperimentale · riconoscimento automatico da verificare</p><p className="text-sm text-muted-foreground">I punti sono proposti da un modello cefalometrico dedicato che gira sul tuo computer (la radiografia non viene inviata). Errore medio dichiarato circa 1,2 mm: controllali e correggili sempre prima di confermare. Al primo utilizzo il modello (30 MB) viene scaricato una volta.</p><p className="text-xs text-muted-foreground mt-1">{MODEL_ATTRIBUTION}.</p></div>
     </div>
     <div className="flex flex-wrap items-end gap-4">
       <input ref={imageInput} type="file" accept="image/png,image/jpeg,image/webp,application/pdf" className="hidden" onChange={e => void loadFile(e.target.files?.[0])} />
@@ -215,6 +202,7 @@ export default function AutomaticCephalometry() {
             </div>
             <div><Label htmlFor="calibration-mm">Distanza C1–C2 (mm)</Label><Input id="calibration-mm" type="number" min="0.01" max="10000" step="0.1" value={calibration} disabled={busy} onChange={e => { setCalibration(e.target.value); setConfirmed(false); }} className="text-base" /><p className="text-xs text-muted-foreground mt-2">{measures.mmPerPx ? `Scala: ${measures.mmPerPx.toFixed(4)} mm/pixel` : "Scala non calibrata · Wits non disponibile"}</p></div>
             <div className="border-t border-border pt-3"><h3 className="font-display font-semibold mb-2">Misure del tracciato</h3><dl className="space-y-3">{Object.entries(MEASURE_LABELS).map(([key, label]) => <div key={key} className="flex justify-between gap-3 text-sm"><dt>{label}</dt><dd className="font-semibold tabular-nums whitespace-nowrap">{formattedMeasure(key, measures[key as keyof typeof MEASURE_LABELS])}</dd></div>)}</dl></div>
+            <div className="border-t border-border pt-3"><h3 className="font-display font-semibold mb-2">Analisi di Jarabak</h3><dl className="space-y-3">{(Object.keys(JARABAK_LABELS) as (keyof JarabakMeasures)[]).map(key => <div key={key} className="flex justify-between gap-3 text-sm"><dt>{JARABAK_LABELS[key]}</dt><dd className="font-semibold tabular-nums whitespace-nowrap">{formattedJarabak(key, jarabak[key])}</dd></div>)}</dl></div>
           </aside>
         </div>
         <div className="flex gap-3 flex-wrap border-t border-border pt-4">
