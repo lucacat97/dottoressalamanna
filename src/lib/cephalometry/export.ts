@@ -1,5 +1,5 @@
 import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
-import { SEGMENTS, MEASURE_LABELS, calculateMeasures, formattedMeasure, type Points } from "./geometry";
+import { SEGMENTS, MEASURE_LABELS, JARABAK_LABELS, calculateMeasures, calculateJarabak, formattedMeasure, formattedJarabak, type Points, type JarabakMeasures } from "./geometry";
 import { downloadBlob, type Analysis } from "./analysis";
 
 export async function traceCanvas(image: string, points: Points) {
@@ -30,15 +30,21 @@ export async function exportTrace(analysis: Analysis, format: "png" | "pdf") {
   const doc = await PDFDocument.create(), font = await doc.embedFont(StandardFonts.Helvetica);
   const page = doc.addPage([595, 842]);
   page.drawText("MILA - Tracciato cefalometrico", { x: 30, y: 810, size: 18, font });
-  page.drawText(`Eta: ${analysis.age || "non indicata"} | Sesso: ${analysis.sex} | Tracciato manuale sperimentale`, { x: 30, y: 788, size: 10, font });
+  page.drawText(`Eta: ${analysis.age || "non indicata"} | Sesso: ${analysis.sex} | Tracciato sperimentale verificato dal professionista`, { x: 30, y: 788, size: 10, font });
   const img = await doc.embedPng(await blob.arrayBuffer());
   const factor = Math.min(535 / img.width, 540 / img.height);
   page.drawImage(img, { x: 30, y: 235, width: img.width * factor, height: img.height * factor });
   const measures = calculateMeasures(analysis.points, analysis.calibration);
-  let y = 210;
+  let y = 212;
   for (const [key, label] of Object.entries(MEASURE_LABELS)) {
     const value = measures[key as keyof typeof MEASURE_LABELS];
-    page.drawText(`${label.replace(/[−–]/g, "-")} : ${formattedMeasure(key, value).replace("—", "non disponibile")}`, { x: 30, y, size: 11, font }); y -= 20;
+    page.drawText(`${label.replace(/[−–]/g, "-")} : ${formattedMeasure(key, value).replace("—", "non disponibile")}`, { x: 30, y, size: 9, font }); y -= 16;
+  }
+  const jarabak = calculateJarabak(analysis.points, measures.mmPerPx);
+  y = 212;
+  page.drawText("Analisi di Jarabak", { x: 300, y, size: 10, font }); y -= 15;
+  for (const key of Object.keys(JARABAK_LABELS) as (keyof JarabakMeasures)[]) {
+    page.drawText(`${JARABAK_LABELS[key].replace(/[−–]/g, "-")} : ${formattedJarabak(key, jarabak[key]).replace(/—/g, "n.d.")}`, { x: 300, y, size: 8, font }); y -= 13;
   }
   page.drawText("Verifica del professionista necessaria. Non costituisce diagnosi medica.", { x: 30, y: 45, size: 9, font, color: rgb(0.3, 0.3, 0.3) });
   const bytes = await doc.save({ useObjectStreams: false });
