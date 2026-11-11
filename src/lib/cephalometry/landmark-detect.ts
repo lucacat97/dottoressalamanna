@@ -1,6 +1,6 @@
 import { INPUT_SIZE, HEATMAP_STRIDE, CHANNELS, toAnalysisPoints } from "./landmark-model";
 import type { Points } from "./geometry";
-import { constructGonion } from "./gonion";
+import { constructGonion, grayBlur } from "./gonion";
 
 let worker: Worker | null = null;
 
@@ -63,9 +63,8 @@ export async function detectLandmarks(image: string, width: number, height: numb
     const g = document.createElement("canvas"); g.width = gw; g.height = gh;
     const gc = g.getContext("2d", { willReadFrequently: true });
     if (gc && points.Ar && points.Go && points.Me) {
-      gc.filter = "grayscale(1) blur(2px)"; gc.drawImage(img, 0, 0, gw, gh);
-      const d = gc.getImageData(0, 0, gw, gh).data, gray = new Float32Array(gw * gh);
-      for (let i = 0; i < gray.length; i++) gray[i] = d[i * 4];
+      gc.drawImage(img, 0, 0, gw, gh);
+      const gray = grayBlur(gc.getImageData(0, 0, gw, gh).data, gw, gh);
       const sx = gw / width, sy = gh / height, to = (p: { x: number; y: number }) => ({ x: p.x * sx, y: p.y * sy });
       const G = constructGonion(gray, gw, gh, to(points.Ar), to(points.Go), to(points.Me));
       if (G) points.Go = { x: G.x / sx, y: G.y / sy };
