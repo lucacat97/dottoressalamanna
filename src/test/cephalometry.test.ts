@@ -81,27 +81,24 @@ describe("combinazione letture multiple", () => {
   });
 });
 
-import { constructGonion, grayBlur } from "@/lib/cephalometry/gonion";
-/** come nelle radiografie vere: bordi ossei sfumati */
-const soften = (g: Float32Array, w: number, h: number) => { const rgba = new Float32Array(w * h * 4); g.forEach((v, i) => { rgba[i * 4] = rgba[i * 4 + 1] = rgba[i * 4 + 2] = v; }); return grayBlur(rgba, w, h, 4); };
-describe("Gonion costruito", () => {
-  it("scende dal Go alto del modello al vertice dell'angolo mandibolare", () => {
-    // mandibola a L chiara: ramo verticale x 100-140, corpo orizzontale y 300-340 fino a x 400; vertice esterno (100,340)
-    const w = 500, h = 500, gray = new Float32Array(w * h).fill(20);
-    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++)
-      if ((x >= 100 && x <= 140 && y >= 50 && y <= 340) || (y >= 300 && y <= 340 && x >= 100 && x <= 400)) gray[y * w + x] = 200;
-    const G = constructGonion(soften(gray, w, h), w, h, { x: 100, y: 60 }, { x: 100, y: 240 }, { x: 400, y: 340 });
-    expect(G).not.toBeNull();
-    expect(Math.hypot(G!.x - 100, G!.y - 340)).toBeLessThan(6);
+import { selectGonion, isPlausibleGonion } from "@/lib/cephalometry/landmark-detect";
+describe("scelta del Gonion tra più letture", () => {
+  // Ar in alto a sinistra, Me in basso a destra, N in alto a destra (profilo rivolto a destra)
+  const Ar = { x: 540, y: 520 }, Me = { x: 980, y: 940 }, N = { x: 1015, y: 300 };
+  it("accetta un Go sull'angolo mandibolare", () => {
+    expect(isPlausibleGonion({ x: 598, y: 760 }, Ar, Me, N)).toBe(true);
   });
-  it("non si ferma su un bordo interno (es. ombra faringea) e corregge un Go del modello spostato in avanti", () => {
-    const w = 500, h = 500, gray = new Float32Array(w * h).fill(20);
-    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
-      if ((x >= 100 && x <= 140 && y >= 50 && y <= 340) || (y >= 300 && y <= 340 && x >= 100 && x <= 400)) gray[y * w + x] = 120;
-      if (x >= 150 && x <= 400 && y >= 150 && y < 300) gray[y * w + x] = 255; // osso molto chiaro più all'interno
-    }
-    const G = constructGonion(soften(gray, w, h), w, h, { x: 100, y: 60 }, { x: 112, y: 250 }, { x: 400, y: 340 });
-    expect(G).not.toBeNull();
-    expect(Math.hypot(G!.x - 100, G!.y - 340)).toBeLessThan(8);
+  it("scarta un Go finito sulle vertebre, vicino all'orecchio o sui denti", () => {
+    expect(isPlausibleGonion({ x: 464, y: 747 }, Ar, Me, N)).toBe(false);
+    expect(isPlausibleGonion({ x: 561, y: 488 }, Ar, Me, N)).toBe(false);
+    expect(isPlausibleGonion({ x: 894, y: 717 }, Ar, Me, N)).toBe(false);
+  });
+  it("usa la mediana delle sole letture plausibili", () => {
+    const sel = selectGonion([{ x: 561, y: 488 }, { x: 600, y: 750 }, { x: 590, y: 760 }, { x: 894, y: 717 }, { x: 596, y: 744 }], Ar, Me, N);
+    expect(sel?.plausible).toBe(3);
+    expect(sel?.go).toEqual({ x: 596, y: 750 });
+  });
+  it("non propone Go se nessuna lettura è plausibile", () => {
+    expect(selectGonion([{ x: 464, y: 747 }], Ar, Me, N)).toBeNull();
   });
 });
