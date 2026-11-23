@@ -65,19 +65,14 @@ const ConsultationRequestModal = ({
   const uploadFiles = async (): Promise<{ name: string; url: string }[]> => {
     if (files.length === 0) return [];
     const uploaded: { name: string; url: string }[] = [];
-    const folder = `web/${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
     for (const file of files) {
-      const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
-      const path = `${folder}/${safeName}`;
-      const { error: upErr } = await supabase.storage
-        .from("consultation-attachments")
-        .upload(path, file, { upsert: false, contentType: file.type });
-      if (upErr) throw new Error(`Upload fallito per ${file.name}: ${upErr.message}`);
+      const fd = new FormData();
+      fd.append("file", file);
       const { data: signed, error: sErr } = await supabase.functions.invoke(
         "sign-web-consultation-attachment",
-        { body: { path } },
+        { body: fd },
       );
-      if (sErr || !signed?.signedUrl) throw new Error(`URL fallito per ${file.name}`);
+      if (sErr || !signed?.signedUrl) throw new Error(`Upload fallito per ${file.name}`);
       uploaded.push({ name: file.name, url: signed.signedUrl });
     }
     return uploaded;
