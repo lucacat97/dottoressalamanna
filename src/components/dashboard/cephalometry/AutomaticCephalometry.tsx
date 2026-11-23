@@ -130,6 +130,8 @@ export default function AutomaticCephalometry() {
     setBusy(true);
     try {
       const rulerCall = (async () => {
+        const { data: sess } = await supabase.auth.getSession();
+        if (!sess.session) return null;
         const img = new Image(); img.src = image; await img.decode();
         const scale = Math.min(1, 1600 / Math.max(img.width, img.height));
         const c = document.createElement("canvas"); c.width = Math.round(img.width * scale); c.height = Math.round(img.height * scale);
