@@ -261,6 +261,24 @@ serve(async (req) => {
 
   const supabaseAdmin = getServiceClient();
 
+  // ── Anti-flood: limite per indirizzo di rete prima di qualsiasi lavoro costoso ──
+  const clientIp = (req.headers.get("cf-connecting-ip") || req.headers.get("x-forwarded-for")?.split(",")[0] || "unknown").trim();
+  const ipHashBuf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode("mila-rl:" + clientIp));
+  const ipHash = Array.from(new Uint8Array(ipHashBuf)).map(x => x.toString(16).padStart(2, "0")).join("");
+  const contentLength = Number(req.headers.get("content-length") || "0");
+  if (contentLength > 25 * 1024 * 1024) {
+    return new Response(JSON.stringify({ error: "Richiesta troppo grande (max 25 MB)." }), {
+      status: 413, headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+  const { data: ipAllowed, error: ipErr } = await supabaseAdmin.rpc("api_rate_check_ip", { _ip_hash: ipHash });
+  if (ipErr) console.error("[external-api] rate check error:", ipErr);
+  if (ipAllowed === false || ipErr) {
+    return new Response(JSON.stringify({ error: "Troppe richieste. Riprova tra qualche minuto." }), {
+      status: 429, headers: { ...corsHeaders, "Content-Type": "application/json", "Retry-After": "600" },
+    });
+  }
+
   // ── Parse body first: l'autenticazione avviene sull'email del professionista ──
   // Accetta sia JSON sia multipart/form-data (upload diretto del PDF dal browser).
   let body: Record<string, unknown>;
@@ -436,6 +454,19 @@ serve(async (req) => {
         status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
       retrievalInput = parsed.data;
+    }
+
+    // ── Limite rigido: massimo 5 cefalometrie al giorno per email via API ──
+    if (tool === "orthodontic") {
+      const { data: dayOk, error: dayErr } = await supabaseAdmin.rpc("api_rate_reserve_daily", {
+        _ip_hash: ipHash, _email: profEmailRaw, _tool: tool, _limit: 5,
+      });
+      if (dayErr) console.error("[external-api] daily limit error:", dayErr);
+      if (dayOk !== true) {
+        return new Response(JSON.stringify({ error: "Limite giornaliero raggiunto: massimo 5 cefalometrie al giorno per email. Riprova domani." }), {
+          status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
     }
 
     // ── Se l'account registrato esiste, il credito è condiviso con il sito ──

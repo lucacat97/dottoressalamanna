@@ -116,6 +116,33 @@ export type Database = {
         }
         Relationships: []
       }
+      api_rate_events: {
+        Row: {
+          created_at: string
+          email: string | null
+          id: string
+          ip_hash: string
+          kind: string
+          tool: string | null
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          ip_hash: string
+          kind: string
+          tool?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          ip_hash?: string
+          kind?: string
+          tool?: string | null
+        }
+        Relationships: []
+      }
       api_usage_log: {
         Row: {
           api_key_id: string
@@ -1263,6 +1290,16 @@ export type Database = {
           _plan: Database["public"]["Enums"]["subscription_plan"]
         }
         Returns: string
+      }
+      api_rate_check_ip: { Args: { _ip_hash: string }; Returns: boolean }
+      api_rate_reserve_daily: {
+        Args: {
+          _email: string
+          _ip_hash: string
+          _limit: number
+          _tool: string
+        }
+        Returns: boolean
       }
       consume_ai_consultation: { Args: { _user_id: string }; Returns: Json }
       delete_email: {
