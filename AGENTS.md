@@ -1,5 +1,7 @@
 # Architecture rules
 
+- Automatic cephalometry visibility and ruler requests require `can_use_automatic_cephalometry()`, backed by an RLS-protected email allowlist; fail closed without implicit admin or plan bypasses to keep access explicitly assigned.
+
 - Cephalometric landmark proposal runs in the browser with the public CC BY 4.0 HRNet CEPHA29 ONNX model (`src/lib/cephalometry/landmark-*`, Web Worker, pinned Hugging Face revision, attribution shown in UI); the `cephalometric-landmarks` edge function is used only for the ruler scale. Radiographs are letterboxed to a square (never stretched) and read at several whole-image and face-centred crops; Go, the model's least stable channel, is the median of only anatomically plausible readings (`selectGonion`) because a geometric vertex reconstruction tested worse than clinician marks. Deterministic geometry (including Jarabak) stays in `src/lib/cephalometry/geometry.ts`, and proposed points are always professional-verified before measures are confirmed.
 - Automatic cephalometry uses device-exported analysis files, not a new remote clinical archive; only confirmed numerical measurements are sent to the existing MILA function and any input change invalidates its report.
 

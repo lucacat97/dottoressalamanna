@@ -15,8 +15,14 @@ import { detectLandmarks } from "@/lib/cephalometry/landmark-detect";
 import { MODEL_ATTRIBUTION } from "@/lib/cephalometry/landmark-model";
 import { analysisSchema, downloadBlob, readMilaStream, type Analysis } from "@/lib/cephalometry/analysis";
 import { exportTrace } from "@/lib/cephalometry/export";
+import { useAutomaticCephalometryAccess } from "@/hooks/useAutomaticCephalometryAccess";
 
 export default function AutomaticCephalometry() {
+  const allowed = useAutomaticCephalometryAccess();
+  return allowed ? <AutomaticCephalometryEditor /> : null;
+}
+
+function AutomaticCephalometryEditor() {
   const [image, setImage] = useState("");
   const [size, setSize] = useState({ width: 1, height: 1 });
   const [points, setPoints] = useState<Points>({});

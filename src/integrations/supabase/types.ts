@@ -172,6 +172,24 @@ export type Database = {
           },
         ]
       }
+      automatic_cephalometry_access: {
+        Row: {
+          created_at: string
+          email: string
+          enabled: boolean
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          enabled?: boolean
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          enabled?: boolean
+        }
+        Relationships: []
+      }
       checkup_questionnaires: {
         Row: {
           completed_at: string | null
@@ -1301,6 +1319,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      can_use_automatic_cephalometry: { Args: never; Returns: boolean }
       consume_ai_consultation: { Args: { _user_id: string }; Returns: Json }
       delete_email: {
         Args: { message_id: number; queue_name: string }

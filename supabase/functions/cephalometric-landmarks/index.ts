@@ -35,9 +35,14 @@ Deno.serve(async (req) => {
   try {
     const token = req.headers.get("Authorization")?.replace("Bearer ", "");
     if (!token) return json({ error: "Accesso richiesto" }, 401);
-    const supabase = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_ANON_KEY")!);
+    const supabase = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_ANON_KEY")!, {
+      global: { headers: { Authorization: `Bearer ${token}` } },
+    });
     const { data: { user } } = await supabase.auth.getUser(token);
     if (!user) return json({ error: "Sessione non valida" }, 401);
+
+    const { data: allowed, error: accessError } = await supabase.rpc("can_use_automatic_cephalometry");
+    if (accessError || allowed !== true) return json({ error: "Email non abilitata alla Cefalometria Automatica" }, 403);
 
     const { image, mode = "full" } = await req.json();
     if (!["full", "refineA", "ruler"].includes(mode)) return json({ error: "Modalità non valida" }, 400);

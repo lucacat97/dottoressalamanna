@@ -10,6 +10,7 @@ import CheckupTool from "./checkup/CheckupTool";
 import AutomaticCephalometry from "./cephalometry/AutomaticCephalometry";
 import UsageWidget from "./UsageWidget";
 import milaHero from "@/assets/mila-tool-hero.jpg";
+import { useAutomaticCephalometryAccess } from "@/hooks/useAutomaticCephalometryAccess";
 
 interface ToolCard {
   id: string;
@@ -68,6 +69,11 @@ const tools: ToolCard[] = [
 
 const ToolsSection = () => {
   const [activeTool, setActiveTool] = useState<string | null>(null);
+  const cephalometryAllowed = useAutomaticCephalometryAccess();
+
+  useEffect(() => {
+    if (!cephalometryAllowed && activeTool === "cephalometry") setActiveTool(null);
+  }, [cephalometryAllowed, activeTool]);
 
   const isToolAllowed = (_tool: ToolCard): boolean => true;
 
@@ -102,7 +108,7 @@ const ToolsSection = () => {
 
         {activeTool === "mila" && <MilaMethodTool onOpenCheckup={() => setActiveTool("checkup")} />}
         {activeTool === "mtc" && <MTCHub />}
-        {activeTool === "cephalometry" && <AutomaticCephalometry />}
+        {activeTool === "cephalometry" && cephalometryAllowed && <AutomaticCephalometry />}
         {activeTool === "checkup" && <CheckupTool onSendToMila={() => setActiveTool("mila")} />}
       </div>
     );
@@ -215,7 +221,7 @@ const ToolsSection = () => {
 
             {/* Other tools */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-              {tools.filter((t) => t.id !== "mila").map((tool) => {
+              {tools.filter((t) => t.id !== "mila" && (t.id !== "cephalometry" || cephalometryAllowed)).map((tool) => {
                 const allowed = isToolAllowed(tool);
                 const card = (
                   <button

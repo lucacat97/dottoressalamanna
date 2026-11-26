@@ -1,5 +1,7 @@
 # Roadmap
 
+- [ ] Riservare la Cefalometria Automatica alle sole email abilitate; elenco in attesa dell'utente
+
 - [x] Cefalometria Automatica: editor dei punti, calcoli geometrici, calibrazione e download del tracciato
 - [x] Collegare le misure confermate alla consulenza MILA e conservare fascicoli sul dispositivo
 - [ ] Riconoscitore dedicato: bloccato da radiografie annotate autorizzate, convenzioni cliniche e risorse di addestramento; non simulare il riconoscimento
